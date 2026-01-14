@@ -1,7 +1,5 @@
 package com.example.ssak3.domain.product.service;
 
-import com.example.ssak3.common.enums.ErrorCode;
-import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.domain.product.entity.Product;
 import com.example.ssak3.domain.product.model.request.ProductCreateRequest;
 import com.example.ssak3.domain.product.model.response.ProductCreateResponse;

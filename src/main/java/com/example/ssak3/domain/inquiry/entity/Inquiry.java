@@ -32,4 +32,11 @@ public class Inquiry extends BaseEntity {
 
     @Column(nullable = false, name = "is_deleted")
     private boolean isDeleted = false;
+
+    public Inquiry(User user, String title, String content, String status) {
+        this.user = user;
+        this.title = title;
+        this.content = content;
+        this.status = status;
+    }
 }

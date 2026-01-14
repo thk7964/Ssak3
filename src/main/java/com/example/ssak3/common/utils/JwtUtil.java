@@ -67,22 +67,19 @@ public class JwtUtil {
 
     public String substringToken(String token) {
 
-        if (!validateAuthorizationHeader(token)) {
+        if (token == null || !token.startsWith(BEARER_PREFIX)) {
             throw new CustomException(ErrorCode.INVALID_TOKEN);
         }
 
-        return token.substring(7);
+        return token.substring(BEARER_PREFIX.length());
     }
 
     public Claims extractClaims(String token) {
         return Jwts.parser()
+                .verifyWith(key)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
-    }
-
-    public boolean validateAuthorizationHeader(String token) {
-        return token != null && token.startsWith(BEARER_PREFIX);
     }
 
 }

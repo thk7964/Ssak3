@@ -25,13 +25,13 @@ public class TimeDeal extends BaseEntity {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @Column(nullable = false, name = "deal_price")
+    @Column(name = "deal_price")
     private Integer dealPrice;
 
-    @Column(nullable = false, name = "start_at")
+    @Column(name = "start_at")
     private LocalDateTime startAt;
 
-    @Column(nullable = false, name = "end_at")
+    @Column(name = "end_at")
     private LocalDateTime endAt;
 
     @Column(nullable = false, name = "is_deleted")
@@ -55,11 +55,14 @@ public class TimeDeal extends BaseEntity {
         return TimeDealStatus.OPEN;
     }
 
-    public void update(TimeDealUpdateRequest request) {
-
-    }
-
     public void softDelete() {
         this.isDeleted = true;
+    }
+
+    public void update(TimeDealUpdateRequest request) {
+
+        if (request.getDealPrice() != null) { this.dealPrice = request.getDealPrice(); }
+        if (request.getStartAt() != null) { this.startAt = request.getStartAt(); }
+        if (request.getEndAt() != null) { this.endAt = request.getEndAt(); }
     }
 }

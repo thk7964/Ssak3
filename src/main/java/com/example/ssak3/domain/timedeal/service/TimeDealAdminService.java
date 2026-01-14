@@ -6,7 +6,9 @@ import com.example.ssak3.domain.product.entity.Product;
 import com.example.ssak3.domain.product.repository.ProductRepository;
 import com.example.ssak3.domain.timedeal.entity.TimeDeal;
 import com.example.ssak3.domain.timedeal.model.request.TimeDealCreateRequest;
+import com.example.ssak3.domain.timedeal.model.request.TimeDealUpdateRequest;
 import com.example.ssak3.domain.timedeal.model.response.TimeDealCreateResponse;
+import com.example.ssak3.domain.timedeal.model.response.TimeDealUpdateResponse;
 import com.example.ssak3.domain.timedeal.repository.TimeDealRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,7 +23,11 @@ public class TimeDealAdminService {
     public TimeDealCreateResponse createTimeDeal(TimeDealCreateRequest request) {
 
         Product product = productRepository.findById(request.getProductId())
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_PRODUCT));
+                .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        if (product.getPrice()<= request.getDealPrice()){
+            throw new CustomException(ErrorCode.INVALID_SALE_PRICE);
+        }
 
         if (request.getStartAt().isAfter(request.getEndAt())) {
             throw new CustomException(ErrorCode.USER_NOT_FOUND);
@@ -39,4 +45,14 @@ public class TimeDealAdminService {
         return TimeDealCreateResponse.from(saved);
 
     }
+
+    public TimeDealUpdateResponse updateTimeDeal(Long timeDealsId, TimeDealUpdateRequest request) {
+        TimeDeal timeDeal = timeDealRepository.findById(timeDealsId)
+                .orElseThrow(()-> new CustomException(ErrorCode.TIME_DEAL_NOT_FOUND));
+
+        timeDeal.update(request);
+
+        return TimeDealUpdateResponse.from(timeDeal);
+    }
+
 }

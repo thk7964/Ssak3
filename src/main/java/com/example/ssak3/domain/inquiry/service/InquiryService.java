@@ -5,8 +5,10 @@ import com.example.ssak3.common.enums.InquiryStatus;
 import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.domain.inquiry.entity.Inquiry;
 import com.example.ssak3.domain.inquiry.model.request.InquiryCreateRequest;
+import com.example.ssak3.domain.inquiry.model.request.InquiryUpdateRequest;
 import com.example.ssak3.domain.inquiry.model.response.InquiryCreateResponse;
 import com.example.ssak3.domain.inquiry.model.response.InquiryGetResponse;
+import com.example.ssak3.domain.inquiry.model.response.InquiryUpdateResponse;
 import com.example.ssak3.domain.inquiry.repository.InquiryRepository;
 import com.example.ssak3.domain.user.entity.User;
 import com.example.ssak3.domain.user.repository.UserRepository;
@@ -23,7 +25,7 @@ public class InquiryService {
 
 
     /**
-     * 문의 생성 API
+     * 문의 생성
      **/
     @Transactional
     public InquiryCreateResponse createInquiry(Long userId, InquiryCreateRequest request) {
@@ -45,7 +47,7 @@ public class InquiryService {
 
 
     /**
-     * 문의 상세 조회 API
+     * 문의 상세 조회
      **/
     @Transactional(readOnly = true)
     public InquiryGetResponse getInquiry(Long userId, Long inquiryId) {
@@ -56,6 +58,23 @@ public class InquiryService {
         foundInquiry.validateUser(userId);  // 작성자 검증
 
         return InquiryGetResponse.from(foundInquiry);
+    }
+
+    /**
+     * 문의 수정
+     **/
+    @Transactional
+    public InquiryUpdateResponse updateInquiry(Long userId, Long inquiryId, InquiryUpdateRequest request) {
+
+        Inquiry foundInquiry =inquiryRepository.findById(inquiryId)
+                .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_NOT_FOUND));
+
+        foundInquiry.validateUser(userId);  // 작성자 검증
+        foundInquiry.validateAnswered(); // 이미 답변완료된 문의인지 검증
+
+        foundInquiry.update(request.getTitle(), request.getContent());
+
+        return InquiryUpdateResponse.from(foundInquiry);
     }
 
 }

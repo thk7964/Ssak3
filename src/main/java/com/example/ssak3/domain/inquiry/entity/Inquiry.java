@@ -42,10 +42,24 @@ public class Inquiry extends BaseEntity {
         this.status = status;
     }
 
+    public void update(String newTitle, String newContent) {
+        this.title = newTitle;
+        this.content = newContent;
+    }
+
+    // 사용자, 작성자 검증 메서드
     public void validateUser(Long userId) {
         if (!this.user.getId().equals(userId)) {
             throw new CustomException(ErrorCode.NOT_INQUIRY_WRITER);
         }
     }
+
+    // 답변완료된 문의 검증 메서드
+    public void validateAnswered() {
+        if ("ANSWERED".equals(this.status)) {
+            throw new CustomException(ErrorCode.INQUIRY_ALREADY_ANSWERED);
+        }
+    }
+
 
 }

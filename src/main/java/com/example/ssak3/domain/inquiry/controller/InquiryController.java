@@ -2,6 +2,7 @@ package com.example.ssak3.domain.inquiry.controller;
 
 import com.example.ssak3.common.model.ApiResponse;
 import com.example.ssak3.domain.inquiry.model.request.InquiryCreateRequest;
+import com.example.ssak3.domain.inquiry.model.request.InquiryUpdateRequest;
 import com.example.ssak3.domain.inquiry.service.InquiryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,5 +38,15 @@ public class InquiryController {
          return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    /**
+     * 문의 수정 API
+     **/
+    @PatchMapping("/{inquiryId}")
+    public ResponseEntity<ApiResponse> updateInquiryApi(@RequestParam Long userId, @PathVariable Long inquiryId, @RequestBody InquiryUpdateRequest request) {
+
+        ApiResponse response = ApiResponse.success("문의가 수정 완료되었습니다.", inquiryService.updateInquiry(userId, inquiryId, request));
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 
 }

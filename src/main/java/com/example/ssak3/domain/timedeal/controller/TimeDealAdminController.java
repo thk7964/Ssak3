@@ -25,5 +25,13 @@ public class TimeDealAdminController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @PatchMapping("/time-deals/{timeDealsId}")
+    public ResponseEntity<ApiResponse> updateTimeDealApi(@PathVariable Long timeDealsId, @Valid @RequestBody TimeDealUpdateRequest request){
+
+        ApiResponse response = ApiResponse.success("타임딜 상품 수정", timeDealAdminService.updateTimeDeal(timeDealsId ,request));
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
 
 }

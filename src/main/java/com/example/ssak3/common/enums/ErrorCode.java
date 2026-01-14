@@ -14,7 +14,8 @@ public enum ErrorCode {
 
 
     //TimeDeal
-    INVALID_SALE_PRICE(HttpStatus.BAD_REQUEST, "세일 가격은 정가보다 낮아야 합니다."),
+    INVALID_SALE_PRICE_BELOW_ORIGINAL(HttpStatus.BAD_REQUEST, "세일 가격은 정가보다 낮아야 합니다."),
+    INVALID_SALE_PRICE_BELOW_PREVIOUS(HttpStatus.BAD_REQUEST, "수정된 세일 가격은 기존 세일 가격보다 낮아야 합니다."),
     TIME_DEAL_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 세일 상품을 찾을 수 없습니다."),
     ;
 

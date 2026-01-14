@@ -26,7 +26,7 @@ public class TimeDealAdminService {
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
         if (product.getPrice()<= request.getDealPrice()){
-            throw new CustomException(ErrorCode.INVALID_SALE_PRICE);
+            throw new CustomException(ErrorCode.INVALID_SALE_PRICE_BELOW_ORIGINAL);
         }
 
         if (request.getStartAt().isAfter(request.getEndAt())) {
@@ -49,6 +49,10 @@ public class TimeDealAdminService {
     public TimeDealUpdateResponse updateTimeDeal(Long timeDealsId, TimeDealUpdateRequest request) {
         TimeDeal timeDeal = timeDealRepository.findById(timeDealsId)
                 .orElseThrow(()-> new CustomException(ErrorCode.TIME_DEAL_NOT_FOUND));
+
+        if (timeDeal.getDealPrice()<= request.getDealPrice()){
+            throw new CustomException(ErrorCode.INVALID_SALE_PRICE_BELOW_PREVIOUS);
+        }
 
         timeDeal.update(request);
 

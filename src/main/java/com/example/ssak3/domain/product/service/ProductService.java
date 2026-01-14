@@ -33,14 +33,6 @@ public class ProductService {
                 request.getQuantity()
         );
         Product createdProduct = productRepository.save(product);
-        ProductCreateResponse response = new ProductCreateResponse(
-                createdProduct.getId(),
-                createdProduct.getName(),
-                createdProduct.getPrice(),
-                createdProduct.getStatus(),
-                createdProduct.getInformation(),
-                createdProduct.getQuantity()
-        );
-        return response;
+        return ProductCreateResponse.from(createdProduct);
     }
 }

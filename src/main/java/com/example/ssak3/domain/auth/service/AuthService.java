@@ -2,7 +2,10 @@ package com.example.ssak3.domain.auth.service;
 
 import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.exception.CustomException;
+import com.example.ssak3.common.utils.JwtUtil;
+import com.example.ssak3.domain.auth.model.request.LoginRequest;
 import com.example.ssak3.domain.auth.model.request.SignupRequest;
+import com.example.ssak3.domain.auth.model.response.LoginResponse;
 import com.example.ssak3.domain.auth.model.response.SignupResponse;
 import com.example.ssak3.domain.user.entity.User;
 import com.example.ssak3.domain.user.repository.UserRepository;
@@ -15,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final JwtUtil jwtUtil;
 
     /**
      * 회원 가입 비즈니스 로직
@@ -38,5 +42,19 @@ public class AuthService {
         User savedUser = userRepository.save(user);
 
         return SignupResponse.from(savedUser);
+    }
+
+    /**
+     * 로그인 비즈니스 로직
+     */
+    @Transactional
+    public LoginResponse login(LoginRequest request) {
+
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        String accessToken = jwtUtil.createToken(user.getId(), user.getRole());
+
+        return new LoginResponse(accessToken);
     }
 }

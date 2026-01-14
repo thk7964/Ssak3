@@ -1,0 +1,41 @@
+package com.example.ssak3.domain.timedeal.service;
+
+import com.example.ssak3.common.enums.ErrorCode;
+import com.example.ssak3.common.exception.CustomException;
+import com.example.ssak3.domain.product.entity.Product;
+import com.example.ssak3.domain.timedeal.entity.TimeDeal;
+import com.example.ssak3.domain.timedeal.model.request.TimeDealCreateRequest;
+import com.example.ssak3.domain.timedeal.model.response.TimeDealCreateResponse;
+import com.example.ssak3.domain.timedeal.repository.TimeDealRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class TimeDealAdminService {
+
+    private TimeDealRepository timeDealRepository;
+    private final ProductRepository productRepository;
+
+    public TimeDealCreateResponse createTimeDeal(TimeDealCreateRequest request) {
+
+        Product product=productRepository.findById(request.getProductId())
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_PRODUCT));
+
+        if (request.getStartAt().isAfter(request.getEndAt())) {
+            throw new CustomException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        TimeDeal timeDeal = new TimeDeal(
+                product,
+                request.getDealPrice(),
+                request.getStartAt(),
+                request.getEndAt()
+        );
+
+        TimeDeal saved = timeDealRepository.save(timeDeal);
+
+        return TimeDealCreateResponse.from(saved);
+
+    }
+}

@@ -12,6 +12,7 @@ import com.example.ssak3.domain.timedeal.model.response.TimeDealUpdateResponse;
 import com.example.ssak3.domain.timedeal.repository.TimeDealRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +21,7 @@ public class TimeDealAdminService {
     private final TimeDealRepository timeDealRepository;
     private final ProductRepository productRepository;
 
+    @Transactional
     public TimeDealCreateResponse createTimeDeal(TimeDealCreateRequest request) {
 
         Product product = productRepository.findById(request.getProductId())
@@ -46,6 +48,7 @@ public class TimeDealAdminService {
 
     }
 
+    @Transactional
     public TimeDealUpdateResponse updateTimeDeal(Long timeDealsId, TimeDealUpdateRequest request) {
         TimeDeal timeDeal = timeDealRepository.findById(timeDealsId)
                 .orElseThrow(()-> new CustomException(ErrorCode.TIME_DEAL_NOT_FOUND));
@@ -59,4 +62,11 @@ public class TimeDealAdminService {
         return TimeDealUpdateResponse.from(timeDeal);
     }
 
+    @Transactional
+    public void deleteTimeDeal(Long timeDealsId) {
+        TimeDeal timeDeal = timeDealRepository.findById(timeDealsId)
+                .orElseThrow(()-> new CustomException(ErrorCode.TIME_DEAL_NOT_FOUND));
+
+        timeDeal.softDelete();
+    }
 }

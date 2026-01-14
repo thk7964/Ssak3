@@ -33,5 +33,13 @@ public class TimeDealAdminController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @DeleteMapping("/time-deals/{timeDealsId}")
+    public ResponseEntity<ApiResponse> deleteTimeDealApi(@PathVariable Long timeDealsId){
 
+        timeDealAdminService.deleteTimeDeal(timeDealsId);
+
+        ApiResponse response = ApiResponse.success("타임딜 상품 삭제", null);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 }

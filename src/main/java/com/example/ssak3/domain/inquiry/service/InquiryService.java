@@ -77,4 +77,19 @@ public class InquiryService {
         return InquiryUpdateResponse.from(foundInquiry);
     }
 
+    /**
+     * 문의 삭제
+     **/
+    @Transactional
+    public void deleteInquiry(Long userId, Long inquiryId) {
+
+        Inquiry foundInquiry =inquiryRepository.findById(inquiryId)
+                .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_NOT_FOUND));
+
+        foundInquiry.validateUser(userId);  // 작성자 검증
+        foundInquiry.validateAnswered();  // 이미 답변완료된 문의인지 검증(답변완료된 것은 삭제 불가)
+
+        foundInquiry.delete();
+    }
+
 }

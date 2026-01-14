@@ -49,4 +49,15 @@ public class InquiryController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    /**
+     * 문의 삭제 API
+     **/
+    @DeleteMapping("/{inquiryId}")
+    public ResponseEntity<ApiResponse> deleteInquiryApi(@RequestParam Long userId, @PathVariable Long inquiryId) {
+
+        inquiryService.deleteInquiry(userId, inquiryId);
+
+        return ResponseEntity.ok(ApiResponse.success("문의가 성공적으로 삭제되었습니다.", null));
+    }
+
 }

@@ -47,6 +47,11 @@ public class Inquiry extends BaseEntity {
         this.content = newContent;
     }
 
+    public Inquiry delete() {
+        this.isDeleted = true;
+        return this;
+    }
+
     // 사용자, 작성자 검증 메서드
     public void validateUser(Long userId) {
         if (!this.user.getId().equals(userId)) {
@@ -60,6 +65,4 @@ public class Inquiry extends BaseEntity {
             throw new CustomException(ErrorCode.INQUIRY_ALREADY_ANSWERED);
         }
     }
-
-
 }

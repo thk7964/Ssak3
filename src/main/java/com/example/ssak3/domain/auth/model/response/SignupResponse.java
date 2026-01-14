@@ -1,4 +1,31 @@
 package com.example.ssak3.domain.auth.model.response;
 
+import com.example.ssak3.domain.user.entity.User;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.time.LocalDateTime;
+
+@Getter
+@RequiredArgsConstructor
 public class SignupResponse {
+
+    private final Long id;
+    private final String email;
+    private final String name;
+    private final String nickname;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime modifiedAt;
+
+    public static SignupResponse from(User user) {
+        return new SignupResponse(
+                user.getId(),
+                user.getEmail(),
+                user.getName(),
+                user.getNickname(),
+                user.getCreatedAt(),
+                user.getUpdatedAt()
+        );
+    }
+
 }

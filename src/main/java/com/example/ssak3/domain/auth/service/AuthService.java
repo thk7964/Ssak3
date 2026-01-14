@@ -10,6 +10,7 @@ import com.example.ssak3.domain.auth.model.response.SignupResponse;
 import com.example.ssak3.domain.user.entity.User;
 import com.example.ssak3.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * 회원 가입 비즈니스 로직
@@ -34,7 +36,7 @@ public class AuthService {
                 request.getName(),
                 request.getNickname(),
                 request.getEmail(),
-                request.getPassword(),
+                passwordEncoder.encode(request.getPassword()),
                 request.getBirth(),
                 request.getPhone(),
                 request.getAddress());
@@ -53,7 +55,11 @@ public class AuthService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        String accessToken = jwtUtil.createToken(user.getId(), user.getRole());
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new CustomException(ErrorCode.PASSWORD_INCORRECT);
+        }
+
+        String accessToken = jwtUtil.createToken(user.getId(), user.getEmail(), user.getNickname(), user.getRole());
 
         return new LoginResponse(accessToken);
     }

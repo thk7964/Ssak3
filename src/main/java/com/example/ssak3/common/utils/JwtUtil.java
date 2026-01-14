@@ -1,6 +1,8 @@
 package com.example.ssak3.common.utils;
 
+import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.enums.UserRole;
+import com.example.ssak3.common.exception.CustomException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -18,7 +20,8 @@ import static io.jsonwebtoken.Jwts.SIG.HS256;
 @Component
 public class JwtUtil {
 
-    private static final String BEARER_PREFIX = "Bearer ";
+    public static final String HEADER = "Authorization";
+    public static final String BEARER_PREFIX = "Bearer ";
     private static final long ACCESS_TOKEN_TIME = 60 * 60 * 1000L; // 60분
 
     @Value("${jwt.secret.key}")
@@ -32,10 +35,12 @@ public class JwtUtil {
         this.key = Keys.hmacShaKeyFor(bytes);
     }
 
-    public String createToken(Long userId, UserRole role) {
+    public String createToken(Long userId, String email, String nickname, UserRole role) {
         return BEARER_PREFIX +
                 Jwts.builder()
                         .subject(String.valueOf(userId))
+                        .claim("email", email)
+                        .claim("nickname", nickname)
                         .claim("role", role)
                         .issuedAt(new Date(System.currentTimeMillis()))
                         .expiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_TIME))
@@ -44,6 +49,11 @@ public class JwtUtil {
     }
 
     public boolean validateToken(String token) {
+
+        if (token == null || token.isBlank())  {
+            return false;
+        }
+
         try {
             Jwts.parser()
                     .verifyWith(key)
@@ -55,11 +65,24 @@ public class JwtUtil {
         }
     }
 
+    public String substringToken(String token) {
+
+        if (!validateAuthorizationHeader(token)) {
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
+        }
+
+        return token.substring(7);
+    }
+
     public Claims extractClaims(String token) {
         return Jwts.parser()
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
+    }
+
+    public boolean validateAuthorizationHeader(String token) {
+        return token != null && token.startsWith(BEARER_PREFIX);
     }
 
 }

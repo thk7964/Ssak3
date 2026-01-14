@@ -24,11 +24,10 @@ public class ProductController {
      */
     @PostMapping("/admin/products")
     public ResponseEntity<ApiResponse> createProductApi(@RequestBody ProductCreateRequest request) {
-        ProductCreateResponse createResponse = productService.createProduct(request);
-       return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse(true, "201", createResponse));
+
+        ApiResponse response = ApiResponse.success("상품을 생성하셨습니다.", productService.createProduct(request));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
-
-
-
 
 }

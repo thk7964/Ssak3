@@ -1,6 +1,8 @@
 package com.example.ssak3.domain.inquiry.entity;
 
 import com.example.ssak3.common.entity.BaseEntity;
+import com.example.ssak3.common.enums.ErrorCode;
+import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -39,4 +41,11 @@ public class Inquiry extends BaseEntity {
         this.content = content;
         this.status = status;
     }
+
+    public void validateUser(Long userId) {
+        if (!this.user.getId().equals(userId)) {
+            throw new CustomException(ErrorCode.NOT_INQUIRY_WRITER);
+        }
+    }
+
 }

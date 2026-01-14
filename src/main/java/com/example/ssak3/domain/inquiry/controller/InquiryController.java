@@ -27,4 +27,15 @@ public class InquiryController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    /**
+     * 문의 상세 조회 API
+     **/
+    @GetMapping("/{inquiryId}")
+    public ResponseEntity<ApiResponse> getInquiryApi(@RequestParam Long userId, @PathVariable Long inquiryId) {
+         ApiResponse response = ApiResponse.success("선택하신 문의가 정상적으로 조회 완료되었습니다.", inquiryService.getInquiry(userId, inquiryId));
+
+         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+
 }

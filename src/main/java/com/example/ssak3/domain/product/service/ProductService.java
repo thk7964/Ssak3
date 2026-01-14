@@ -21,9 +21,6 @@ public class ProductService {
      */
     @Transactional
     public ProductCreateResponse createProduct(ProductCreateRequest request) {
-        if(productRepository.existsByName(request.getName())) {
-            throw new CustomException(ErrorCode.PRODUCT_ALREADY_EXISTS);
-        }
 
         Product product = new Product(
                 request.getName(),

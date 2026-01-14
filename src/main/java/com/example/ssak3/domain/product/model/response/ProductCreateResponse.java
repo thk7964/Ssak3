@@ -1,6 +1,5 @@
 package com.example.ssak3.domain.product.model.response;
 
-import com.example.ssak3.domain.category.entity.Category;
 import com.example.ssak3.domain.product.entity.Product;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

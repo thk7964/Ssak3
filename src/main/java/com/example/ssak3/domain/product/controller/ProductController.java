@@ -2,7 +2,6 @@ package com.example.ssak3.domain.product.controller;
 
 import com.example.ssak3.common.model.ApiResponse;
 import com.example.ssak3.domain.product.model.request.ProductCreateRequest;
-import com.example.ssak3.domain.product.model.response.ProductCreateResponse;
 import com.example.ssak3.domain.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -2,7 +2,6 @@ package com.example.ssak3.domain.timedeal.model.response;
 
 
 import com.example.ssak3.common.enums.TimeDealStatus;
-import com.example.ssak3.domain.product.entity.Product;
 import com.example.ssak3.domain.timedeal.entity.TimeDeal;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

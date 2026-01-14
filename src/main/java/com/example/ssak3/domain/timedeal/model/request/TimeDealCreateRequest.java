@@ -1,6 +1,5 @@
 package com.example.ssak3.domain.timedeal.model.request;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Getter;

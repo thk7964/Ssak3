@@ -1,14 +1,15 @@
 package com.example.ssak3.domain.timedeal.model.response;
 
-import com.example.ssak3.domain.timedeal.TimeDealStatus;
+
+import com.example.ssak3.common.enums.TimeDealStatus;
 import com.example.ssak3.domain.timedeal.entity.TimeDeal;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Getter
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class TimeDealCreateResponse {
     private final Long id;
     private final Long productId;
@@ -18,7 +19,7 @@ public class TimeDealCreateResponse {
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
-    public static TimeDealCreateResponse from (TimeDeal timeDeal){
+    public static TimeDealCreateResponse from(TimeDeal timeDeal) {
         return new TimeDealCreateResponse(
                 timeDeal.getId(),
                 timeDeal.getProduct().getId(),

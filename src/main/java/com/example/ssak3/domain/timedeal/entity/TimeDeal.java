@@ -1,8 +1,8 @@
 package com.example.ssak3.domain.timedeal.entity;
 
 import com.example.ssak3.common.entity.BaseEntity;
+import com.example.ssak3.common.enums.TimeDealStatus;
 import com.example.ssak3.domain.product.entity.Product;
-import com.example.ssak3.domain.timedeal.TimeDealStatus;
 import com.example.ssak3.domain.timedeal.model.request.TimeDealUpdateRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -40,19 +40,26 @@ public class TimeDeal extends BaseEntity {
     public TimeDeal(Product product, Integer dealPrice, LocalDateTime startAt, LocalDateTime endAt) {
         this.product = product;
         this.dealPrice = dealPrice;
-        this.startAt= startAt;
-        this.endAt=endAt;
-        this.isDeleted=false;
+        this.startAt = startAt;
+        this.endAt = endAt;
+        this.isDeleted = false;
     }
 
     /*
-    *  현재 시점 기준으로 타임딜의 상태를 반환
-    * */
+     *  현재 시점 기준으로 타임딜의 상태를 반환
+     * */
     public TimeDealStatus getStatus(LocalDateTime now) {
         if (isDeleted) return TimeDealStatus.DELETED;
         if (now.isBefore(startAt)) return TimeDealStatus.READY;
         if (now.isAfter(endAt)) return TimeDealStatus.CLOSED;
         return TimeDealStatus.OPEN;
     }
-    public void softDelete() {this.isDeleted = true;}
+
+    public void update(TimeDealUpdateRequest request) {
+
+    }
+
+    public void softDelete() {
+        this.isDeleted = true;
+    }
 }

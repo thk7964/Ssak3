@@ -3,19 +3,23 @@ package com.example.ssak3.domain.inquiry.service;
 import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.enums.InquiryStatus;
 import com.example.ssak3.common.exception.CustomException;
+import com.example.ssak3.common.model.PageResponse;
+import com.example.ssak3.domain.coupon.model.response.CouponListGetResponse;
+import com.example.ssak3.domain.coupon.repository.CouponRepository;
 import com.example.ssak3.domain.inquiry.entity.Inquiry;
 import com.example.ssak3.domain.inquiry.model.request.InquiryCreateRequest;
 import com.example.ssak3.domain.inquiry.model.request.InquiryUpdateRequest;
-import com.example.ssak3.domain.inquiry.model.response.InquiryCreateResponse;
-import com.example.ssak3.domain.inquiry.model.response.InquiryDeleteResponse;
-import com.example.ssak3.domain.inquiry.model.response.InquiryGetResponse;
-import com.example.ssak3.domain.inquiry.model.response.InquiryUpdateResponse;
+import com.example.ssak3.domain.inquiry.model.response.*;
 import com.example.ssak3.domain.inquiry.repository.InquiryRepository;
 import com.example.ssak3.domain.user.entity.User;
 import com.example.ssak3.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +27,6 @@ public class InquiryService {
 
     private final InquiryRepository inquiryRepository;
     private final UserRepository userRepository;
-
 
     /**
      * 문의 생성
@@ -44,6 +47,17 @@ public class InquiryService {
         Inquiry savedInquiry = inquiryRepository.save(inquiry);
 
         return InquiryCreateResponse.from(savedInquiry);
+    }
+
+    /**
+     * 문의 전체 조회
+     **/
+    @Transactional(readOnly = true)
+    public PageResponse<InquiryListGetResponse> getInquiryList(Long userId, Pageable pageable) {
+
+        Page<InquiryListGetResponse> inquiryListPage = inquiryRepository.findAllByIsDeletedFalseAndUserId(userId, pageable).map(InquiryListGetResponse::from);
+
+        return PageResponse.from(inquiryListPage);
     }
 
 

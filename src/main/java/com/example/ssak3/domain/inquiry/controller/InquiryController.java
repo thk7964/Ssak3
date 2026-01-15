@@ -2,11 +2,16 @@ package com.example.ssak3.domain.inquiry.controller;
 
 import com.example.ssak3.common.model.ApiResponse;
 import com.example.ssak3.common.model.AuthUser;
+import com.example.ssak3.common.model.PageResponse;
 import com.example.ssak3.domain.inquiry.model.request.InquiryCreateRequest;
 import com.example.ssak3.domain.inquiry.model.request.InquiryUpdateRequest;
+import com.example.ssak3.domain.inquiry.model.response.InquiryListGetResponse;
 import com.example.ssak3.domain.inquiry.service.InquiryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,7 +26,7 @@ public class InquiryController {
 
     /**
      * 문의 생성 API
-     **/
+     */
     @PostMapping
     public ResponseEntity<ApiResponse> createInquiryApi(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody InquiryCreateRequest request) {
 
@@ -32,8 +37,22 @@ public class InquiryController {
     }
 
     /**
+     * 문의 전체 조회 API
+     */
+    @GetMapping
+    public ResponseEntity<ApiResponse> getInquiryListApi(@AuthenticationPrincipal AuthUser authUser, @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+
+        Long userId = authUser.getId();
+        PageResponse<InquiryListGetResponse> pageResponse = inquiryService.getInquiryList(userId, pageable);
+
+        ApiResponse response = ApiResponse.success("전체 문의가 정상적으로 조회되었습니다.", pageResponse);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    /**
      * 문의 상세 조회 API
-     **/
+     */
     @GetMapping("/{inquiryId}")
     public ResponseEntity<ApiResponse> getInquiryApi(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long inquiryId) {
 
@@ -45,7 +64,7 @@ public class InquiryController {
 
     /**
      * 문의 수정 API
-     **/
+     */
     @PatchMapping("/{inquiryId}")
     public ResponseEntity<ApiResponse> updateInquiryApi(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long inquiryId, @RequestBody InquiryUpdateRequest request) {
 

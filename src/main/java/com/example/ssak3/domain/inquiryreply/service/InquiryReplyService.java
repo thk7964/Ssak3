@@ -3,15 +3,19 @@ package com.example.ssak3.domain.inquiryreply.service;
 import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.enums.InquiryStatus;
 import com.example.ssak3.common.exception.CustomException;
+import com.example.ssak3.common.model.PageResponse;
 import com.example.ssak3.domain.inquiry.entity.Inquiry;
 import com.example.ssak3.domain.inquiry.repository.InquiryRepository;
 import com.example.ssak3.domain.inquiryreply.entity.InquiryReply;
 import com.example.ssak3.domain.inquiryreply.model.request.InquiryReplyCreateRequest;
 import com.example.ssak3.domain.inquiryreply.model.response.InquiryReplyCreateResponse;
+import com.example.ssak3.domain.inquiryreply.model.response.InquiryReplyListGetResponse;
 import com.example.ssak3.domain.inquiryreply.repository.InquiryReplyRepository;
 import com.example.ssak3.domain.user.entity.User;
 import com.example.ssak3.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,6 +52,18 @@ public class InquiryReplyService {
         foundInquiry.updateStatus(InquiryStatus.ANSWERED);
 
         return InquiryReplyCreateResponse.from(savedInquiryReply);
+    }
+
+    /**
+     * 문의 답변 목록 조회
+     */
+    @Transactional(readOnly = true)
+    public PageResponse<InquiryReplyListGetResponse> getInquiryReplyList(Pageable pageable) {
+        Page<InquiryReplyListGetResponse> inquiryReplyListPage = inquiryReplyRepository
+                .findAllByIsDeletedFalse(pageable)  // 관리자는 adminId 상관없이 작성한 모든 답변을 볼 수 있음
+                .map(InquiryReplyListGetResponse::from);
+
+        return PageResponse.from(inquiryReplyListPage);
     }
 
 }

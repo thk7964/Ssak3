@@ -1,11 +1,15 @@
 package com.example.ssak3.domain.inquiryreply.controller;
 
 
+import com.example.ssak3.common.entity.BaseEntity;
 import com.example.ssak3.common.model.ApiResponse;
 import com.example.ssak3.common.model.AuthUser;
 import com.example.ssak3.domain.inquiryreply.model.request.InquiryReplyCreateRequest;
 import com.example.ssak3.domain.inquiryreply.service.InquiryReplyService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/ssak3/admin/inquiry-replies")
+@RequestMapping("/ssak3/admin/inquiries")
 public class InquiryReplyController {
 
     private final InquiryReplyService inquiryReplyService;
@@ -23,7 +27,7 @@ public class InquiryReplyController {
      * 문의 답변 생성 API
      */
 //    @PreAuthorize("hasAuthority('ADMIN')")
-    @PostMapping("/inquiries/{inquiryId}")
+    @PostMapping("/{inquiryId}/inquiry-replies")
     public ResponseEntity<ApiResponse> createInquiryReplyApi(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long inquiryId, @RequestBody InquiryReplyCreateRequest request) {
 
         Long adminId = authUser.getId();
@@ -31,5 +35,18 @@ public class InquiryReplyController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+    /**
+     * 문의 답변 목록 조회 API
+     */
+//    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/inquiry-replies")
+    public ResponseEntity<ApiResponse> getInquiryReplyListApi(@PageableDefault(size = 10, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable) {
+
+        ApiResponse response = ApiResponse.success("문의 답변 목록 조회 성공", inquiryReplyService.getInquiryReplyList(pageable));
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
 
 }

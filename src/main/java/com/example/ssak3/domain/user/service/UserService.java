@@ -4,9 +4,11 @@ import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.common.model.AuthUser;
 import com.example.ssak3.domain.user.entity.User;
+import com.example.ssak3.domain.user.model.request.UserChangePasswordRequest;
 import com.example.ssak3.domain.user.model.request.UserUpdateRequest;
 import com.example.ssak3.domain.user.model.request.UserVerifyPasswordRequest;
 import com.example.ssak3.domain.user.model.response.MyProfileGetResponse;
+import com.example.ssak3.domain.user.model.response.UserChangePasswordResponse;
 import com.example.ssak3.domain.user.model.response.UserUpdateResponse;
 import com.example.ssak3.domain.user.model.response.UserVerifyPasswordResponse;
 import com.example.ssak3.domain.user.repository.UserRepository;
@@ -63,4 +65,17 @@ public class UserService {
         return new UserVerifyPasswordResponse(passwordEncoder.matches(request.getPassword(), user.getPassword()));
     }
 
+    /**
+     * 비밀번호 변경 비즈니스 로직
+     */
+    @Transactional
+    public UserChangePasswordResponse changePassword(AuthUser authUser, UserChangePasswordRequest request) {
+
+        User user = userRepository.findById(authUser.getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        user.updatePassword(passwordEncoder.encode(request.getNewPassword()));
+
+        return new UserChangePasswordResponse(user.getId());
+    }
 }

@@ -78,4 +78,8 @@ public class User extends BaseEntity {
         this.phone = (request.getPhone() != null && !request.getPhone().contains(" ")) ? request.getPhone() : this.phone;
         this.address = (request.getAddress() != null && !request.getAddress().contains(" ")) ? request.getAddress() : this.address;
     }
+
+    public void updatePassword(String password) {
+        this.password = (password != null && !password.contains(" ")) ? password : this.password;
+    }
 }

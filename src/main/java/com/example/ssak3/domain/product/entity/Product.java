@@ -39,5 +39,11 @@ public class Product extends BaseEntity {
     @Column(nullable = false, name = "is_deleted")
     private boolean isDeleted = false;
 
-
+    public Product(String name, Integer price, String status, String information, Integer quantity) {
+        this.name = name;
+        this.price = price;
+        this.status = status;
+        this.information = information;
+        this.quantity = quantity;
+    }
 }

@@ -7,6 +7,7 @@ import com.example.ssak3.domain.inquiry.entity.Inquiry;
 import com.example.ssak3.domain.inquiry.model.request.InquiryCreateRequest;
 import com.example.ssak3.domain.inquiry.model.request.InquiryUpdateRequest;
 import com.example.ssak3.domain.inquiry.model.response.InquiryCreateResponse;
+import com.example.ssak3.domain.inquiry.model.response.InquiryDeleteResponse;
 import com.example.ssak3.domain.inquiry.model.response.InquiryGetResponse;
 import com.example.ssak3.domain.inquiry.model.response.InquiryUpdateResponse;
 import com.example.ssak3.domain.inquiry.repository.InquiryRepository;
@@ -52,10 +53,13 @@ public class InquiryService {
     @Transactional(readOnly = true)
     public InquiryGetResponse getInquiry(Long userId, Long inquiryId) {
 
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
         Inquiry foundInquiry =inquiryRepository.findById(inquiryId)
                 .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_NOT_FOUND));
 
-        foundInquiry.validateUser(userId);  // 작성자 검증
+        foundInquiry.validateUser(user.getId());  // 작성자 검증
 
         return InquiryGetResponse.from(foundInquiry);
     }
@@ -66,11 +70,14 @@ public class InquiryService {
     @Transactional
     public InquiryUpdateResponse updateInquiry(Long userId, Long inquiryId, InquiryUpdateRequest request) {
 
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
         Inquiry foundInquiry =inquiryRepository.findById(inquiryId)
                 .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_NOT_FOUND));
 
-        foundInquiry.validateUser(userId);  // 작성자 검증
-        foundInquiry.validateAnswered(); // 이미 답변완료된 문의인지 검증
+        foundInquiry.validateUser(user.getId());  // 작성자 검증
+        foundInquiry.validateAnswered(); // 이미 답변완료된 문의인지 검증(답변완료된 것은 수정불가)
 
         foundInquiry.update(request.getTitle(), request.getContent());
 
@@ -81,15 +88,20 @@ public class InquiryService {
      * 문의 삭제
      **/
     @Transactional
-    public void deleteInquiry(Long userId, Long inquiryId) {
+    public InquiryDeleteResponse deleteInquiry(Long userId, Long inquiryId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         Inquiry foundInquiry =inquiryRepository.findById(inquiryId)
                 .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_NOT_FOUND));
 
-        foundInquiry.validateUser(userId);  // 작성자 검증
-        foundInquiry.validateAnswered();  // 이미 답변완료된 문의인지 검증(답변완료된 것은 삭제 불가)
+        foundInquiry.validateUser(user.getId());  // 작성자 검증
+        foundInquiry.validateAnswered();  // 이미 답변완료된 문의인지 검증(답변완료된 것은 삭제불가)
 
         foundInquiry.delete();
+
+        return InquiryDeleteResponse.from(foundInquiry);
     }
 
 }

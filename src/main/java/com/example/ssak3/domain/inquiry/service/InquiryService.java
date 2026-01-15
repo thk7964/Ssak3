@@ -4,8 +4,6 @@ import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.enums.InquiryStatus;
 import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.common.model.PageResponse;
-import com.example.ssak3.domain.coupon.model.response.CouponListGetResponse;
-import com.example.ssak3.domain.coupon.repository.CouponRepository;
 import com.example.ssak3.domain.inquiry.entity.Inquiry;
 import com.example.ssak3.domain.inquiry.model.request.InquiryCreateRequest;
 import com.example.ssak3.domain.inquiry.model.request.InquiryUpdateRequest;
@@ -18,8 +16,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -116,7 +112,7 @@ public class InquiryService {
         foundInquiry.validateDeleted(); // 이미 삭제된 문의인지 검증
         foundInquiry.validateAnswered();  // 이미 답변완료된 문의인지 검증(답변완료된 것은 삭제불가)
 
-        foundInquiry.delete();
+        foundInquiry.softDelete();
 
         return InquiryDeleteResponse.from(foundInquiry);
     }

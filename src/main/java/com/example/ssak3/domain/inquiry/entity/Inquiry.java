@@ -47,7 +47,7 @@ public class Inquiry extends BaseEntity {
         this.content = newContent;
     }
 
-    public Inquiry delete() {
+    public Inquiry softDelete() {
         this.isDeleted = true;
         return this;
     }

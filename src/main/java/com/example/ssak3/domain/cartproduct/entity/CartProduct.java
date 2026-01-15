@@ -4,9 +4,7 @@ import com.example.ssak3.common.entity.BaseEntity;
 import com.example.ssak3.domain.cart.entity.Cart;
 import com.example.ssak3.domain.product.entity.Product;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
@@ -28,4 +26,15 @@ public class CartProduct extends BaseEntity {
 
     @Column(nullable = false)
     private Integer quantity;
+
+    public void changeQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public CartProduct(Cart cart, Product product, Integer quantity) {
+        this.cart = cart;
+        this.product = product;
+        this.quantity = quantity;
+    }
+
 }

@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @RequiredArgsConstructor
-public class UserUpdateResponse {
+public class MyProfileGetResponse {
 
     private final Long id;
     private final String name;
@@ -21,8 +21,8 @@ public class UserUpdateResponse {
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
-    public static UserUpdateResponse from(User user) {
-        return new UserUpdateResponse(
+    public static MyProfileGetResponse from(User user) {
+        return new MyProfileGetResponse(
                 user.getId(),
                 user.getName(),
                 user.getNickname(),

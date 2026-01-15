@@ -2,11 +2,15 @@ package com.example.ssak3.domain.admin.service;
 
 import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.exception.CustomException;
+import com.example.ssak3.common.model.PageResponse;
 import com.example.ssak3.domain.admin.model.request.AdminRoleChangeRequest;
 import com.example.ssak3.domain.admin.model.response.AdminRoleChangeResponse;
+import com.example.ssak3.domain.admin.model.response.UserListGetResponse;
 import com.example.ssak3.domain.user.entity.User;
 import com.example.ssak3.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,5 +29,13 @@ public class AdminService {
         user.updateRole(request.getRole());
 
         return AdminRoleChangeResponse.from(user);
+    }
+
+    @Transactional(readOnly = true)
+    public PageResponse<UserListGetResponse> getUserList(Pageable pageable) {
+
+        Page<UserListGetResponse> userList = userRepository.findAllByIsDeletedFalse(pageable).map(UserListGetResponse::from);
+
+        return PageResponse.from(userList);
     }
 }

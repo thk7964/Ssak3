@@ -1,8 +1,6 @@
 package com.example.ssak3.common.filter;
 
-import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.enums.UserRole;
-import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.common.model.AuthUser;
 import com.example.ssak3.common.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
@@ -50,12 +48,12 @@ public class JwtFilter extends OncePerRequestFilter {
         try {
             Claims claims = jwtUtil.extractClaims(rawToken);
 
-            Long userId = Long.valueOf(claims.getSubject());
+            Long id = Long.valueOf(claims.getSubject());
             String email = claims.get("email", String.class);
             String nickname = claims.get("nickname", String.class);
             UserRole role = UserRole.valueOf(claims.get("role", String.class));
 
-            AuthUser authUser = new AuthUser(userId, email, nickname, role);
+            AuthUser authUser = new AuthUser(id, email, nickname, role);
 
             Authentication authentication
                     = new UsernamePasswordAuthenticationToken(authUser, null, List.of(new SimpleGrantedAuthority("ROLE_" + role.name())));

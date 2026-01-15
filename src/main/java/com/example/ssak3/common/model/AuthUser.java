@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthUser {
 
-    private final Long userId;
+    private final Long id;
     private final String email;
     private final String nickname;
     private final UserRole role;

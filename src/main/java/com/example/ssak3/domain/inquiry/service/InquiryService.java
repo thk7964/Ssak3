@@ -37,7 +37,7 @@ public class InquiryService {
                 user,
                 request.getTitle(),
                 request.getContent(),
-                InquiryStatus.PENDING.name()
+                InquiryStatus.PENDING
         );
 
         Inquiry savedInquiry = inquiryRepository.save(inquiry);

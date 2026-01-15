@@ -2,6 +2,7 @@ package com.example.ssak3.domain.inquiry.entity;
 
 import com.example.ssak3.common.entity.BaseEntity;
 import com.example.ssak3.common.enums.ErrorCode;
+import com.example.ssak3.common.enums.InquiryStatus;
 import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.domain.user.entity.User;
 import jakarta.persistence.*;
@@ -29,13 +30,14 @@ public class Inquiry extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status;
+    private InquiryStatus status;
 
     @Column(nullable = false, name = "is_deleted")
     private boolean isDeleted = false;
 
-    public Inquiry(User user, String title, String content, String status) {
+    public Inquiry(User user, String title, String content, InquiryStatus status) {
         this.user = user;
         this.title = title;
         this.content = content;
@@ -47,9 +49,8 @@ public class Inquiry extends BaseEntity {
         this.content = newContent;
     }
 
-    public Inquiry softDelete() {
+    public void softDelete() {
         this.isDeleted = true;
-        return this;
     }
 
     // 사용자, 작성자 검증

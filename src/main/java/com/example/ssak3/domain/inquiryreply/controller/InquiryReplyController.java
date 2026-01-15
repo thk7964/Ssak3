@@ -3,6 +3,7 @@ package com.example.ssak3.domain.inquiryreply.controller;
 import com.example.ssak3.common.model.ApiResponse;
 import com.example.ssak3.common.model.AuthUser;
 import com.example.ssak3.domain.inquiryreply.model.request.InquiryReplyCreateRequest;
+import com.example.ssak3.domain.inquiryreply.model.request.InquiryReplyUpdateRequest;
 import com.example.ssak3.domain.inquiryreply.service.InquiryReplyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/ssak3/admin/inquiries")
+@RequestMapping("/ssak3/admin/inquiry-replies")
 public class InquiryReplyController {
 
     private final InquiryReplyService inquiryReplyService;
@@ -25,7 +26,7 @@ public class InquiryReplyController {
      * 문의 답변 생성 API
      */
 //    @PreAuthorize("hasAuthority('ADMIN')")
-    @PostMapping("/{inquiryId}/inquiry-replies")
+    @PostMapping("/inquiries/{inquiryId}")
     public ResponseEntity<ApiResponse> createInquiryReplyApi(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long inquiryId, @RequestBody InquiryReplyCreateRequest request) {
 
         Long adminId = authUser.getId();
@@ -38,7 +39,7 @@ public class InquiryReplyController {
      * 문의 답변 목록 조회 API
      */
 //    @PreAuthorize("hasAuthority('ADMIN')")
-    @GetMapping("/inquiry-replies")
+    @GetMapping
     public ResponseEntity<ApiResponse> getInquiryReplyListApi(@PageableDefault(size = 10, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
         ApiResponse response = ApiResponse.success("문의 답변 목록 조회 성공", inquiryReplyService.getInquiryReplyList(pageable));
@@ -50,11 +51,26 @@ public class InquiryReplyController {
      * 문의 답변 상세 조회 API
      */
 //    @PreAuthorize("hasAuthority('ADMIN')")
-    @GetMapping("/inquiry-replies/{inquiryReplyId}")
+    @GetMapping("/{inquiryReplyId}")
     public ResponseEntity<ApiResponse> getInquiryReplyApi(@PathVariable Long inquiryReplyId) {
+
         ApiResponse response = ApiResponse.success("문의 답변 조회 성공", inquiryReplyService.getInquiryReply(inquiryReplyId));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    /**
+     * 문의 답변 수정 API
+     */
+    @PatchMapping("/{inquiryReplyId}")
+    public ResponseEntity<ApiResponse> updateInquiryReplyApi(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long inquiryReplyId, @RequestBody InquiryReplyUpdateRequest request) {
+
+        Long adminId = authUser.getId();
+
+        ApiResponse response = ApiResponse.success("문의 답변 수정", inquiryReplyService.updateInquiryReply(adminId, inquiryReplyId, request));
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
 
 }

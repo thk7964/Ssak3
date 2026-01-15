@@ -8,9 +8,11 @@ import com.example.ssak3.domain.inquiry.entity.Inquiry;
 import com.example.ssak3.domain.inquiry.repository.InquiryRepository;
 import com.example.ssak3.domain.inquiryreply.entity.InquiryReply;
 import com.example.ssak3.domain.inquiryreply.model.request.InquiryReplyCreateRequest;
+import com.example.ssak3.domain.inquiryreply.model.request.InquiryReplyUpdateRequest;
 import com.example.ssak3.domain.inquiryreply.model.response.InquiryReplyCreateResponse;
 import com.example.ssak3.domain.inquiryreply.model.response.InquiryReplyGetResponse;
 import com.example.ssak3.domain.inquiryreply.model.response.InquiryReplyListGetResponse;
+import com.example.ssak3.domain.inquiryreply.model.response.InquiryReplyUpdateResponse;
 import com.example.ssak3.domain.inquiryreply.repository.InquiryReplyRepository;
 import com.example.ssak3.domain.user.entity.User;
 import com.example.ssak3.domain.user.repository.UserRepository;
@@ -76,9 +78,29 @@ public class InquiryReplyService {
         InquiryReply foundInquiryReply = inquiryReplyRepository.findById(inquiryReplyId)
                 .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_REPLY_NOT_FOUND));
 
-        foundInquiryReply.validateInquiryReplyDeleted();  // 삭제된 문의 답변인지 검증
+        foundInquiryReply.validateDeleted();  // 삭제된 문의 답변인지 검증
 
         return InquiryReplyGetResponse.from(foundInquiryReply);
     }
+
+    /**
+     * 문의 답변 수정
+     */
+    @Transactional
+    public InquiryReplyUpdateResponse updateInquiryReply(Long adminId, Long inquiryReplyId, InquiryReplyUpdateRequest request) {
+
+        User admin = userRepository.findById(adminId)
+                .orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        InquiryReply foundInquiryReply = inquiryReplyRepository.findById(inquiryReplyId)
+                .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_REPLY_NOT_FOUND));
+
+        foundInquiryReply.validateDeleted();  // 삭제된 문의 답변인지 검증
+
+        foundInquiryReply.update(admin, request.getContent());
+
+        return InquiryReplyUpdateResponse.from(foundInquiryReply);
+    }
+
 
 }

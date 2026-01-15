@@ -22,6 +22,9 @@ public enum ErrorCode {
 
     // Token 에러
     INVALID_TOKEN(HttpStatus.BAD_REQUEST, "유효하지 않은 토큰입니다."),
+
+    // Coupon 에러
+    COUPON_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 쿠폰입니다.")
     ;
 
     private final HttpStatus status;

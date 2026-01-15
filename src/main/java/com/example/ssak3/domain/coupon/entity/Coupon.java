@@ -1,18 +1,20 @@
 package com.example.ssak3.domain.coupon.entity;
 
 import com.example.ssak3.common.entity.BaseEntity;
+import com.example.ssak3.domain.coupon.model.request.CouponUpdateRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
 @Entity
 @Table(name = "coupons")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Coupon extends BaseEntity {
 
     @Id
@@ -25,11 +27,11 @@ public class Coupon extends BaseEntity {
     @Column(nullable = false, name = "discount_value")
     private Integer discountValue;
 
-    @Column(name = "total_quantity")
+    @Column(nullable = false, name = "total_quantity")
     private Integer totalQuantity;
 
     @Column(nullable = false, name = "issued_quantity")
-    private Integer issuedQuantity;
+    private Integer issuedQuantity = 0;
 
     @Column(nullable = false, name = "issue_start_date")
     private LocalDateTime issueStartDate;
@@ -46,4 +48,25 @@ public class Coupon extends BaseEntity {
     @Column(nullable = false, name = "is_deleted")
     private boolean isDeleted = false;
 
+    public Coupon(String name, Integer discountValue, Integer totalQuantity, LocalDateTime issueStartDate, LocalDateTime issueEndDate, Integer minOrderPrice, Integer validDays) {
+        this.name = name;
+        this.discountValue = discountValue;
+        this.totalQuantity = totalQuantity;
+        this.issueStartDate = issueStartDate;
+        this.issueEndDate = issueEndDate;
+        this.minOrderPrice = minOrderPrice;
+        this.validDays = validDays;
+    }
+
+    // Update
+    public void update(CouponUpdateRequest request) {
+        this.totalQuantity = request.getTotalQuantity();
+        this.issueEndDate = request.getIssueEndDate();
+        this.validDays = request.getValidDays();
+    }
+
+    // SoftDelete
+    public void delete() {
+        this.isDeleted = true;
+    }
 }

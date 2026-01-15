@@ -3,6 +3,7 @@ package com.example.ssak3.domain.user.controller;
 import com.example.ssak3.common.model.ApiResponse;
 import com.example.ssak3.common.model.AuthUser;
 import com.example.ssak3.domain.user.model.request.UserUpdateRequest;
+import com.example.ssak3.domain.user.model.request.UserVerifyPasswordRequest;
 import com.example.ssak3.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -35,6 +36,17 @@ public class UserController {
     public ResponseEntity<ApiResponse> updateUserApi(@AuthenticationPrincipal AuthUser authUser, @RequestBody UserUpdateRequest request) {
 
         ApiResponse response = ApiResponse.success("유저 정보 수정에 성공했습니다.", userService.updateUser(authUser, request));
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    /**
+     * 비밀번호 검증 API
+     */
+    @PostMapping("/verify-password")
+    public ResponseEntity<ApiResponse> verifyPasswordApi(@AuthenticationPrincipal AuthUser authUser, @RequestBody UserVerifyPasswordRequest request) {
+
+        ApiResponse response = ApiResponse.success("비밀번호 검증", userService.verifyPassword(authUser, request));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

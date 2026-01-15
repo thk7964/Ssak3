@@ -56,7 +56,7 @@ public class AuthService {
                 .orElseThrow(() -> new CustomException(ErrorCode.UNREGISTERED_USER));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new CustomException(ErrorCode.PASSWORD_INCORRECT);
+            throw new CustomException(ErrorCode.PASSWORD_MISMATCH);
         }
 
         String accessToken = jwtUtil.createToken(user.getId(), user.getEmail(), user.getNickname(), user.getRole());

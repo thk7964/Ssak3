@@ -67,10 +67,19 @@ public class InquiryReplyController {
 
         Long adminId = authUser.getId();
 
-        ApiResponse response = ApiResponse.success("문의 답변 수정", inquiryReplyService.updateInquiryReply(adminId, inquiryReplyId, request));
+        ApiResponse response = ApiResponse.success("문의 답변 수정 성공", inquiryReplyService.updateInquiryReply(adminId, inquiryReplyId, request));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    /**
+     * 문의 답변 삭제 API
+     */
+    @DeleteMapping("/{inquiryReplyId}")
+    public ResponseEntity<ApiResponse> deleteInquiryReplyApi(@PathVariable Long inquiryReplyId) {
+        ApiResponse response = ApiResponse.success("문의 답변 삭제 성공", inquiryReplyService.deleteInquiryReply(inquiryReplyId));
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 
 }

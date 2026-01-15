@@ -5,14 +5,12 @@ import com.example.ssak3.common.enums.InquiryStatus;
 import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.common.model.PageResponse;
 import com.example.ssak3.domain.inquiry.entity.Inquiry;
+import com.example.ssak3.domain.inquiry.model.response.InquiryDeleteResponse;
 import com.example.ssak3.domain.inquiry.repository.InquiryRepository;
 import com.example.ssak3.domain.inquiryreply.entity.InquiryReply;
 import com.example.ssak3.domain.inquiryreply.model.request.InquiryReplyCreateRequest;
 import com.example.ssak3.domain.inquiryreply.model.request.InquiryReplyUpdateRequest;
-import com.example.ssak3.domain.inquiryreply.model.response.InquiryReplyCreateResponse;
-import com.example.ssak3.domain.inquiryreply.model.response.InquiryReplyGetResponse;
-import com.example.ssak3.domain.inquiryreply.model.response.InquiryReplyListGetResponse;
-import com.example.ssak3.domain.inquiryreply.model.response.InquiryReplyUpdateResponse;
+import com.example.ssak3.domain.inquiryreply.model.response.*;
 import com.example.ssak3.domain.inquiryreply.repository.InquiryReplyRepository;
 import com.example.ssak3.domain.user.entity.User;
 import com.example.ssak3.domain.user.repository.UserRepository;
@@ -102,5 +100,20 @@ public class InquiryReplyService {
         return InquiryReplyUpdateResponse.from(foundInquiryReply);
     }
 
+    /**
+     * 문의 답변 삭제
+     */
+    @Transactional
+    public InquiryReplyDeleteResponse deleteInquiryReply(Long inquiryReplyId) {
+
+        InquiryReply foundInquiryReply = inquiryReplyRepository.findById(inquiryReplyId)
+                .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_REPLY_NOT_FOUND));
+
+        foundInquiryReply.validateDeleted();  // 삭제된 문의 답변인지 검증
+
+        foundInquiryReply.softDelete();
+
+        return InquiryReplyDeleteResponse.from(foundInquiryReply);
+    }
 
 }

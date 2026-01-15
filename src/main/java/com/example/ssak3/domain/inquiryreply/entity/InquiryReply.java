@@ -45,6 +45,10 @@ public class InquiryReply extends BaseEntity {
         this.content = newContent;
     }
 
+    public void softDelete() {
+        this.isDeleted = true;
+    }
+
     // 삭제된 문의 답변 검증
     public void validateDeleted() {
         if (this.isDeleted) {

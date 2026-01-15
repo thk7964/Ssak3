@@ -5,6 +5,7 @@ import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.common.model.PageResponse;
 import com.example.ssak3.domain.admin.model.request.AdminRoleChangeRequest;
 import com.example.ssak3.domain.admin.model.response.AdminRoleChangeResponse;
+import com.example.ssak3.domain.admin.model.response.UserGetResponse;
 import com.example.ssak3.domain.admin.model.response.UserListGetResponse;
 import com.example.ssak3.domain.user.entity.User;
 import com.example.ssak3.domain.user.repository.UserRepository;
@@ -37,5 +38,14 @@ public class AdminService {
         Page<UserListGetResponse> userList = userRepository.findAllByIsDeletedFalse(pageable).map(UserListGetResponse::from);
 
         return PageResponse.from(userList);
+    }
+
+    @Transactional(readOnly = true)
+    public UserGetResponse getUser(Long userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        return UserGetResponse.from(user);
     }
 }

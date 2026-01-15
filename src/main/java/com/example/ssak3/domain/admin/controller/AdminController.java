@@ -43,4 +43,16 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    /**
+     * 유저 단 건 조회 API
+     */
+    @PreAuthorize("hasRole('MANAGER')")
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<ApiResponse> getUserApi(@PathVariable Long userId) {
+
+        ApiResponse response = ApiResponse.success("유저 전체 조회에 성공했습니다.", adminService.getUser(userId));
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
 }

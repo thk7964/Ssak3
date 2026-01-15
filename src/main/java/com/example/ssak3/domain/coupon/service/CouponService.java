@@ -2,6 +2,7 @@ package com.example.ssak3.domain.coupon.service;
 
 import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.exception.CustomException;
+import com.example.ssak3.common.model.PageResponse;
 import com.example.ssak3.domain.coupon.entity.Coupon;
 import com.example.ssak3.domain.coupon.model.request.CouponCreateRequest;
 import com.example.ssak3.domain.coupon.model.request.CouponUpdateRequest;
@@ -11,9 +12,10 @@ import com.example.ssak3.domain.coupon.model.response.CouponListGetResponse;
 import com.example.ssak3.domain.coupon.model.response.CouponUpdateResponse;
 import com.example.ssak3.domain.coupon.repository.CouponRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -46,13 +48,12 @@ public class CouponService {
      * 쿠폰 목록 조회 로직
      */
     @Transactional(readOnly = true)
-    public List<CouponListGetResponse> getCouponList() {
+    public PageResponse<CouponListGetResponse> getCouponList(Pageable pageable) {
 
-        List<CouponListGetResponse> couponList = couponRepository.findAllByIsDeletedFalse().stream()
-                .map(CouponListGetResponse::from)
-                .toList();
+        Page<CouponListGetResponse> couponListPage = couponRepository.findAllByIsDeletedFalse(pageable)
+                .map(CouponListGetResponse::from);
 
-        return couponList;
+        return PageResponse.from(couponListPage);
     }
 
     /**

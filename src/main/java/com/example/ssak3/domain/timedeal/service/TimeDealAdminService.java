@@ -8,6 +8,7 @@ import com.example.ssak3.domain.timedeal.entity.TimeDeal;
 import com.example.ssak3.domain.timedeal.model.request.TimeDealCreateRequest;
 import com.example.ssak3.domain.timedeal.model.request.TimeDealUpdateRequest;
 import com.example.ssak3.domain.timedeal.model.response.TimeDealCreateResponse;
+import com.example.ssak3.domain.timedeal.model.response.TimeDealDeleteResponse;
 import com.example.ssak3.domain.timedeal.model.response.TimeDealUpdateResponse;
 import com.example.ssak3.domain.timedeal.repository.TimeDealRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,9 @@ public class TimeDealAdminService {
     private final TimeDealRepository timeDealRepository;
     private final ProductRepository productRepository;
 
+    /**
+     * 타임딜 생성
+     */
     @Transactional
     public TimeDealCreateResponse createTimeDeal(TimeDealCreateRequest request) {
 
@@ -48,6 +52,9 @@ public class TimeDealAdminService {
 
     }
 
+    /**
+     * 타임딜 수정
+     */
     @Transactional
     public TimeDealUpdateResponse updateTimeDeal(Long timeDealsId, TimeDealUpdateRequest request) {
         TimeDeal timeDeal = timeDealRepository.findById(timeDealsId)
@@ -62,12 +69,17 @@ public class TimeDealAdminService {
         return TimeDealUpdateResponse.from(timeDeal);
     }
 
+    /**
+     * 타임딜 삭제
+     */
     @Transactional
-    public void deleteTimeDeal(Long timeDealsId) {
+    public TimeDealDeleteResponse deleteTimeDeal(Long timeDealsId) {
         TimeDeal timeDeal = timeDealRepository.findById(timeDealsId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TIME_DEAL_NOT_FOUND));
 
         timeDeal.softDelete();
+
+        return TimeDealDeleteResponse.from(timeDeal);
     }
 
 }

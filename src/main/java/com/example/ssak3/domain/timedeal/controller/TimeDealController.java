@@ -19,6 +19,9 @@ public class TimeDealController {
 
     private final TimeDealService timeDealService;
 
+    /**
+     * 타임딜 상세 조회
+     */
     @GetMapping("/{timeDealsId}")
     public ResponseEntity<ApiResponse> getTimeDealApi (@PathVariable Long timeDealsId){
 
@@ -27,6 +30,9 @@ public class TimeDealController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    /**
+     * 타임딜 목록 조회
+     */
     @GetMapping
     public ResponseEntity<ApiResponse> getTimeDealListApi (@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable){
 

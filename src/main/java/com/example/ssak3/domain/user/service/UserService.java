@@ -7,10 +7,7 @@ import com.example.ssak3.domain.user.entity.User;
 import com.example.ssak3.domain.user.model.request.UserChangePasswordRequest;
 import com.example.ssak3.domain.user.model.request.UserUpdateRequest;
 import com.example.ssak3.domain.user.model.request.UserVerifyPasswordRequest;
-import com.example.ssak3.domain.user.model.response.MyProfileGetResponse;
-import com.example.ssak3.domain.user.model.response.UserChangePasswordResponse;
-import com.example.ssak3.domain.user.model.response.UserUpdateResponse;
-import com.example.ssak3.domain.user.model.response.UserVerifyPasswordResponse;
+import com.example.ssak3.domain.user.model.response.*;
 import com.example.ssak3.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -77,5 +74,19 @@ public class UserService {
         user.updatePassword(passwordEncoder.encode(request.getNewPassword()));
 
         return new UserChangePasswordResponse(user.getId());
+    }
+
+    /**
+     * 회원 탈퇴 비즈니스 로직
+     */
+    @Transactional
+    public UserDeleteResponse deleteUser(AuthUser authUser) {
+
+        User user = userRepository.findById(authUser.getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        user.softDelete();
+
+        return new UserDeleteResponse(user.getId());
     }
 }

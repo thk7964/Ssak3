@@ -82,4 +82,8 @@ public class User extends BaseEntity {
     public void updatePassword(String password) {
         this.password = (password != null && !password.contains(" ")) ? password : this.password;
     }
+
+    public void softDelete() {
+        this.isDeleted = true;
+    }
 }

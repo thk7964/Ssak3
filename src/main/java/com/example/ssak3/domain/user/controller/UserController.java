@@ -63,4 +63,14 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    /**
+     * 회원 탈퇴 API
+     */
+    @DeleteMapping
+    public ResponseEntity<ApiResponse> deleteUserApi(@AuthenticationPrincipal AuthUser authUser) {
+
+        ApiResponse response = ApiResponse.success("회원 탈퇴가 완료되었습니다.", userService.deleteUser(authUser));
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 }

@@ -124,7 +124,7 @@ public class CartProductService {
      * 장바구니 상품 삭제
      */
     @Transactional
-    public Object deleteCartProduct(Long userId, CartProductDeleteRequest request) {
+    public void deleteCartProduct(Long userId, CartProductDeleteRequest request) {
 
         Cart cart = cartService.getOrCreateCart(userId);
 
@@ -132,8 +132,5 @@ public class CartProductService {
                 .orElseThrow(() -> new CustomException(ErrorCode.CART_PRODUCT_NOT_FOUND));
 
         cartProductRepository.delete(cartProduct);
-
-        // ApiResponse 사용을 위해 null을 리턴하도록 했습니다. 다른 방법이 있으면 알려주세용
-        return null;
     }
 }

@@ -28,16 +28,13 @@ public class CouponService {
     public CouponCreateResponse createCoupon(CouponCreateRequest request) {
 
         Coupon coupon = new Coupon(
-                null,
                 request.getName(),
                 request.getDiscountValue(),
                 request.getTotalQuantity(),
-                0,
                 request.getIssueStartDate(),
                 request.getIssueEndDate(),
                 request.getMinOrderPrice(),
-                request.getValidDays(),
-                false
+                request.getValidDays()
         );
 
         Coupon savedCoupon = couponRepository.save(coupon);

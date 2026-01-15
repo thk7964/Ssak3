@@ -16,6 +16,8 @@ public class CouponUpdateResponse {
     private final Integer totalQuantity;
     private final LocalDateTime issueEndDate;
     private final Integer validDays;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime updatedAt;
 
     public static CouponUpdateResponse from(Coupon coupon) {
         return new CouponUpdateResponse(
@@ -24,7 +26,9 @@ public class CouponUpdateResponse {
                 coupon.getDiscountValue(),
                 coupon.getTotalQuantity(),
                 coupon.getIssueEndDate(),
-                coupon.getValidDays()
+                coupon.getValidDays(),
+                coupon.getCreatedAt(),
+                coupon.getUpdatedAt()
         );
     }
 }

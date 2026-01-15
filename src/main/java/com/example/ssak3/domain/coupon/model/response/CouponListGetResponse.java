@@ -17,6 +17,8 @@ public class CouponListGetResponse {
     private final Integer issuedQuantity;
     private final LocalDateTime issueStartDate;
     private final LocalDateTime issueEndDate;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime updatedAt;
 
     public static CouponListGetResponse from(Coupon coupon) {
         return new CouponListGetResponse(
@@ -26,7 +28,9 @@ public class CouponListGetResponse {
                 coupon.getTotalQuantity(),
                 coupon.getIssuedQuantity(),
                 coupon.getIssueStartDate(),
-                coupon.getIssueEndDate()
+                coupon.getIssueEndDate(),
+                coupon.getCreatedAt(),
+                coupon.getUpdatedAt()
         );
     }
 }

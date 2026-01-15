@@ -2,6 +2,7 @@ package com.example.ssak3.common.config;
 
 import com.example.ssak3.common.filter.JwtFilter;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -28,8 +29,9 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/signup", "/api/login").permitAll()
-                        .requestMatchers("/api/admin/**", "/api/coupons").hasRole("ADMIN")
+                        .requestMatchers("/ssak3/signup", "/ssak3/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/ssak3/coupons").permitAll()
+                        .requestMatchers("/ssak3/admin/**", "/ssak3/coupons").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

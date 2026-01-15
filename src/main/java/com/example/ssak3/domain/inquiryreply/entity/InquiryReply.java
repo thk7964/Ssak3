@@ -31,4 +31,10 @@ public class InquiryReply extends BaseEntity {
 
     @Column(nullable = false, name = "is_deleted")
     private boolean isDeleted = false;
+
+    public InquiryReply(User admin, Inquiry inquiry, String content) {
+        this.admin = admin;
+        this.inquiry = inquiry;
+        this.content = content;
+    }
 }

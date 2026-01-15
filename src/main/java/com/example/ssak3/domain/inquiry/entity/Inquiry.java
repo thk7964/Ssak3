@@ -49,6 +49,11 @@ public class Inquiry extends BaseEntity {
         this.content = newContent;
     }
 
+    // 상태 업데이트
+    public void updateStatus(InquiryStatus status) {
+        this.status = status;
+    }
+
     public void softDelete() {
         this.isDeleted = true;
     }
@@ -62,7 +67,7 @@ public class Inquiry extends BaseEntity {
 
     // 답변완료된 문의 검증
     public void validateAnswered() {
-        if ("ANSWERED".equals(this.status)) {
+        if (this.status == InquiryStatus.ANSWERED) {
             throw new CustomException(ErrorCode.INQUIRY_ALREADY_ANSWERED);
         }
     }

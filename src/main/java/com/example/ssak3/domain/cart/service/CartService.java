@@ -29,28 +29,27 @@ public class CartService {
     @Transactional
     public CartGetResponse getMyCart(Long userId){
 
-        Cart cart = cartRepository.findByUserId(userId)
-                .orElseGet(() -> createCart(userId));
+        Cart cart = getOrCreateCart(userId);
 
         List<CartProductListGetResponse> productList = cartProductRepository.findAllByCartId(cart.getId())
                 .stream()
-                .map(cp -> CartProductListGetResponse.from(
-                        cp.getId(),
-                        cp.getProduct().getId(),
-                        cp.getProduct().getName(),
-                        cp.getQuantity(),
-                        cp.getProduct().getPrice()
-                )).toList();
+                .map(CartProductListGetResponse::from)
+                .toList();
 
         return CartGetResponse.from(cart, productList);
     }
 
-    private Cart createCart(Long userId){
+    @Transactional
+    public Cart getOrCreateCart(Long userId){
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        Cart newCart = new Cart(user);
-        return cartRepository.saveAndFlush(newCart);
+        return cartRepository.findByUserId(userId)
+                .orElseGet(() -> {
+                    User user = userRepository.findById(userId)
+                            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+                    Cart cart = new Cart(user);
+                    return cartRepository.save(cart);
+                });
 
     }
 }

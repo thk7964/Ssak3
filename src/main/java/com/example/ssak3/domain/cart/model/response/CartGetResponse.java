@@ -11,9 +11,9 @@ import java.util.List;
 @AllArgsConstructor
 public class CartGetResponse {
 
-    private Long cartId;
-    private List<CartProductListGetResponse> productList;
-    private long totalPrice;
+    private final Long cartId;
+    private final List<CartProductListGetResponse> productList;
+    private final long totalPrice;
 
     public static CartGetResponse from(Cart cart, List<CartProductListGetResponse> productList) {
         long totalPrice = productList

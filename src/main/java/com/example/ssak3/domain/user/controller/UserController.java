@@ -6,6 +6,7 @@ import com.example.ssak3.domain.user.model.request.UserChangePasswordRequest;
 import com.example.ssak3.domain.user.model.request.UserUpdateRequest;
 import com.example.ssak3.domain.user.model.request.UserVerifyPasswordRequest;
 import com.example.ssak3.domain.user.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,7 @@ public class UserController {
      * 유저 정보 수정 API
      */
     @PatchMapping
-    public ResponseEntity<ApiResponse> updateUserApi(@AuthenticationPrincipal AuthUser authUser, @RequestBody UserUpdateRequest request) {
+    public ResponseEntity<ApiResponse> updateUserApi(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody UserUpdateRequest request) {
 
         ApiResponse response = ApiResponse.success("유저 정보 수정에 성공했습니다.", userService.updateUser(authUser, request));
 
@@ -56,7 +57,7 @@ public class UserController {
      * 비밀번호 변경 API
      */
     @PostMapping("/change-password")
-    public ResponseEntity<ApiResponse> changePasswordApi(@AuthenticationPrincipal AuthUser authUser, @RequestBody UserChangePasswordRequest request) {
+    public ResponseEntity<ApiResponse> changePasswordApi(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody UserChangePasswordRequest request) {
 
         ApiResponse response = ApiResponse.success("비밀번호가 변경되었습니다.", userService.changePassword(authUser, request));
 

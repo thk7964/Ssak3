@@ -18,6 +18,7 @@ public class CartGetResponse {
     public static CartGetResponse from(Cart cart, List<CartProductListGetResponse> productList) {
         long totalPrice = productList
                 .stream()
+                .filter(CartProductListGetResponse::isPurchasable)
                 .mapToLong(CartProductListGetResponse::getLinePrice)
                 .sum();
 

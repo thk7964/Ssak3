@@ -9,6 +9,7 @@ import com.example.ssak3.domain.cartproduct.entity.CartProduct;
 import com.example.ssak3.domain.cartproduct.model.request.CartProductAddRequest;
 import com.example.ssak3.domain.cartproduct.model.request.CartProductDeleteRequest;
 import com.example.ssak3.domain.cartproduct.model.request.CartProductQuantityUpdateRequest;
+import com.example.ssak3.domain.cartproduct.model.response.CartProductDeleteResponse;
 import com.example.ssak3.domain.cartproduct.model.response.CartProductListGetResponse;
 import com.example.ssak3.domain.cartproduct.repository.CartProductRepository;
 import com.example.ssak3.domain.product.entity.Product;
@@ -124,13 +125,16 @@ public class CartProductService {
      * 장바구니 상품 삭제
      */
     @Transactional
-    public void deleteCartProduct(Long userId, CartProductDeleteRequest request) {
+    public CartProductDeleteResponse deleteCartProduct(Long userId, CartProductDeleteRequest request) {
 
         Cart cart = cartService.getOrCreateCart(userId);
 
         CartProduct cartProduct = cartProductRepository.findByIdAndCartId(request.getCartProductId(), cart.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.CART_PRODUCT_NOT_FOUND));
 
+        CartProductDeleteResponse response = CartProductDeleteResponse.from(cartProduct.getId(), cartProduct.getCreatedAt(), cartProduct.getUpdatedAt());
         cartProductRepository.delete(cartProduct);
+
+        return response;
     }
 }

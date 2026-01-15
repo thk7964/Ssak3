@@ -37,9 +37,7 @@ public class CartProductController {
     @DeleteMapping
     public ResponseEntity<ApiResponse> deleteCartProductAPI(@RequestBody CartProductDeleteRequest request) {
 
-        cartProductService.deleteCartProduct(1L, request);
-
-        ApiResponse response = ApiResponse.success("장바구니 상품 삭제 성공했습니다.", null);
+        ApiResponse response = ApiResponse.success("장바구니 상품 삭제 성공했습니다.", cartProductService.deleteCartProduct(1L, request));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

@@ -1,7 +1,7 @@
 package com.example.ssak3.domain.admin.controller;
 
 import com.example.ssak3.common.model.ApiResponse;
-import com.example.ssak3.domain.admin.model.request.AdminRegisterRequest;
+import com.example.ssak3.domain.admin.model.request.AdminRoleChangeRequest;
 import com.example.ssak3.domain.admin.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,10 +18,11 @@ public class AdminController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping
-    public ResponseEntity<ApiResponse> registerAdminApi(@RequestBody AdminRegisterRequest request) {
+    public ResponseEntity<ApiResponse> changeUserRoleApi(@RequestBody AdminRoleChangeRequest request) {
 
-        ApiResponse response = ApiResponse.success("관리자 권한으로 변경했습니다.", adminService.registerAdmin(request));
+        ApiResponse response = ApiResponse.success("관리자 권한으로 변경했습니다.", adminService.changeUserRole(request));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
 }

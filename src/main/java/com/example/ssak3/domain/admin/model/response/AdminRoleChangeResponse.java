@@ -6,14 +6,14 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class AdminRegisterResponse {
+public class AdminRoleChangeResponse {
 
     private final Long managerId;
     private final String name;
     private final String phone;
 
-    public static AdminRegisterResponse from(User user) {
-        return new AdminRegisterResponse(
+    public static AdminRoleChangeResponse from(User user) {
+        return new AdminRoleChangeResponse(
                 user.getId(),
                 user.getName(),
                 user.getPhone()

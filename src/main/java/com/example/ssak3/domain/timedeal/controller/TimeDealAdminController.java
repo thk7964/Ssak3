@@ -8,16 +8,18 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping("/ssak3/admin/time-deals")
 public class TimeDealAdminController {
 
     private final TimeDealAdminService timeDealAdminService;
 
-    @PostMapping("/time-deals")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PostMapping
     public ResponseEntity<ApiResponse> createTimeDealApi(@Valid @RequestBody TimeDealCreateRequest request){
 
         ApiResponse response = ApiResponse.success("타임딜 상품 생성", timeDealAdminService.createTimeDeal(request));
@@ -25,7 +27,8 @@ public class TimeDealAdminController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PatchMapping("/time-deals/{timeDealsId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PatchMapping("/{timeDealsId}")
     public ResponseEntity<ApiResponse> updateTimeDealApi(@PathVariable Long timeDealsId, @Valid @RequestBody TimeDealUpdateRequest request){
 
         ApiResponse response = ApiResponse.success("타임딜 상품 수정", timeDealAdminService.updateTimeDeal(timeDealsId ,request));
@@ -33,7 +36,8 @@ public class TimeDealAdminController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @DeleteMapping("/time-deals/{timeDealsId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @DeleteMapping("/{timeDealsId}")
     public ResponseEntity<ApiResponse> deleteTimeDealApi(@PathVariable Long timeDealsId){
 
         timeDealAdminService.deleteTimeDeal(timeDealsId);

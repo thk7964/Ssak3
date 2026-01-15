@@ -21,11 +21,6 @@ public enum ErrorCode {
 
     // Cart 에러
     CART_PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "장바구니에서 상품을 찾을 수 없습니다."),
-    PASSWORD_INCORRECT(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
-
-    //상품
-    PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 상품을 찾을 수 없습니다."),
-
 
     //TimeDeal 에러
     INVALID_SALE_PRICE_BELOW_ORIGINAL(HttpStatus.BAD_REQUEST, "세일 가격은 정가보다 낮아야 합니다."),
@@ -37,8 +32,7 @@ public enum ErrorCode {
     INVALID_TOKEN(HttpStatus.BAD_REQUEST, "유효하지 않은 토큰입니다."),
 
     // Coupon 에러
-    COUPON_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 쿠폰입니다.")
-    ;
+    COUPON_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 쿠폰입니다.");
 
     private final HttpStatus status;
     private final String message;

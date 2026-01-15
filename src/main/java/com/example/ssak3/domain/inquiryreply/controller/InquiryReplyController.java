@@ -1,7 +1,5 @@
 package com.example.ssak3.domain.inquiryreply.controller;
 
-
-import com.example.ssak3.common.entity.BaseEntity;
 import com.example.ssak3.common.model.ApiResponse;
 import com.example.ssak3.common.model.AuthUser;
 import com.example.ssak3.domain.inquiryreply.model.request.InquiryReplyCreateRequest;
@@ -48,5 +46,15 @@ public class InquiryReplyController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    /**
+     * 문의 답변 상세 조회 API
+     */
+//    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/inquiry-replies/{inquiryReplyId}")
+    public ResponseEntity<ApiResponse> getInquiryReplyApi(@PathVariable Long inquiryReplyId) {
+        ApiResponse response = ApiResponse.success("문의 답변 조회 성공", inquiryReplyService.getInquiryReply(inquiryReplyId));
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 
 }

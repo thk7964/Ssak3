@@ -9,6 +9,7 @@ import com.example.ssak3.domain.inquiry.repository.InquiryRepository;
 import com.example.ssak3.domain.inquiryreply.entity.InquiryReply;
 import com.example.ssak3.domain.inquiryreply.model.request.InquiryReplyCreateRequest;
 import com.example.ssak3.domain.inquiryreply.model.response.InquiryReplyCreateResponse;
+import com.example.ssak3.domain.inquiryreply.model.response.InquiryReplyGetResponse;
 import com.example.ssak3.domain.inquiryreply.model.response.InquiryReplyListGetResponse;
 import com.example.ssak3.domain.inquiryreply.repository.InquiryReplyRepository;
 import com.example.ssak3.domain.user.entity.User;
@@ -64,6 +65,20 @@ public class InquiryReplyService {
                 .map(InquiryReplyListGetResponse::from);
 
         return PageResponse.from(inquiryReplyListPage);
+    }
+
+    /**
+     * 문의 답변 상세 조회
+     */
+    @Transactional(readOnly = true)
+    public InquiryReplyGetResponse getInquiryReply(Long inquiryReplyId) {
+
+        InquiryReply foundInquiryReply = inquiryReplyRepository.findById(inquiryReplyId)
+                .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_REPLY_NOT_FOUND));
+
+        foundInquiryReply.validateInquiryReplyDeleted();  // 삭제된 문의 답변인지 검증
+
+        return InquiryReplyGetResponse.from(foundInquiryReply);
     }
 
 }

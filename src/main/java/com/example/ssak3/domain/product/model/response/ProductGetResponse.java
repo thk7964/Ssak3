@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @RequiredArgsConstructor
-public class ProductCreateResponse {
+public class ProductGetResponse {
 
     private final Long id;
     private final String name;
@@ -19,18 +19,17 @@ public class ProductCreateResponse {
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
-    public static ProductCreateResponse from(Product product) {
-        return new ProductCreateResponse(
-                product.getId(),
-                product.getName(),
-                product.getPrice(),
-                product.getStatus(),
-                product.getInformation(),
-                product.getQuantity(),
-                product.getCreatedAt(),
-                product.getUpdatedAt()
+
+    public static ProductGetResponse form(Product product) {
+       return new ProductGetResponse(
+               product.getId(),
+               product.getName(),
+               product.getPrice(),
+               product.getStatus(),
+               product.getInformation(),
+               product.getQuantity(),
+               product.getCreatedAt(),
+               product.getUpdatedAt()
         );
-
     }
-
 }

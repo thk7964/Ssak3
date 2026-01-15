@@ -2,6 +2,7 @@ package com.example.ssak3.domain.product.entity;
 
 import com.example.ssak3.common.entity.BaseEntity;
 import com.example.ssak3.domain.category.entity.Category;
+import com.example.ssak3.domain.product.model.request.ProductUpdateRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -46,4 +47,27 @@ public class Product extends BaseEntity {
         this.information = information;
         this.quantity = quantity;
     }
+
+    public void update(ProductUpdateRequest request) {
+        if (request.getName() != null) {
+            this.name = request.getName();
+        }
+        if (request.getPrice() != null) {
+            this.price = request.getPrice();
+        }
+        if (request.getStatus() != null) {
+            this.status = request.getStatus();
+        }
+        if (request.getInformation() != null) {
+            this.information = request.getInformation();
+        }
+        if (request.getQuantity() != null) {
+            this.quantity = request.getQuantity();
+        }
+    }
+
+    public boolean isDeleted() {
+        return this.isDeleted = true;
+    }
+
 }

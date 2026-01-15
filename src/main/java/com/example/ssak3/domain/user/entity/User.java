@@ -41,6 +41,7 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String address;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserRole role;
 
@@ -68,6 +69,10 @@ public class User extends BaseEntity {
         this.birth = birth;
         this.phone = phone;
         this.address = address;
+        this.role = role;
+    }
+
+    public void updateRole(UserRole role) {
         this.role = role;
     }
 

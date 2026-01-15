@@ -32,6 +32,18 @@ public class AdminController {
     }
 
     /**
+     * 관리자 (MANAGER 권한 유저) 전체 조회 API
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/managers")
+    public ResponseEntity<ApiResponse> getManagersListApi() {
+
+        ApiResponse response = ApiResponse.success("관리자 전체 조회에 성공했습니다.", adminService.getManagerList());
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    /**
      * 유저 전체 조회 API
      */
     @PreAuthorize("hasRole('MANAGER')")

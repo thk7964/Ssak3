@@ -1,10 +1,12 @@
 package com.example.ssak3.domain.admin.service;
 
 import com.example.ssak3.common.enums.ErrorCode;
+import com.example.ssak3.common.enums.UserRole;
 import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.common.model.PageResponse;
 import com.example.ssak3.domain.admin.model.request.AdminRoleChangeRequest;
 import com.example.ssak3.domain.admin.model.response.AdminRoleChangeResponse;
+import com.example.ssak3.domain.admin.model.response.ManagerGetResponse;
 import com.example.ssak3.domain.admin.model.response.UserGetResponse;
 import com.example.ssak3.domain.admin.model.response.UserListGetResponse;
 import com.example.ssak3.domain.user.entity.User;
@@ -14,6 +16,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +34,15 @@ public class AdminService {
         user.updateRole(request.getRole());
 
         return AdminRoleChangeResponse.from(user);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ManagerGetResponse> getManagerList() {
+
+        List<User> managerList = userRepository.findAllByRole(UserRole.MANAGER);
+
+        return managerList.stream().map(ManagerGetResponse::from).toList();
+
     }
 
     @Transactional(readOnly = true)

@@ -23,7 +23,7 @@ public class TimeDealAdminController {
      */
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
-    public ResponseEntity<ApiResponse> createTimeDealApi(@Valid @RequestBody TimeDealCreateRequest request){
+    public ResponseEntity<ApiResponse> createTimeDealApi(@Valid @RequestBody TimeDealCreateRequest request) {
 
         ApiResponse response = ApiResponse.success("타임딜 상품 생성", timeDealAdminService.createTimeDeal(request));
 
@@ -34,10 +34,10 @@ public class TimeDealAdminController {
      * 타임딜 수정
      */
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PatchMapping("/{timeDealsId}")
-    public ResponseEntity<ApiResponse> updateTimeDealApi(@PathVariable Long timeDealsId, @Valid @RequestBody TimeDealUpdateRequest request){
+    @PatchMapping("/{timeDealId}")
+    public ResponseEntity<ApiResponse> updateTimeDealApi(@PathVariable Long timeDealId, @Valid @RequestBody TimeDealUpdateRequest request) {
 
-        ApiResponse response = ApiResponse.success("타임딜 상품 수정", timeDealAdminService.updateTimeDeal(timeDealsId ,request));
+        ApiResponse response = ApiResponse.success("타임딜 상품 수정", timeDealAdminService.updateTimeDeal(timeDealId, request));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -46,12 +46,10 @@ public class TimeDealAdminController {
      * 타임딜 삭제
      */
     @PreAuthorize("hasAuthority('ADMIN')")
-    @DeleteMapping("/{timeDealsId}")
-    public ResponseEntity<ApiResponse> deleteTimeDealApi(@PathVariable Long timeDealsId){
+    @DeleteMapping("/{timeDealId}")
+    public ResponseEntity<ApiResponse> deleteTimeDealApi(@PathVariable Long timeDealId) {
 
-        timeDealAdminService.deleteTimeDeal(timeDealsId);
-
-        ApiResponse response = ApiResponse.success("타임딜 상품 삭제", null);
+        ApiResponse response = ApiResponse.success("타임딜 상품 삭제", timeDealAdminService.deleteTimeDeal(timeDealId));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

@@ -32,7 +32,7 @@ public class TimeDealAdminService {
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
         if (product.getPrice() <= request.getDealPrice()) {
-            throw new CustomException(ErrorCode.INVALID_SALE_PRICE_BELOW_ORIGINAL);
+            throw new CustomException(ErrorCode.SALE_PRICE_MUST_BE_LOWER_THAN_ORIGINAL_PRICE);
         }
 
         if (request.getStartAt().isAfter(request.getEndAt())) {
@@ -56,12 +56,12 @@ public class TimeDealAdminService {
      * 타임딜 수정
      */
     @Transactional
-    public TimeDealUpdateResponse updateTimeDeal(Long timeDealsId, TimeDealUpdateRequest request) {
-        TimeDeal timeDeal = timeDealRepository.findById(timeDealsId)
+    public TimeDealUpdateResponse updateTimeDeal(Long timeDealId, TimeDealUpdateRequest request) {
+        TimeDeal timeDeal = timeDealRepository.findById(timeDealId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TIME_DEAL_NOT_FOUND));
 
         if (timeDeal.getDealPrice() <= request.getDealPrice()) {
-            throw new CustomException(ErrorCode.INVALID_SALE_PRICE_BELOW_PREVIOUS);
+            throw new CustomException(ErrorCode.UPDATED_SALE_PRICE_MUST_BE_LOWER_THAN_CURRENT_SALE_PRICE);
         }
 
         timeDeal.update(request);
@@ -73,8 +73,8 @@ public class TimeDealAdminService {
      * 타임딜 삭제
      */
     @Transactional
-    public TimeDealDeleteResponse deleteTimeDeal(Long timeDealsId) {
-        TimeDeal timeDeal = timeDealRepository.findById(timeDealsId)
+    public TimeDealDeleteResponse deleteTimeDeal(Long timeDealId) {
+        TimeDeal timeDeal = timeDealRepository.findById(timeDealId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TIME_DEAL_NOT_FOUND));
 
         timeDeal.softDelete();

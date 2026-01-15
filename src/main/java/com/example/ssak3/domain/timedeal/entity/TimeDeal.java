@@ -25,13 +25,13 @@ public class TimeDeal extends BaseEntity {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @Column(name = "deal_price")
+    @Column(name = "deal_price", nullable = false)
     private Integer dealPrice;
 
-    @Column(name = "start_at")
+    @Column(name = "start_at", nullable = false)
     private LocalDateTime startAt;
 
-    @Column(name = "end_at")
+    @Column(name = "end_at", nullable = false)
     private LocalDateTime endAt;
 
     @Column(nullable = false, name = "is_deleted")

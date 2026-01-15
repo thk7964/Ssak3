@@ -8,13 +8,13 @@ import lombok.RequiredArgsConstructor;
 import java.time.LocalDateTime;
 @Getter
 @RequiredArgsConstructor
-public class TimeDealGetListResponse {
+public class TimeDealSummaryResponse {
     private final Long id;
     private final String productName;
     private final Integer dealPrice;
     private final TimeDealStatus status;
-    public static TimeDealGetListResponse from(TimeDeal timeDeal) {
-        return new TimeDealGetListResponse(
+    public static TimeDealSummaryResponse from(TimeDeal timeDeal) {
+        return new TimeDealSummaryResponse(
                 timeDeal.getId(),
                 timeDeal.getProduct().getName(),
                 timeDeal.getDealPrice(),

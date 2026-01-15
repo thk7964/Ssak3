@@ -73,7 +73,7 @@ public class UserService {
 
         user.updatePassword(passwordEncoder.encode(request.getNewPassword()));
 
-        return new UserChangePasswordResponse(user.getId());
+        return UserChangePasswordResponse.from(user);
     }
 
     /**
@@ -87,6 +87,6 @@ public class UserService {
 
         user.softDelete();
 
-        return new UserDeleteResponse(user.getId());
+        return UserDeleteResponse.from(user);
     }
 }

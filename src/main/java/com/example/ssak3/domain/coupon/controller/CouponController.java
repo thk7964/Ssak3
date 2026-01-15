@@ -1,6 +1,7 @@
 package com.example.ssak3.domain.coupon.controller;
 
 import com.example.ssak3.common.model.ApiResponse;
+import com.example.ssak3.common.model.PageResponse;
 import com.example.ssak3.domain.coupon.model.request.CouponCreateRequest;
 import com.example.ssak3.domain.coupon.model.request.CouponUpdateRequest;
 import com.example.ssak3.domain.coupon.model.response.CouponCreateResponse;
@@ -9,11 +10,12 @@ import com.example.ssak3.domain.coupon.model.response.CouponListGetResponse;
 import com.example.ssak3.domain.coupon.model.response.CouponUpdateResponse;
 import com.example.ssak3.domain.coupon.service.CouponService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/ssak3/coupons")
@@ -37,11 +39,13 @@ public class CouponController {
      * 쿠폰 목록 조회
      */
     @GetMapping
-    public ResponseEntity<ApiResponse> getCouponListApi() {
+    public ResponseEntity<ApiResponse> getCouponListApi(
+            @PageableDefault(size = 10, sort = "issueEndDate", direction = Sort.Direction.ASC) Pageable pageable) {
 
-        List<CouponListGetResponse> response = couponService.getCouponList();
+        PageResponse<CouponListGetResponse> response = couponService.getCouponList(pageable);
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("쿠폰 목록 조회 완료", response));
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success("쿠폰 목록 조회 완료", response));
     }
 
     /**

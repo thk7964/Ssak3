@@ -2,18 +2,17 @@ package com.example.ssak3.domain.user.controller;
 
 import com.example.ssak3.common.model.ApiResponse;
 import com.example.ssak3.common.model.AuthUser;
+import com.example.ssak3.domain.user.model.request.UserUpdateRequest;
 import com.example.ssak3.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/users")
+@RequestMapping("/ssak3/users")
 public class UserController {
 
     private final UserService userService;
@@ -28,4 +27,16 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    /**
+     * 유저 정보 수정 API
+     */
+    @PatchMapping
+    public ResponseEntity<ApiResponse> updateUserApi(@AuthenticationPrincipal AuthUser authUser, @RequestBody UserUpdateRequest request) {
+
+        ApiResponse response = ApiResponse.success("유저 정보 수정에 성공했습니다.", userService.updateUser(authUser, request));
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
 }

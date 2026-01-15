@@ -74,6 +74,7 @@ public class InquiryService {
                 .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_NOT_FOUND));
 
         foundInquiry.validateUser(user.getId());  // 작성자 검증
+        foundInquiry.validateDeleted(); // 이미 삭제된 문의인지 검증
 
         return InquiryGetResponse.from(foundInquiry);
     }
@@ -91,6 +92,7 @@ public class InquiryService {
                 .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_NOT_FOUND));
 
         foundInquiry.validateUser(user.getId());  // 작성자 검증
+        foundInquiry.validateDeleted(); // 이미 삭제된 문의인지 검증
         foundInquiry.validateAnswered(); // 이미 답변완료된 문의인지 검증(답변완료된 것은 수정불가)
 
         foundInquiry.update(request.getTitle(), request.getContent());
@@ -111,6 +113,7 @@ public class InquiryService {
                 .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_NOT_FOUND));
 
         foundInquiry.validateUser(user.getId());  // 작성자 검증
+        foundInquiry.validateDeleted(); // 이미 삭제된 문의인지 검증
         foundInquiry.validateAnswered();  // 이미 답변완료된 문의인지 검증(답변완료된 것은 삭제불가)
 
         foundInquiry.delete();

@@ -4,7 +4,7 @@ import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.common.model.PageResponse;
 import com.example.ssak3.domain.timedeal.entity.TimeDeal;
-import com.example.ssak3.domain.timedeal.model.response.TimeDealSummaryResponse;
+import com.example.ssak3.domain.timedeal.model.response.TimeDealListGetResponse;
 import com.example.ssak3.domain.timedeal.model.response.TimeDealGetResponse;
 import com.example.ssak3.domain.timedeal.repository.TimeDealRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,9 +37,9 @@ public class TimeDealService {
      * 타임딜 목록
      */
     @Transactional(readOnly = true)
-    public PageResponse<TimeDealSummaryResponse> getTimeDealList(Pageable pageable) {
+    public PageResponse<TimeDealListGetResponse> getTimeDealList(Pageable pageable) {
 
-        Page<TimeDealSummaryResponse> responsePage = timeDealRepository.findAllByIsDeletedFalse(pageable).map(TimeDealSummaryResponse::from);
+        Page<TimeDealListGetResponse> responsePage = timeDealRepository.findAllByIsDeletedFalse(pageable).map(TimeDealListGetResponse::from);
 
         return PageResponse.from(responsePage);
     }

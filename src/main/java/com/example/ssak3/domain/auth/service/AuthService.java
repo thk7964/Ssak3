@@ -23,7 +23,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
 
     /**
-     * 회원 가입 비즈니스 로직
+     * 회원가입
      */
     @Transactional
     public SignupResponse signup(SignupRequest request) {
@@ -47,7 +47,7 @@ public class AuthService {
     }
 
     /**
-     * 로그인 비즈니스 로직
+     * 로그인
      */
     @Transactional
     public LoginResponse login(LoginRequest request) {

@@ -22,7 +22,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     /**
-     * 마이 페이지 조회 비즈니스 로직
+     * 마이 페이지 조회
      */
     @Transactional(readOnly = true)
     public MyProfileGetResponse getMyProfile(AuthUser authUser) {
@@ -33,7 +33,7 @@ public class UserService {
     }
 
     /**
-     * 유저 정보 수정 비즈니스 로직
+     * 유저 정보 수정
      */
     @Transactional
     public UserUpdateResponse updateUser(AuthUser authUser, UserUpdateRequest request) {
@@ -46,7 +46,7 @@ public class UserService {
     }
 
     /**
-     * 비밀번호 검증 비즈니스 로직
+     * 비밀번호 검증
      */
     public UserVerifyPasswordResponse verifyPassword(AuthUser authUser, UserVerifyPasswordRequest request) {
 
@@ -56,7 +56,7 @@ public class UserService {
     }
 
     /**
-     * 비밀번호 변경 비즈니스 로직
+     * 비밀번호 변경
      */
     @Transactional
     public UserChangePasswordResponse changePassword(AuthUser authUser, UserChangePasswordRequest request) {
@@ -69,7 +69,7 @@ public class UserService {
     }
 
     /**
-     * 유저 탈퇴 비즈니스 로직
+     * 유저 탈퇴
      */
     @Transactional
     public UserDeleteResponse deleteUser(AuthUser authUser) {

@@ -22,6 +22,9 @@ public class AdminService {
 
     private final UserRepository userRepository;
 
+    /**
+     * 유저 권한 변경
+     */
     @Transactional
     public AdminRoleChangeResponse changeUserRole(Long userId, AdminRoleChangeRequest request) {
 
@@ -33,6 +36,9 @@ public class AdminService {
         return AdminRoleChangeResponse.from(user);
     }
 
+    /**
+     * 유저 목록 조회
+     */
     @Transactional(readOnly = true)
     public PageResponse<UserListGetResponse> getUserList(UserRole role, Pageable pageable) {
 
@@ -41,6 +47,9 @@ public class AdminService {
         return PageResponse.from(userList);
     }
 
+    /**
+     * 유저 단 건 조회
+     */
     @Transactional(readOnly = true)
     public UserGetResponse getUser(Long userId) {
 

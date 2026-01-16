@@ -2,11 +2,13 @@ package com.example.ssak3.domain.auth.model.request;
 
 import jakarta.validation.constraints.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
 @Getter
+@NoArgsConstructor
 public class SignupRequest {
 
     @NotBlank(message = "이름은 필수 입력 사항입니다.")

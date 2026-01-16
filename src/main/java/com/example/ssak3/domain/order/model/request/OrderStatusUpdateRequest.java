@@ -3,10 +3,10 @@ package com.example.ssak3.domain.order.model.request;
 import com.example.ssak3.common.enums.OrderStatus;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class OrderStatusUpdateRequest {
 
     @NotNull

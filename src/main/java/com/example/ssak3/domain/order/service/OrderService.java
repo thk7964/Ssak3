@@ -22,6 +22,8 @@ import com.example.ssak3.domain.orderProduct.entity.OrderProduct;
 import com.example.ssak3.domain.orderProduct.repository.OrderProductRepository;
 import com.example.ssak3.domain.product.entity.Product;
 import com.example.ssak3.domain.product.repository.ProductRepository;
+import com.example.ssak3.domain.timedeal.entity.TimeDeal;
+import com.example.ssak3.domain.timedeal.repository.TimeDealRepository;
 import com.example.ssak3.domain.user.entity.User;
 import com.example.ssak3.domain.user.repository.UserRepository;
 import com.example.ssak3.domain.usercoupon.entity.UserCoupon;
@@ -34,6 +36,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.time.LocalDateTime.now;
+
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -45,6 +49,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderProductRepository orderProductRepository;
     private final ProductRepository productRepository;
+    private final TimeDealRepository timeDealRepository;
 
     /**
      * 주문서 생성(결제 전)
@@ -61,13 +66,11 @@ public class OrderService {
 
         int quantity = request.getQuantity();
 
-        // 구매 가능 여부 확인
-        validatePurchasable(product, quantity);
+        // 구매 가능 여부 확인 후 단위 가격 저장
+        int unitPrice = validatePurchasableReturnUnitPrice(product, quantity);
 
         // 재고 차감
         product.decreaseQuantity(quantity);
-
-        int unitPrice = product.getPrice();
         long subtotal = unitPrice * quantity;
 
         Order order = new Order(user, subtotal);
@@ -112,12 +115,11 @@ public class OrderService {
 
             int quantity = cartProduct.getQuantity();
 
-            validatePurchasable(product, quantity);
-
+            // 구매 가능 여부 확인 후 단위 가격 저장
+            int unitPrice = validatePurchasableReturnUnitPrice(product, quantity);
 
             product.decreaseQuantity(quantity);
 
-            int unitPrice = product.getPrice();
             subtotal += unitPrice * quantity;
         }
 
@@ -182,20 +184,27 @@ public class OrderService {
     }
 
     /**
-     * 판매중/재고 체크(주문 가능 여부 체크)
+     * 판매중/재고 체크(주문 가능 여부 체크) 후 단위 가격(주문 시의 1개당 가격) 반환
      */
-    private void validatePurchasable(Product product, int quantity) {
-
-        // 판매중인지 확인
-        // TODO : product status string->enum 변경 시 수정 필요
-        if (!product.getStatus().equals("FOR_SALE")) {
-            throw new CustomException(ErrorCode.PRODUCT_NOT_FOR_SALE);
-        }
+    private int validatePurchasableReturnUnitPrice(Product product, int quantity) {
 
         // 재고 확인
         if (product.getQuantity() < quantity) {
             throw new CustomException(ErrorCode.PRODUCT_INSUFFICIENT);
         }
+
+        // 판매중인지 확인
+        // TODO : product status string->enum 변경 시 수정 필요
+        if (product.getStatus().equals("FOR_SALE")) {
+            return product.getPrice();
+        }
+
+        // 판매중x and 타임딜 OPEN인지 확인
+        TimeDeal timeDeal = timeDealRepository.findOpenTimeDeal(product.getId(), now())
+                .orElseThrow(() -> new  CustomException(ErrorCode.PRODUCT_NOT_FOR_SALE));
+
+        return timeDeal.getDealPrice();
+
 
 
     }

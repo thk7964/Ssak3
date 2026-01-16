@@ -18,8 +18,8 @@ public class OrderUpdateResponse {
     private final Long discount; // 쿠폰 할인 금액
     private final Long totalPrice; // 최종 금액
     private final Long userCouponId; // 쿠폰 사용 x시 null
-    private final LocalDateTime createAt;
-    private final LocalDateTime updateAt;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime updatedAt;
 
     public static OrderUpdateResponse from(Order order, Long subtotal, Long discount) {
         return new OrderUpdateResponse(

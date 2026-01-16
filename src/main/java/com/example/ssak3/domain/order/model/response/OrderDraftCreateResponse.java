@@ -18,8 +18,8 @@ public class OrderDraftCreateResponse {
     private final OrderStatus orderStatus;
     private final Long totalPrice;
     private final List<OrderProductGetResponse> orderProductList;
-    private final LocalDateTime createAt;
-    private final LocalDateTime updateAt;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime updatedAt;
 
     public static OrderDraftCreateResponse from(Order order, List<OrderProduct> orderProductList) {
         List<OrderProductGetResponse> orderProductGetResponseList = orderProductList

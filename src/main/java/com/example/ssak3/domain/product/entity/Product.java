@@ -47,7 +47,7 @@ public class Product extends BaseEntity {
         this.quantity = quantity;
     }
 
-    public void decreaseQuantity(Integer quantity) {
-        this.quantity -= quantity;
+    public void decreaseQuantity(Integer orderProductQuantity) {
+        this.quantity -= orderProductQuantity;
     }
 }

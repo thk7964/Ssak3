@@ -22,7 +22,7 @@ public class CouponController {
     /**
      * 쿠폰 생성
      */
-    //@PreAuthorize("hasAuthority('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ApiResponse> createCouponApi(@RequestBody CouponCreateRequest request) {
 
@@ -45,7 +45,7 @@ public class CouponController {
     /**
      * 쿠폰 수정
      */
-    //@PreAuthorize("hasAuthority('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{couponId}")
     public ResponseEntity<ApiResponse> updateCouponApi(@PathVariable Long couponId, @RequestBody CouponUpdateRequest request) {
 
@@ -57,7 +57,7 @@ public class CouponController {
     /**
      * 쿠폰 삭제
      */
-    //@PreAuthorize("hasAuthority('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{couponId}")
     public ResponseEntity<ApiResponse> deleteCouponApi(@PathVariable Long couponId) {
 

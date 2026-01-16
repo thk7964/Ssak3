@@ -2,6 +2,7 @@ package com.example.ssak3.domain.user.entity;
 
 import com.example.ssak3.common.entity.BaseEntity;
 import com.example.ssak3.common.enums.UserRole;
+import com.example.ssak3.domain.user.model.request.UserUpdateRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -40,6 +41,7 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String address;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserRole role;
 
@@ -70,4 +72,19 @@ public class User extends BaseEntity {
         this.role = role;
     }
 
+    public void update(UserUpdateRequest request) {
+        this.name = (request.getName() != null && !request.getName().contains(" ")) ? request.getName() : this.name;
+        this.nickname = (request.getNickname() != null && !request.getNickname().contains(" ")) ? request.getNickname() : this.nickname;
+        this.birth = (request.getBirth() != null) ? request.getBirth() : this.birth;
+        this.phone = (request.getPhone() != null && !request.getPhone().contains(" ")) ? request.getPhone() : this.phone;
+        this.address = (request.getAddress() != null && !request.getAddress().contains(" ")) ? request.getAddress() : this.address;
+    }
+
+    public void updatePassword(String password) {
+        this.password = (password != null && !password.contains(" ")) ? password : this.password;
+    }
+
+    public void softDelete() {
+        this.isDeleted = true;
+    }
 }

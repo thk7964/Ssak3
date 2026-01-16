@@ -1,8 +1,7 @@
 package com.example.ssak3.common.utils;
 
-import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.enums.UserRole;
-import com.example.ssak3.common.exception.CustomException;
+import com.example.ssak3.common.exception.JwtAuthenticationException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -48,7 +47,7 @@ public class JwtUtil {
                         .compact();
     }
 
-    public boolean validateToken(String token) {
+    public boolean validateToken(String token) throws JwtAuthenticationException {
 
         if (token == null || token.isBlank())  {
             return false;
@@ -61,14 +60,14 @@ public class JwtUtil {
                     .parseSignedClaims(token);
             return true;
         } catch (JwtException e) {
-            return false;
+            throw new JwtAuthenticationException("토큰 검증에 실패했습니다.");
         }
     }
 
-    public String substringToken(String token) {
+    public String substringToken(String token) throws JwtAuthenticationException {
 
         if (token == null || !token.startsWith(BEARER_PREFIX)) {
-            throw new CustomException(ErrorCode.INVALID_TOKEN);
+            throw new JwtAuthenticationException("토큰이 유효하지 않습니다.");
         }
 
         return token.substring(BEARER_PREFIX.length());

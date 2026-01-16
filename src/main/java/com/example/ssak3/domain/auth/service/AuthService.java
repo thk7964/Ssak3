@@ -52,8 +52,14 @@ public class AuthService {
     @Transactional
     public LoginResponse login(LoginRequest request) {
 
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new CustomException(ErrorCode.UNREGISTERED_USER));
+        // 가입된 이메일인지 검증
+        if (!userRepository.existsByEmail(request.getEmail())) {
+            throw new CustomException(ErrorCode.UNREGISTERED_USER);
+        }
+
+        // 탈퇴한 유저는 예외 처리
+        User user = userRepository.findByEmailAndIsDeletedFalse(request.getEmail())
+                .orElseThrow(() -> new CustomException(ErrorCode.WITHDRAWN_USER));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new CustomException(ErrorCode.PASSWORD_MISMATCH);

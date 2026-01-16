@@ -27,8 +27,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public MyProfileGetResponse getMyProfile(AuthUser authUser) {
 
-        User user = userRepository.findById(authUser.getId())
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        User user = getUser(authUser);
 
         return MyProfileGetResponse.from(user);
     }
@@ -39,8 +38,7 @@ public class UserService {
     @Transactional
     public UserUpdateResponse updateUser(AuthUser authUser, UserUpdateRequest request) {
 
-        User user = userRepository.findById(authUser.getId())
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        User user = getUser(authUser);
 
         user.update(request);
 
@@ -52,8 +50,7 @@ public class UserService {
      */
     public UserVerifyPasswordResponse verifyPassword(AuthUser authUser, UserVerifyPasswordRequest request) {
 
-        User user = userRepository.findById(authUser.getId())
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        User user = getUser(authUser);
 
         return new UserVerifyPasswordResponse(passwordEncoder.matches(request.getPassword(), user.getPassword()));
     }
@@ -64,8 +61,7 @@ public class UserService {
     @Transactional
     public UserChangePasswordResponse changePassword(AuthUser authUser, UserChangePasswordRequest request) {
 
-        User user = userRepository.findById(authUser.getId())
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        User user = getUser(authUser);
 
         user.updatePassword(passwordEncoder.encode(request.getNewPassword()));
 
@@ -73,16 +69,23 @@ public class UserService {
     }
 
     /**
-     * 회원 탈퇴 비즈니스 로직
+     * 유저 탈퇴 비즈니스 로직
      */
     @Transactional
     public UserDeleteResponse deleteUser(AuthUser authUser) {
 
-        User user = userRepository.findById(authUser.getId())
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        User user = getUser(authUser);
 
         user.softDelete();
 
         return UserDeleteResponse.from(user);
+    }
+
+    /**
+     * 유저를 얻어오는 내부 전용 메소드
+     */
+    private User getUser(AuthUser authUser) {
+        return userRepository.findByIdAndIsDeletedFalse(authUser.getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 }

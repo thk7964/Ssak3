@@ -45,7 +45,7 @@ public class UserController {
     /**
      * 비밀번호 검증 API
      */
-    @PostMapping("/verification-password")
+    @PostMapping("/password-verification")
     public ResponseEntity<ApiResponse> verifyPasswordApi(@AuthenticationPrincipal AuthUser authUser, @RequestBody UserVerifyPasswordRequest request) {
 
         ApiResponse response = ApiResponse.success("비밀번호 검증 API가 성공적으로 호출되었습니다.", userService.verifyPassword(authUser, request));
@@ -67,7 +67,7 @@ public class UserController {
     /**
      * 회원 탈퇴 API
      */
-    @DeleteMapping("/me")
+    @DeleteMapping
     public ResponseEntity<ApiResponse> deleteUserApi(@AuthenticationPrincipal AuthUser authUser) {
 
         ApiResponse response = ApiResponse.success("회원 탈퇴가 완료되었습니다.", userService.deleteUser(authUser));

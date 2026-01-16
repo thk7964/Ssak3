@@ -15,7 +15,7 @@ public class SignupResponse {
     private final String name;
     private final String nickname;
     private final LocalDateTime createdAt;
-    private final LocalDateTime modifiedAt;
+    private final LocalDateTime updatedAt;
 
     public static SignupResponse from(User user) {
         return new SignupResponse(

@@ -1,4 +1,4 @@
-package com.example.ssak3.common;
+package com.example.ssak3.common.handler;
 
 import com.example.ssak3.common.model.ApiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;

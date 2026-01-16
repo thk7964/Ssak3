@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "order_products")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class orderProduct {
+public class OrderProduct {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,4 +31,10 @@ public class orderProduct {
     @Column(nullable = false)
     private Integer quantity;
 
+    public OrderProduct(Order order, Product product, Integer unitPrice, Integer quantity) {
+        this.order = order;
+        this.product = product;
+        this.unitPrice = unitPrice;
+        this.quantity = quantity;
+    }
 }

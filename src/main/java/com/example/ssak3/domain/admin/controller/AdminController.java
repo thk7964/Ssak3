@@ -36,7 +36,7 @@ public class AdminController {
 
     /**
      * 유저 전체 조회 API
-     * 쿼리 파라미터 role
+     * 쿼리 파라미터 role - SUPER_ADMIN, ADMIN, USER
      */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
@@ -56,7 +56,7 @@ public class AdminController {
     @GetMapping("/{userId}")
     public ResponseEntity<ApiResponse> getUserApi(@PathVariable Long userId) {
 
-        ApiResponse response = ApiResponse.success("유저 전체 조회에 성공했습니다.", adminService.getUser(userId));
+        ApiResponse response = ApiResponse.success("유저 단 건 조회에 성공했습니다.", adminService.getUser(userId));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

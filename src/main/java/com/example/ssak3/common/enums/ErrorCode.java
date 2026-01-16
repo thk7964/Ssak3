@@ -27,6 +27,7 @@ public enum ErrorCode {
     UPDATED_SALE_PRICE_MUST_BE_LOWER_THAN_CURRENT_SALE_PRICE(HttpStatus.BAD_REQUEST, "변경된 할인가는 기존 할인보다 낮아야 합니다."),
     INVALID_TIME_RANGE(HttpStatus.BAD_REQUEST, "시작 시간은 종료 시간보다 늦을 수 없습니다."),
     TIME_DEAL_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 세일 상품을 찾을 수 없습니다."),
+    ACTIVE_TIME_DEAL_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "현재 진행중인 타임딜 상품입니다."),
 
     // Token 에러
     INVALID_TOKEN(HttpStatus.BAD_REQUEST, "유효하지 않은 토큰입니다."),

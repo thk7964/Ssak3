@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class TimeDealAdminService {
@@ -30,6 +32,14 @@ public class TimeDealAdminService {
 
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        LocalDateTime now = LocalDateTime.now();
+
+        boolean hasActiveDeal = timeDealRepository.existsActiveDealByProduct(product.getId(),now);
+
+        if (hasActiveDeal){
+            throw new CustomException(ErrorCode.ACTIVE_TIME_DEAL_ALREADY_EXISTS);
+        }
 
         if (product.getPrice() <= request.getDealPrice()) {
             throw new CustomException(ErrorCode.SALE_PRICE_MUST_BE_LOWER_THAN_ORIGINAL_PRICE);

@@ -42,4 +42,15 @@ public class TimeDealController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    /**
+     * open된 타임딜 목록 조회
+     */
+    @GetMapping("/open")
+    public ResponseEntity<ApiResponse> getTimeDealOpenListApi(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+
+        ApiResponse response = ApiResponse.success("타임딜 OPEN 목록 조회", timeDealService.getTimeDealOpenList(pageable));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
 }

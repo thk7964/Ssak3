@@ -29,17 +29,27 @@ public class TimeDealService {
                 .orElseThrow(() -> new CustomException(ErrorCode.TIME_DEAL_NOT_FOUND)
                 );
 
-
         return TimeDealGetResponse.from(response);
     }
 
     /**
-     * 타임딜 목록
+     * 타임딜 목록(전체) 조회
      */
     @Transactional(readOnly = true)
     public PageResponse<TimeDealListGetResponse> getTimeDealList(Pageable pageable) {
 
         Page<TimeDealListGetResponse> responsePage = timeDealRepository.findAllByIsDeletedFalse(pageable).map(TimeDealListGetResponse::from);
+
+        return PageResponse.from(responsePage);
+    }
+
+    /**
+     * 타임딜 OPEN목록
+     */
+    @Transactional(readOnly = true)
+    public PageResponse<TimeDealListGetResponse> getTimeDealOpenList(Pageable pageable) {
+
+        Page<TimeDealListGetResponse> responsePage = timeDealRepository.findOpenTimeDeals(pageable);
 
         return PageResponse.from(responsePage);
     }

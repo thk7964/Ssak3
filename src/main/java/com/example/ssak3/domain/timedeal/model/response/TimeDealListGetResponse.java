@@ -13,12 +13,16 @@ public class TimeDealListGetResponse {
     private final String productName;
     private final Integer dealPrice;
     private final TimeDealStatus status;
+    private final LocalDateTime startAt;
+    private final LocalDateTime endAt;
     public static TimeDealListGetResponse from(TimeDeal timeDeal) {
         return new TimeDealListGetResponse(
                 timeDeal.getId(),
                 timeDeal.getProduct().getName(),
                 timeDeal.getDealPrice(),
-                timeDeal.getStatus(LocalDateTime.now())
+                timeDeal.getStatus(LocalDateTime.now()),
+                timeDeal.getStartAt(),
+                timeDeal.getEndAt()
         );
     }
 }

@@ -1,0 +1,56 @@
+package com.example.ssak3.domain.timedeal.controller;
+
+import com.example.ssak3.common.model.ApiResponse;
+import com.example.ssak3.domain.timedeal.model.request.TimeDealCreateRequest;
+import com.example.ssak3.domain.timedeal.model.request.TimeDealUpdateRequest;
+import com.example.ssak3.domain.timedeal.service.TimeDealAdminService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+@RequiredArgsConstructor
+@RestController
+@RequestMapping("/ssak3/admin/time-deals")
+public class TimeDealAdminController {
+
+    private final TimeDealAdminService timeDealAdminService;
+
+    /**
+     * 타임딜 생성
+     */
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PostMapping
+    public ResponseEntity<ApiResponse> createTimeDealApi(@Valid @RequestBody TimeDealCreateRequest request) {
+
+        ApiResponse response = ApiResponse.success("타임딜 상품 생성", timeDealAdminService.createTimeDeal(request));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    /**
+     * 타임딜 수정
+     */
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PatchMapping("/{timeDealId}")
+    public ResponseEntity<ApiResponse> updateTimeDealApi(@PathVariable Long timeDealId, @Valid @RequestBody TimeDealUpdateRequest request) {
+
+        ApiResponse response = ApiResponse.success("타임딜 상품 수정", timeDealAdminService.updateTimeDeal(timeDealId, request));
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    /**
+     * 타임딜 삭제
+     */
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @DeleteMapping("/{timeDealId}")
+    public ResponseEntity<ApiResponse> deleteTimeDealApi(@PathVariable Long timeDealId) {
+
+        ApiResponse response = ApiResponse.success("타임딜 상품 삭제", timeDealAdminService.deleteTimeDeal(timeDealId));
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+}

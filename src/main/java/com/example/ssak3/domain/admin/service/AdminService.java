@@ -25,7 +25,7 @@ public class AdminService {
     @Transactional
     public AdminRoleChangeResponse changeUserRole(Long userId, AdminRoleChangeRequest request) {
 
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndIsDeletedFalse(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         user.updateRole(request.getRole());
@@ -44,7 +44,7 @@ public class AdminService {
     @Transactional(readOnly = true)
     public UserGetResponse getUser(Long userId) {
 
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndIsDeletedFalse(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         return UserGetResponse.from(user);

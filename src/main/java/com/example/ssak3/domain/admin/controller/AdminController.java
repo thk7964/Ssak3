@@ -41,7 +41,7 @@ public class AdminController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<ApiResponse> getUserListApi(
-            @RequestParam UserRole role,
+            @RequestParam(defaultValue = "USER") UserRole role,
             @PageableDefault(sort = "nickname", direction = Sort.Direction.ASC) Pageable pageable) {
 
         ApiResponse response = ApiResponse.success("유저 전체 조회에 성공했습니다.", adminService.getUserList(role, pageable));

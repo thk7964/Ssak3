@@ -1,5 +1,6 @@
 package com.example.ssak3.domain.user.model.request;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -10,9 +11,11 @@ import java.time.LocalDate;
 @Getter
 public class UserUpdateRequest {
 
+    @NotBlank
     @Size(min = 1, max = 30, message = "이름은 1자 이상 30자 이하여야 합니다.")
     private String name;
 
+    @NotBlank
     @Size(min = 4, max = 30, message = "닉네임은 4자 이상 30자 이하여야 합니다.")
     private String nickname;
 

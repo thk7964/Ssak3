@@ -6,7 +6,6 @@ import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.common.model.PageResponse;
 import com.example.ssak3.domain.admin.model.request.AdminRoleChangeRequest;
 import com.example.ssak3.domain.admin.model.response.AdminRoleChangeResponse;
-import com.example.ssak3.domain.admin.model.response.ManagerGetResponse;
 import com.example.ssak3.domain.admin.model.response.UserGetResponse;
 import com.example.ssak3.domain.admin.model.response.UserListGetResponse;
 import com.example.ssak3.domain.user.entity.User;
@@ -17,8 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class AdminService {
@@ -26,9 +23,9 @@ public class AdminService {
     private final UserRepository userRepository;
 
     @Transactional
-    public AdminRoleChangeResponse changeUserRole(AdminRoleChangeRequest request) {
+    public AdminRoleChangeResponse changeUserRole(Long userId, AdminRoleChangeRequest request) {
 
-        User user = userRepository.findById(request.getManagerId())
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         user.updateRole(request.getRole());
@@ -37,18 +34,9 @@ public class AdminService {
     }
 
     @Transactional(readOnly = true)
-    public List<ManagerGetResponse> getManagerList() {
+    public PageResponse<UserListGetResponse> getUserList(UserRole role, Pageable pageable) {
 
-        List<User> managerList = userRepository.findAllByRole(UserRole.MANAGER);
-
-        return managerList.stream().map(ManagerGetResponse::from).toList();
-
-    }
-
-    @Transactional(readOnly = true)
-    public PageResponse<UserListGetResponse> getUserList(Pageable pageable) {
-
-        Page<UserListGetResponse> userList = userRepository.findAllByIsDeletedFalse(pageable).map(UserListGetResponse::from);
+        Page<UserListGetResponse> userList = userRepository.findUserByRole(role, false, pageable).map(UserListGetResponse::from);
 
         return PageResponse.from(userList);
     }

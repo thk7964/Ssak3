@@ -6,6 +6,5 @@ import lombok.Getter;
 @Getter
 public class AdminRoleChangeRequest {
 
-    private Long managerId;
     private UserRole role;
 }

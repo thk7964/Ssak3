@@ -42,10 +42,6 @@ public class UserService {
         User user = userRepository.findById(authUser.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        if (!request.getNickname().equals(authUser.getNickname()) && userRepository.existsByNickname(request.getNickname())) {
-            throw new CustomException(ErrorCode.NICKNAME_ALREADY_EXISTS);
-        }
-
         user.update(request);
 
         return UserUpdateResponse.from(user);

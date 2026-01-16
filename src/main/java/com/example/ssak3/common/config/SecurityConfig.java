@@ -25,7 +25,7 @@ public class SecurityConfig {
     @Bean
     public RoleHierarchy roleHierarchy() {
         return RoleHierarchyImpl.fromHierarchy("""
-                ROLE_ADMIN > ROLE_MANAGER > ROLE_USER
+                ROLE_SUPER_ADMIN > ROLE_ADMIN > ROLE_USER
                 """);
     }
 
@@ -38,10 +38,10 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/ssak3/signup", "/ssak3/login").permitAll()
+                        .requestMatchers("/ssak3/auth/signup", "/ssak3/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/ssak3/coupons").permitAll()
-                        .requestMatchers("/ssak3/admin").hasRole("ADMIN")
-                        .requestMatchers("/ssak3/admin/**", "/ssak3/coupons").hasRole("MANAGER")
+                        .requestMatchers("/ssak3/admin").hasRole("SUPER_ADMIN")
+                        .requestMatchers("/ssak3/admin/**", "/ssak3/coupons").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

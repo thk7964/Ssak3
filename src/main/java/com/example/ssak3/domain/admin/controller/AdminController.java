@@ -1,5 +1,6 @@
 package com.example.ssak3.domain.admin.controller;
 
+import com.example.ssak3.common.enums.UserRole;
 import com.example.ssak3.common.model.ApiResponse;
 import com.example.ssak3.domain.admin.model.request.AdminRoleChangeRequest;
 import com.example.ssak3.domain.admin.service.AdminService;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/ssak3/admin")
+@RequestMapping("/ssak3/admin/users")
 public class AdminController {
 
     private final AdminService adminService;
@@ -22,35 +23,28 @@ public class AdminController {
     /**
      * 권한 변경 API
      */
-    @PreAuthorize("hasRole('ADMIN')")
-    @PatchMapping
-    public ResponseEntity<ApiResponse> changeUserRoleApi(@RequestBody AdminRoleChangeRequest request) {
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @PatchMapping("/{userId}")
+    public ResponseEntity<ApiResponse> changeUserRoleApi(
+            @PathVariable Long userId,
+            @RequestBody AdminRoleChangeRequest request) {
 
-        ApiResponse response = ApiResponse.success("권한을 변경했습니다.", adminService.changeUserRole(request));
-
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
-    /**
-     * 관리자 (MANAGER 권한 유저) 전체 조회 API
-     */
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/managers")
-    public ResponseEntity<ApiResponse> getManagersListApi() {
-
-        ApiResponse response = ApiResponse.success("관리자 전체 조회에 성공했습니다.", adminService.getManagerList());
+        ApiResponse response = ApiResponse.success("권한을 변경했습니다.", adminService.changeUserRole(userId, request));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     /**
      * 유저 전체 조회 API
+     * 쿼리 파라미터 role
      */
-    @PreAuthorize("hasRole('MANAGER')")
-    @GetMapping("/users")
-    public ResponseEntity<ApiResponse> getUserListApi(@PageableDefault(sort = "nickname", direction = Sort.Direction.ASC) Pageable pageable) {
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping
+    public ResponseEntity<ApiResponse> getUserListApi(
+            @RequestParam UserRole role,
+            @PageableDefault(sort = "nickname", direction = Sort.Direction.ASC) Pageable pageable) {
 
-        ApiResponse response = ApiResponse.success("유저 전체 조회에 성공했습니다.", adminService.getUserList(pageable));
+        ApiResponse response = ApiResponse.success("유저 전체 조회에 성공했습니다.", adminService.getUserList(role, pageable));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -58,8 +52,8 @@ public class AdminController {
     /**
      * 유저 단 건 조회 API
      */
-    @PreAuthorize("hasRole('MANAGER')")
-    @GetMapping("/users/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/{userId}")
     public ResponseEntity<ApiResponse> getUserApi(@PathVariable Long userId) {
 
         ApiResponse response = ApiResponse.success("유저 전체 조회에 성공했습니다.", adminService.getUser(userId));

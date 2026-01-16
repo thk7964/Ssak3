@@ -21,6 +21,14 @@ public enum ErrorCode {
 
     // Cart 에러
     CART_PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "장바구니에서 상품을 찾을 수 없습니다."),
+    PASSWORD_INCORRECT(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
+    CART_ACCESS_DENIED(HttpStatus.FORBIDDEN, "내 장바구니가 아닙니다."),
+    CART_PRODUCT_LIMIT(HttpStatus.BAD_REQUEST, "장바구니에 담을 수 있는 수량을 초과했습니다."),
+
+    // Order 에러
+    ORDER_PRODUCT_IS_NULL(HttpStatus.BAD_REQUEST, "주문할 상품이 선택되지 않았습니다."),
+    ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문을 찾을 수 없습니다."),
+    ORDER_INVALID(HttpStatus.BAD_REQUEST, "유효하지 않은 주문입니다"),
 
     //TimeDeal 에러
     SALE_PRICE_MUST_BE_LOWER_THAN_ORIGINAL_PRICE(HttpStatus.BAD_REQUEST, "할인가는 정가보다 낮아야 합니다."),

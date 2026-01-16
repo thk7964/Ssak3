@@ -62,7 +62,7 @@ public class CouponService {
     @Transactional
     public CouponUpdateResponse updateCoupon(Long couponId, CouponUpdateRequest request) {
 
-        Coupon coupon = couponRepository.findByIdAndIsDeletedFalse(couponId)
+        Coupon coupon = couponRepository.findById(couponId)
                 .orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
 
         coupon.update(request);
@@ -76,7 +76,7 @@ public class CouponService {
     @Transactional
     public CouponDeleteResponse deleteCoupon(Long couponId) {
 
-        Coupon coupon = couponRepository.findByIdAndIsDeletedFalse(couponId)
+        Coupon coupon = couponRepository.findById(couponId)
                 .orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
 
         coupon.delete();

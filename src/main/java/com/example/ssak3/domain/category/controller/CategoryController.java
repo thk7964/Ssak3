@@ -29,8 +29,8 @@ public class CategoryController {
             @AuthenticationPrincipal AuthUser user,
             @RequestBody CategoryCreateRequest request
     ) {
-        ApiResponse apiResponse = ApiResponse.success("카테고리를 생성하였습니다.",  categoryService.createCategory(user, request));
-        return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
+        ApiResponse response = ApiResponse.success("카테고리를 생성하였습니다.",  categoryService.createCategory(user, request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     /**

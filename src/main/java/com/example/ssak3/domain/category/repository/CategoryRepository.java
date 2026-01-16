@@ -19,7 +19,5 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
             FROM Category c
             WHERE c.isDeleted = false
             """)
-    Page<Category> findCategoryPage(
-            Pageable pageable
-    );
+    Page<Category> findCategoryPage(Pageable pageable);
 }

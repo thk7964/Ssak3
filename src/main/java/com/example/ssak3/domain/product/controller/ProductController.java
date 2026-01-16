@@ -41,9 +41,7 @@ public class ProductController {
      * 상품 상세조회 API
      */
     @GetMapping("/products/{productId}")
-    public ResponseEntity<ApiResponse> getProductApi(
-            @PathVariable Long productId
-            ) {
+    public ResponseEntity<ApiResponse> getProductApi(@PathVariable Long productId) {
         log.info("controller 상품상세조회 id: {}", productId);
        ApiResponse response = ApiResponse.success("상품을 조회했습니다.", productService.getProduct(productId));
        return ResponseEntity.status(HttpStatus.OK).body(response);

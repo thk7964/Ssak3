@@ -33,7 +33,7 @@ public class Category extends BaseEntity {
         }
     }
 
-    public void isDeleted() {
+    public void softDelete() {
         this.isDeleted = true;
     }
 }

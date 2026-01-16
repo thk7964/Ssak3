@@ -33,11 +33,9 @@ public class CategoryService {
         userRepository.findByIdAndIsDeletedFalse(user.getId())
                 .orElseThrow(()-> new CustomException(ErrorCode.ADMIN_NOT_FOUND));
 
-        Category category = new Category(
-                request.getName()
-        );
+        Category category = new Category(request.getName());
         Category savedCategory = categoryRepository.save(category);
-        return CategoryCreateResponse.form(savedCategory);
+        return CategoryCreateResponse.from(savedCategory);
     }
 
     /**
@@ -83,7 +81,7 @@ public class CategoryService {
         Category findCategory = categoryRepository.findByIdAndIsDeletedFalse(categoryId)
                 .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
 
-        findCategory.isDeleted();
+        findCategory.softDelete();
 
         return CategoryDeleteResponse.form(findCategory);
     }

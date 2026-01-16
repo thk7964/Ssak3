@@ -74,7 +74,7 @@ public class Product extends BaseEntity {
         }
     }
 
-    public void isDeleted() {
+    public void softDelete() {
         this.isDeleted = true;
     }
 

@@ -28,7 +28,7 @@ public class ProductService {
     private final CategoryRepository categoryRepository;
 
     /**
-     * 상품생성 비즈니스 로직
+     * 상품생성
      */
     @Transactional
     public ProductCreateResponse createProduct(ProductCreateRequest request, AuthUser user) {
@@ -53,7 +53,7 @@ public class ProductService {
     }
 
     /**
-     * 상품 상세조회 비즈니스 로직
+     * 상품 상세조회
      */
     @Transactional(readOnly = true)
     public ProductGetResponse getProduct(Long productId) {
@@ -63,7 +63,7 @@ public class ProductService {
     }
 
     /**
-     * 상품 목록조회 비즈니스 로직
+     * 상품 목록조회
      */
     @Transactional(readOnly = true)
     public ProductListGetResponse getProductList(Long categoryId, Pageable pageable) {
@@ -113,7 +113,7 @@ public class ProductService {
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
         // 상품삭제(SoftDelete)
-        foundProduct.isDeleted();
+        foundProduct.softDelete();
        return ProductDeleteResponse.form(foundProduct);
     }
 }

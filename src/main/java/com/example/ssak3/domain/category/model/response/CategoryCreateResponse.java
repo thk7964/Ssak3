@@ -15,7 +15,7 @@ public class CategoryCreateResponse {
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
-    public static CategoryCreateResponse form(Category category) {
+    public static CategoryCreateResponse from(Category category) {
 
         return new CategoryCreateResponse(
                 category.getId(),

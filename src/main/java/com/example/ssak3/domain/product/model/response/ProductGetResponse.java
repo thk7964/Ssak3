@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 public class ProductGetResponse {
 
     private final Long id;
+    private final Long categoryId;
     private final String name;
     private final Integer price;
     private final ProductStatus status;
@@ -24,6 +25,7 @@ public class ProductGetResponse {
     public static ProductGetResponse form(Product product) {
        return new ProductGetResponse(
                product.getId(),
+               product.getCategory().getId(),
                product.getName(),
                product.getPrice(),
                product.getStatus(),

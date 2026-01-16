@@ -7,7 +7,7 @@ public enum ProductStatus {
     // 판매중
     FOR_SALE,
     // 판매전
-    BEFORE_SALE;
-
-
+    BEFORE_SALE,
+    // 판매중지
+    STOP_SALE;
 }

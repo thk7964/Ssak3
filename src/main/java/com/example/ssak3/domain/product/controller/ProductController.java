@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.PublicKey;
 
 @Slf4j
 @RequestMapping("/ssak3")
@@ -37,6 +36,7 @@ public class ProductController {
         ApiResponse response = ApiResponse.success("상품을 생성하셨습니다.", productService.createProduct(request, user));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
     /**
      * 상품 상세조회 API
      */
@@ -48,17 +48,20 @@ public class ProductController {
        ApiResponse response = ApiResponse.success("상품을 조회했습니다.", productService.getProduct(productId));
        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
     /**
      * 상품 목록조회 API
      */
     @GetMapping("/products")
     public ResponseEntity<ApiResponse> getProductListApi(
-            @RequestParam(name = "name")String name,
+            // 카테고리 아이디값을 활용해서 해당 아이디 보유한 상품만 조회하는 기능
+            @RequestParam(name = "categoryId")Long categoryId,
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC)Pageable pageable) {
-        log.info("controller 상품목록조회 검색: {}", name);
-        ApiResponse response = ApiResponse.success("상품목록을 조회했습니다.",  productService.getProductList(name, pageable));
+        log.info("controller 상품목록조회 검색: {}", categoryId);
+        ApiResponse response = ApiResponse.success("상품목록을 조회했습니다.",  productService.getProductList(categoryId, pageable));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
     /**
      * 상품수정 API
      */
@@ -83,8 +86,4 @@ public class ProductController {
         ApiResponse response = ApiResponse.success("상품을 삭제하였습니다", productService.deleteProduct(user, productId));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
-
-
-
-
 }

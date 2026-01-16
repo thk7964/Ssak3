@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 public class ProductCreateResponse {
 
     private final Long id;
+    private final Long categoryId;
     private final String name;
     private final Integer price;
     private final ProductStatus status;
@@ -23,6 +24,7 @@ public class ProductCreateResponse {
     public static ProductCreateResponse from(Product product) {
         return new ProductCreateResponse(
                 product.getId(),
+                product.getCategory().getId(),
                 product.getName(),
                 product.getPrice(),
                 product.getStatus(),

@@ -21,11 +21,11 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     SELECT p
     FROM Product p
     WHERE p.isDeleted = false
-      AND (:name IS NULL OR p.name = :name)
+      AND (:categoryId IS NULL OR p.category.id = :categoryId)
 """)
         // 반환타입을 Page로 수정
     Page<Product> findProductListPage(
-            @Param("name") String name,
+            @Param("categoryId") Long categoryId,
             Pageable pageable
     );
 

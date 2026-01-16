@@ -1,6 +1,7 @@
-package com.example.ssak3.domain.product.model.response;
+package com.example.ssak3.domain.category.model.response;
 
-import com.example.ssak3.common.enums.ProductStatus;
+import com.example.ssak3.domain.category.entity.Category;
+import com.example.ssak3.domain.product.model.response.ProductListGetResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -9,24 +10,20 @@ import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
-public class ProductListGetResponse {
+public class CategoryListGetResponse {
 
     private final Integer counts;
-    private final List<ProductListGetResponse.ProductDto> productDtoList;
+    private final List<CategoryListGetResponse.CategoryDto> productDtoList;
 
-    public static class ProductDto {
+    public static class CategoryDto {
         private Long id;
-        private Long categoryId;
         private String name;
-        private Integer price;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
 
-        public ProductDto(Long id, Long categoryId, String name, Integer price, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        public CategoryDto(Long id, String name, LocalDateTime createdAt, LocalDateTime updatedAt) {
             this.id = id;
-            this.categoryId = categoryId;
             this.name = name;
-            this.price = price;
             this.createdAt = createdAt;
             this.updatedAt = updatedAt;
         }
@@ -34,12 +31,8 @@ public class ProductListGetResponse {
         public Long getId() {
             return id;
         }
-        public Long getCategoryId() {return categoryId;}
         public String getName() {
             return name;
-        }
-        public Integer getPrice() {
-            return price;
         }
         public LocalDateTime getCreatedAt() {
             return createdAt;

@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 public class ProductUpdateRequest {
 
+    private Long categoryId;
     private String name;
     private Integer price;
     private ProductStatus status;

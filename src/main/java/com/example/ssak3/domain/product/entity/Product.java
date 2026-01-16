@@ -42,7 +42,8 @@ public class Product extends BaseEntity {
     @Column(nullable = false, name = "is_deleted")
     private boolean isDeleted = false;
 
-    public Product(String name, Integer price, ProductStatus status, String information, Integer quantity) {
+    public Product(Category category, String name, Integer price, ProductStatus status, String information, Integer quantity) {
+        this.category = category;
         this.name = name;
         this.price = price;
         this.status = status;
@@ -51,6 +52,7 @@ public class Product extends BaseEntity {
     }
 
     public void update(ProductUpdateRequest request) {
+
         if (request.getName() != null) {
             this.name = request.getName();
         }

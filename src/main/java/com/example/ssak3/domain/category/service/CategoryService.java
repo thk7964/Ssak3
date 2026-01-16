@@ -40,16 +40,6 @@ public class CategoryService {
         return CategoryCreateResponse.form(savedCategory);
     }
 
-//    /**
-//     * 카테고리 상세조회 비즈니스 로직
-//     */
-//    @Transactional(readOnly = true)
-//    public CategoryGetResponse getCategory(Long categoryId) {
-//        Category findCategory = categoryRepository.findByIdAndIsDeletedFalse(categoryId)
-//                .orElseThrow(()-> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
-//        return CategoryGetResponse.form(findCategory);
-//    }
-
     /**
      * 카테고리 목록조회 비즈니스 로직
      */

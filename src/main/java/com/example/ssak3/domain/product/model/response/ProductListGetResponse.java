@@ -1,6 +1,5 @@
 package com.example.ssak3.domain.product.model.response;
 
-import com.example.ssak3.common.enums.ProductStatus;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

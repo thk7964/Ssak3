@@ -15,7 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/ssak3/categorys")
+@RequestMapping("/ssak3")
 @RequiredArgsConstructor
 public class CategoryController {
 
@@ -24,7 +24,7 @@ public class CategoryController {
     /**
      * 카테고리 생성 API
      */
-    @PostMapping
+    @PostMapping("/admin/categories")
     public ResponseEntity<ApiResponse> createCategoryApi(
             @AuthenticationPrincipal AuthUser user,
             @RequestBody CategoryCreateRequest request
@@ -36,7 +36,7 @@ public class CategoryController {
     /**
      * 카테고리 목록조회 API
      */
-    @GetMapping
+    @GetMapping("/categories")
     public ResponseEntity<ApiResponse> getCategoryListApi(
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC)Pageable pageable
             ) {
@@ -47,7 +47,7 @@ public class CategoryController {
     /**
      * 카테고리 수정 API
      */
-    @PatchMapping("/{categoryId}")
+    @PatchMapping("/admin/categories/{categoryId}")
     public ResponseEntity<ApiResponse> updateCategoryApi(
             @AuthenticationPrincipal AuthUser user,
             @PathVariable Long categoryId,
@@ -59,7 +59,7 @@ public class CategoryController {
     /**
      * 카테고리 삭제 API
      */
-    @DeleteMapping("/{categoryId}")
+    @DeleteMapping("/admin/categories/{categoryId}")
     public ResponseEntity<ApiResponse> deleteCategoryApi(
             @AuthenticationPrincipal AuthUser user,
             @PathVariable Long categoryId) {

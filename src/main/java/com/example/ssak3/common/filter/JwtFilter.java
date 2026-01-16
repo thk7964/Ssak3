@@ -8,6 +8,7 @@ import com.example.ssak3.common.utils.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -63,8 +64,8 @@ public class JwtFilter extends OncePerRequestFilter {
         } catch (JwtAuthenticationException e) {
             authenticationEntryPoint.commence(request, response, e);
             return;
-        } catch (ExpiredJwtException e) {
-            ApiResponse errorResponse = ApiResponse.error("만료된 토큰입니다.");
+        } catch (ExpiredJwtException | MalformedJwtException e) {
+            ApiResponse errorResponse = ApiResponse.error("유효하지 않은 토큰입니다.");
 
             String result = objectMapper.writeValueAsString(errorResponse);
 

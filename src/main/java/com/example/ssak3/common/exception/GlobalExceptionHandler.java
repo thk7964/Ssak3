@@ -8,6 +8,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.time.format.DateTimeParseException;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -27,6 +29,14 @@ public class GlobalExceptionHandler {
         String message = e.getBindingResult().getAllErrors().get(0).getDefaultMessage();
 
         ApiResponse response = ApiResponse.error(message);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(DateTimeParseException.class)
+    public ResponseEntity<ApiResponse> dateTimeParseException(DateTimeParseException e) {
+
+        ApiResponse response = ApiResponse.error("올바른 날짜 형식이 아닙니다.");
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }

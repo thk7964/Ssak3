@@ -1,6 +1,7 @@
 package com.example.ssak3.domain.product.entity;
 
 import com.example.ssak3.common.entity.BaseEntity;
+import com.example.ssak3.common.enums.ProductStatus;
 import com.example.ssak3.domain.category.entity.Category;
 import com.example.ssak3.domain.product.model.request.ProductUpdateRequest;
 import jakarta.persistence.*;
@@ -28,8 +29,9 @@ public class Product extends BaseEntity {
     @Column(nullable = false)
     private Integer price;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status;
+    private ProductStatus status;
 
     @Column(nullable = false)
     private String information;
@@ -40,7 +42,7 @@ public class Product extends BaseEntity {
     @Column(nullable = false, name = "is_deleted")
     private boolean isDeleted = false;
 
-    public Product(String name, Integer price, String status, String information, Integer quantity) {
+    public Product(String name, Integer price, ProductStatus status, String information, Integer quantity) {
         this.name = name;
         this.price = price;
         this.status = status;
@@ -66,8 +68,8 @@ public class Product extends BaseEntity {
         }
     }
 
-    public boolean isDeleted() {
-        return this.isDeleted = true;
+    public void isDeleted() {
+        this.isDeleted = true;
     }
 
 }

@@ -16,10 +16,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     Optional<Product> findByIdAndIsDeletedFalse(Long id);
 
-    List<Product> findByNameAndIsDeletedFalse(String name);
-
-    boolean existsByIdAndIsDeletedFalse(Long id);
-
 
     @Query("""
     SELECT p

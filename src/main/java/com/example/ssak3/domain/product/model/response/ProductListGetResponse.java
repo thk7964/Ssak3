@@ -1,6 +1,6 @@
 package com.example.ssak3.domain.product.model.response;
 
-import com.example.ssak3.domain.product.entity.Product;
+import com.example.ssak3.common.enums.ProductStatus;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -9,7 +9,7 @@ import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
-public class ProductGetListResponse {
+public class ProductListGetResponse {
 
     private final Integer counts;
     private final List<ProductDto> productDtoList;
@@ -18,13 +18,13 @@ public class ProductGetListResponse {
         private Long id;
         private String name;
         private Integer price;
-        private String status;
+        private ProductStatus status;
         private String information;
         private Integer quantity;
         private final LocalDateTime createdAt;
         private final LocalDateTime updatedAt;
 
-        public ProductDto(Long id, String name, Integer price, String status, String information, Integer quantity, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        public ProductDto(Long id, String name, Integer price, ProductStatus status, String information, Integer quantity, LocalDateTime createdAt, LocalDateTime updatedAt) {
             this.id = id;
             this.name = name;
             this.price = price;
@@ -44,7 +44,7 @@ public class ProductGetListResponse {
         public Integer getPrice() {
             return price;
         }
-        public String getStatus() {
+        public ProductStatus getStatus() {
             return status;
         }
         public String getInformation() {

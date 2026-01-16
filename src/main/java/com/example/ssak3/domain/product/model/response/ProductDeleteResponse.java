@@ -20,5 +20,5 @@ public class ProductDeleteResponse {
                 product.getCreatedAt(),
                 product.getUpdatedAt()
         );
-
+    }
 }

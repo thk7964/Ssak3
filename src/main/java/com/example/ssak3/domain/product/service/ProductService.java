@@ -2,19 +2,19 @@ package com.example.ssak3.domain.product.service;
 
 import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.exception.CustomException;
+import com.example.ssak3.common.model.AuthUser;
 import com.example.ssak3.domain.product.entity.Product;
 import com.example.ssak3.domain.product.model.request.ProductCreateRequest;
 import com.example.ssak3.domain.product.model.request.ProductUpdateRequest;
 import com.example.ssak3.domain.product.model.response.*;
 import com.example.ssak3.domain.product.repository.ProductRepository;
+import com.example.ssak3.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,12 +22,16 @@ import java.util.List;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final UserRepository userRepository;
 
     /**
      * 상품생성 비즈니스 로직
      */
     @Transactional
-    public ProductCreateResponse createProduct(ProductCreateRequest request) {
+    public ProductCreateResponse createProduct(ProductCreateRequest request, AuthUser user) {
+        // 관리자의 존재여부 확인
+        userRepository.findByIdAndIsDeletedFalse(user.getId())
+                .orElseThrow(()-> new CustomException(ErrorCode.ADMIN_NOT_FOUND));
 
         Product product = new Product(
                 request.getName(),
@@ -54,10 +58,10 @@ public class ProductService {
      * 상품 목록조회 비즈니스 로직
      */
     @Transactional(readOnly = true)
-    public ProductGetListResponse getProductList(String name, Pageable pageable) {
+    public ProductListGetResponse getProductList(String name, Pageable pageable) {
         Page<Product> productList = productRepository.findProductListPage(name, pageable);
-       List<ProductGetListResponse.ProductDto> productDtoList = productList.getContent().stream()
-                .map(product -> new ProductGetListResponse.ProductDto(
+       List<ProductListGetResponse.ProductDto> productDtoList = productList.getContent().stream()
+                .map(product -> new ProductListGetResponse.ProductDto(
                         product.getId(),
                         product.getName(),
                         product.getPrice(),
@@ -68,7 +72,7 @@ public class ProductService {
                         product.getUpdatedAt()
                 ))
                 .toList();
-       return new ProductGetListResponse(productList.getNumberOfElements(), productDtoList);
+       return new ProductListGetResponse(productList.getNumberOfElements(), productDtoList);
 
 
     }
@@ -77,7 +81,11 @@ public class ProductService {
      * 상품수정 비즈니스 로직
      */
     @Transactional
-    public ProductUpdateResponse updateProduct(Long productId, ProductUpdateRequest request) {
+    public ProductUpdateResponse updateProduct(AuthUser user, Long productId, ProductUpdateRequest request) {
+        // 관리자의 존재여부 확인
+        userRepository.findByIdAndIsDeletedFalse(user.getId())
+                .orElseThrow(()-> new CustomException(ErrorCode.ADMIN_NOT_FOUND));
+
         Product foundProduct = productRepository.findByIdAndIsDeletedFalse(productId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
         foundProduct.update(request);
@@ -89,13 +97,16 @@ public class ProductService {
      * 상품삭제 비즈니스 로직
      */
     @Transactional
-    public ProductDeleteResponse deleteProduct(Long productId) {
+    public ProductDeleteResponse deleteProduct(AuthUser user, Long productId) {
+        // 관리자의 존재여부 확인
+        userRepository.findByIdAndIsDeletedFalse(user.getId())
+                .orElseThrow(()-> new CustomException(ErrorCode.ADMIN_NOT_FOUND));
+
+        // 상품 존재여부 확인
         Product foundProduct = productRepository.findByIdAndIsDeletedFalse(productId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
-       if(!productRepository.existsByIdAndIsDeletedFalse(foundProduct.getId())) {
-           throw new RuntimeException("이미 삭제된 상품입니다");
-       }
+        // 상품삭제(SoftDelete)
         foundProduct.isDeleted();
        return ProductDeleteResponse.form(foundProduct);
     }

@@ -1,5 +1,6 @@
 package com.example.ssak3.domain.product.model.response;
 
+import com.example.ssak3.common.enums.ProductStatus;
 import com.example.ssak3.domain.product.entity.Product;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,7 @@ public class ProductGetResponse {
     private final Long id;
     private final String name;
     private final Integer price;
-    private final String status;
+    private final ProductStatus status;
     private final String information;
     private final Integer quantity;
     private final LocalDateTime createdAt;

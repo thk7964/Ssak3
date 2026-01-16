@@ -2,14 +2,12 @@ package com.example.ssak3.domain.order.entity;
 
 import com.example.ssak3.common.entity.BaseEntity;
 import com.example.ssak3.common.enums.OrderStatus;
-import com.example.ssak3.domain.coupon.entity.Coupon;
 import com.example.ssak3.domain.user.entity.User;
 import com.example.ssak3.domain.usercoupon.entity.UserCoupon;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 @Getter
 @Entity

@@ -39,6 +39,9 @@ public class CartService {
         return CartGetResponse.from(cart, productList);
     }
 
+    /**
+     * 장바구니가 있으면 조회 없으면 생성
+     */
     @Transactional
     public Cart getOrCreateCart(Long userId){
 

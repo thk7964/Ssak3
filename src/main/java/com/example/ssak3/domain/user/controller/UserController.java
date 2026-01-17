@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/ssak3/users")
+@RequestMapping("/ssak3/users/me")
 public class UserController {
 
     private final UserService userService;
@@ -23,7 +23,7 @@ public class UserController {
     /**
      * 마이 페이지 조회 API
      */
-    @GetMapping("/my-profile")
+    @GetMapping
     public ResponseEntity<ApiResponse> getMyProfileApi(@AuthenticationPrincipal AuthUser authUser) {
 
         ApiResponse response = ApiResponse.success("마이 페이지 조회에 성공했습니다.", userService.getMyProfile(authUser));
@@ -45,7 +45,7 @@ public class UserController {
     /**
      * 비밀번호 검증 API
      */
-    @PostMapping("/verify-password")
+    @PostMapping("/password-verification")
     public ResponseEntity<ApiResponse> verifyPasswordApi(@AuthenticationPrincipal AuthUser authUser, @RequestBody UserVerifyPasswordRequest request) {
 
         ApiResponse response = ApiResponse.success("비밀번호 검증 API가 성공적으로 호출되었습니다.", userService.verifyPassword(authUser, request));
@@ -56,7 +56,7 @@ public class UserController {
     /**
      * 비밀번호 변경 API
      */
-    @PostMapping("/change-password")
+    @PatchMapping("/password")
     public ResponseEntity<ApiResponse> changePasswordApi(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody UserChangePasswordRequest request) {
 
         ApiResponse response = ApiResponse.success("비밀번호가 변경되었습니다.", userService.changePassword(authUser, request));

@@ -70,6 +70,14 @@ public class CartProductService {
 
         // 기존 상품 없음
         else {
+
+            long count = cartProductRepository.countByCartId(cart.getId());
+
+            // 장바구니에 담을 수 있는 상품 개수 30개로 제한
+            if (count >= 30) {
+                throw new CustomException(ErrorCode.CART_PRODUCT_LIMIT);
+            }
+
             if (request.getQuantity() > product.getQuantity()) {
                 throw new CustomException(ErrorCode.PRODUCT_INSUFFICIENT);
             }

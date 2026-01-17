@@ -12,6 +12,7 @@ public enum ErrorCode {
     NICKNAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 닉네임입니다."),
     UNREGISTERED_USER(HttpStatus.NOT_FOUND, "가입되지 않은 사용자입니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."),
+    WITHDRAWN_USER(HttpStatus.NOT_FOUND, "탈퇴한 유저입니다."),
 
     // Product 에러
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다."),
@@ -21,6 +22,14 @@ public enum ErrorCode {
 
     // Cart 에러
     CART_PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "장바구니에서 상품을 찾을 수 없습니다."),
+    PASSWORD_INCORRECT(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
+    CART_ACCESS_DENIED(HttpStatus.FORBIDDEN, "내 장바구니가 아닙니다."),
+    CART_PRODUCT_LIMIT(HttpStatus.BAD_REQUEST, "장바구니에 담을 수 있는 수량을 초과했습니다."),
+
+    // Order 에러
+    ORDER_PRODUCT_IS_NULL(HttpStatus.BAD_REQUEST, "주문할 상품이 선택되지 않았습니다."),
+    ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문을 찾을 수 없습니다."),
+    ORDER_INVALID(HttpStatus.BAD_REQUEST, "유효하지 않은 주문입니다"),
 
     //TimeDeal 에러
     SALE_PRICE_MUST_BE_LOWER_THAN_ORIGINAL_PRICE(HttpStatus.BAD_REQUEST, "할인가는 정가보다 낮아야 합니다."),
@@ -33,6 +42,12 @@ public enum ErrorCode {
 
     // Coupon 에러
     COUPON_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 쿠폰입니다."),
+    COUPON_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 지급된 쿠폰입니다."),
+    COUPON_OUT_OF_STOCK(HttpStatus.CONFLICT, "쿠폰 수량이 모두 소진되었습니다."),
+    COUPON_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "사용 가능한 상태의 쿠폰이 아닙니다."),
+    COUPON_EXPIRED(HttpStatus.BAD_REQUEST, "사용 기한이 만료된 쿠폰입니다."),
+    FORBIDDEN_COUPON_ACCESS(HttpStatus.FORBIDDEN, "본인의 쿠폰만 사용할 수 있습니다."),
+    COUPON_MIN_ORDER_PRICE_NOT_MET(HttpStatus.BAD_REQUEST, "최소 주문 금액을 만족하지 못해 쿠폰을 사용할 수 없습니다."),
 
     // Inquiry 에러
     INQUIRY_NOT_FOUND(HttpStatus.NOT_FOUND, "문의 내역을 찾을 수 없습니다."),

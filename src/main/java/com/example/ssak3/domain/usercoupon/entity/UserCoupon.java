@@ -1,6 +1,7 @@
 package com.example.ssak3.domain.usercoupon.entity;
 
 import com.example.ssak3.common.entity.BaseEntity;
+import com.example.ssak3.common.enums.UserCouponStatus;
 import com.example.ssak3.domain.coupon.entity.Coupon;
 import com.example.ssak3.domain.user.entity.User;
 import jakarta.persistence.*;
@@ -31,7 +32,19 @@ public class UserCoupon extends BaseEntity {
     @Column(nullable = false, name = "expired_at")
     private LocalDateTime expiredAt;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status;
+    private UserCouponStatus status;
 
+    public UserCoupon(User user, Coupon coupon, LocalDateTime expiredAt, UserCouponStatus status) {
+        this.user = user;
+        this.coupon = coupon;
+        this.expiredAt = expiredAt;
+        this.status = status;
+    }
+
+    // 상태 : 사용 완료
+    public void use() {
+        this.status = UserCouponStatus.USED;
+    }
 }

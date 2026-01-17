@@ -25,12 +25,12 @@ public class InquiryReplyController {
     /**
      * 문의 답변 생성 API
      */
-//    @PreAuthorize("hasAuthority('ADMIN')")
-    @PostMapping("/inquiries/{inquiryId}")
-    public ResponseEntity<ApiResponse> createInquiryReplyApi(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long inquiryId, @RequestBody InquiryReplyCreateRequest request) {
+//    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping
+    public ResponseEntity<ApiResponse> createInquiryReplyApi(@AuthenticationPrincipal AuthUser authUser, @RequestBody InquiryReplyCreateRequest request) {
 
         Long adminId = authUser.getId();
-        ApiResponse response = ApiResponse.success("문의 답변 생성 성공", inquiryReplyService.createInquiryReply(adminId, inquiryId, request));
+        ApiResponse response = ApiResponse.success("문의 답변 생성 성공", inquiryReplyService.createInquiryReply(adminId, request));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -38,7 +38,7 @@ public class InquiryReplyController {
     /**
      * 문의 답변 목록 조회 API
      */
-//    @PreAuthorize("hasAuthority('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<ApiResponse> getInquiryReplyListApi(@PageableDefault(size = 10, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
@@ -50,7 +50,7 @@ public class InquiryReplyController {
     /**
      * 문의 답변 상세 조회 API
      */
-//    @PreAuthorize("hasAuthority('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{inquiryReplyId}")
     public ResponseEntity<ApiResponse> getInquiryReplyApi(@PathVariable Long inquiryReplyId) {
 
@@ -62,6 +62,7 @@ public class InquiryReplyController {
     /**
      * 문의 답변 수정 API
      */
+//    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{inquiryReplyId}")
     public ResponseEntity<ApiResponse> updateInquiryReplyApi(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long inquiryReplyId, @RequestBody InquiryReplyUpdateRequest request) {
 
@@ -75,6 +76,7 @@ public class InquiryReplyController {
     /**
      * 문의 답변 삭제 API
      */
+//    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{inquiryReplyId}")
     public ResponseEntity<ApiResponse> deleteInquiryReplyApi(@PathVariable Long inquiryReplyId) {
         ApiResponse response = ApiResponse.success("문의 답변 삭제 성공", inquiryReplyService.deleteInquiryReply(inquiryReplyId));

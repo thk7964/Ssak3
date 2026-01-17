@@ -2,6 +2,7 @@ package com.example.ssak3.domain.inquiry.model.response;
 
 import com.example.ssak3.common.enums.InquiryStatus;
 import com.example.ssak3.domain.inquiry.entity.Inquiry;
+import com.example.ssak3.domain.inquiryreply.entity.InquiryReply;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +19,9 @@ public class InquiryGetResponse {
     private final InquiryStatus status;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
+    private final String replyContent;
 
-
-    public static InquiryGetResponse from(Inquiry inquiry) {
+    public static InquiryGetResponse from(Inquiry inquiry, InquiryReply inquiryReply) {
         return new InquiryGetResponse(
                 inquiry.getId(),
                 inquiry.getUser().getId(),
@@ -28,7 +29,8 @@ public class InquiryGetResponse {
                 inquiry.getContent(),
                 inquiry.getStatus(),
                 inquiry.getCreatedAt(),
-                inquiry.getUpdatedAt()
+                inquiry.getUpdatedAt(),
+                inquiryReply != null ? inquiryReply.getContent() : null  // 문의 답변이 있는 경우 출력, 없는 경우 null
         );
     }
 }

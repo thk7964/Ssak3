@@ -32,12 +32,12 @@ public class InquiryReplyService {
      * 문의 답변 생성
      */
     @Transactional
-    public InquiryReplyCreateResponse createInquiryReply(Long adminId, Long inquiryId, InquiryReplyCreateRequest request) {
+    public InquiryReplyCreateResponse createInquiryReply(Long adminId, InquiryReplyCreateRequest request) {
 
         User admin = userRepository.findById(adminId)
                 .orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        Inquiry foundInquiry = inquiryRepository.findById(inquiryId)
+        Inquiry foundInquiry = inquiryRepository.findById(request.getInquiryId())
                 .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_NOT_FOUND));
 
         foundInquiry.validateAnswered();  // 이미 답변완료된 문의인지 검사
@@ -60,6 +60,7 @@ public class InquiryReplyService {
      */
     @Transactional(readOnly = true)
     public PageResponse<InquiryReplyListGetResponse> getInquiryReplyList(Pageable pageable) {
+
         Page<InquiryReplyListGetResponse> inquiryReplyListPage = inquiryReplyRepository
                 .findAllByIsDeletedFalse(pageable)  // 관리자는 adminId 상관없이 작성한 모든 답변을 볼 수 있음
                 .map(InquiryReplyListGetResponse::from);

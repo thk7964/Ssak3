@@ -3,7 +3,6 @@ package com.example.ssak3.domain.inquiry.model.response;
 import com.example.ssak3.common.enums.InquiryStatus;
 import com.example.ssak3.domain.inquiry.entity.Inquiry;
 import com.example.ssak3.domain.inquiryreply.entity.InquiryReply;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

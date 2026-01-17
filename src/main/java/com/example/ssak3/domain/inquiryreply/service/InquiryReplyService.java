@@ -40,6 +40,7 @@ public class InquiryReplyService {
         Inquiry foundInquiry = inquiryRepository.findById(request.getInquiryId())
                 .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_NOT_FOUND));
 
+        foundInquiry.validateDeleted(); // 이미 삭제된 문의인지 검증
         foundInquiry.validateAnswered();  // 이미 답변완료된 문의인지 검사
 
         InquiryReply inquiryReply = new InquiryReply(
@@ -73,6 +74,9 @@ public class InquiryReplyService {
      */
     @Transactional(readOnly = true)
     public InquiryReplyGetResponse getInquiryReply(Long inquiryReplyId) {
+
+        Inquiry foundInquiry = inquiryRepository.findById(inquiryReplyId)
+                .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_NOT_FOUND));
 
         InquiryReply foundInquiryReply = inquiryReplyRepository.findById(inquiryReplyId)
                 .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_REPLY_NOT_FOUND));

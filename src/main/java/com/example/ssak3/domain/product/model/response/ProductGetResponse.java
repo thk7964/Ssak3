@@ -22,7 +22,7 @@ public class ProductGetResponse {
     private final LocalDateTime updatedAt;
 
 
-    public static ProductGetResponse form(Product product) {
+    public static ProductGetResponse from(Product product) {
        return new ProductGetResponse(
                product.getId(),
                product.getCategory().getId(),

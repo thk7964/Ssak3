@@ -56,7 +56,7 @@ public class ProductService {
         Product foundProduct = productRepository.findByIdAndIsDeletedFalse(productId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
-        return ProductGetResponse.form(foundProduct);
+        return ProductGetResponse.from(foundProduct);
     }
 
     /**
@@ -81,7 +81,7 @@ public class ProductService {
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
         foundProduct.update(request);
 
-        return ProductUpdateResponse.form(foundProduct);
+        return ProductUpdateResponse.from(foundProduct);
     }
 
     /**

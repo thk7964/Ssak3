@@ -14,7 +14,7 @@ public class CategoryDeleteResponse {
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
-    public static CategoryDeleteResponse form(Category category) {
+    public static CategoryDeleteResponse from(Category category) {
 
         return new CategoryDeleteResponse(
                 category.getId(),

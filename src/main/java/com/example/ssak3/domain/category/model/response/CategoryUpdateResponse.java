@@ -15,7 +15,7 @@ public class CategoryUpdateResponse {
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
-    public static CategoryUpdateResponse form(Category category) {
+    public static CategoryUpdateResponse from(Category category) {
 
         return new CategoryUpdateResponse(
                 category.getId(),

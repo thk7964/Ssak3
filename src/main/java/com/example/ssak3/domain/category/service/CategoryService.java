@@ -55,7 +55,7 @@ public class CategoryService {
                 .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
         findCategory.update(request);
 
-       return CategoryUpdateResponse.form(findCategory);
+       return CategoryUpdateResponse.from(findCategory);
     }
 
     /**
@@ -69,6 +69,6 @@ public class CategoryService {
 
         findCategory.softDelete();
 
-        return CategoryDeleteResponse.form(findCategory);
+        return CategoryDeleteResponse.from(findCategory);
     }
 }

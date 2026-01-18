@@ -21,7 +21,7 @@ public class ProductUpdateResponse {
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
-    public static ProductUpdateResponse form(Product product) {
+    public static ProductUpdateResponse from(Product product) {
         return new ProductUpdateResponse(
                 product.getId(),
                 product.getCategory().getId(),

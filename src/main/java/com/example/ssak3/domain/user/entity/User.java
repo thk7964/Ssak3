@@ -72,12 +72,16 @@ public class User extends BaseEntity {
         this.role = role;
     }
 
+    public void updateRole(UserRole role) {
+        this.role = role;
+    }
+
     public void update(UserUpdateRequest request) {
         this.name = (request.getName() != null && !request.getName().contains(" ")) ? request.getName() : this.name;
         this.nickname = (request.getNickname() != null && !request.getNickname().contains(" ")) ? request.getNickname() : this.nickname;
         this.birth = (request.getBirth() != null) ? request.getBirth() : this.birth;
-        this.phone = (request.getPhone() != null && !request.getPhone().contains(" ")) ? request.getPhone() : this.phone;
-        this.address = (request.getAddress() != null && !request.getAddress().contains(" ")) ? request.getAddress() : this.address;
+        this.phone = (request.getPhone() != null) ? request.getPhone() : this.phone;
+        this.address = (request.getAddress() != null) ? request.getAddress() : this.address;
     }
 
     public void updatePassword(String password) {

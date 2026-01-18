@@ -1,6 +1,8 @@
 package com.example.ssak3.domain.coupon.entity;
 
 import com.example.ssak3.common.entity.BaseEntity;
+import com.example.ssak3.common.enums.ErrorCode;
+import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.domain.coupon.model.request.CouponUpdateRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -68,5 +70,13 @@ public class Coupon extends BaseEntity {
     // SoftDelete
     public void delete() {
         this.isDeleted = true;
+    }
+
+    // IssuedQuantity (현재까지 발급된 수량) 증가 메소드
+    public void increaseIssuedQuantity() {
+        if (this.totalQuantity != null && this.issuedQuantity >= this.totalQuantity) {
+            throw new CustomException(ErrorCode.COUPON_OUT_OF_STOCK);
+        }
+        this.issuedQuantity++;
     }
 }

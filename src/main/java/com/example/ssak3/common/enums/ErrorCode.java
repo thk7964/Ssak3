@@ -12,6 +12,7 @@ public enum ErrorCode {
     NICKNAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 닉네임입니다."),
     UNREGISTERED_USER(HttpStatus.NOT_FOUND, "가입되지 않은 사용자입니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."),
+    WITHDRAWN_USER(HttpStatus.NOT_FOUND, "탈퇴한 유저입니다."),
 
     // Product 에러
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다."),
@@ -44,12 +45,22 @@ public enum ErrorCode {
 
     // Coupon 에러
     COUPON_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 쿠폰입니다."),
+    COUPON_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 지급된 쿠폰입니다."),
+    COUPON_OUT_OF_STOCK(HttpStatus.CONFLICT, "쿠폰 수량이 모두 소진되었습니다."),
+    COUPON_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "사용 가능한 상태의 쿠폰이 아닙니다."),
+    COUPON_EXPIRED(HttpStatus.BAD_REQUEST, "사용 기한이 만료된 쿠폰입니다."),
+    FORBIDDEN_COUPON_ACCESS(HttpStatus.FORBIDDEN, "본인의 쿠폰만 사용할 수 있습니다."),
+    COUPON_MIN_ORDER_PRICE_NOT_MET(HttpStatus.BAD_REQUEST, "최소 주문 금액을 만족하지 못해 쿠폰을 사용할 수 없습니다."),
 
-    // Inquiry Error
+    // Inquiry 에러
     INQUIRY_NOT_FOUND(HttpStatus.NOT_FOUND, "문의 내역을 찾을 수 없습니다."),
     NOT_INQUIRY_WRITER(HttpStatus.FORBIDDEN, "내 문의 내역이 아닙니다."),
-    INQUIRY_ALREADY_ANSWERED(HttpStatus.BAD_REQUEST, "이미 답변완료된 문의입니다."),
-    INQUIRY_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "이미 삭제된 문의입니다.")
+    INQUIRY_ALREADY_ANSWERED(HttpStatus.BAD_REQUEST, "답변완료된 문의입니다."),
+    INQUIRY_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "삭제된 문의입니다."),
+
+    // InquiryReply 에러
+    INQUIRY_REPLY_NOT_FOUND(HttpStatus.NOT_FOUND, "문의 답변 내역을 찾을 수 없습니다."),
+    INQUIRY_REPLY_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "삭제된 문의 답변입니다.")
 
 
     ;

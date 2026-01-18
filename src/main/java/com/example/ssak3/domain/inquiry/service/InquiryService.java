@@ -9,6 +9,8 @@ import com.example.ssak3.domain.inquiry.model.request.InquiryCreateRequest;
 import com.example.ssak3.domain.inquiry.model.request.InquiryUpdateRequest;
 import com.example.ssak3.domain.inquiry.model.response.*;
 import com.example.ssak3.domain.inquiry.repository.InquiryRepository;
+import com.example.ssak3.domain.inquiryreply.entity.InquiryReply;
+import com.example.ssak3.domain.inquiryreply.repository.InquiryReplyRepository;
 import com.example.ssak3.domain.user.entity.User;
 import com.example.ssak3.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class InquiryService {
 
     private final InquiryRepository inquiryRepository;
+    private final InquiryReplyRepository inquiryReplyRepository;
     private final UserRepository userRepository;
 
     /**
@@ -69,10 +72,13 @@ public class InquiryService {
         Inquiry foundInquiry =inquiryRepository.findById(inquiryId)
                 .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_NOT_FOUND));
 
+        InquiryReply foundInquiryReply = inquiryReplyRepository.findById(inquiryId)
+                .orElse(null);  // 문의 답변 없는 경우 null로
+
         foundInquiry.validateUser(user.getId());  // 작성자 검증
         foundInquiry.validateDeleted(); // 이미 삭제된 문의인지 검증
 
-        return InquiryGetResponse.from(foundInquiry);
+        return InquiryGetResponse.from(foundInquiry, foundInquiryReply);
     }
 
     /**

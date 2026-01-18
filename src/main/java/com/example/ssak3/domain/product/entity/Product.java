@@ -1,7 +1,9 @@
 package com.example.ssak3.domain.product.entity;
 
 import com.example.ssak3.common.entity.BaseEntity;
+import com.example.ssak3.common.enums.ProductStatus;
 import com.example.ssak3.domain.category.entity.Category;
+import com.example.ssak3.domain.product.model.request.ProductUpdateRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -27,8 +29,9 @@ public class Product extends BaseEntity {
     @Column(nullable = false)
     private Integer price;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status;
+    private ProductStatus status;
 
     @Column(nullable = false)
     private String information;
@@ -39,7 +42,8 @@ public class Product extends BaseEntity {
     @Column(nullable = false, name = "is_deleted")
     private boolean isDeleted = false;
 
-    public Product(String name, Integer price, String status, String information, Integer quantity) {
+    public Product(Category category, String name, Integer price, ProductStatus status, String information, Integer quantity) {
+        this.category = category;
         this.name = name;
         this.price = price;
         this.status = status;
@@ -50,4 +54,28 @@ public class Product extends BaseEntity {
     public void decreaseQuantity(Integer orderProductQuantity) {
         this.quantity -= orderProductQuantity;
     }
+
+    public void update(ProductUpdateRequest request) {
+
+        if (request.getName() != null) {
+            this.name = request.getName();
+        }
+        if (request.getPrice() != null) {
+            this.price = request.getPrice();
+        }
+        if (request.getStatus() != null) {
+            this.status = request.getStatus();
+        }
+        if (request.getInformation() != null) {
+            this.information = request.getInformation();
+        }
+        if (request.getQuantity() != null) {
+            this.quantity = request.getQuantity();
+        }
+    }
+
+    public void softDelete() {
+        this.isDeleted = true;
+    }
+
 }

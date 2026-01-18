@@ -2,6 +2,9 @@ package com.example.ssak3.domain.user.repository;
 
 import com.example.ssak3.common.enums.UserRole;
 import com.example.ssak3.domain.user.entity.User;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,6 +18,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmail(String email);
 
     boolean existsByNickname(String nickname);
+
+    boolean existsByPhone(String phone);
 
     Optional<User> findByEmailAndIsDeletedFalse(String email);
 

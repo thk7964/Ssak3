@@ -40,6 +40,14 @@ public class UserService {
 
         User user = getUser(authUser);
 
+        if (userRepository.existsByNickname(request.getNickname()) && !user.getNickname().equals(request.getNickname())) {
+            throw new CustomException(ErrorCode.NICKNAME_ALREADY_EXISTS);
+        }
+
+        if (userRepository.existsByPhone(request.getPhone())) {
+            throw new CustomException(ErrorCode.PHONE_ALREADY_EXISTS);
+        }
+
         user.update(request);
 
         return UserUpdateResponse.from(user);

@@ -1,5 +1,6 @@
 package com.example.ssak3.common.handler;
 
+import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.model.ApiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,7 +22,11 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
 
-        ApiResponse errorResponse = ApiResponse.error("인증이 필요합니다.");
+        ErrorCode errorCode = (ErrorCode) request.getAttribute("exception");
+
+        String message = (errorCode == null) ? "인증이 필요합니다." : errorCode.getMessage();
+
+        ApiResponse errorResponse = ApiResponse.error(message);
 
         String result = objectMapper.writeValueAsString(errorResponse);
 

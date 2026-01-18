@@ -36,6 +36,10 @@ public class AuthService {
             throw new CustomException(ErrorCode.NICKNAME_ALREADY_EXISTS);
         }
 
+        if (userRepository.existsByPhone(request.getPhone())) {
+            throw new CustomException(ErrorCode.PHONE_ALREADY_EXISTS);
+        }
+
         User user = new User(
                 request.getName(),
                 request.getNickname(),
@@ -69,7 +73,7 @@ public class AuthService {
             throw new CustomException(ErrorCode.PASSWORD_MISMATCH);
         }
 
-        String accessToken = jwtUtil.createToken(user.getId(), user.getEmail(), user.getNickname(), user.getRole());
+        String accessToken = jwtUtil.createToken(user.getId(), user.getEmail(), user.getName(), user.getRole());
 
         return new LoginResponse(accessToken);
     }

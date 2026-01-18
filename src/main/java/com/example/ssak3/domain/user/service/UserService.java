@@ -44,7 +44,7 @@ public class UserService {
             throw new CustomException(ErrorCode.NICKNAME_ALREADY_EXISTS);
         }
 
-        if (userRepository.existsByPhone(request.getPhone())) {
+        if (userRepository.existsByPhone(request.getPhone()) && !user.getPhone().equals(request.getPhone())) {
             throw new CustomException(ErrorCode.PHONE_ALREADY_EXISTS);
         }
 

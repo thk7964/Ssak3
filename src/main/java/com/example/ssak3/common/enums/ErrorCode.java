@@ -49,11 +49,15 @@ public enum ErrorCode {
     FORBIDDEN_COUPON_ACCESS(HttpStatus.FORBIDDEN, "본인의 쿠폰만 사용할 수 있습니다."),
     COUPON_MIN_ORDER_PRICE_NOT_MET(HttpStatus.BAD_REQUEST, "최소 주문 금액을 만족하지 못해 쿠폰을 사용할 수 없습니다."),
 
-    // Inquiry Error
+    // Inquiry 에러
     INQUIRY_NOT_FOUND(HttpStatus.NOT_FOUND, "문의 내역을 찾을 수 없습니다."),
     NOT_INQUIRY_WRITER(HttpStatus.FORBIDDEN, "내 문의 내역이 아닙니다."),
-    INQUIRY_ALREADY_ANSWERED(HttpStatus.BAD_REQUEST, "이미 답변완료된 문의입니다."),
-    INQUIRY_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "이미 삭제된 문의입니다.")
+    INQUIRY_ALREADY_ANSWERED(HttpStatus.BAD_REQUEST, "답변완료된 문의입니다."),
+    INQUIRY_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "삭제된 문의입니다."),
+
+    // InquiryReply 에러
+    INQUIRY_REPLY_NOT_FOUND(HttpStatus.NOT_FOUND, "문의 답변 내역을 찾을 수 없습니다."),
+    INQUIRY_REPLY_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "삭제된 문의 답변입니다.")
 
 
     ;

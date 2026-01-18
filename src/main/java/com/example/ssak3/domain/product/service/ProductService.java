@@ -3,6 +3,7 @@ package com.example.ssak3.domain.product.service;
 import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.common.model.AuthUser;
+import com.example.ssak3.common.model.PageResponse;
 import com.example.ssak3.domain.category.entity.Category;
 import com.example.ssak3.domain.category.repository.CategoryRepository;
 import com.example.ssak3.domain.product.entity.Product;
@@ -66,21 +67,10 @@ public class ProductService {
      * 상품 목록조회
      */
     @Transactional(readOnly = true)
-    public ProductListGetResponse getProductList(Long categoryId, Pageable pageable) {
-        Page<Product> productList = productRepository.findProductListByCategoryId(categoryId, pageable);
-       List<ProductListGetResponse.ProductDto> productDtoList = productList.getContent().stream()
-                .map(product -> new ProductListGetResponse.ProductDto(
-                        product.getId(),
-                        product.getCategory().getId(),
-                        product.getName(),
-                        product.getPrice(),
-                        product.getCreatedAt(),
-                        product.getUpdatedAt()
-                ))
-                .toList();
-       return new ProductListGetResponse(productList.getNumberOfElements(), productDtoList);
-
-
+    public PageResponse<ProductListGetResponse> getProductList(Long categoryId, Pageable pageable) {
+        Page<ProductListGetResponse> productList = productRepository.findProductListByCategoryId(categoryId, pageable)
+                .map(ProductListGetResponse::from);
+       return PageResponse.from(productList);
     }
 
     /**
@@ -114,6 +104,6 @@ public class ProductService {
 
         // 상품삭제(SoftDelete)
         foundProduct.softDelete();
-       return ProductDeleteResponse.form(foundProduct);
+        return ProductDeleteResponse.from(foundProduct);
     }
 }

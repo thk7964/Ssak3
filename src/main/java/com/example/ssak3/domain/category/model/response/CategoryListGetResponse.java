@@ -1,42 +1,26 @@
 package com.example.ssak3.domain.category.model.response;
 
+import com.example.ssak3.domain.category.entity.Category;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
 import java.time.LocalDateTime;
-import java.util.List;
+
 
 @Getter
 @RequiredArgsConstructor
 public class CategoryListGetResponse {
 
-    private final Integer counts;
-    private final List<CategoryListGetResponse.CategoryDto> productDtoList;
+    private final Long id;
+    private final String name;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime updatedAt;
 
-    public static class CategoryDto {
-        private Long id;
-        private String name;
-        private LocalDateTime createdAt;
-        private LocalDateTime updatedAt;
-
-        public CategoryDto(Long id, String name, LocalDateTime createdAt, LocalDateTime updatedAt) {
-            this.id = id;
-            this.name = name;
-            this.createdAt = createdAt;
-            this.updatedAt = updatedAt;
-        }
-
-        public Long getId() {
-            return id;
-        }
-        public String getName() {
-            return name;
-        }
-        public LocalDateTime getCreatedAt() {
-            return createdAt;
-        }
-        public LocalDateTime getUpdatedAt() {
-            return updatedAt;
-        }
+    public static CategoryListGetResponse from(Category category) {
+       return new CategoryListGetResponse(
+               category.getId(),
+               category.getName(),
+               category.getCreatedAt(),
+               category.getUpdatedAt()
+       );
     }
 }

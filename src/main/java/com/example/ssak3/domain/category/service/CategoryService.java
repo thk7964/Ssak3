@@ -3,6 +3,7 @@ package com.example.ssak3.domain.category.service;
 import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.common.model.AuthUser;
+import com.example.ssak3.common.model.PageResponse;
 import com.example.ssak3.domain.category.entity.Category;
 import com.example.ssak3.domain.category.model.request.CategoryCreateRequest;
 import com.example.ssak3.domain.category.model.request.CategoryUpdateRequest;
@@ -42,17 +43,10 @@ public class CategoryService {
      * 카테고리 목록조회 비즈니스 로직
      */
     @Transactional(readOnly = true)
-    public CategoryListGetResponse getCategoryList(Pageable pageable) {
-        Page<Category> categoryPage = categoryRepository.findCategoryPage(pageable);
-       List<CategoryListGetResponse.CategoryDto> categoryList = categoryPage.getContent().stream()
-                .map(category -> new CategoryListGetResponse.CategoryDto(
-                        category.getId(),
-                        category.getName(),
-                        category.getCreatedAt(),
-                        category.getUpdatedAt()
-                ))
-                .toList();
-       return new CategoryListGetResponse(categoryPage.getNumberOfElements(), categoryList);
+    public PageResponse<CategoryListGetResponse> getCategoryList(Pageable pageable) {
+        Page<CategoryListGetResponse> categoryPage = categoryRepository.findCategoryPage(pageable)
+                .map(CategoryListGetResponse::from);
+        return PageResponse.from(categoryPage);
     }
 
     /**

@@ -14,7 +14,7 @@ public class ProductDeleteResponse {
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
-    public static ProductDeleteResponse form(Product product) {
+    public static ProductDeleteResponse from(Product product) {
         return new ProductDeleteResponse(
                 product.getId(),
                 product.getCreatedAt(),

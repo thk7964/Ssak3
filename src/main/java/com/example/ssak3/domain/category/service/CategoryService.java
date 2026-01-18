@@ -23,16 +23,12 @@ import java.util.List;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
-    private final UserRepository userRepository;
 
     /**
      * 카테고리 생성 비즈니스 로직
      */
     @Transactional
-    public CategoryCreateResponse createCategory(AuthUser user, CategoryCreateRequest request) {
-        // 관리자의 존재여부 확인
-        userRepository.findByIdAndIsDeletedFalse(user.getId())
-                .orElseThrow(()-> new CustomException(ErrorCode.ADMIN_NOT_FOUND));
+    public CategoryCreateResponse createCategory(CategoryCreateRequest request) {
 
         Category category = new Category(request.getName());
         Category savedCategory = categoryRepository.save(category);
@@ -53,9 +49,7 @@ public class CategoryService {
      * 카테고리 수정 비즈니스 로직
      */
     @Transactional
-    public CategoryUpdateResponse updateCategory(AuthUser user, Long categoryId, CategoryUpdateRequest request) {
-        userRepository.findByIdAndIsDeletedFalse(user.getId())
-                .orElseThrow(() -> new CustomException(ErrorCode.ADMIN_NOT_FOUND));
+    public CategoryUpdateResponse updateCategory(Long categoryId, CategoryUpdateRequest request) {
 
         Category findCategory = categoryRepository.findByIdAndIsDeletedFalse(categoryId)
                 .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
@@ -68,9 +62,7 @@ public class CategoryService {
      * 카테고리 삭제 비즈니스 로직
      */
     @Transactional
-    public CategoryDeleteResponse deleteCategory(AuthUser user, Long categoryId) {
-        userRepository.findByIdAndIsDeletedFalse(user.getId())
-                .orElseThrow(() -> new CustomException(ErrorCode.ADMIN_NOT_FOUND));
+    public CategoryDeleteResponse deleteCategory(Long categoryId) {
 
         Category findCategory = categoryRepository.findByIdAndIsDeletedFalse(categoryId)
                 .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));

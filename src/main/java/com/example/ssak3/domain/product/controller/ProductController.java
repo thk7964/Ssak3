@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,13 +28,13 @@ public class ProductController {
     /**
      * 상품생성 API
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/admin/products")
     public ResponseEntity<ApiResponse> createProductApi(
-            @AuthenticationPrincipal AuthUser user,
             @RequestBody ProductCreateRequest request
     ) {
         log.info("controller 상품생성 상품명: {}", request.getName());
-        ApiResponse response = ApiResponse.success("상품을 생성하셨습니다.", productService.createProduct(request, user));
+        ApiResponse response = ApiResponse.success("상품을 생성하셨습니다.", productService.createProduct(request));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -63,25 +64,25 @@ public class ProductController {
     /**
      * 상품수정 API
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/admin/products/{productId}")
     public ResponseEntity<ApiResponse> updateProductApi(
-            @AuthenticationPrincipal AuthUser user,
             @PathVariable Long productId,
             @RequestBody ProductUpdateRequest request) {
         log.info("controller 상품수정 id: {}", productId);
-        ApiResponse response = ApiResponse.success("상품을 수정하였습니다.", productService.updateProduct(user, productId, request));
+        ApiResponse response = ApiResponse.success("상품을 수정하였습니다.", productService.updateProduct(productId, request));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     /**
      * 상품삭제 API
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/admin/products/{productId}")
     public ResponseEntity<ApiResponse> deleteProductApi(
-            @AuthenticationPrincipal AuthUser user,
             @PathVariable Long productId) {
         log.info("controller 상품삭제 id: {}", productId);
-        ApiResponse response = ApiResponse.success("상품을 삭제하였습니다", productService.deleteProduct(user, productId));
+        ApiResponse response = ApiResponse.success("상품을 삭제하였습니다", productService.deleteProduct(productId));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

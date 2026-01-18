@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,12 +25,12 @@ public class CategoryController {
     /**
      * 카테고리 생성 API
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/admin/categories")
     public ResponseEntity<ApiResponse> createCategoryApi(
-            @AuthenticationPrincipal AuthUser user,
             @RequestBody CategoryCreateRequest request
     ) {
-        ApiResponse response = ApiResponse.success("카테고리를 생성하였습니다.",  categoryService.createCategory(user, request));
+        ApiResponse response = ApiResponse.success("카테고리를 생성하였습니다.",  categoryService.createCategory(request));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -47,23 +48,25 @@ public class CategoryController {
     /**
      * 카테고리 수정 API
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/admin/categories/{categoryId}")
     public ResponseEntity<ApiResponse> updateCategoryApi(
             @AuthenticationPrincipal AuthUser user,
             @PathVariable Long categoryId,
             @RequestBody CategoryUpdateRequest request) {
-        ApiResponse response = ApiResponse.success("카테고리를 수정하였습니다.", categoryService.updateCategory(user, categoryId, request));
+        ApiResponse response = ApiResponse.success("카테고리를 수정하였습니다.", categoryService.updateCategory(categoryId, request));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     /**
      * 카테고리 삭제 API
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/admin/categories/{categoryId}")
     public ResponseEntity<ApiResponse> deleteCategoryApi(
             @AuthenticationPrincipal AuthUser user,
             @PathVariable Long categoryId) {
-        ApiResponse response = ApiResponse.success("카테고리를 삭제하였습니다.", categoryService.deleteCategory(user, categoryId));
+        ApiResponse response = ApiResponse.success("카테고리를 삭제하였습니다.", categoryService.deleteCategory(categoryId));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

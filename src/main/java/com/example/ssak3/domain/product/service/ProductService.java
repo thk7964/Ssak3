@@ -67,7 +67,7 @@ public class ProductService {
      */
     @Transactional(readOnly = true)
     public ProductListGetResponse getProductList(Long categoryId, Pageable pageable) {
-        Page<Product> productList = productRepository.findProductListPage(categoryId, pageable);
+        Page<Product> productList = productRepository.findProductListByCategoryId(categoryId, pageable);
        List<ProductListGetResponse.ProductDto> productDtoList = productList.getContent().stream()
                 .map(product -> new ProductListGetResponse.ProductDto(
                         product.getId(),

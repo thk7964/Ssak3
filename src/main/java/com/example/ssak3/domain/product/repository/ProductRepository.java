@@ -24,7 +24,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
       AND (:categoryId IS NULL OR p.category.id = :categoryId)
 """)
         // 반환타입을 Page로 수정
-    Page<Product> findProductListPage(
+    Page<Product> findProductListByCategoryId(
             @Param("categoryId") Long categoryId,
             Pageable pageable
     );

@@ -4,7 +4,7 @@ import com.example.ssak3.common.enums.ProductStatus;
 import lombok.Getter;
 
 @Getter
-public class ProductCreateRequest {
+public class ProductUpdateRequest {
 
     private Long categoryId;
     private String name;

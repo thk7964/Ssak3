@@ -22,28 +22,30 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     /**
-     * 마이 페이지 조회 비즈니스 로직
+     * 마이 페이지 조회
      */
     @Transactional(readOnly = true)
     public MyProfileGetResponse getMyProfile(AuthUser authUser) {
 
-        User user = userRepository.findById(authUser.getId())
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        User user = getUser(authUser);
 
         return MyProfileGetResponse.from(user);
     }
 
     /**
-     * 유저 정보 수정 비즈니스 로직
+     * 유저 정보 수정
      */
     @Transactional
     public UserUpdateResponse updateUser(AuthUser authUser, UserUpdateRequest request) {
 
-        User user = userRepository.findById(authUser.getId())
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        User user = getUser(authUser);
 
-        if (!request.getNickname().equals(authUser.getNickname()) && userRepository.existsByNickname(request.getNickname())) {
+        if (userRepository.existsByNickname(request.getNickname()) && !user.getNickname().equals(request.getNickname())) {
             throw new CustomException(ErrorCode.NICKNAME_ALREADY_EXISTS);
+        }
+
+        if (userRepository.existsByPhone(request.getPhone()) && !user.getPhone().equals(request.getPhone())) {
+            throw new CustomException(ErrorCode.PHONE_ALREADY_EXISTS);
         }
 
         user.update(request);
@@ -52,24 +54,22 @@ public class UserService {
     }
 
     /**
-     * 비밀번호 검증 비즈니스 로직
+     * 비밀번호 검증
      */
     public UserVerifyPasswordResponse verifyPassword(AuthUser authUser, UserVerifyPasswordRequest request) {
 
-        User user = userRepository.findById(authUser.getId())
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        User user = getUser(authUser);
 
         return new UserVerifyPasswordResponse(passwordEncoder.matches(request.getPassword(), user.getPassword()));
     }
 
     /**
-     * 비밀번호 변경 비즈니스 로직
+     * 비밀번호 변경
      */
     @Transactional
     public UserChangePasswordResponse changePassword(AuthUser authUser, UserChangePasswordRequest request) {
 
-        User user = userRepository.findById(authUser.getId())
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        User user = getUser(authUser);
 
         user.updatePassword(passwordEncoder.encode(request.getNewPassword()));
 
@@ -77,16 +77,23 @@ public class UserService {
     }
 
     /**
-     * 회원 탈퇴 비즈니스 로직
+     * 유저 탈퇴
      */
     @Transactional
     public UserDeleteResponse deleteUser(AuthUser authUser) {
 
-        User user = userRepository.findById(authUser.getId())
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        User user = getUser(authUser);
 
         user.softDelete();
 
         return UserDeleteResponse.from(user);
+    }
+
+    /**
+     * 유저를 얻어오는 내부 전용 메소드
+     */
+    private User getUser(AuthUser authUser) {
+        return userRepository.findByIdAndIsDeletedFalse(authUser.getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 }

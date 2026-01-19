@@ -2,12 +2,14 @@ package com.example.ssak3.common.utils;
 
 import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.enums.UserRole;
-import com.example.ssak3.common.exception.CustomException;
+import com.example.ssak3.common.exception.JwtAuthenticationException;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +19,7 @@ import java.util.Date;
 
 import static io.jsonwebtoken.Jwts.SIG.HS256;
 
+@Slf4j
 @Component
 public class JwtUtil {
 
@@ -35,12 +38,12 @@ public class JwtUtil {
         this.key = Keys.hmacShaKeyFor(bytes);
     }
 
-    public String createToken(Long id, String email, String nickname, UserRole role) {
+    public String createToken(Long id, String email, String name, UserRole role) {
         return BEARER_PREFIX +
                 Jwts.builder()
                         .subject(String.valueOf(id))
                         .claim("email", email)
-                        .claim("nickname", nickname)
+                        .claim("name", name)
                         .claim("role", role)
                         .issuedAt(new Date(System.currentTimeMillis()))
                         .expiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_TIME))
@@ -48,38 +51,31 @@ public class JwtUtil {
                         .compact();
     }
 
-    public boolean validateToken(String token) {
-
-        if (token == null || token.isBlank())  {
-            return false;
-        }
-
-        try {
-            Jwts.parser()
-                    .verifyWith(key)
-                    .build()
-                    .parseSignedClaims(token);
-            return true;
-        } catch (JwtException e) {
-            return false;
-        }
-    }
-
-    public String substringToken(String token) {
+    public String substringToken(String token) throws JwtAuthenticationException {
 
         if (token == null || !token.startsWith(BEARER_PREFIX)) {
-            throw new CustomException(ErrorCode.INVALID_TOKEN);
+            throw new JwtAuthenticationException(ErrorCode.INVALID_TOKEN);
         }
 
         return token.substring(BEARER_PREFIX.length());
     }
 
     public Claims extractClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(key)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+
+        try {
+            return Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (ExpiredJwtException e) {
+            log.warn("message = 만료된 토큰 에러, class = {}", e.getClass());
+            throw e;
+        } catch (JwtException e) {
+            log.warn("message = 유효하지 않은 토큰 에러, class = {}", e.getClass());
+            throw new JwtAuthenticationException(ErrorCode.INVALID_TOKEN);
+        }
+
     }
 
 }

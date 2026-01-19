@@ -23,13 +23,21 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
 
     /**
-     * 회원 가입 비즈니스 로직
+     * 회원가입
      */
     @Transactional
     public SignupResponse signup(SignupRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new CustomException(ErrorCode.EMAIL_ALREADY_EXISTS);
+        }
+
+        if (userRepository.existsByNickname(request.getNickname())) {
+            throw new CustomException(ErrorCode.NICKNAME_ALREADY_EXISTS);
+        }
+
+        if (userRepository.existsByPhone(request.getPhone())) {
+            throw new CustomException(ErrorCode.PHONE_ALREADY_EXISTS);
         }
 
         User user = new User(
@@ -47,19 +55,25 @@ public class AuthService {
     }
 
     /**
-     * 로그인 비즈니스 로직
+     * 로그인
      */
     @Transactional
     public LoginResponse login(LoginRequest request) {
 
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new CustomException(ErrorCode.UNREGISTERED_USER));
+        // 가입된 이메일인지 검증
+        if (!userRepository.existsByEmail(request.getEmail())) {
+            throw new CustomException(ErrorCode.UNREGISTERED_USER);
+        }
+
+        // 탈퇴한 유저는 예외 처리
+        User user = userRepository.findByEmailAndIsDeletedFalse(request.getEmail())
+                .orElseThrow(() -> new CustomException(ErrorCode.WITHDRAWN_USER));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new CustomException(ErrorCode.PASSWORD_MISMATCH);
         }
 
-        String accessToken = jwtUtil.createToken(user.getId(), user.getEmail(), user.getNickname(), user.getRole());
+        String accessToken = jwtUtil.createToken(user.getId(), user.getEmail(), user.getName(), user.getRole());
 
         return new LoginResponse(accessToken);
     }

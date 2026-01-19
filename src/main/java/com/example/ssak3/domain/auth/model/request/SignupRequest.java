@@ -2,11 +2,13 @@ package com.example.ssak3.domain.auth.model.request;
 
 import jakarta.validation.constraints.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
 @Getter
+@NoArgsConstructor
 public class SignupRequest {
 
     @NotBlank(message = "이름은 필수 입력 사항입니다.")
@@ -14,7 +16,7 @@ public class SignupRequest {
     private String name;
 
     @NotBlank(message = "닉네임은 필수 입력 사항입니다.")
-    @Size(min = 4, max = 30, message = "닉네임은 4자 이상 30자 이하여야 합니다.")
+    @Size(min = 2, max = 30, message = "닉네임은 2자 이상 30자 이하여야 합니다.")
     private String nickname;
 
     @NotBlank(message = "이메일은 필수 입력 사항입니다.")

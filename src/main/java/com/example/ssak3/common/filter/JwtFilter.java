@@ -4,9 +4,6 @@ import com.example.ssak3.common.enums.UserRole;
 import com.example.ssak3.common.model.AuthUser;
 import com.example.ssak3.common.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,41 +36,20 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         String rawToken = jwtUtil.substringToken(accessToken);
+        Claims claims = jwtUtil.extractClaims(rawToken);
 
-        if (!jwtUtil.validateToken(rawToken)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+        Long id = Long.valueOf(claims.getSubject());
+        String email = claims.get("email", String.class);
+        String name = claims.get("name", String.class);
+        UserRole role = UserRole.valueOf(claims.get("role", String.class));
 
-        try {
-            Claims claims = jwtUtil.extractClaims(rawToken);
+        AuthUser authUser = new AuthUser(id, email, name, role);
 
-            Long id = Long.valueOf(claims.getSubject());
-            String email = claims.get("email", String.class);
-            String nickname = claims.get("nickname", String.class);
-            UserRole role = UserRole.valueOf(claims.get("role", String.class));
+        Authentication authentication
+                = new UsernamePasswordAuthenticationToken(authUser, null, List.of(new SimpleGrantedAuthority("ROLE_" + role.name())));
 
-            AuthUser authUser = new AuthUser(id, email, nickname, role);
-
-            Authentication authentication
-                    = new UsernamePasswordAuthenticationToken(authUser, null, List.of(new SimpleGrantedAuthority("ROLE_" + role.name())));
-
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        } catch (SecurityException | MalformedJwtException e) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "유효하지 않은 JWT 서명입니다.");
-            return;
-        } catch (ExpiredJwtException e) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "만료된 JWT 토큰입니다.");
-            return;
-        } catch (UnsupportedJwtException e) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "지원되지 않는 JWT 토큰입니다.");
-            return;
-        } catch (Exception e) {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            return;
-        }
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         filterChain.doFilter(request, response);
-
     }
 }

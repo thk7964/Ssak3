@@ -1,6 +1,8 @@
 package com.example.ssak3.domain.inquiryreply.entity;
 
 import com.example.ssak3.common.entity.BaseEntity;
+import com.example.ssak3.common.enums.ErrorCode;
+import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.domain.inquiry.entity.Inquiry;
 import com.example.ssak3.domain.user.entity.User;
 import jakarta.persistence.*;
@@ -31,4 +33,27 @@ public class InquiryReply extends BaseEntity {
 
     @Column(nullable = false, name = "is_deleted")
     private boolean isDeleted = false;
+
+    public InquiryReply(User admin, Inquiry inquiry, String content) {
+        this.admin = admin;
+        this.inquiry = inquiry;
+        this.content = content;
+    }
+
+    public void update(User newAdmin, String newContent) {
+        this.admin = newAdmin;
+        this.content = newContent;
+    }
+
+    public void softDelete() {
+        this.isDeleted = true;
+    }
+
+    // 삭제된 문의 답변 검증
+    public void validateDeleted() {
+        if (this.isDeleted) {
+            throw new CustomException(ErrorCode.INQUIRY_REPLY_ALREADY_DELETED);
+        }
+    }
+
 }

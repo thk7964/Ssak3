@@ -55,7 +55,9 @@ public class Product extends BaseEntity {
         this.quantity -= orderProductQuantity;
     }
 
-    public void update(ProductUpdateRequest request) {
+    public void update(ProductUpdateRequest request, Category category) {
+
+        this.category = category;
 
         if (request.getName() != null) {
             this.name = request.getName();

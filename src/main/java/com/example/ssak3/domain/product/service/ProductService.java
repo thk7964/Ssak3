@@ -76,10 +76,14 @@ public class ProductService {
      */
     @Transactional
     public ProductUpdateResponse updateProduct(Long productId, ProductUpdateRequest request) {
+        Category category = categoryRepository.findByIdAndIsDeletedFalse(request.getCategoryId())
+                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
+
 
         Product foundProduct = productRepository.findByIdAndIsDeletedFalse(productId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
-        foundProduct.update(request);
+
+        foundProduct.update(request, category);
 
         return ProductUpdateResponse.from(foundProduct);
     }

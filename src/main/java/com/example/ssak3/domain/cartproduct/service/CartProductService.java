@@ -1,6 +1,7 @@
 package com.example.ssak3.domain.cartproduct.service;
 
 import com.example.ssak3.common.enums.ErrorCode;
+import com.example.ssak3.common.enums.ProductStatus;
 import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.domain.cart.entity.Cart;
 import com.example.ssak3.domain.cart.repository.CartRepository;
@@ -40,9 +41,8 @@ public class CartProductService {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
-        // TODO : enum 사용 시 수정 필요
         // 판매중인지 확인
-        if (!product.getStatus().equals("FOR_SALE")) {
+        if (!product.getStatus().equals(ProductStatus.FOR_SALE)) {
             throw new CustomException(ErrorCode.PRODUCT_NOT_FOR_SALE);
         }
 
@@ -113,8 +113,7 @@ public class CartProductService {
 
         Product product = cartProduct.getProduct();
 
-        // TODO : enum 변경 시 수정 필요
-        if(!product.getStatus().equals("FOR_SALE")) {
+        if(!product.getStatus().equals(ProductStatus.FOR_SALE)) {
             throw new CustomException(ErrorCode.PRODUCT_NOT_FOR_SALE);
         }
 

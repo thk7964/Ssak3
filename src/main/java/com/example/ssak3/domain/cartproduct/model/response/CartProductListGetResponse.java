@@ -1,5 +1,6 @@
 package com.example.ssak3.domain.cartproduct.model.response;
 
+import com.example.ssak3.common.enums.ProductStatus;
 import com.example.ssak3.domain.cartproduct.entity.CartProduct;
 import com.example.ssak3.domain.product.entity.Product;
 import lombok.AllArgsConstructor;
@@ -20,8 +21,7 @@ public class CartProductListGetResponse {
     public static CartProductListGetResponse from(CartProduct cartProduct) {
         Product product = cartProduct.getProduct();
 
-        // TODO : enum 사용 시 수정 필요
-        boolean purchasable = product.getStatus().equals("FOR_SALE") && (product.getQuantity() >= cartProduct.getQuantity());
+        boolean purchasable = product.getStatus().equals(ProductStatus.FOR_SALE) && (product.getQuantity() >= cartProduct.getQuantity());
 
         return new CartProductListGetResponse(
                 cartProduct.getId(),

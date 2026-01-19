@@ -64,6 +64,10 @@ public class TimeDealAdminService {
             throw new CustomException(ErrorCode.UPDATED_SALE_PRICE_MUST_BE_LOWER_THAN_CURRENT_SALE_PRICE);
         }
 
+        if (request.getStartAt().isAfter(request.getEndAt())) {
+            throw new CustomException(ErrorCode.INVALID_TIME_RANGE);
+        }
+
         timeDeal.update(request);
 
         return TimeDealUpdateResponse.from(timeDeal);

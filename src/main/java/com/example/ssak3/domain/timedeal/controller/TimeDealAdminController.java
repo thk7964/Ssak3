@@ -35,7 +35,7 @@ public class TimeDealAdminController {
      */
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{timeDealId}")
-    public ResponseEntity<ApiResponse> updateTimeDealApi(@PathVariable Long timeDealId, @Valid @RequestBody TimeDealUpdateRequest request) {
+    public ResponseEntity<ApiResponse> updateTimeDealApi(@PathVariable Long timeDealId, @RequestBody TimeDealUpdateRequest request) {
 
         ApiResponse response = ApiResponse.success("타임딜 상품 수정", timeDealAdminService.updateTimeDeal(timeDealId, request));
 

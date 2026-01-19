@@ -59,12 +59,12 @@ public class TimeDealAdminService {
     public TimeDealUpdateResponse updateTimeDeal(Long timeDealId, TimeDealUpdateRequest request) {
         TimeDeal timeDeal = timeDealRepository.findById(timeDealId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TIME_DEAL_NOT_FOUND));
-
-        if (timeDeal.getDealPrice() <= request.getDealPrice()) {
+        
+        if (request.getDealPrice() != null && timeDeal.getDealPrice() <= request.getDealPrice()) {
             throw new CustomException(ErrorCode.UPDATED_SALE_PRICE_MUST_BE_LOWER_THAN_CURRENT_SALE_PRICE);
         }
 
-        if (request.getStartAt().isAfter(request.getEndAt())) {
+        if (request.getStartAt() != null && request.getEndAt() != null &&request.getStartAt().isAfter(request.getEndAt())) {
             throw new CustomException(ErrorCode.INVALID_TIME_RANGE);
         }
 

@@ -21,7 +21,7 @@ public class TimeDealAdminController {
     /**
      * 타임딜 생성
      */
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ApiResponse> createTimeDealApi(@Valid @RequestBody TimeDealCreateRequest request) {
 
@@ -33,7 +33,7 @@ public class TimeDealAdminController {
     /**
      * 타임딜 수정
      */
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{timeDealId}")
     public ResponseEntity<ApiResponse> updateTimeDealApi(@PathVariable Long timeDealId, @Valid @RequestBody TimeDealUpdateRequest request) {
 
@@ -45,7 +45,7 @@ public class TimeDealAdminController {
     /**
      * 타임딜 삭제
      */
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{timeDealId}")
     public ResponseEntity<ApiResponse> deleteTimeDealApi(@PathVariable Long timeDealId) {
 

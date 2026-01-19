@@ -10,6 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,7 +23,7 @@ public class CouponController {
     /**
      * 쿠폰 생성
      */
-    //@PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ApiResponse> createCouponApi(@RequestBody CouponCreateRequest request) {
 
@@ -45,7 +46,7 @@ public class CouponController {
     /**
      * 쿠폰 수정
      */
-    //@PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{couponId}")
     public ResponseEntity<ApiResponse> updateCouponApi(@PathVariable Long couponId, @RequestBody CouponUpdateRequest request) {
 
@@ -57,7 +58,7 @@ public class CouponController {
     /**
      * 쿠폰 삭제
      */
-    //@PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{couponId}")
     public ResponseEntity<ApiResponse> deleteCouponApi(@PathVariable Long couponId) {
 

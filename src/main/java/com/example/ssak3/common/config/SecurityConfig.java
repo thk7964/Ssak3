@@ -48,7 +48,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/ssak3/auth/signup", "/ssak3/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/ssak3/coupons").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/ssak3/products/**", "/ssak3/coupons", "/ssak3/categories", "/ssak3/time-deals/**").permitAll()
                         .requestMatchers("/ssak3/admin").hasRole("SUPER_ADMIN")
                         .requestMatchers("/ssak3/admin/**", "/ssak3/coupons").hasRole("ADMIN")
                         .anyRequest().authenticated())

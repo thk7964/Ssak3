@@ -2,6 +2,7 @@ package com.example.ssak3.domain.order.service;
 
 import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.enums.OrderStatus;
+import com.example.ssak3.common.enums.ProductStatus;
 import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.common.model.PageResponse;
 import com.example.ssak3.domain.cart.entity.Cart;
@@ -194,8 +195,7 @@ public class OrderService {
         }
 
         // 판매중인지 확인
-        // TODO : product status string->enum 변경 시 수정 필요
-        if (product.getStatus().equals("FOR_SALE")) {
+        if (product.getStatus().equals(ProductStatus.FOR_SALE)) {
             return product.getPrice();
         }
 

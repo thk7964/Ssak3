@@ -27,9 +27,7 @@ public class CategoryController {
      */
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/admin/categories")
-    public ResponseEntity<ApiResponse> createCategoryApi(
-            @RequestBody CategoryCreateRequest request
-    ) {
+    public ResponseEntity<ApiResponse> createCategoryApi( @RequestBody CategoryCreateRequest request) {
         ApiResponse response = ApiResponse.success("카테고리를 생성하였습니다.",  categoryService.createCategory(request));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -51,7 +49,6 @@ public class CategoryController {
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/admin/categories/{categoryId}")
     public ResponseEntity<ApiResponse> updateCategoryApi(
-            @AuthenticationPrincipal AuthUser user,
             @PathVariable Long categoryId,
             @RequestBody CategoryUpdateRequest request) {
         ApiResponse response = ApiResponse.success("카테고리를 수정하였습니다.", categoryService.updateCategory(categoryId, request));
@@ -64,7 +61,6 @@ public class CategoryController {
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/admin/categories/{categoryId}")
     public ResponseEntity<ApiResponse> deleteCategoryApi(
-            @AuthenticationPrincipal AuthUser user,
             @PathVariable Long categoryId) {
         ApiResponse response = ApiResponse.success("카테고리를 삭제하였습니다.", categoryService.deleteCategory(categoryId));
         return ResponseEntity.status(HttpStatus.OK).body(response);

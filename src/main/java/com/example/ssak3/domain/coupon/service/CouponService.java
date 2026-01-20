@@ -29,6 +29,11 @@ public class CouponService {
     @Transactional
     public CouponCreateResponse createCoupon(CouponCreateRequest request) {
 
+        // 종료일이 시작일보다 빠른 경우 예외
+        if (request.getIssueEndDate().isBefore(request.getIssueStartDate())) {
+            throw new CustomException(ErrorCode.COUPON_INVALID_TIME_RANGE);
+        }
+
         Coupon coupon = new Coupon(
                 request.getName(),
                 request.getDiscountValue(),

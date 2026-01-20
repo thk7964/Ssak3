@@ -50,6 +50,7 @@ public enum ErrorCode {
     COUPON_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 쿠폰입니다."),
     COUPON_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 지급된 쿠폰입니다."),
     COUPON_ALREADY_DELETED(HttpStatus.CONFLICT, "이미 삭제된 쿠폰입니다."),
+    COUPON_INVALID_TIME_RANGE(HttpStatus.BAD_REQUEST, "종료일은 시작일 이전일 수 없습니다. "),
     COUPON_OUT_OF_STOCK(HttpStatus.CONFLICT, "쿠폰 수량이 모두 소진되었습니다."),
     COUPON_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "사용 가능한 상태의 쿠폰이 아닙니다."),
     COUPON_EXPIRED(HttpStatus.BAD_REQUEST, "사용 기한이 만료된 쿠폰입니다."),

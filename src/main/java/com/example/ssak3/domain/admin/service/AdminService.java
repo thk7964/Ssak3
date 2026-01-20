@@ -28,6 +28,10 @@ public class AdminService {
     @Transactional
     public AdminRoleChangeResponse changeUserRole(Long userId, AdminRoleChangeRequest request) {
 
+        if (request.getRole().equals(UserRole.SUPER_ADMIN)) {
+            throw new CustomException(ErrorCode.NOT_ALLOWED_CHANGE_SUPER_ADMIN);
+        }
+
         User user = userRepository.findByIdAndIsDeletedFalse(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 

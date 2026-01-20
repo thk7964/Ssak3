@@ -37,7 +37,9 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                                 user.id,
                                 user.name,
                                 user.nickname,
-                                user.email))
+                                user.email,
+                                user.createdAt,
+                                user.updatedAt))
                         .from(user)
                         .where(
                                 roleEq(role),

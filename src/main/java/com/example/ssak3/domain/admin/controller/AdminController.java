@@ -6,7 +6,6 @@ import com.example.ssak3.domain.admin.model.request.AdminRoleChangeRequest;
 import com.example.ssak3.domain.admin.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

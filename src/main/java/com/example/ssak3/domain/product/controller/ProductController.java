@@ -54,7 +54,7 @@ public class ProductController {
     @GetMapping("/products")
     public ResponseEntity<ApiResponse> getProductListApi(
             // 카테고리 아이디값을 활용해서 해당 아이디 보유한 상품만 조회하는 기능
-            @RequestParam(name = "categoryId") Long categoryId,
+            @RequestParam(name = "categoryId", required = false) Long categoryId,
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         log.info("controller 상품목록조회 검색: {}", categoryId);
         ApiResponse response = ApiResponse.success("상품목록을 조회했습니다.",  productService.getProductList(categoryId, pageable));

@@ -47,7 +47,7 @@ public class TimeDealService {
      * 타임딜 상태별 목록 조회
      */
     @Transactional(readOnly = true)
-    public PageResponse<TimeDealListGetResponse> getTimeDealOpenList(String status,Pageable pageable) {
+    public PageResponse<TimeDealListGetResponse> getTimeDealStatusList(String status,Pageable pageable) {
         TimeDealStatus timeDealStatus= parseStatus(status);
 
         Page<TimeDealListGetResponse> responsePage = timeDealRepository.findTimeDeals(timeDealStatus,pageable);

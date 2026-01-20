@@ -43,9 +43,9 @@ public class TimeDealController {
      * 타임딜 상태별 목록 조회
      */
     @GetMapping("/deal")
-    public ResponseEntity<ApiResponse> getTimeDealOpenListApi(@RequestParam(required = false) String status, @PageableDefault Pageable pageable) {
+    public ResponseEntity<ApiResponse> getTimeDealStatusListApi(@RequestParam(required = false) String status, @PageableDefault Pageable pageable) {
 
-        ApiResponse response = ApiResponse.success("타임딜 OPEN 목록 조회", timeDealService.getTimeDealOpenList(status,pageable));
+        ApiResponse response = ApiResponse.success("타임딜 상태별 목록 조회", timeDealService.getTimeDealStatusList(status,pageable));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

@@ -1,5 +1,6 @@
 package com.example.ssak3.domain.usercoupon.controller;
 
+import com.example.ssak3.common.enums.UserCouponStatus;
 import com.example.ssak3.common.model.ApiResponse;
 import com.example.ssak3.common.model.AuthUser;
 import com.example.ssak3.domain.usercoupon.model.request.UserCouponIssueRequest;
@@ -38,9 +39,12 @@ public class UserCouponController {
      * 내 쿠폰 목록 조회
      */
     @GetMapping
-    public ResponseEntity<ApiResponse> getMyCouponListApi(@AuthenticationPrincipal AuthUser authUser, @PageableDefault(size = 10, sort = "coupon.discountValue", direction = Sort.Direction.DESC) Pageable pageable) {
+    public ResponseEntity<ApiResponse> getMyCouponListApi(
+            @AuthenticationPrincipal AuthUser authUser,
+            @PageableDefault(size = 10, sort = "coupon.discountValue", direction = Sort.Direction.DESC) Pageable pageable,
+            @RequestParam(required = false, defaultValue = "AVAILABLE") UserCouponStatus status) {
 
-        ApiResponse response = ApiResponse.success("내 쿠폰 조회 완료", userCouponService.getMyCouponList(authUser.getId(), pageable));
+        ApiResponse response = ApiResponse.success("내 쿠폰 조회 완료", userCouponService.getMyCouponList(authUser.getId(), pageable, status));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

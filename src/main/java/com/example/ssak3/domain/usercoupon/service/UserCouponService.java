@@ -2,6 +2,7 @@ package com.example.ssak3.domain.usercoupon.service;
 
 import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.enums.UserCouponStatus;
+import com.example.ssak3.common.enums.UserRole;
 import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.common.model.PageResponse;
 import com.example.ssak3.domain.coupon.entity.Coupon;
@@ -41,6 +42,11 @@ public class UserCouponService {
         Coupon coupon = couponRepository.findById(couponId)
                 .orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
 
+        // 관리자는 쿠폰을 발급받을 수 없음
+        if (user.getRole() == UserRole.ADMIN) {
+            throw new CustomException(ErrorCode.ADMIN_CANNOT_ISSUE_COUPON);
+        }
+
         // 이미 쿠폰을 지급 받은 경우
         if (userCouponRepository.existsByUserAndCoupon(user, coupon)) {
             throw new CustomException(ErrorCode.COUPON_ALREADY_EXISTS);
@@ -77,9 +83,9 @@ public class UserCouponService {
      * 내 쿠폰 목록 조회 로직
      */
     @Transactional(readOnly = true)
-    public PageResponse<UserCouponListGetResponse> getMyCouponList(Long userId, Pageable pageable) {
+    public PageResponse<UserCouponListGetResponse> getMyCouponList(Long userId, Pageable pageable, UserCouponStatus status) {
 
-        Page<UserCouponListGetResponse> userCouponPage = userCouponRepository.findAllActiveCouponsByUserId(userId, pageable)
+        Page<UserCouponListGetResponse> userCouponPage = userCouponRepository.findAllActiveCouponsByUserId(userId, pageable, status)
                 .map(UserCouponListGetResponse::from);
 
         return PageResponse.from(userCouponPage);

@@ -1,5 +1,6 @@
 package com.example.ssak3.domain.usercoupon.repository;
 
+import com.example.ssak3.common.enums.UserCouponStatus;
 import com.example.ssak3.domain.coupon.entity.Coupon;
 import com.example.ssak3.domain.user.entity.User;
 import com.example.ssak3.domain.usercoupon.entity.UserCoupon;
@@ -17,6 +18,7 @@ public interface UserCouponRepository extends JpaRepository<UserCoupon, Long> {
     @Query("SELECT uc " +
             "FROM UserCoupon uc JOIN uc.coupon c " +
             "WHERE uc.user.id = :userId " +
-            "AND c.isDeleted = false ") // 관리자가 삭제한 쿠폰 제외
-    Page<UserCoupon> findAllActiveCouponsByUserId(Long userId, Pageable pageable);
+            "AND c.isDeleted = false " +  // 관리자가 삭제한 쿠폰 제외
+            "AND uc.status = :status")
+    Page<UserCoupon> findAllActiveCouponsByUserId(Long userId, Pageable pageable, UserCouponStatus status);
 }

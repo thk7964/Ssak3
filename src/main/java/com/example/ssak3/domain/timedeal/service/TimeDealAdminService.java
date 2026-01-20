@@ -1,6 +1,7 @@
 package com.example.ssak3.domain.timedeal.service;
 
 import com.example.ssak3.common.enums.ErrorCode;
+import com.example.ssak3.common.enums.ProductStatus;
 import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.domain.product.entity.Product;
 import com.example.ssak3.domain.product.repository.ProductRepository;
@@ -30,8 +31,12 @@ public class TimeDealAdminService {
     @Transactional
     public TimeDealCreateResponse createTimeDeal(TimeDealCreateRequest request) {
 
-        Product product = productRepository.findById(request.getProductId())
+        Product product = productRepository.findByIdAndIsDeletedFalse(request.getProductId())
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        if (product.getStatus()== ProductStatus.STOP_SALE|| product.getStatus()== ProductStatus.SOLD_OUT){
+            throw new CustomException(ErrorCode.TIME_DEAL_CANNOT_CREATE);
+        }
 
         LocalDateTime now = LocalDateTime.now();
 
@@ -48,6 +53,7 @@ public class TimeDealAdminService {
         if (request.getStartAt().isAfter(request.getEndAt())) {
             throw new CustomException(ErrorCode.INVALID_TIME_RANGE);
         }
+
 
         TimeDeal timeDeal = new TimeDeal(
                 product,
@@ -67,9 +73,12 @@ public class TimeDealAdminService {
      */
     @Transactional
     public TimeDealUpdateResponse updateTimeDeal(Long timeDealId, TimeDealUpdateRequest request) {
-        TimeDeal timeDeal = timeDealRepository.findById(timeDealId)
+        TimeDeal timeDeal = timeDealRepository.findByIdAndIsDeletedFalse(timeDealId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TIME_DEAL_NOT_FOUND));
-        
+        if (timeDeal.getProduct().getStatus() == ProductStatus.SOLD_OUT){
+            throw new CustomException(ErrorCode.TIME_DEAL_CANNOT_UPDATE);
+        }
+
         if (request.getDealPrice() != null && timeDeal.getDealPrice() <= request.getDealPrice()) {
             throw new CustomException(ErrorCode.UPDATED_SALE_PRICE_MUST_BE_LOWER_THAN_CURRENT_SALE_PRICE);
         }
@@ -88,8 +97,12 @@ public class TimeDealAdminService {
      */
     @Transactional
     public TimeDealDeleteResponse deleteTimeDeal(Long timeDealId) {
-        TimeDeal timeDeal = timeDealRepository.findById(timeDealId)
+        TimeDeal timeDeal = timeDealRepository.findByIdAndIsDeletedFalse(timeDealId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TIME_DEAL_NOT_FOUND));
+
+        if(!timeDeal.isDeletable(LocalDateTime.now())){
+            throw new CustomException(ErrorCode.TIME_DEAL_CANNOT_DELETE);
+        }
 
         timeDeal.softDelete();
 

@@ -21,7 +21,7 @@ public class TimeDealCustomRepositoryImpl implements TimeDealCustomRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<TimeDealListGetResponse> findOpenTimeDeals(Pageable pageable) {
+    public Page<TimeDealListGetResponse> findTimeDeals(TimeDealStatus status, Pageable pageable) {
         LocalDateTime now = LocalDateTime.now();
         List<TimeDealListGetResponse> list =
                 queryFactory.select(Projections.constructor(
@@ -29,16 +29,17 @@ public class TimeDealCustomRepositoryImpl implements TimeDealCustomRepository {
                                 timeDeal.id,
                                 timeDeal.product.name,
                                 timeDeal.dealPrice,
-                                Expressions.constant(TimeDealStatus.OPEN),
+                                Expressions.constant(status),
                                 timeDeal.startAt,
                                 timeDeal.endAt
                         ))
                         .from(timeDeal)
                         .join(timeDeal.product)
                         .where(
-                                isOpen(now),
+                                timeDealStatusCondition(status, now),
                                 timeDeal.isDeleted.isFalse()
                         )
+                        .orderBy(timeDeal.endAt.asc())// 종료 임박순
                         .offset(pageable.getOffset())
                         .limit(pageable.getPageSize())
                         .fetch();
@@ -47,7 +48,7 @@ public class TimeDealCustomRepositoryImpl implements TimeDealCustomRepository {
                 .select(timeDeal.count())
                 .from(timeDeal)
                 .where(
-                        isOpen(now),
+                        timeDealStatusCondition(status, now),
                         timeDeal.isDeleted.isFalse()
                 )
                 .fetchOne();
@@ -55,8 +56,24 @@ public class TimeDealCustomRepositoryImpl implements TimeDealCustomRepository {
         return new PageImpl<>(list, pageable, count == null ? 0 : count);
     }
 
-    private BooleanExpression isOpen(LocalDateTime now) {
-        return timeDeal.startAt.loe(now).and(timeDeal.endAt.goe(now));
+    private BooleanExpression timeDealStatusCondition(TimeDealStatus status, LocalDateTime now) {
+
+        if (status == null){
+            return null;
+        }
+
+        switch (status) {
+            case READY:
+                return timeDeal.startAt.gt(now);
+            case OPEN:
+                return timeDeal.startAt.loe(now)
+                        .and(timeDeal.endAt.goe(now));
+            case CLOSED:
+                return timeDeal.endAt.lt(now);
+            default:
+                return null;
+        }
+
     }
 
 

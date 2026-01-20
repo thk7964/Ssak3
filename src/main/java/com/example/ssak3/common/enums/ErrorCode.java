@@ -42,6 +42,12 @@ public enum ErrorCode {
     INVALID_TIME_RANGE(HttpStatus.BAD_REQUEST, "시작 시간은 종료 시간보다 늦을 수 없습니다."),
     TIME_DEAL_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 세일 상품을 찾을 수 없습니다."),
     ACTIVE_TIME_DEAL_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "현재 진행중인 타임딜 상품입니다."),
+    TIME_DEAL_CANNOT_DELETE(HttpStatus.BAD_REQUEST, "현재 진행중이거나 삭제할 수 없는 상태의 타임딜 상품입니다."),
+    TIME_DEAL_CANNOT_CREATE(HttpStatus.BAD_REQUEST,"타임딜을 생성할 수 없습니다. 상품 상태를 확인해주세요" ),
+    TIME_DEAL_CANNOT_UPDATE(HttpStatus.BAD_REQUEST, "상품 재고가 없어 타임딜을 수정할 수 없습니다."),
+    TIME_DEAL_INVALID_STATUS(HttpStatus.BAD_REQUEST, "유효하지 않은 타임딜 상태입니다."),
+    TIME_DEAL_DELETED_STATUS_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "삭제된 타임딜 상태로는 조회할 수 없습니다."),
+
 
     // Token 에러
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
@@ -64,10 +70,8 @@ public enum ErrorCode {
 
     // InquiryReply 에러
     INQUIRY_REPLY_NOT_FOUND(HttpStatus.NOT_FOUND, "문의 답변 내역을 찾을 수 없습니다."),
-    INQUIRY_REPLY_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "삭제된 문의 답변입니다.")
-
-
-    ;
+    INQUIRY_REPLY_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "삭제된 문의 답변입니다."),
+;
 
     private final HttpStatus status;
     private final String message;

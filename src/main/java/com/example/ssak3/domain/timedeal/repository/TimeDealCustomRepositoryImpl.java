@@ -62,17 +62,13 @@ public class TimeDealCustomRepositoryImpl implements TimeDealCustomRepository {
             return null;
         }
 
-        switch (status) {
-            case READY:
-                return timeDeal.startAt.gt(now);
-            case OPEN:
-                return timeDeal.startAt.loe(now)
-                        .and(timeDeal.endAt.goe(now));
-            case CLOSED:
-                return timeDeal.endAt.lt(now);
-            default:
-                return null;
-        }
+        return switch (status) {
+            case READY -> timeDeal.startAt.gt(now);
+            case OPEN -> timeDeal.startAt.loe(now)
+                    .and(timeDeal.endAt.goe(now));
+            case CLOSED -> timeDeal.endAt.lt(now);
+            default -> null;
+        };
 
     }
 

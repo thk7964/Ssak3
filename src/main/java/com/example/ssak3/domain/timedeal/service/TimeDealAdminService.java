@@ -34,15 +34,15 @@ public class TimeDealAdminService {
         Product product = productRepository.findByIdAndIsDeletedFalse(request.getProductId())
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
-        if (product.getStatus()== ProductStatus.STOP_SALE|| product.getStatus()== ProductStatus.SOLD_OUT){
+        if (product.getStatus() == ProductStatus.STOP_SALE || product.getStatus() == ProductStatus.SOLD_OUT) {
             throw new CustomException(ErrorCode.TIME_DEAL_CANNOT_CREATE);
         }
 
         LocalDateTime now = LocalDateTime.now();
 
-        boolean hasActiveDeal = timeDealRepository.existsActiveDealByProduct(product.getId(),now);
+        boolean hasActiveDeal = timeDealRepository.existsActiveDealByProduct(product.getId(), now);
 
-        if (hasActiveDeal){
+        if (hasActiveDeal) {
             throw new CustomException(ErrorCode.ACTIVE_TIME_DEAL_ALREADY_EXISTS);
         }
 
@@ -50,7 +50,11 @@ public class TimeDealAdminService {
             throw new CustomException(ErrorCode.SALE_PRICE_MUST_BE_LOWER_THAN_ORIGINAL_PRICE);
         }
 
-        if (request.getStartAt().isAfter(request.getEndAt())) {
+        if (!request.getStartAt().isAfter(now)) {
+            throw new CustomException(ErrorCode.TIME_DEAL_START_TIME_MUST_BE_IN_FUTURE);
+        }
+
+        if (!request.getEndAt().isAfter(request.getStartAt())) {
             throw new CustomException(ErrorCode.INVALID_TIME_RANGE);
         }
 
@@ -73,9 +77,11 @@ public class TimeDealAdminService {
      */
     @Transactional
     public TimeDealUpdateResponse updateTimeDeal(Long timeDealId, TimeDealUpdateRequest request) {
+
         TimeDeal timeDeal = timeDealRepository.findByIdAndIsDeletedFalse(timeDealId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TIME_DEAL_NOT_FOUND));
-        if (timeDeal.getProduct().getStatus() == ProductStatus.SOLD_OUT){
+
+        if (timeDeal.getProduct().getStatus() == ProductStatus.SOLD_OUT) {
             throw new CustomException(ErrorCode.TIME_DEAL_CANNOT_UPDATE);
         }
 
@@ -83,9 +89,18 @@ public class TimeDealAdminService {
             throw new CustomException(ErrorCode.UPDATED_SALE_PRICE_MUST_BE_LOWER_THAN_CURRENT_SALE_PRICE);
         }
 
-        if (request.getStartAt() != null && request.getEndAt() != null &&request.getStartAt().isAfter(request.getEndAt())) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startAt = request.getStartAt() != null ? request.getStartAt() : timeDeal.getStartAt();
+        LocalDateTime endAt = request.getEndAt() != null ? request.getEndAt() : timeDeal.getEndAt();
+
+        if (!startAt.isAfter(now)) {
+            throw new CustomException(ErrorCode.TIME_DEAL_START_TIME_MUST_BE_IN_FUTURE);
+        }
+
+        if (!endAt.isAfter(startAt)) {
             throw new CustomException(ErrorCode.INVALID_TIME_RANGE);
         }
+
 
         timeDeal.update(request);
 
@@ -100,7 +115,7 @@ public class TimeDealAdminService {
         TimeDeal timeDeal = timeDealRepository.findByIdAndIsDeletedFalse(timeDealId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TIME_DEAL_NOT_FOUND));
 
-        if(!timeDeal.isDeletable(LocalDateTime.now())){
+        if (!timeDeal.isDeletable(LocalDateTime.now())) {
             throw new CustomException(ErrorCode.TIME_DEAL_CANNOT_DELETE);
         }
 

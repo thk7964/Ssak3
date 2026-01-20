@@ -50,9 +50,12 @@ public class TimeDeal extends BaseEntity {
      * */
     public TimeDealStatus getStatus(LocalDateTime now) {
         if (isDeleted) return TimeDealStatus.DELETED;
-        if (now.isBefore(startAt)) return TimeDealStatus.READY;
-        if (now.isAfter(endAt)) {productClosed(); return TimeDealStatus.CLOSED;}
-        productOpen();
+        if (now.isBefore(startAt)) {open(); return TimeDealStatus.READY;}
+        if (now.isAfter(endAt)) {
+            open();
+            return TimeDealStatus.CLOSED;
+        }
+        closed();
         return TimeDealStatus.OPEN;
     }
 
@@ -78,12 +81,12 @@ public class TimeDeal extends BaseEntity {
         return status == TimeDealStatus.READY || status == TimeDealStatus.CLOSED;
     }
 
-    public void  productOpen(){
+    public void open() {
         if (isDeleted) return;
         product.stopSaleForTimeDeal();
     }
 
-    public void productClosed(){
+    public void closed() {
         if (isDeleted) return;
         product.restoreStatusAfterTimeDeal();
     }

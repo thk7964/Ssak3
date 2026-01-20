@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public interface TimeDealRepository extends JpaRepository<TimeDeal, Long>, TimeDealCustomRepository {
 
-    Page<TimeDeal> findAllByIsDeletedFalse(Pageable pageable);
+
 
     @Query("""
                     select td

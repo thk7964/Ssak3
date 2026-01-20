@@ -2,7 +2,9 @@ package com.example.ssak3.domain.usercoupon.controller;
 
 import com.example.ssak3.common.model.ApiResponse;
 import com.example.ssak3.common.model.AuthUser;
+import com.example.ssak3.domain.usercoupon.model.request.UserCouponIssueRequest;
 import com.example.ssak3.domain.usercoupon.service.UserCouponService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -24,10 +26,10 @@ public class UserCouponController {
     /**
      * 쿠폰 추가
      */
-    @PostMapping("/{couponId}")
-    public ResponseEntity<ApiResponse> issueCouponApi(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long couponId) {
+    @PostMapping
+    public ResponseEntity<ApiResponse> issueCouponApi(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody UserCouponIssueRequest request) {
 
-        ApiResponse response = ApiResponse.success("쿠폰 발급 완료", userCouponService.issueCoupon(authUser.getId(), couponId));
+        ApiResponse response = ApiResponse.success("쿠폰 발급 완료", userCouponService.issueCoupon(authUser.getId(), request.getCouponId()));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

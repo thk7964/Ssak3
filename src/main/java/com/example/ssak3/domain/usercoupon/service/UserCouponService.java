@@ -46,6 +46,11 @@ public class UserCouponService {
             throw new CustomException(ErrorCode.COUPON_ALREADY_EXISTS);
         }
 
+        // 삭제된 쿠폰인지 확인
+        if (coupon.isDeleted()) {
+            throw new CustomException(ErrorCode.COUPON_NOT_AVAILABLE);
+        }
+
         // 쿠폰 다운로드 수 증가 로직
         coupon.increaseIssuedQuantity();
 
@@ -74,7 +79,7 @@ public class UserCouponService {
     @Transactional(readOnly = true)
     public PageResponse<UserCouponListGetResponse> getMyCouponList(Long userId, Pageable pageable) {
 
-        Page<UserCouponListGetResponse> userCouponPage = userCouponRepository.findAllByUserId(userId, pageable)
+        Page<UserCouponListGetResponse> userCouponPage = userCouponRepository.findAllActiveCouponsByUserId(userId, pageable)
                 .map(UserCouponListGetResponse::from);
 
         return PageResponse.from(userCouponPage);

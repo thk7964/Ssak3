@@ -6,6 +6,7 @@ import com.example.ssak3.domain.usercoupon.entity.UserCoupon;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 public interface UserCouponRepository extends JpaRepository<UserCoupon, Long> {
 
@@ -13,5 +14,9 @@ public interface UserCouponRepository extends JpaRepository<UserCoupon, Long> {
     boolean existsByUserAndCoupon(User user, Coupon coupon);
 
     // 내 쿠폰 목록 페이징 조회
-    Page<UserCoupon> findAllByUserId(Long userId, Pageable pageable);
+    @Query("SELECT uc " +
+            "FROM UserCoupon uc JOIN uc.coupon c " +
+            "WHERE uc.user.id = :userId " +
+            "AND c.isDeleted = false ") // 관리자가 삭제한 쿠폰 제외
+    Page<UserCoupon> findAllActiveCouponsByUserId(Long userId, Pageable pageable);
 }

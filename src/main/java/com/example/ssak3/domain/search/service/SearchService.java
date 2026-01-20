@@ -16,9 +16,9 @@ public class SearchService {
     private final SearchCustomRepository searchCustomRepository;
 
     @Transactional(readOnly = true)
-    public PageResponse<ProductSearchResponse> searchProduct(String keyword, Pageable pageable) {
+    public PageResponse<ProductSearchResponse> searchProduct(String keyword, Integer minPrice, Integer maxPrice, Pageable pageable) {
 
-        Page<ProductSearchResponse> response = searchCustomRepository.searchProduct(keyword, pageable);
+        Page<ProductSearchResponse> response = searchCustomRepository.searchProduct(keyword, minPrice, maxPrice, pageable);
 
         return PageResponse.from(response);
     }

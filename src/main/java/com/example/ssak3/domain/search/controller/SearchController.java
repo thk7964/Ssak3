@@ -22,9 +22,11 @@ public class SearchController {
     @GetMapping
     public ResponseEntity<ApiResponse> searchProductApi(
             @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Integer minPrice,
+            @RequestParam(required = false) Integer maxPrice,
             @PageableDefault Pageable pageable) {
 
-        ApiResponse response = ApiResponse.success("상품 통합 검색에 성공했습니다.", searchService.searchProduct(keyword, pageable));
+        ApiResponse response = ApiResponse.success("상품 통합 검색에 성공했습니다.", searchService.searchProduct(keyword, minPrice, maxPrice, pageable));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

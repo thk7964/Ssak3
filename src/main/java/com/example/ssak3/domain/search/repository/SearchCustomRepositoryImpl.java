@@ -30,7 +30,7 @@ public class SearchCustomRepositoryImpl implements SearchCustomRepository {
     // 이래서 DTO를 쓰는 건가? DTO 덕분에 원하는 값만 골라서 가져오기 수월했다.
 
     @Override
-    public Page<ProductSearchResponse> searchProduct(String keyword, Pageable pageable) {
+    public Page<ProductSearchResponse> searchProduct(String keyword, Integer minPrice, Integer maxPrice, Pageable pageable) {
 
         Long total = queryFactory
                 .select(product.countDistinct())
@@ -54,7 +54,10 @@ public class SearchCustomRepositoryImpl implements SearchCustomRepository {
                 .from(product)
                 .leftJoin(timeDeal)
                 .on(product.id.eq(timeDeal.product.id))
-                .where(nameContains(keyword))
+                .where(
+                        nameContains(keyword),
+                        priceGoe(minPrice),
+                        priceLoe(maxPrice))
                 .orderBy(product.name.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -68,5 +71,17 @@ public class SearchCustomRepositoryImpl implements SearchCustomRepository {
         return (keyword != null) ? product.name.contains(keyword) : null;
     }
 
+    private BooleanExpression priceGoe(Integer minPrice) {
 
+        if (minPrice == null) return null;
+
+        return timeDeal.dealPrice.coalesce(product.price).goe(minPrice);
+    }
+
+    private BooleanExpression priceLoe(Integer maxPrice) {
+
+        if (maxPrice == null) return null;
+
+        return timeDeal.dealPrice.coalesce(product.price).loe(maxPrice);
+    }
 }

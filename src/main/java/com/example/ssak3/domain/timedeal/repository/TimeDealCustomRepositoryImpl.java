@@ -1,6 +1,7 @@
 package com.example.ssak3.domain.timedeal.repository;
 
 import com.example.ssak3.common.enums.TimeDealStatus;
+import com.example.ssak3.domain.timedeal.entity.TimeDeal;
 import com.example.ssak3.domain.timedeal.model.response.TimeDealListGetResponse;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -23,18 +24,9 @@ public class TimeDealCustomRepositoryImpl implements TimeDealCustomRepository {
     @Override
     public Page<TimeDealListGetResponse> findTimeDeals(TimeDealStatus status, Pageable pageable) {
         LocalDateTime now = LocalDateTime.now();
-        List<TimeDealListGetResponse> list =
-                queryFactory.select(Projections.constructor(
-                                TimeDealListGetResponse.class,
-                                timeDeal.id,
-                                timeDeal.product.name,
-                                timeDeal.dealPrice,
-                                Expressions.constant(status),
-                                timeDeal.startAt,
-                                timeDeal.endAt
-                        ))
-                        .from(timeDeal)
-                        .join(timeDeal.product)
+        List<TimeDeal> timeDeals =
+                queryFactory.selectFrom(timeDeal)
+                        .join(timeDeal.product).fetchJoin()
                         .where(
                                 timeDealStatusCondition(status, now),
                                 timeDeal.isDeleted.isFalse()
@@ -43,6 +35,10 @@ public class TimeDealCustomRepositoryImpl implements TimeDealCustomRepository {
                         .offset(pageable.getOffset())
                         .limit(pageable.getPageSize())
                         .fetch();
+
+        List<TimeDealListGetResponse>list =timeDeals.stream()
+                .map(TimeDealListGetResponse::from)
+                .toList();
 
         Long count = queryFactory
                 .select(timeDeal.count())
@@ -71,7 +67,6 @@ public class TimeDealCustomRepositoryImpl implements TimeDealCustomRepository {
         };
 
     }
-
 
     @Override
     public boolean existsActiveDealByProduct(Long productId, LocalDateTime now) {

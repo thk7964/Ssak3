@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
+
+import static com.example.ssak3.domain.timedeal.utils.TimeDealUtils.formatRemainingTime;
+
 @Getter
 @RequiredArgsConstructor
 public class TimeDealListGetResponse {
@@ -15,14 +18,25 @@ public class TimeDealListGetResponse {
     private final TimeDealStatus status;
     private final LocalDateTime startAt;
     private final LocalDateTime endAt;
+    private final String remainingTime;
     public static TimeDealListGetResponse from(TimeDeal timeDeal) {
+
+        LocalDateTime now = LocalDateTime.now();
+        TimeDealStatus status = timeDeal.getStatus(now);
+        String remainingTime = null;
+
+        if (status == TimeDealStatus.READY || status == TimeDealStatus.OPEN) {
+            remainingTime = formatRemainingTime(now, timeDeal.getStartAt(), timeDeal.getEndAt());
+        }
+
         return new TimeDealListGetResponse(
                 timeDeal.getId(),
                 timeDeal.getProduct().getName(),
                 timeDeal.getDealPrice(),
-                timeDeal.getStatus(LocalDateTime.now()),
+                status,
                 timeDeal.getStartAt(),
-                timeDeal.getEndAt()
+                timeDeal.getEndAt(),
+                remainingTime
         );
     }
 }

@@ -17,6 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class CouponService {
@@ -55,7 +57,7 @@ public class CouponService {
     @Transactional(readOnly = true)
     public PageResponse<CouponListGetResponse> getCouponList(Pageable pageable) {
 
-        Page<CouponListGetResponse> couponListPage = couponRepository.findAllByIsDeletedFalse(pageable)
+        Page<CouponListGetResponse> couponListPage = couponRepository.findAllAvailableCoupons(LocalDateTime.now(), pageable)
                 .map(CouponListGetResponse::from);
 
         return PageResponse.from(couponListPage);

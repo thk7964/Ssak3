@@ -79,6 +79,9 @@ public class CouponService {
         Coupon coupon = couponRepository.findById(couponId)
                 .orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
 
+        if (coupon.isDeleted()) {
+            throw new CustomException(ErrorCode.COUPON_ALREADY_DELETED);
+        }
         coupon.delete();
 
         return CouponDeleteResponse.from(coupon);

@@ -17,6 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class CouponService {
@@ -28,6 +30,11 @@ public class CouponService {
      */
     @Transactional
     public CouponCreateResponse createCoupon(CouponCreateRequest request) {
+
+        // 종료일이 시작일보다 빠른 경우 예외
+        if (request.getIssueEndDate().isBefore(request.getIssueStartDate())) {
+            throw new CustomException(ErrorCode.COUPON_INVALID_TIME_RANGE);
+        }
 
         Coupon coupon = new Coupon(
                 request.getName(),
@@ -50,7 +57,7 @@ public class CouponService {
     @Transactional(readOnly = true)
     public PageResponse<CouponListGetResponse> getCouponList(Pageable pageable) {
 
-        Page<CouponListGetResponse> couponListPage = couponRepository.findAllByIsDeletedFalse(pageable)
+        Page<CouponListGetResponse> couponListPage = couponRepository.findAllAvailableCoupons(LocalDateTime.now(), pageable)
                 .map(CouponListGetResponse::from);
 
         return PageResponse.from(couponListPage);
@@ -79,6 +86,9 @@ public class CouponService {
         Coupon coupon = couponRepository.findById(couponId)
                 .orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
 
+        if (coupon.isDeleted()) {
+            throw new CustomException(ErrorCode.COUPON_ALREADY_DELETED);
+        }
         coupon.delete();
 
         return CouponDeleteResponse.from(coupon);

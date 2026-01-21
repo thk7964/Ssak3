@@ -11,36 +11,31 @@ import static com.example.ssak3.domain.timedeal.utils.TimeDealUtils.formatRemain
 
 @Getter
 @RequiredArgsConstructor
-public class TimeDealGetResponse {
+public class TimeDealListGetResponse {
     private final Long id;
     private final String productName;
-    private final String productInformation;
     private final Integer dealPrice;
     private final TimeDealStatus status;
     private final LocalDateTime startAt;
     private final LocalDateTime endAt;
-    private final LocalDateTime createdAt;
-    private final LocalDateTime updatedAt;
     private final String remainingTime;
-    public static TimeDealGetResponse from(TimeDeal timeDeal) {
+    public static TimeDealListGetResponse from(TimeDeal timeDeal) {
+
         LocalDateTime now = LocalDateTime.now();
         TimeDealStatus status = timeDeal.getStatus(now);
         String remainingTime = null;
 
-        if (status == TimeDealStatus.READY || status== TimeDealStatus.OPEN){
-            remainingTime = formatRemainingTime(now, timeDeal.getStartAt(),timeDeal.getEndAt());
+        if (status == TimeDealStatus.READY || status == TimeDealStatus.OPEN) {
+            remainingTime = formatRemainingTime(now, timeDeal.getStartAt(), timeDeal.getEndAt());
         }
 
-        return new TimeDealGetResponse(
+        return new TimeDealListGetResponse(
                 timeDeal.getId(),
                 timeDeal.getProduct().getName(),
-                timeDeal.getProduct().getInformation(),
                 timeDeal.getDealPrice(),
                 status,
                 timeDeal.getStartAt(),
                 timeDeal.getEndAt(),
-                timeDeal.getCreatedAt(),
-                timeDeal.getUpdatedAt(),
                 remainingTime
         );
     }

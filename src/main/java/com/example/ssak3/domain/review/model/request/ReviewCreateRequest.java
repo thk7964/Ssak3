@@ -2,8 +2,10 @@ package com.example.ssak3.domain.review.model.request;
 
 import jakarta.validation.constraints.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class ReviewCreateRequest {
 
     @NotNull

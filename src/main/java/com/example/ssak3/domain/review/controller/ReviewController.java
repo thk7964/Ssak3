@@ -7,12 +7,13 @@ import com.example.ssak3.domain.review.model.request.ReviewUpdateRequest;
 import com.example.ssak3.domain.review.service.ReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.PublicKey;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,7 +23,7 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     /**
-     * 후기 생성
+     * 후기 생성 API
      */
     @PostMapping
     public ResponseEntity<ApiResponse> createReviewApi(@Valid @RequestBody ReviewCreateRequest request) {
@@ -31,18 +32,28 @@ public class ReviewController {
     }
 
     /**
-     * 후기 조회
+     * 후기 상세조회 API
      */
     @GetMapping("/{reviewId}")
     public ResponseEntity<ApiResponse> getReviewApi(@PathVariable Long reviewId) {
         ApiResponse response = ApiResponse.success("후기를 조회하였습니다.", reviewService.getReview(reviewId));
         return ResponseEntity.status(HttpStatus.OK).body(response);
-
-
     }
 
     /**
-     * 후기 수정
+     * 후기 목록조회 API
+     */
+    @GetMapping
+    public ResponseEntity<ApiResponse> getReviewListApi(
+            @RequestParam Long productId,
+            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        ApiResponse response = ApiResponse.success("후기목록을 조회하였습니다.", reviewService.getReviewList(productId, pageable));
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    /**
+     * 후기 수정 API
      */
     @PatchMapping("/{reviewId}")
     public ResponseEntity<ApiResponse> updateReviewApi(
@@ -55,7 +66,7 @@ public class ReviewController {
     }
 
     /**
-     * 후기 삭제
+     * 후기 삭제 API
      */
     @DeleteMapping("/{reviewId}")
     public ResponseEntity<ApiResponse> deleteReviewApi(

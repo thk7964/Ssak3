@@ -3,12 +3,12 @@ package com.example.ssak3.domain.review.model.response;
 import com.example.ssak3.domain.review.entity.Review;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import java.time.LocalDateTime;
 
+import java.time.LocalDateTime;
 
 @Getter
 @RequiredArgsConstructor
-public class ReviewCreateResponse {
+public class ReviewListGetResponse {
 
     private final Long id;
     private final Long userId;
@@ -19,8 +19,8 @@ public class ReviewCreateResponse {
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
-    public static ReviewCreateResponse from(Review review) {
-        return new ReviewCreateResponse(
+    public static ReviewListGetResponse from(Review review) {
+        return new ReviewListGetResponse(
                 review.getId(),
                 review.getUser().getId(),
                 review.getUser().getNickname(),

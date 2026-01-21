@@ -50,8 +50,12 @@ public class TimeDeal extends BaseEntity {
      * */
     public TimeDealStatus getStatus(LocalDateTime now) {
         if (isDeleted) return TimeDealStatus.DELETED;
-        if (now.isBefore(startAt)) return TimeDealStatus.READY;
-        if (now.isAfter(endAt)) return TimeDealStatus.CLOSED;
+        if (now.isBefore(startAt)) {open(); return TimeDealStatus.READY;}
+        if (now.isAfter(endAt)) {
+            open();
+            return TimeDealStatus.CLOSED;
+        }
+        closed();
         return TimeDealStatus.OPEN;
     }
 
@@ -61,8 +65,31 @@ public class TimeDeal extends BaseEntity {
 
     public void update(TimeDealUpdateRequest request) {
 
-        if (request.getDealPrice() != null) { this.dealPrice = request.getDealPrice(); }
-        if (request.getStartAt() != null) { this.startAt = request.getStartAt(); }
-        if (request.getEndAt() != null) { this.endAt = request.getEndAt(); }
+        if (request.getDealPrice() != null) {
+            this.dealPrice = request.getDealPrice();
+        }
+        if (request.getStartAt() != null) {
+            this.startAt = request.getStartAt();
+        }
+        if (request.getEndAt() != null) {
+            this.endAt = request.getEndAt();
+        }
     }
+
+    public boolean isDeletable(LocalDateTime now) {
+        TimeDealStatus status = getStatus(now);
+        return status == TimeDealStatus.READY || status == TimeDealStatus.CLOSED;
+    }
+
+    public void open() {
+        if (isDeleted) return;
+        product.stopSaleForTimeDeal();
+    }
+
+    public void closed() {
+        if (isDeleted) return;
+        product.restoreStatusAfterTimeDeal();
+    }
+
+
 }

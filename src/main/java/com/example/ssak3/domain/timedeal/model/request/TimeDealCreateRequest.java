@@ -3,11 +3,13 @@ package com.example.ssak3.domain.timedeal.model.request;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
 @Getter
+@NoArgsConstructor
 public class TimeDealCreateRequest {
 
     @NotNull(message = "상품 아이디는 필수 입력 사항입니다.")

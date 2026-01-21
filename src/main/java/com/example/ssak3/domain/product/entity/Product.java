@@ -80,4 +80,15 @@ public class Product extends BaseEntity {
         this.isDeleted = true;
     }
 
+    public void restoreStatusAfterTimeDeal() {
+        if (status!= ProductStatus.STOP_SALE){
+            status= ProductStatus.STOP_SALE;
+        }
+    }
+
+    public void stopSaleForTimeDeal() {
+        if (status!= ProductStatus.FOR_SALE){
+            status=ProductStatus.FOR_SALE;
+        }
+    }
 }

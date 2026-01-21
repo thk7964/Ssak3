@@ -8,10 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -28,7 +25,7 @@ public class TimeDealController {
 
         ApiResponse response = ApiResponse.success("타임딜 상세 조회", timeDealService.getTimeDeal(timeDealId));
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     /**
@@ -39,7 +36,18 @@ public class TimeDealController {
 
         ApiResponse response = ApiResponse.success("타임딜 목록 조회", timeDealService.getTimeDealList(pageable));
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    /**
+     * 타임딜 상태별 목록 조회
+     */
+    @GetMapping("/deal")
+    public ResponseEntity<ApiResponse> getTimeDealStatusListApi(@RequestParam(required = false) String status, @PageableDefault Pageable pageable) {
+
+        ApiResponse response = ApiResponse.success("타임딜 상태별 목록 조회", timeDealService.getTimeDealStatusList(status,pageable));
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
 }

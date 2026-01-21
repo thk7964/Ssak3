@@ -6,7 +6,6 @@ import com.example.ssak3.domain.admin.model.request.AdminRoleChangeRequest;
 import com.example.ssak3.domain.admin.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,16 +34,17 @@ public class AdminController {
     }
 
     /**
-     * 유저 전체 조회 API
-     * 쿼리 파라미터 role - SUPER_ADMIN, ADMIN, USER
+     * 유저 목록 조회 API
+     * 쿼리 파라미터 role - SUPER_ADMIN, ADMIN, USER, 닉네임 검색
      */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<ApiResponse> getUserListApi(
-            @RequestParam(defaultValue = "USER") UserRole role,
-            @PageableDefault(sort = "nickname", direction = Sort.Direction.ASC) Pageable pageable) {
+            @RequestParam(required = false) UserRole role,
+            @RequestParam(required = false) String nickname,
+            @PageableDefault Pageable pageable) {
 
-        ApiResponse response = ApiResponse.success("유저 전체 조회에 성공했습니다.", adminService.getUserList(role, pageable));
+        ApiResponse response = ApiResponse.success("유저 목록 조회에 성공했습니다.", adminService.getUserList(role, nickname, pageable));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

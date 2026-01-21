@@ -150,7 +150,7 @@ public class UserCouponService {
         }
 
         // 이미 삭제된 쿠폰인지 확인
-        if (userCoupon.getStatus() == UserCouponStatus.DELETED || userCoupon.getStatus() == UserCouponStatus.USED_DELETED) {
+        if (userCoupon.getStatus() == UserCouponStatus.UNUSED_DELETED || userCoupon.getStatus() == UserCouponStatus.USED_DELETED) {
             throw new CustomException(ErrorCode.COUPON_ALREADY_DELETED);
         }
 
@@ -158,7 +158,7 @@ public class UserCouponService {
         // else if)  사용후 삭제: 수량 복구 X + USED_DELETED 상태로 변경
         if (userCoupon.getStatus() == UserCouponStatus.AVAILABLE) {
             userCoupon.getCoupon().decreaseIssuedQuantity();
-            userCoupon.changeStatus(UserCouponStatus.DELETED);
+            userCoupon.changeStatus(UserCouponStatus.UNUSED_DELETED);
         } else if (userCoupon.getStatus() == UserCouponStatus.USED) {
             userCoupon.changeStatus(UserCouponStatus.USED_DELETED);
         }

@@ -61,7 +61,7 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
     }
 
     private BooleanExpression nicknameContains(String nickname) {
-        return (nickname != null) ? user.nickname.contains(nickname) : null;
+        return (nickname != null && !nickname.isBlank()) ? user.nickname.contains(nickname) : null;
     }
 
 }

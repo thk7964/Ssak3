@@ -84,7 +84,7 @@ public class SearchCustomRepositoryImpl implements SearchCustomRepository {
     }
 
     private BooleanExpression nameContains(String keyword) {
-        return (keyword != null) ? product.name.contains(keyword) : null;
+        return (keyword != null && !keyword.isBlank()) ? product.name.contains(keyword) : null;
     }
 
     private BooleanExpression priceGoe(Integer minPrice) {

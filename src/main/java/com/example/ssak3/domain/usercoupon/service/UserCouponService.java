@@ -10,6 +10,7 @@ import com.example.ssak3.domain.coupon.repository.CouponRepository;
 import com.example.ssak3.domain.user.entity.User;
 import com.example.ssak3.domain.user.repository.UserRepository;
 import com.example.ssak3.domain.usercoupon.entity.UserCoupon;
+import com.example.ssak3.domain.usercoupon.model.response.UserCouponDeleteResponse;
 import com.example.ssak3.domain.usercoupon.model.response.UserCouponIssueResponse;
 import com.example.ssak3.domain.usercoupon.model.response.UserCouponListGetResponse;
 import com.example.ssak3.domain.usercoupon.model.response.UserCouponUseResponse;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -42,13 +44,22 @@ public class UserCouponService {
         Coupon coupon = couponRepository.findById(couponId)
                 .orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
 
+        // 재발급을 막아야 하는 상태 리스트
+        // AVAILABLE(사용 가능), USED(사용 완료), USED_DELETED(사용 후 삭제)
+        List<UserCouponStatus> restrictedStatuses = List.of(
+                UserCouponStatus.AVAILABLE,
+                UserCouponStatus.USED,
+                UserCouponStatus.USED_DELETED
+        );
+
+
         // 관리자는 쿠폰을 발급받을 수 없음
         if (user.getRole() == UserRole.ADMIN) {
             throw new CustomException(ErrorCode.ADMIN_CANNOT_ISSUE_COUPON);
         }
 
-        // 이미 쿠폰을 지급 받은 경우
-        if (userCouponRepository.existsByUserAndCoupon(user, coupon)) {
+        // 쿠폰 재발급 차단
+        if (userCouponRepository.existsByUserAndCouponAndStatusIn(user, coupon, restrictedStatuses)) {
             throw new CustomException(ErrorCode.COUPON_ALREADY_EXISTS);
         }
 
@@ -122,5 +133,36 @@ public class UserCouponService {
         userCoupon.use();
 
         return UserCouponUseResponse.from(userCoupon);
+    }
+
+    /**
+     * 내 쿠폰 삭제
+     */
+    @Transactional
+    public UserCouponDeleteResponse deleteUserCoupon(Long userId, Long userCouponId) {
+
+        UserCoupon userCoupon = userCouponRepository.findById(userCouponId)
+                .orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
+
+        // 본인 쿠폰인지 확인
+        if (!userCoupon.getUser().getId().equals(userId)) {
+            throw new CustomException(ErrorCode.FORBIDDEN_COUPON_ACCESS);
+        }
+
+        // 이미 삭제된 쿠폰인지 확인
+        if (userCoupon.getStatus() == UserCouponStatus.DELETED || userCoupon.getStatus() == UserCouponStatus.USED_DELETED) {
+            throw new CustomException(ErrorCode.COUPON_ALREADY_DELETED);
+        }
+
+        // if) 미사용 삭제 : 수량 복구 + DELETED 상태로 변경
+        // else if)  사용후 삭제: 수량 복구 X + USED_DELETED 상태로 변경
+        if (userCoupon.getStatus() == UserCouponStatus.AVAILABLE) {
+            userCoupon.getCoupon().decreaseIssuedQuantity();
+            userCoupon.changeStatus(UserCouponStatus.DELETED);
+        } else if (userCoupon.getStatus() == UserCouponStatus.USED) {
+            userCoupon.changeStatus(UserCouponStatus.USED_DELETED);
+        }
+
+        return UserCouponDeleteResponse.from(userCoupon);
     }
 }

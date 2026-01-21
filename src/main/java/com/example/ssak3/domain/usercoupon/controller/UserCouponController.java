@@ -59,4 +59,15 @@ public class UserCouponController {
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    /**
+     * 내 쿠폰 삭제
+     */
+    @DeleteMapping("/{userCouponId}")
+    public ResponseEntity<ApiResponse> deleteUserCouponApi(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long userCouponId) {
+
+        ApiResponse response = ApiResponse.success("내 쿠폰 삭제 완료", userCouponService.deleteUserCoupon(authUser.getId(), userCouponId));
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 }

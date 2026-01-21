@@ -47,4 +47,9 @@ public class UserCoupon extends BaseEntity {
     public void use() {
         this.status = UserCouponStatus.USED;
     }
+
+    // 상태 : 삭제 됨
+    public void changeStatus(UserCouponStatus targetStatus) {
+        this.status = targetStatus;
+    }
 }

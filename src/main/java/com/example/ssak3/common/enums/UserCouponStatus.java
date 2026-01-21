@@ -4,5 +4,6 @@ public enum UserCouponStatus {
     AVAILABLE,
     USED,
     EXPIRED,
-    DELETED;
+    DELETED,
+    USED_DELETED;
 }

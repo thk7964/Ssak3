@@ -8,11 +8,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import java.util.List;
 
 public interface UserCouponRepository extends JpaRepository<UserCoupon, Long> {
 
     // 헤딩 유저가 이미 해당 쿠폰을 받았는지 확인
-    boolean existsByUserAndCoupon(User user, Coupon coupon);
+    boolean existsByUserAndCouponAndStatusIn(User user, Coupon coupon, List<UserCouponStatus> statuses);
 
     // 내 쿠폰 목록 페이징 조회
     @Query("SELECT uc " +

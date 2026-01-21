@@ -14,6 +14,7 @@ public class UserListGetResponse {
     private final String name;
     private final String nickname;
     private final String email;
+    private final String phone;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
@@ -23,6 +24,7 @@ public class UserListGetResponse {
                 user.getName(),
                 user.getNickname(),
                 user.getEmail(),
+                user.getPhone(),
                 user.getCreatedAt(),
                 user.getUpdatedAt()
         );

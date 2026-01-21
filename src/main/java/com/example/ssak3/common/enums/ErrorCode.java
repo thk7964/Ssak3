@@ -22,6 +22,10 @@ public enum ErrorCode {
     PRODUCT_INSUFFICIENT(HttpStatus.BAD_REQUEST, "상품 재고가 부족합니다."),
     INVALID_QUANTITY(HttpStatus.BAD_REQUEST, "유효한 재고값이 아닙니다."),
 
+    // Review 에러
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "후기를 찾을 수 없습니다."),
+    REVIEW_AUTHOR_MISMATCH(HttpStatus.NOT_FOUND, "사용자와 후기작성자가 일치하지 않습니다."),
+
     // Category 에러
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "카테고리를 찾을 수 없습니다."),
 

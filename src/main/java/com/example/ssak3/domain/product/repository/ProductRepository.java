@@ -17,6 +17,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Optional<Product> findByIdAndIsDeletedFalse(Long id);
 
 
+
     @Query("""
     SELECT p
     FROM Product p
@@ -29,4 +30,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             Pageable pageable
     );
 
+    boolean existsByCategoryId(Long categoryId);
 }

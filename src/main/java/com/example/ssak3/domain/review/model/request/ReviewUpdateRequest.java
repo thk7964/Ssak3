@@ -8,8 +8,6 @@ import lombok.Getter;
 @Getter
 public class ReviewUpdateRequest {
 
-    private Long userId;
-
     private Long productId;
 
     @Size(min = 10, message = "10자 이상 입력해야 합니다.")

@@ -7,9 +7,6 @@ import lombok.Getter;
 public class ReviewCreateRequest {
 
     @NotNull
-    private Long userId;
-
-    @NotNull
     private Long productId;
 
     @NotBlank

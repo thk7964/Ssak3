@@ -33,8 +33,9 @@ public class ReviewService {
      * 후기 생성
      */
     @Transactional
-    public ReviewCreateResponse createReview(ReviewCreateRequest request) {
-        User foundUser = userRepository.findByIdAndIsDeletedFalse(request.getUserId())
+    public ReviewCreateResponse createReview(AuthUser user, ReviewCreateRequest request) {
+
+        User foundUser = userRepository.findByIdAndIsDeletedFalse(user.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         Product foundProduct = productRepository.findByIdAndIsDeletedFalse(request.getProductId())
@@ -81,7 +82,7 @@ public class ReviewService {
                 .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
 
         // 사용자와 댓글 작성자가 일치하는지 확인
-        if(!user.getId().equals(foundReview.getId())) {
+        if(!user.getId().equals(foundReview.getUser().getId())) {
             throw new CustomException(ErrorCode.REVIEW_AUTHOR_MISMATCH);
         }
         foundReview.update(request);

@@ -26,8 +26,10 @@ public class ReviewController {
      * 후기 생성 API
      */
     @PostMapping
-    public ResponseEntity<ApiResponse> createReviewApi(@Valid @RequestBody ReviewCreateRequest request) {
-        ApiResponse response = ApiResponse.success("후기를 생성하였습니다.", reviewService.createReview(request));
+    public ResponseEntity<ApiResponse> createReviewApi(
+            @AuthenticationPrincipal AuthUser user,
+            @Valid @RequestBody ReviewCreateRequest request) {
+        ApiResponse response = ApiResponse.success("후기를 생성하였습니다.", reviewService.createReview(user, request));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

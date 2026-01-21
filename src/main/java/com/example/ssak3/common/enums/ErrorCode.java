@@ -28,6 +28,7 @@ public enum ErrorCode {
 
     // Category 에러
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "카테고리를 찾을 수 없습니다."),
+    CATEGORY_HAS_PRODUCTS(HttpStatus.NOT_FOUND, "카테고리에 포함된 상품이 있습니다."),
 
     // Cart 에러
     CART_PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "장바구니에서 상품을 찾을 수 없습니다."),

@@ -30,5 +30,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             Pageable pageable
     );
 
+    // 카테고리 아이디를 통해 상품의 존재확인
     boolean existsByCategoryId(Long categoryId);
 }

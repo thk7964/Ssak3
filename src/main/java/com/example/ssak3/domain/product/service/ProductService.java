@@ -9,6 +9,7 @@ import com.example.ssak3.domain.category.repository.CategoryRepository;
 import com.example.ssak3.domain.product.entity.Product;
 import com.example.ssak3.domain.product.model.request.ProductCreateRequest;
 import com.example.ssak3.domain.product.model.request.ProductUpdateRequest;
+import com.example.ssak3.domain.product.model.request.ProductUpdateStatusRequest;
 import com.example.ssak3.domain.product.model.response.*;
 import com.example.ssak3.domain.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +53,6 @@ public class ProductService {
      */
     @Transactional(readOnly = true)
     public ProductGetResponse getProduct(Long productId) {
-
         Product foundProduct = productRepository.findByIdAndIsDeletedFalse(productId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
@@ -64,7 +64,6 @@ public class ProductService {
      */
     @Transactional(readOnly = true)
     public PageResponse<ProductListGetResponse> getProductList(Long categoryId, Pageable pageable) {
-
         Page<ProductListGetResponse> productList = productRepository.findProductListByCategoryId(categoryId, pageable)
                 .map(ProductListGetResponse::from);
 
@@ -72,7 +71,7 @@ public class ProductService {
     }
 
     /**
-     * 상품수정 비즈니스 로직
+     * 상품수정
      */
     @Transactional
     public ProductUpdateResponse updateProduct(Long productId, ProductUpdateRequest request) {
@@ -89,15 +88,25 @@ public class ProductService {
     }
 
     /**
-     * 상품삭제 비즈니스 로직
+     * 상품삭제
      */
     @Transactional
     public ProductDeleteResponse deleteProduct(Long productId) {
-
         Product foundProduct = productRepository.findByIdAndIsDeletedFalse(productId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
         foundProduct.softDelete();
         return ProductDeleteResponse.from(foundProduct);
+    }
+
+    /**
+     * 상품 상태변경
+     */
+    public ProductUpdateStatusResponse updateProductStatus(ProductUpdateStatusRequest request) {
+        Product foundProduct = productRepository.findByIdAndIsDeletedFalse(request.getProductId())
+                .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        foundProduct.updateStatus(request.getStatus());
+        return ProductUpdateStatusResponse.from(foundProduct);
     }
 }

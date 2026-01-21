@@ -4,6 +4,7 @@ import com.example.ssak3.common.model.ApiResponse;
 import com.example.ssak3.common.model.AuthUser;
 import com.example.ssak3.domain.product.model.request.ProductCreateRequest;
 import com.example.ssak3.domain.product.model.request.ProductUpdateRequest;
+import com.example.ssak3.domain.product.model.request.ProductUpdateStatusRequest;
 import com.example.ssak3.domain.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -83,6 +84,16 @@ public class ProductController {
             @PathVariable Long productId) {
         log.info("controller 상품삭제 id: {}", productId);
         ApiResponse response = ApiResponse.success("상품을 삭제하였습니다", productService.deleteProduct(productId));
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    /**
+     * 상품 상태변경 API
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/admin/products/status")
+    public ResponseEntity<ApiResponse> updateProductStatusApi(@RequestBody ProductUpdateStatusRequest request) {
+        ApiResponse response = ApiResponse.success("상품의 상태가 변경되었습니다.", productService.updateProductStatus(request));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

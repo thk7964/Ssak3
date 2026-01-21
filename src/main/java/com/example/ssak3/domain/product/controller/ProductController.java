@@ -85,4 +85,16 @@ public class ProductController {
         ApiResponse response = ApiResponse.success("상품을 삭제하였습니다", productService.deleteProduct(productId));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+
+    /**
+     * 조회 수 TOP 10
+     */
+    @GetMapping("/products/popular")
+    public ResponseEntity<ApiResponse> getPopularProductApi() {
+
+        ApiResponse response = ApiResponse.success("조회 수 인기 TOP 10 상품 검색에 성공했습니다.", productService.getPopularProduct());
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 }

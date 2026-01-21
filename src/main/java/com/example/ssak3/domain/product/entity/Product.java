@@ -39,6 +39,9 @@ public class Product extends BaseEntity {
     @Column(nullable = false)
     private Integer quantity;
 
+    @Column(nullable = false, name = "view_count")
+    private Long viewCount;
+
     @Column(nullable = false, name = "is_deleted")
     private boolean isDeleted = false;
 
@@ -49,7 +52,13 @@ public class Product extends BaseEntity {
         this.status = status;
         this.information = information;
         this.quantity = quantity;
+        this.viewCount = 0L;
     }
+
+    public void increaseViewCount() {
+        this.viewCount++;
+    }
+
 
     public void decreaseQuantity(Integer orderProductQuantity) {
         this.quantity -= orderProductQuantity;

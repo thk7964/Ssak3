@@ -29,4 +29,12 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             Pageable pageable
     );
 
+    @Query("""
+    SELECT p
+    FROM Product p
+    WHERE p.isDeleted = false
+    ORDER BY p.viewCount desc
+    LIMIT 10
+    """)
+    List<Product> getPopularTop10();
 }

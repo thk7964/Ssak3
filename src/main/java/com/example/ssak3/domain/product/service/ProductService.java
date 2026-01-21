@@ -50,11 +50,13 @@ public class ProductService {
     /**
      * 상품 상세조회
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public ProductGetResponse getProduct(Long productId) {
 
         Product foundProduct = productRepository.findByIdAndIsDeletedFalse(productId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        foundProduct.increaseViewCount();
 
         return ProductGetResponse.from(foundProduct);
     }
@@ -99,5 +101,17 @@ public class ProductService {
 
         foundProduct.softDelete();
         return ProductDeleteResponse.from(foundProduct);
+    }
+
+
+    /**
+     * 조회 수 TOP 10
+     */
+    @Transactional(readOnly = true)
+    public List<ProductGetResponse> getPopularProduct() {
+
+        List<Product> popularTop10List = productRepository.getPopularTop10();
+
+        return popularTop10List.stream().map(ProductGetResponse::from).toList();
     }
 }

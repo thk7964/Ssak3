@@ -25,7 +25,8 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                 .from(user)
                 .where(
                         roleEq(role),
-                        nicknameContains(nickname)
+                        nicknameContains(nickname),
+                        user.isDeleted.eq(false)
                 )
                 .fetchOne();
 
@@ -44,7 +45,8 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                         .from(user)
                         .where(
                                 roleEq(role),
-                                nicknameContains(nickname)
+                                nicknameContains(nickname),
+                                user.isDeleted.eq(false)
                         )
                         .orderBy(user.nickname.asc())
                         .offset(pageable.getOffset())

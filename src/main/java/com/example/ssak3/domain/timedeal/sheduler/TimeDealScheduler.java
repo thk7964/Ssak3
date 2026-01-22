@@ -19,7 +19,7 @@ public class TimeDealScheduler {
 
     private final TimeDealRepository timeDealRepository;
 
-    @Scheduled(cron = "5 * * * * *")
+    @Scheduled(cron = "0 0 * * * *")
     @Transactional
     public void updateTimeDealStatus() {
         LocalDateTime now = LocalDateTime.now();

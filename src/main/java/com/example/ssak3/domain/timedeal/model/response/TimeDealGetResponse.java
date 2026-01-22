@@ -24,7 +24,7 @@ public class TimeDealGetResponse {
     private final String remainingTime;
     public static TimeDealGetResponse from(TimeDeal timeDeal) {
         LocalDateTime now = LocalDateTime.now();
-        TimeDealStatus status = timeDeal.getStatus(now);
+        TimeDealStatus status = timeDeal.getStatus();
         String remainingTime = null;
 
         if (status == TimeDealStatus.READY || status== TimeDealStatus.OPEN){

@@ -35,6 +35,7 @@ public enum ErrorCode {
     ORDER_PRODUCT_IS_NULL(HttpStatus.BAD_REQUEST, "주문할 상품이 선택되지 않았습니다."),
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문을 찾을 수 없습니다."),
     ORDER_INVALID(HttpStatus.BAD_REQUEST, "유효하지 않은 주문입니다"),
+    ORDER_CAN_NOT_BE_CANCELED(HttpStatus.BAD_REQUEST, "주문을 취소할 수 없습니다."),
 
     //TimeDeal 에러
     SALE_PRICE_MUST_BE_LOWER_THAN_ORIGINAL_PRICE(HttpStatus.BAD_REQUEST, "할인가는 정가보다 낮아야 합니다."),

@@ -31,7 +31,7 @@ public class CartService {
 
         Cart cart = getOrCreateCart(userId);
 
-        List<CartProductListGetResponse> productList = cartProductRepository.findAllByCartId(cart.getId())
+        List<CartProductListGetResponse> productList = cartProductRepository.findAllByCartIdOrderByUpdatedAtDesc(cart.getId())
                 .stream()
                 .map(CartProductListGetResponse::from)
                 .toList();

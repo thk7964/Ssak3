@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 public interface UserCouponRepository extends JpaRepository<UserCoupon, Long> {
 
     // 헤딩 유저가 이미 해당 쿠폰을 받았는지 확인
@@ -14,4 +16,6 @@ public interface UserCouponRepository extends JpaRepository<UserCoupon, Long> {
 
     // 내 쿠폰 목록 페이징 조회
     Page<UserCoupon> findAllByUserId(Long userId, Pageable pageable);
+
+    Optional<UserCoupon> findByIdAndUserId(Long userCouponId, Long userId);
 }

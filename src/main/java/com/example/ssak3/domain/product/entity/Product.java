@@ -91,4 +91,8 @@ public class Product extends BaseEntity {
             status=ProductStatus.FOR_SALE;
         }
     }
+
+    public void updateStatus(ProductStatus status) {
+        this.status = status;
+    }
 }

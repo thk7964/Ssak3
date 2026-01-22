@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
+import java.util.Optional;
+
 public interface UserCouponRepository extends JpaRepository<UserCoupon, Long> {
 
     // 헤딩 유저가 이미 해당 쿠폰을 받았는지 확인
@@ -22,4 +24,6 @@ public interface UserCouponRepository extends JpaRepository<UserCoupon, Long> {
             "AND c.isDeleted = false " +  // 관리자가 삭제한 쿠폰 제외
             "AND uc.status = :status")
     Page<UserCoupon> findAllActiveCouponsByUserId(Long userId, Pageable pageable, UserCouponStatus status);
+
+    Optional<UserCoupon> findByIdAndUserId(Long userCouponId, Long userId);
 }

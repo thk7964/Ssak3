@@ -2,6 +2,7 @@ package com.example.ssak3.domain.order.entity;
 
 import com.example.ssak3.common.entity.BaseEntity;
 import com.example.ssak3.common.enums.OrderStatus;
+import com.example.ssak3.domain.coupon.entity.Coupon;
 import com.example.ssak3.domain.user.entity.User;
 import com.example.ssak3.domain.usercoupon.entity.UserCoupon;
 import jakarta.persistence.*;
@@ -34,23 +35,27 @@ public class Order extends BaseEntity {
     @Column(nullable = false, name = "total_price")
     private Long totalPrice;
 
-    @Column
+    @Column(nullable = false)
     private String address;
 
-    // 결제 전 주문서 생성
-    public Order(User user, Long totalPrice) {
+    public Order(User user, String Address, UserCoupon userCoupon, Long totalPrice) {
         this.user = user;
-        this.totalPrice = totalPrice;
-    }
-
-    public void update(String Address, UserCoupon userCoupon, Long totalPrice) {
         this.address = Address;
         this.userCoupon = userCoupon;
         this.totalPrice = totalPrice;
     }
 
+    public void applyCoupon(UserCoupon coupon, long discount) {
+        this.userCoupon = coupon;
+        this.totalPrice -= discount;
+    }
+
     public void updateStatus(OrderStatus orderStatus) {
         this.status = orderStatus;
+    }
+
+    public void canceled() {
+        this.status = OrderStatus.CANCELED;
     }
 
 }

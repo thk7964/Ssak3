@@ -1,11 +1,13 @@
 package com.example.ssak3.domain.timedeal.repository;
 
 import com.example.ssak3.common.enums.TimeDealStatus;
+import com.example.ssak3.domain.timedeal.entity.TimeDeal;
 import com.example.ssak3.domain.timedeal.model.response.TimeDealListGetResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface TimeDealCustomRepository {
 
@@ -13,7 +15,7 @@ public interface TimeDealCustomRepository {
 
     boolean existsActiveDealByProduct(Long productId, LocalDateTime now);
 
-    long openReadyTimeDeals(LocalDateTime now);
+    List<TimeDeal> findReadyToOpen(LocalDateTime now);
 
-    long expiredTimeDeals(LocalDateTime now);
+    List<TimeDeal> findOpenToClose(LocalDateTime now);
 }

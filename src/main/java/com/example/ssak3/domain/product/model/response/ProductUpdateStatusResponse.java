@@ -9,29 +9,25 @@ import java.time.LocalDateTime;
 
 @Getter
 @RequiredArgsConstructor
-public class ProductUpdateResponse {
+public class ProductUpdateStatusResponse {
 
     private final Long id;
     private final Long categoryId;
     private final String name;
-    private final Integer price;
     private final ProductStatus status;
-    private final String information;
-    private final Integer quantity;
+
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
-    public static ProductUpdateResponse from(Product product) {
-        return new ProductUpdateResponse(
+    public static ProductUpdateStatusResponse from(Product product) {
+        return new ProductUpdateStatusResponse(
                 product.getId(),
                 product.getCategory().getId(),
                 product.getName(),
-                product.getPrice(),
                 product.getStatus(),
-                product.getInformation(),
-                product.getQuantity(),
                 product.getCreatedAt(),
                 product.getUpdatedAt()
         );
     }
+
 }

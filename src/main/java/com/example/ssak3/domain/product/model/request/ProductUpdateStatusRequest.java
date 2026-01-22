@@ -6,13 +6,9 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class ProductUpdateRequest {
+public class ProductUpdateStatusRequest {
 
-    private Long categoryId;
-    private String name;
-    private Integer price;
+    private Long productId;
     private ProductStatus status;
-    private String information;
-    private Integer quantity;
 
 }

@@ -1,14 +1,15 @@
 package com.example.ssak3.domain.product.service;
 
 import com.example.ssak3.common.enums.ErrorCode;
+import com.example.ssak3.common.enums.ProductStatus;
 import com.example.ssak3.common.exception.CustomException;
-import com.example.ssak3.common.model.AuthUser;
 import com.example.ssak3.common.model.PageResponse;
 import com.example.ssak3.domain.category.entity.Category;
 import com.example.ssak3.domain.category.repository.CategoryRepository;
 import com.example.ssak3.domain.product.entity.Product;
 import com.example.ssak3.domain.product.model.request.ProductCreateRequest;
 import com.example.ssak3.domain.product.model.request.ProductUpdateRequest;
+import com.example.ssak3.domain.product.model.request.ProductUpdateStatusRequest;
 import com.example.ssak3.domain.product.model.response.*;
 import com.example.ssak3.domain.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +40,7 @@ public class ProductService {
                 findCategory,
                 request.getName(),
                 request.getPrice(),
-                request.getStatus(),
+                ProductStatus.BEFORE_SALE,
                 request.getInformation(),
                 request.getQuantity()
         );
@@ -48,19 +49,33 @@ public class ProductService {
     }
 
     /**
-     * 상품 상세조회
+     * 상품 상세조회(사용자)
      */
     @Transactional(readOnly = true)
     public ProductGetResponse getProduct(Long productId) {
-
         Product foundProduct = productRepository.findByIdAndIsDeletedFalse(productId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
+        if (foundProduct.getStatus().equals(ProductStatus.STOP_SALE)) {
+            throw new CustomException(ErrorCode.PRODUCT_NOT_VIEWABLE);
+        }
+        if (foundProduct.getStatus().equals(ProductStatus.BEFORE_SALE)) {
+            throw new CustomException(ErrorCode.PRODUCT_NOT_VIEWABLE);
+        }
         return ProductGetResponse.from(foundProduct);
     }
 
     /**
-     * 상품 목록조회
+     * 상품 상세조회(관리자)
+     */
+    public ProductGetResponse getProductAdmin(Long productId) {
+        Product foundProduct = productRepository.findByIdAndIsDeletedFalse(productId)
+                .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
+        return ProductGetResponse.from(foundProduct);
+    }
+
+    /**
+     * 상품 목록조회(사용자)
      */
     @Transactional(readOnly = true)
     public PageResponse<ProductListGetResponse> getProductList(Long categoryId, Pageable pageable) {
@@ -72,7 +87,16 @@ public class ProductService {
     }
 
     /**
-     * 상품수정 비즈니스 로직
+     * 상품 목록조회(관리자)
+     */
+    public Object getProductListAdmin(Long categoryId, Pageable pageable) {
+        Page<ProductListGetResponse> productList = productRepository.findProductListByCategoryIdForAdmin(categoryId, pageable)
+                .map(ProductListGetResponse::from);
+        return PageResponse.from(productList);
+    }
+
+    /**
+     * 상품수정
      */
     @Transactional
     public ProductUpdateResponse updateProduct(Long productId, ProductUpdateRequest request) {
@@ -89,15 +113,25 @@ public class ProductService {
     }
 
     /**
-     * 상품삭제 비즈니스 로직
+     * 상품삭제
      */
     @Transactional
     public ProductDeleteResponse deleteProduct(Long productId) {
-
         Product foundProduct = productRepository.findByIdAndIsDeletedFalse(productId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
         foundProduct.softDelete();
         return ProductDeleteResponse.from(foundProduct);
+    }
+
+    /**
+     * 상품 상태변경
+     */
+    public ProductUpdateStatusResponse updateProductStatus(ProductUpdateStatusRequest request) {
+        Product foundProduct = productRepository.findByIdAndIsDeletedFalse(request.getProductId())
+                .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        foundProduct.updateStatus(request.getStatus());
+        return ProductUpdateStatusResponse.from(foundProduct);
     }
 }

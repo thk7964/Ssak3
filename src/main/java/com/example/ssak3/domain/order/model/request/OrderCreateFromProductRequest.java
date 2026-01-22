@@ -1,19 +1,25 @@
 package com.example.ssak3.domain.order.model.request;
 
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class OrderDraftCreateFromProductRequest {
+public class OrderCreateFromProductRequest {
 
     @NotNull
     private Long productId;
 
     @NotNull
-    @Min(1)
+    @Min(value = 1, message = "수량은 1 이상이어야 합니다.")
     private Integer quantity;
+
+    @NotBlank
+    private String address;
+
+    private Long userCouponId;
 
 }

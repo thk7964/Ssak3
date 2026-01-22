@@ -1,7 +1,9 @@
 package com.example.ssak3.domain.product.entity;
 
 import com.example.ssak3.common.entity.BaseEntity;
+import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.enums.ProductStatus;
+import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.domain.category.entity.Category;
 import com.example.ssak3.domain.product.model.request.ProductUpdateRequest;
 import jakarta.persistence.*;
@@ -52,7 +54,14 @@ public class Product extends BaseEntity {
     }
 
     public void decreaseQuantity(Integer orderProductQuantity) {
+        if(this.quantity < orderProductQuantity) {
+            throw new CustomException(ErrorCode.PRODUCT_INSUFFICIENT);
+        }
         this.quantity -= orderProductQuantity;
+
+        if (this.quantity == 0) {
+            this.status = ProductStatus.SOLD_OUT;
+        }
     }
 
     public void update(ProductUpdateRequest request, Category category) {

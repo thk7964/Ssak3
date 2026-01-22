@@ -38,7 +38,7 @@ public class CartProductService {
     public CartProductListGetResponse addCartProduct(Long userId, CartProductAddRequest request) {
 
         // 상품 조회
-        Product product = productRepository.findById(request.getProductId())
+        Product product = productRepository.findByIdAndIsDeletedFalse(request.getProductId())
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
         // 판매중인지 확인
@@ -99,12 +99,7 @@ public class CartProductService {
     @Transactional
     public CartProductListGetResponse updateCartProductQuantity (Long userId, CartProductQuantityUpdateRequest request) {
 
-        // 변경하려는 수량이 1보다 큰지 확인
         int newQuantity = request.getQuantity();
-
-        if(newQuantity < 1) {
-            throw new CustomException(ErrorCode.INVALID_QUANTITY);
-        }
 
         Cart cart = cartService.getOrCreateCart(userId);
 

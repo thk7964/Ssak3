@@ -79,4 +79,11 @@ public class Coupon extends BaseEntity {
         }
         this.issuedQuantity++;
     }
+
+    // IssuedQuantity (현재까지 발급된 수량) 감소 메소드
+    public void decreaseIssuedQuantity() {
+        if (this.issuedQuantity > 0) {
+            this.issuedQuantity--;
+        }
+    }
 }

@@ -3,9 +3,7 @@ package com.example.ssak3.domain.timedeal.repository;
 import com.example.ssak3.common.enums.TimeDealStatus;
 import com.example.ssak3.domain.timedeal.entity.TimeDeal;
 import com.example.ssak3.domain.timedeal.model.response.TimeDealListGetResponse;
-import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -36,7 +34,7 @@ public class TimeDealCustomRepositoryImpl implements TimeDealCustomRepository {
                         .limit(pageable.getPageSize())
                         .fetch();
 
-        List<TimeDealListGetResponse>list =timeDeals.stream()
+        List<TimeDealListGetResponse> list = timeDeals.stream()
                 .map(TimeDealListGetResponse::from)
                 .toList();
 
@@ -54,7 +52,7 @@ public class TimeDealCustomRepositoryImpl implements TimeDealCustomRepository {
 
     private BooleanExpression timeDealStatusCondition(TimeDealStatus status, LocalDateTime now) {
 
-        if (status == null){
+        if (status == null) {
             return null;
         }
 
@@ -74,8 +72,7 @@ public class TimeDealCustomRepositoryImpl implements TimeDealCustomRepository {
                 .where(
                         timeDeal.product.id.eq(productId),
                         timeDeal.isDeleted.isFalse(),
-                        timeDeal.startAt.loe(now),
-                        timeDeal.endAt.goe(now)
+                        timeDeal.status.in(TimeDealStatus.READY, TimeDealStatus.OPEN)
                 )
                 .fetchFirst() != null;
     }

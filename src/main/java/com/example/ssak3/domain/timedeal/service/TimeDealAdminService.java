@@ -101,8 +101,7 @@ public class TimeDealAdminService {
             throw new CustomException(ErrorCode.INVALID_TIME_RANGE);
         }
 
-
-        timeDeal.update(request);
+        timeDeal.update(request, now);
 
         return TimeDealUpdateResponse.from(timeDeal);
     }
@@ -115,7 +114,7 @@ public class TimeDealAdminService {
         TimeDeal timeDeal = timeDealRepository.findByIdAndIsDeletedFalse(timeDealId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TIME_DEAL_NOT_FOUND));
 
-        if (!timeDeal.isDeletable(LocalDateTime.now())) {
+        if (!timeDeal.isDeletable()) {
             throw new CustomException(ErrorCode.TIME_DEAL_CANNOT_DELETE);
         }
 

@@ -12,4 +12,8 @@ public interface TimeDealCustomRepository {
     Page<TimeDealListGetResponse> findTimeDeals (TimeDealStatus status, Pageable pageable);
 
     boolean existsActiveDealByProduct(Long productId, LocalDateTime now);
+
+    long openReadyTimeDeals(LocalDateTime now);
+
+    long expiredTimeDeals(LocalDateTime now);
 }

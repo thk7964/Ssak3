@@ -15,7 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/ssak3/coupons")
+@RequestMapping("/ssak3")
 @RequiredArgsConstructor
 public class CouponController {
 
@@ -25,7 +25,7 @@ public class CouponController {
      * 쿠폰 생성
      */
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping
+    @PostMapping("/admin/coupons")
     public ResponseEntity<ApiResponse> createCouponApi(@Valid @RequestBody CouponCreateRequest request) {
 
         ApiResponse response = ApiResponse.success("쿠폰 생성 완료", couponService.createCoupon(request));
@@ -36,7 +36,7 @@ public class CouponController {
     /**
      * 쿠폰 목록 조회
      */
-    @GetMapping
+    @GetMapping("/coupons")
     public ResponseEntity<ApiResponse> getCouponListApi(@PageableDefault(size = 10, sort = "issueEndDate", direction = Sort.Direction.ASC) Pageable pageable) {
 
         ApiResponse response = ApiResponse.success("쿠폰 목록 조회 완료", couponService.getCouponList(pageable));
@@ -48,7 +48,7 @@ public class CouponController {
      * 쿠폰 수정
      */
     @PreAuthorize("hasRole('ADMIN')")
-    @PatchMapping("/{couponId}")
+    @PatchMapping("/admin/coupons/{couponId}")
     public ResponseEntity<ApiResponse> updateCouponApi(@PathVariable Long couponId, @RequestBody CouponUpdateRequest request) {
 
         ApiResponse response = ApiResponse.success("쿠폰 수정 완료", couponService.updateCoupon(couponId, request));
@@ -60,7 +60,7 @@ public class CouponController {
      * 쿠폰 삭제
      */
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/{couponId}")
+    @DeleteMapping("/admin/coupons/{couponId}")
     public ResponseEntity<ApiResponse> deleteCouponApi(@PathVariable Long couponId) {
 
         ApiResponse response = ApiResponse.success("쿠폰 삭제 완료", couponService.deleteCoupon(couponId));

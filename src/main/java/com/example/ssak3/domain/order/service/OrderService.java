@@ -217,6 +217,11 @@ public class OrderService {
      */
     private int validatePurchasableReturnUnitPrice(Product product, int quantity) {
 
+        // 삭제된 상품인지 확인
+        if (product.isDeleted()) {
+            throw new CustomException(ErrorCode.PRODUCT_NOT_FOUND);
+        }
+
         // 재고 확인
         if (product.getQuantity() < quantity) {
             throw new CustomException(ErrorCode.PRODUCT_INSUFFICIENT);

@@ -1,0 +1,55 @@
+package com.example.ssak3.domain.product.service;
+
+import com.example.ssak3.domain.product.entity.Product;
+import com.example.ssak3.domain.product.model.response.ProductGetResponse;
+import com.example.ssak3.domain.product.repository.ProductRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class ProductRankingService {
+
+    private final RedisTemplate<String, String> redisTemplate;
+    private final ProductRepository productRepository;
+    private static final String PRODUCT_VIEW_RANKING = "product:ranking:view";
+
+    public void increaseViewCount(Long productId) {
+
+        redisTemplate.opsForZSet().incrementScore(PRODUCT_VIEW_RANKING, productId.toString(), 1);
+    }
+
+    public List<ProductGetResponse> getPopularProductTop10() {
+
+        Set<ZSetOperations.TypedTuple<String>> result = redisTemplate.opsForZSet().reverseRangeWithScores(PRODUCT_VIEW_RANKING, 0, 9);
+
+        if (result == null || result.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Long> productIdList = result.stream().map(tuple -> Long.parseLong(tuple.getValue())).toList();
+
+        List<Product> productList = productRepository.findByIdIn(productIdList);
+
+        Map<Long, Product> productMap = productList.stream()
+                .collect(Collectors.toMap(Product::getId, p -> p));
+
+        List<ProductGetResponse> productGetResponseList = new ArrayList<>();
+
+        for (Long productId : productIdList) {
+            Product product = productMap.get(productId);
+
+            if (product != null) {
+                productGetResponseList.add(ProductGetResponse.from(product));
+            }
+        }
+
+        return productGetResponseList;
+    }
+
+}

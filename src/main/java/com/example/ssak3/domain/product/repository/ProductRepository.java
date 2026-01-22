@@ -37,4 +37,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     LIMIT 10
     """)
     List<Product> getPopularTop10();
+
+    List<Product> findByIdIn(List<Long> productIdList);
 }

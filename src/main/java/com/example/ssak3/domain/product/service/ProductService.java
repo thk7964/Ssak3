@@ -25,6 +25,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final ProductRankingService productRankingService;
 
     /**
      * 상품생성
@@ -56,7 +57,7 @@ public class ProductService {
         Product foundProduct = productRepository.findByIdAndIsDeletedFalse(productId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
-        foundProduct.increaseViewCount();
+        productRankingService.increaseViewCount(productId);
 
         return ProductGetResponse.from(foundProduct);
     }

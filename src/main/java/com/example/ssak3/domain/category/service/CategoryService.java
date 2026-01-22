@@ -2,7 +2,6 @@ package com.example.ssak3.domain.category.service;
 
 import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.exception.CustomException;
-import com.example.ssak3.common.model.AuthUser;
 import com.example.ssak3.common.model.PageResponse;
 import com.example.ssak3.domain.category.entity.Category;
 import com.example.ssak3.domain.category.model.request.CategoryCreateRequest;
@@ -15,8 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

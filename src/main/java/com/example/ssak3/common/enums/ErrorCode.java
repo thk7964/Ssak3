@@ -21,6 +21,7 @@ public enum ErrorCode {
     PRODUCT_NOT_FOR_SALE(HttpStatus.BAD_REQUEST, "판매중인 상품이 아닙니다."),
     PRODUCT_INSUFFICIENT(HttpStatus.BAD_REQUEST, "상품 재고가 부족합니다."),
     INVALID_QUANTITY(HttpStatus.BAD_REQUEST, "유효한 재고값이 아닙니다."),
+    PRODUCT_NOT_VIEWABLE(HttpStatus.BAD_REQUEST, "현재 상품 상태에서는 조회할 수 없습니다."),
 
     // Review 에러
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "후기를 찾을 수 없습니다."),

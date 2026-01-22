@@ -1,8 +1,8 @@
 package com.example.ssak3.domain.product.service;
 
 import com.example.ssak3.common.enums.ErrorCode;
+import com.example.ssak3.common.enums.ProductStatus;
 import com.example.ssak3.common.exception.CustomException;
-import com.example.ssak3.common.model.AuthUser;
 import com.example.ssak3.common.model.PageResponse;
 import com.example.ssak3.domain.category.entity.Category;
 import com.example.ssak3.domain.category.repository.CategoryRepository;
@@ -40,7 +40,7 @@ public class ProductService {
                 findCategory,
                 request.getName(),
                 request.getPrice(),
-                request.getStatus(),
+                ProductStatus.BEFORE_SALE,
                 request.getInformation(),
                 request.getQuantity()
         );
@@ -49,25 +49,50 @@ public class ProductService {
     }
 
     /**
-     * 상품 상세조회
+     * 상품 상세조회(사용자)
      */
     @Transactional(readOnly = true)
     public ProductGetResponse getProduct(Long productId) {
         Product foundProduct = productRepository.findByIdAndIsDeletedFalse(productId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
+        if (foundProduct.getStatus().equals(ProductStatus.STOP_SALE)) {
+            throw new CustomException(ErrorCode.PRODUCT_NOT_VIEWABLE);
+        }
+        if (foundProduct.getStatus().equals(ProductStatus.BEFORE_SALE)) {
+            throw new CustomException(ErrorCode.PRODUCT_NOT_VIEWABLE);
+        }
         return ProductGetResponse.from(foundProduct);
     }
 
     /**
-     * 상품 목록조회
+     * 상품 상세조회(관리자)
+     */
+    public ProductGetResponse getProductAdmin(Long productId) {
+        Product foundProduct = productRepository.findByIdAndIsDeletedFalse(productId)
+                .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
+        return ProductGetResponse.from(foundProduct);
+    }
+
+    /**
+     * 상품 목록조회(사용자)
      */
     @Transactional(readOnly = true)
     public PageResponse<ProductListGetResponse> getProductList(Long categoryId, Pageable pageable) {
+
         Page<ProductListGetResponse> productList = productRepository.findProductListByCategoryId(categoryId, pageable)
                 .map(ProductListGetResponse::from);
 
        return PageResponse.from(productList);
+    }
+
+    /**
+     * 상품 목록조회(관리자)
+     */
+    public Object getProductListAdmin(Long categoryId, Pageable pageable) {
+        Page<ProductListGetResponse> productList = productRepository.findProductListByCategoryIdForAdmin(categoryId, pageable)
+                .map(ProductListGetResponse::from);
+        return PageResponse.from(productList);
     }
 
     /**

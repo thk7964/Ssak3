@@ -34,6 +34,10 @@ public class TimeDeal extends BaseEntity {
     @Column(name = "end_at", nullable = false)
     private LocalDateTime endAt;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private TimeDealStatus status;
+
     @Column(nullable = false, name = "is_deleted")
     private boolean isDeleted;
 
@@ -43,53 +47,49 @@ public class TimeDeal extends BaseEntity {
         this.startAt = startAt;
         this.endAt = endAt;
         this.isDeleted = false;
+        this.status = TimeDealStatus.READY;
     }
 
-    /*
-     *  현재 시점 기준으로 타임딜의 상태를 반환
-     * */
-    public TimeDealStatus getStatus(LocalDateTime now) {
-        if (isDeleted) return TimeDealStatus.DELETED;
-        if (now.isBefore(startAt)) {open(); return TimeDealStatus.READY;}
-        if (now.isAfter(endAt)) {
-            open();
-            return TimeDealStatus.CLOSED;
+
+    public void setStatus(TimeDealStatus newStatus) {
+        if (this.status != newStatus) {
+            this.status = newStatus;
+            if (newStatus == TimeDealStatus.READY || newStatus == TimeDealStatus.CLOSED) productOpen();
+            if (newStatus == TimeDealStatus.OPEN) productClosed();
+
         }
-        closed();
-        return TimeDealStatus.OPEN;
     }
 
     public void softDelete() {
         this.isDeleted = true;
     }
 
-    public void update(TimeDealUpdateRequest request) {
+    public void update(TimeDealUpdateRequest request, LocalDateTime now) {
 
         if (request.getDealPrice() != null) {
             this.dealPrice = request.getDealPrice();
         }
         if (request.getStartAt() != null) {
             this.startAt = request.getStartAt();
+            setStatus(TimeDealStatus.READY);
         }
         if (request.getEndAt() != null) {
             this.endAt = request.getEndAt();
         }
     }
 
-    public boolean isDeletable(LocalDateTime now) {
-        TimeDealStatus status = getStatus(now);
+    public boolean isDeletable() {
         return status == TimeDealStatus.READY || status == TimeDealStatus.CLOSED;
     }
 
-    public void open() {
+    private void productOpen() {
         if (isDeleted) return;
         product.stopSaleForTimeDeal();
     }
 
-    public void closed() {
+    private void productClosed() {
         if (isDeleted) return;
         product.restoreStatusAfterTimeDeal();
     }
-
 
 }

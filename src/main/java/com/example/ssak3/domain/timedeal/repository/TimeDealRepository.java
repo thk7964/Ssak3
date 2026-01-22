@@ -1,11 +1,13 @@
 package com.example.ssak3.domain.timedeal.repository;
 
+import com.example.ssak3.common.enums.TimeDealStatus;
 import com.example.ssak3.domain.timedeal.entity.TimeDeal;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public interface TimeDealRepository extends JpaRepository<TimeDeal, Long>, TimeDealCustomRepository {
@@ -22,4 +24,6 @@ public interface TimeDealRepository extends JpaRepository<TimeDeal, Long>, TimeD
     Optional<TimeDeal> findOpenTimeDeal(@Param("productId") Long productId, @Param("now") LocalDateTime now);
 
     Optional<TimeDeal> findByIdAndIsDeletedFalse(Long timeDealId);
+
+    List<TimeDeal> findAllByStatus(TimeDealStatus timeDealStatus);
 }

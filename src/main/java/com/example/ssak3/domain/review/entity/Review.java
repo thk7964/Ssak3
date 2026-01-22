@@ -2,6 +2,7 @@ package com.example.ssak3.domain.review.entity;
 
 import com.example.ssak3.common.entity.BaseEntity;
 import com.example.ssak3.domain.product.entity.Product;
+import com.example.ssak3.domain.review.model.request.ReviewUpdateRequest;
 import com.example.ssak3.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -33,5 +34,25 @@ public class Review extends BaseEntity {
 
     @Column(nullable = false, name = "is_deleted")
     private boolean isDeleted = false;
+
+    public Review(User user, Product product, String content, Integer score) {
+        this.user = user;
+        this.product = product;
+        this.content = content;
+        this.score = score;
+    }
+
+    public void update(ReviewUpdateRequest request) {
+        if (request.getContent() != null) {
+            this.content = request.getContent();
+        }
+        if (request.getScore() != null) {
+            this.score = request.getScore();
+        }
+    }
+
+    public void softDelete() {
+        this.isDeleted = true;
+    }
 
 }

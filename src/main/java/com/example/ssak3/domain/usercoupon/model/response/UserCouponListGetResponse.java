@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 public class UserCouponListGetResponse {
 
     private final Long userCouponId;    // 발급된 회원 쿠폰의 아이디
+    private final Long couponId;        // 발급한 쿠폰 아이디
     private final String couponName;
     private final Integer discountValue;
     private final LocalDateTime expiredAt;
@@ -22,6 +23,7 @@ public class UserCouponListGetResponse {
     public static UserCouponListGetResponse from(UserCoupon userCoupon) {
         return new UserCouponListGetResponse(
                 userCoupon.getId(),
+                userCoupon.getCoupon().getId(),
                 userCoupon.getCoupon().getName(),
                 userCoupon.getCoupon().getDiscountValue(),
                 userCoupon.getExpiredAt(),

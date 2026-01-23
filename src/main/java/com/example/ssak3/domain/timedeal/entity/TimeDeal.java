@@ -62,6 +62,7 @@ public class TimeDeal extends BaseEntity {
 
     public void softDelete() {
         this.isDeleted = true;
+        this.status=TimeDealStatus.DELETED;
     }
 
     public void update(TimeDealUpdateRequest request, LocalDateTime now) {

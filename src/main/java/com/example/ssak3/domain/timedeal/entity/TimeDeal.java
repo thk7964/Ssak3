@@ -65,7 +65,7 @@ public class TimeDeal extends BaseEntity {
         this.status=TimeDealStatus.DELETED;
     }
 
-    public void update(TimeDealUpdateRequest request, LocalDateTime now) {
+    public void update(TimeDealUpdateRequest request) {
 
         if (request.getDealPrice() != null) {
             this.dealPrice = request.getDealPrice();

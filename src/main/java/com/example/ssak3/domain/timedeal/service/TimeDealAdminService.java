@@ -116,7 +116,7 @@ public class TimeDealAdminService {
             throw new CustomException(ErrorCode.INVALID_TIME_RANGE);
         }
 
-        timeDeal.update(request, now);
+        timeDeal.update(request);
 
         return TimeDealUpdateResponse.from(timeDeal);
     }

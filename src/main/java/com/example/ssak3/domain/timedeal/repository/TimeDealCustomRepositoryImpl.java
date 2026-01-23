@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.example.ssak3.domain.product.entity.QProduct.product;
 import static com.example.ssak3.domain.timedeal.entity.QTimeDeal.timeDeal;
 
 @RequiredArgsConstructor
@@ -75,6 +76,32 @@ public class TimeDealCustomRepositoryImpl implements TimeDealCustomRepository {
                         timeDeal.status.in(TimeDealStatus.READY, TimeDealStatus.OPEN)
                 )
                 .fetchFirst() != null;
+    }
+
+    @Override
+    public List<TimeDeal> findReadyToOpen(LocalDateTime now) {
+        return queryFactory
+                .selectFrom(timeDeal)
+                .join(timeDeal.product, product).fetchJoin()
+                .where(
+                        timeDeal.status.eq(TimeDealStatus.READY),
+                        timeDeal.isDeleted.isFalse(),
+                        timeDeal.startAt.loe(now)
+                )
+                .fetch();
+    }
+
+    @Override
+    public List<TimeDeal> findOpenToClose(LocalDateTime now) {
+        return queryFactory
+                .selectFrom(timeDeal)
+                .join(timeDeal.product, product).fetchJoin()
+                .where(
+                        timeDeal.status.eq(TimeDealStatus.OPEN),
+                        timeDeal.isDeleted.isFalse(),
+                        timeDeal.endAt.loe(now)
+                )
+                .fetch();
     }
 
 }

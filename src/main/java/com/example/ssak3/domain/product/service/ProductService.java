@@ -18,8 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class ProductService {
@@ -68,6 +66,7 @@ public class ProductService {
     /**
      * 상품 상세조회(관리자)
      */
+    @Transactional(readOnly = true)
     public ProductGetResponse getProductAdmin(Long productId) {
         Product foundProduct = productRepository.findByIdAndIsDeletedFalse(productId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
@@ -89,6 +88,7 @@ public class ProductService {
     /**
      * 상품 목록조회(관리자)
      */
+    @Transactional(readOnly = true)
     public Object getProductListAdmin(Long categoryId, Pageable pageable) {
         Page<ProductListGetResponse> productList = productRepository.findProductListByCategoryIdForAdmin(categoryId, pageable)
                 .map(ProductListGetResponse::from);
@@ -127,6 +127,7 @@ public class ProductService {
     /**
      * 상품 상태변경
      */
+    @Transactional
     public ProductUpdateStatusResponse updateProductStatus(ProductUpdateStatusRequest request) {
         Product foundProduct = productRepository.findByIdAndIsDeletedFalse(request.getProductId())
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));

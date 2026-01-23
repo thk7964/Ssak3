@@ -1,7 +1,7 @@
 package com.example.ssak3.domain.product.service;
 
 import com.example.ssak3.domain.product.entity.Product;
-import com.example.ssak3.domain.product.model.response.ProductGetResponse;
+import com.example.ssak3.domain.product.model.response.ProductGetPopularResponse;
 import com.example.ssak3.domain.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -30,7 +30,7 @@ public class ProductRankingService {
     /**
      * 상품 조회수 TOP 10 조회
      */
-    public List<ProductGetResponse> getPopularProductTop10() {
+    public List<ProductGetPopularResponse> getPopularProductTop10() {
 
         Set<ZSetOperations.TypedTuple<String>> result = redisTemplate.opsForZSet().reverseRangeWithScores(PRODUCT_VIEW_RANKING, 0, 9);
 
@@ -45,17 +45,17 @@ public class ProductRankingService {
         Map<Long, Product> productMap = productList.stream()
                 .collect(Collectors.toMap(Product::getId, p -> p));
 
-        List<ProductGetResponse> productGetResponseList = new ArrayList<>();
+        List<ProductGetPopularResponse> responseList = new ArrayList<>();
 
         for (Long productId : productIdList) {
             Product product = productMap.get(productId);
 
             if (product != null) {
-                productGetResponseList.add(ProductGetResponse.from(product));
+                responseList.add(ProductGetPopularResponse.from(product));
             }
         }
 
-        return productGetResponseList;
+        return responseList;
     }
 
 }

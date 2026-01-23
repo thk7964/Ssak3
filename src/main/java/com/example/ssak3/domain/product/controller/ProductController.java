@@ -95,7 +95,7 @@ public class ProductController {
     @GetMapping("/products/popular")
     public ResponseEntity<ApiResponse> getPopularProductApi() {
 
-        ApiResponse response = ApiResponse.success("조회 수 인기 TOP 10 상품 검색에 성공했습니다.", productRankingService.getPopularProductTop10());
+        ApiResponse response = ApiResponse.success("조회수 인기 TOP 10 상품 검색에 성공했습니다.", productRankingService.getPopularProductTop10());
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

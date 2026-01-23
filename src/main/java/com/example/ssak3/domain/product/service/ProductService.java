@@ -51,7 +51,7 @@ public class ProductService {
     /**
      * 상품 상세조회
      */
-    public ProductGetResponse getProduct(Long productId) {
+    public ProductGetPopularResponse getProduct(Long productId) {
 
         Product foundProduct = productRepository.findByIdAndIsDeletedFalse(productId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
@@ -62,7 +62,7 @@ public class ProductService {
             log.warn("Redis 조회수 업데이트 실패: productId = {}", foundProduct.getId());
         }
 
-        return ProductGetResponse.from(foundProduct);
+        return ProductGetPopularResponse.from(foundProduct);
     }
 
     /**

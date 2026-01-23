@@ -33,17 +33,6 @@ public class TimeDealService {
     }
 
     /**
-     * 타임딜 목록(전체) 조회
-     */
-    @Transactional(readOnly = true)
-    public PageResponse<TimeDealListGetResponse> getTimeDealList(Pageable pageable) {
-
-        Page<TimeDealListGetResponse> responsePage = timeDealRepository.findAll(pageable).map(TimeDealListGetResponse::from);
-
-        return PageResponse.from(responsePage);
-    }
-
-    /**
      * 타임딜 상태별 목록 조회
      */
     @Transactional(readOnly = true)

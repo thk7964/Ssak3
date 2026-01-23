@@ -1,5 +1,6 @@
 package com.example.ssak3.domain.timedeal.repository;
 
+import com.example.ssak3.common.enums.TimeDealStatus;
 import com.example.ssak3.domain.timedeal.entity.TimeDeal;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

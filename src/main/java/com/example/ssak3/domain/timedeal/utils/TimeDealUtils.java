@@ -15,7 +15,7 @@ public class TimeDealUtils {
         } else if (now.isBefore(endAt)) {   //closed전까지 남음시간
             targetTime = endAt;
         } else {
-            return "00:00:00:00";
+            return null;
         }
 
         long totalSeconds = Duration.between(now, targetTime).getSeconds();

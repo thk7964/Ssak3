@@ -23,7 +23,7 @@ public class TimeDealService {
     /**
      * 타임딜 상세 조회
      */
-    @Transactional
+    @Transactional(readOnly = true)
     public TimeDealGetResponse getTimeDeal(Long timeDealId) {
 
         TimeDeal response = timeDealRepository.findByIdAndIsDeletedFalse(timeDealId)

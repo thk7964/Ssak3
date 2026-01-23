@@ -2,10 +2,7 @@ package com.example.ssak3.domain.order.controller;
 
 import com.example.ssak3.common.model.ApiResponse;
 import com.example.ssak3.common.model.AuthUser;
-import com.example.ssak3.domain.order.model.request.OrderDraftCreateFromCartRequest;
-import com.example.ssak3.domain.order.model.request.OrderDraftCreateFromProductRequest;
-import com.example.ssak3.domain.order.model.request.OrderStatusUpdateRequest;
-import com.example.ssak3.domain.order.model.request.OrderUpdateRequest;
+import com.example.ssak3.domain.order.model.request.*;
 import com.example.ssak3.domain.order.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,63 +11,50 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/ssak3/orders")
+@RequestMapping("/ssak3")
 @Slf4j
 public class OrderController {
 
     private final OrderService orderService;
 
     /**
-     * 단일 상품 주문서 생성
+     * 단일 상품 주문
      */
-    @PostMapping("/products")
+    @PostMapping("/orders/products")
     public ResponseEntity<ApiResponse> createOrderDraftFromProductApi(
             @AuthenticationPrincipal AuthUser user,
-            @Valid @RequestBody OrderDraftCreateFromProductRequest request
+            @Valid @RequestBody OrderCreateFromProductRequest request
     ) {
 
-        ApiResponse response = ApiResponse.success("상품 주문서가 생성되었습니다.", orderService.createOrderDraftFromProduct(user.getId(), request));
+        ApiResponse response = ApiResponse.success("상품 주문이 생성 되었습니다.", orderService.createOrderFromProduct(user.getId(), request));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     /**
-     * 장바구니 상품 주문서 생성
+     * 장바구니 상품 주문
      */
-    @PostMapping("/carts")
-    public ResponseEntity<ApiResponse> createOrderDraftFromCartApi(
+    @PostMapping("/orders/carts")
+    public ResponseEntity<ApiResponse> createOrderFromCartApi(
             @AuthenticationPrincipal AuthUser user,
-            @Valid @RequestBody OrderDraftCreateFromCartRequest request
+            @Valid @RequestBody OrderCreateFromCartRequest request
     ) {
 
-        ApiResponse response = ApiResponse.success("장바구니 상품 주문서가 생성되었습니다.", orderService.createOrderDraftFromCart(user.getId(), request));
+        ApiResponse response = ApiResponse.success("장바구니 상품 주문이 생성 되었습니다.", orderService.createOrderFromCart(user.getId(), request));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
-
-    /**
-     * 주문서 작성 후 주문 확정
-     */
-    @PatchMapping
-    public ResponseEntity<ApiResponse> updateOrderApi(
-            @AuthenticationPrincipal AuthUser user,
-            @Valid @RequestBody OrderUpdateRequest request
-    ) {
-
-        ApiResponse response = ApiResponse.success("주문이 완료되었습니다.", orderService.updateOrder(user.getId(), request));
-
-        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     /**
      * 주문 상세 조회
      */
-    @GetMapping("/{orderId}")
+    @GetMapping("/orders/{orderId}")
     public ResponseEntity<ApiResponse> getOrderApi(
             @AuthenticationPrincipal AuthUser user,
             @PathVariable("orderId") Long orderId
@@ -84,7 +68,7 @@ public class OrderController {
     /**
      * 내 주문 목록 조회
      */
-    @GetMapping
+    @GetMapping("/orders")
     public ResponseEntity<ApiResponse> getOrderListApi(
             @AuthenticationPrincipal AuthUser user,
             @PageableDefault Pageable pageable
@@ -95,17 +79,32 @@ public class OrderController {
     }
 
     /**
-     * 주문 상태 변경
+     * 주문 취소
      */
-    @PatchMapping("/{orderId}")
-    public ResponseEntity<ApiResponse> updateOrderStatusApi(
+    @PatchMapping("/orders/{orderId}")
+    public ResponseEntity<ApiResponse> updateOrderCanceledApi(
             @AuthenticationPrincipal AuthUser user,
+            @PathVariable Long orderId
+    ) {
+        ApiResponse response = ApiResponse.success("주문 취소 성공했습니다.",  orderService.updateOrderCanceled(user.getId(), orderId));
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    /**
+     * 주문 상태 변경(admin)
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/admin/orders/{orderId}")
+    public ResponseEntity<ApiResponse> updateOrderStatusApi(
             @PathVariable Long orderId,
             @Valid @RequestBody OrderStatusUpdateRequest request
     ) {
-        ApiResponse response = ApiResponse.success("주문 상태 변경 성공했습니다.",  orderService.updateOrderStatus(user.getId(), orderId, request));
+
+        ApiResponse response = ApiResponse.success("주문 상태 변경 성공했습니다.", orderService.updateOrderStatus(orderId, request));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
+
     }
 
 

@@ -21,7 +21,9 @@ public class CartProductListGetResponse {
     public static CartProductListGetResponse from(CartProduct cartProduct) {
         Product product = cartProduct.getProduct();
 
-        boolean purchasable = product.getStatus().equals(ProductStatus.FOR_SALE) && (product.getQuantity() >= cartProduct.getQuantity());
+        boolean purchasable = product.getStatus().equals(ProductStatus.FOR_SALE)
+                && (product.getQuantity() >= cartProduct.getQuantity()
+                && !product.isDeleted());
 
         return new CartProductListGetResponse(
                 cartProduct.getId(),

@@ -6,6 +6,7 @@ import com.example.ssak3.domain.cartproduct.model.request.CartProductAddRequest;
 import com.example.ssak3.domain.cartproduct.model.request.CartProductDeleteRequest;
 import com.example.ssak3.domain.cartproduct.model.request.CartProductQuantityUpdateRequest;
 import com.example.ssak3.domain.cartproduct.service.CartProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class CartProductController {
     @PostMapping
     public ResponseEntity<ApiResponse> addCartProductAPI(
             @AuthenticationPrincipal AuthUser user,
-            @RequestBody CartProductAddRequest request) {
+            @Valid @RequestBody CartProductAddRequest request) {
 
         ApiResponse response = ApiResponse.success("장바구니 상품 담기에 성공했습니다.", cartProductService.addCartProduct(user.getId(), request));
 
@@ -32,7 +33,7 @@ public class CartProductController {
     @PatchMapping
     public ResponseEntity<ApiResponse> updateCartProductQuantityAPI(
             @AuthenticationPrincipal AuthUser user,
-            @RequestBody CartProductQuantityUpdateRequest request) {
+            @Valid @RequestBody CartProductQuantityUpdateRequest request) {
 
         ApiResponse response = ApiResponse.success("장바구니 상품 수량 변경에 성공했습니다.", cartProductService.updateCartProductQuantity(user.getId(), request));
 
@@ -42,7 +43,7 @@ public class CartProductController {
     @DeleteMapping
     public ResponseEntity<ApiResponse> deleteCartProductAPI(
             @AuthenticationPrincipal AuthUser user,
-            @RequestBody CartProductDeleteRequest request) {
+            @Valid @RequestBody CartProductDeleteRequest request) {
 
         ApiResponse response = ApiResponse.success("장바구니 상품 삭제 성공했습니다.", cartProductService.deleteCartProduct(user.getId(), request));
 

@@ -39,4 +39,14 @@ public class InquiryChatRoom extends BaseEntity {
         this.status = status;
     }
 
+    // 관리자 배정
+    public void assignAdmin(User admin) {
+        // 관리자가 배정되지 않았거나 문의대기 상태인 것만 관리자 배정 가능
+        if (this.admin != null || this.status != ChatRoomStatus.WAITING) {
+            throw new IllegalStateException("해당 문의를 선택할 수 없습니다.");
+        }
+        this.admin = admin;
+        this.status = ChatRoomStatus.ONGOING;
+    }
+
 }

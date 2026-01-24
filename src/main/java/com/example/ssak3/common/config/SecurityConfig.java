@@ -51,6 +51,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/ssak3/products/**", "/ssak3/coupons", "/ssak3/categories", "/ssak3/time-deals/**").permitAll()
                         .requestMatchers("/ssak3/admin").hasRole("SUPER_ADMIN")
                         .requestMatchers("/ssak3/admin/**", "/ssak3/coupons").hasRole("ADMIN")
+                        .requestMatchers("/ssak3/chat/**").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtExceptionFilter, JwtFilter.class)

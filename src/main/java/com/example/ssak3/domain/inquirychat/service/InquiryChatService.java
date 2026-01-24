@@ -44,4 +44,28 @@ public class InquiryChatService {
         return ChatRoomCreateResponse.from(savedRoom);
     }
 
+
+    /**
+     * 문의 채팅방 연결
+     */
+    @Transactional
+    public void saveMessage(ChatMessageRequest request) {
+
+        InquiryChatRoom room = roomRepository.findById(Long.valueOf(request.getRoomId()))
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅방입니다."));
+
+        User user = userRepository.findById(request.getSenderId())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        InquiryChatMessage message = new InquiryChatMessage(
+                room,
+                user,
+                request.getSenderRole(),
+                request.getType(),
+                request.getContent()
+        );
+
+        messageRepository.save(message);
+    }
+
 }

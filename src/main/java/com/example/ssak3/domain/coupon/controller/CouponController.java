@@ -4,6 +4,7 @@ import com.example.ssak3.common.model.ApiResponse;
 import com.example.ssak3.domain.coupon.model.request.CouponCreateRequest;
 import com.example.ssak3.domain.coupon.model.request.CouponUpdateRequest;
 import com.example.ssak3.domain.coupon.service.CouponService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -25,7 +26,7 @@ public class CouponController {
      */
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<ApiResponse> createCouponApi(@RequestBody CouponCreateRequest request) {
+    public ResponseEntity<ApiResponse> createCouponApi(@Valid @RequestBody CouponCreateRequest request) {
 
         ApiResponse response = ApiResponse.success("쿠폰 생성 완료", couponService.createCoupon(request));
 

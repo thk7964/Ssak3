@@ -22,6 +22,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     FROM Product p
     WHERE p.isDeleted = false
       AND (:categoryId IS NULL OR p.category.id = :categoryId)
+      AND p.status IN (
+      com.example.ssak3.common.enums.ProductStatus.FOR_SALE,
+      com.example.ssak3.common.enums.ProductStatus.SOLD_OUT)
 """)
         // 반환타입을 Page로 수정
     Page<Product> findProductListByCategoryId(
@@ -30,4 +33,19 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     );
 
     List<Product> findByIdIn(List<Long> productIdList);
+
+    @Query("""
+    SELECT p
+    FROM Product p
+    WHERE p.isDeleted = false
+      AND (:categoryId IS NULL OR p.category.id = :categoryId)
+""")
+        // 반환타입을 Page로 수정
+    Page<Product> findProductListByCategoryIdForAdmin(
+            @Param("categoryId") Long categoryId,
+            Pageable pageable
+    );
+
+    // 카테고리 아이디를 통해 상품의 존재확인
+    boolean existsByCategoryId(Long categoryId);
 }

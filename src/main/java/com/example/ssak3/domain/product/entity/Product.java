@@ -1,7 +1,9 @@
 package com.example.ssak3.domain.product.entity;
 
 import com.example.ssak3.common.entity.BaseEntity;
+import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.enums.ProductStatus;
+import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.domain.category.entity.Category;
 import com.example.ssak3.domain.product.model.request.ProductUpdateRequest;
 import jakarta.persistence.*;
@@ -39,9 +41,6 @@ public class Product extends BaseEntity {
     @Column(nullable = false)
     private Integer quantity;
 
-    @Column(nullable = false, name = "view_count")
-    private Long viewCount;
-
     @Column(nullable = false, name = "is_deleted")
     private boolean isDeleted = false;
 
@@ -52,16 +51,17 @@ public class Product extends BaseEntity {
         this.status = status;
         this.information = information;
         this.quantity = quantity;
-        this.viewCount = 0L;
     }
-
-    public void increaseViewCount() {
-        this.viewCount++;
-    }
-
 
     public void decreaseQuantity(Integer orderProductQuantity) {
+        if(this.quantity < orderProductQuantity) {
+            throw new CustomException(ErrorCode.PRODUCT_INSUFFICIENT);
+        }
         this.quantity -= orderProductQuantity;
+
+        if (this.quantity == 0) {
+            this.status = ProductStatus.SOLD_OUT;
+        }
     }
 
     public void update(ProductUpdateRequest request, Category category) {
@@ -99,5 +99,9 @@ public class Product extends BaseEntity {
         if (status!= ProductStatus.FOR_SALE){
             status=ProductStatus.FOR_SALE;
         }
+    }
+
+    public void updateStatus(ProductStatus status) {
+        this.status = status;
     }
 }

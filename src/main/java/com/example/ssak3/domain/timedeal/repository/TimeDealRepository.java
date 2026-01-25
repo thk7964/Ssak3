@@ -22,4 +22,5 @@ public interface TimeDealRepository extends JpaRepository<TimeDeal, Long>, TimeD
     Optional<TimeDeal> findOpenTimeDeal(@Param("productId") Long productId, @Param("now") LocalDateTime now);
 
     Optional<TimeDeal> findByIdAndIsDeletedFalse(Long timeDealId);
+
 }

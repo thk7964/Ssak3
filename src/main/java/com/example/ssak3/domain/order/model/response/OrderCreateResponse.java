@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @RequiredArgsConstructor
-public class OrderUpdateResponse {
+public class OrderCreateResponse {
 
     private final Long orderId;
     private final OrderStatus orderStatus;
@@ -21,8 +21,8 @@ public class OrderUpdateResponse {
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
-    public static OrderUpdateResponse from(Order order, Long subtotal, Long discount) {
-        return new OrderUpdateResponse(
+    public static OrderCreateResponse from(Order order, Long subtotal, Long discount) {
+        return new OrderCreateResponse(
                 order.getId(),
                 order.getStatus(),
                 order.getAddress(),

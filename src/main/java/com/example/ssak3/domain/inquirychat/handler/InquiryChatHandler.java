@@ -10,9 +10,7 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -114,7 +112,7 @@ public class InquiryChatHandler extends TextWebSocketHandler {
     }
 
 
-    // 방에 있는 모든 세션에 메시지 발송하는 메서드
+    // 방에 있는 모든 세션에게 메시지 발송하는 메서드
     private void broadcastToRoom(Long roomId, String message) throws Exception {
 
         Set<WebSocketSession> sessions = roomSessions.get(roomId);
@@ -129,11 +127,11 @@ public class InquiryChatHandler extends TextWebSocketHandler {
         }
     }
 
-    // 연결이 끊겼을 때 리스트에서 삭제 + 방 없애기
+    // 세션의 연결이 끊겼을 때 리스트에서 삭제 + 방 없애기
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
 
-        // 모든 방을 돌면서 나간 세션들을 지워줌
+        // 나간 세션들 지워주기
         for (Set<WebSocketSession> sessions : roomSessions.values()) {
             sessions.remove(session);
         }

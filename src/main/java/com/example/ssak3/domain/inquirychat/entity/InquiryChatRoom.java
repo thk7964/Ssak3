@@ -51,4 +51,9 @@ public class InquiryChatRoom extends BaseEntity {
         this.status = ChatRoomStatus.ONGOING;
     }
 
+    // 문의 채팅 종료 시 COMPLETED로 상태 변경
+    public void chatComplete() {
+        this.status = ChatRoomStatus.COMPLETED;
+    }
+
 }

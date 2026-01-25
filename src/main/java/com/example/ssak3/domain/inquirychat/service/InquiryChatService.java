@@ -6,7 +6,7 @@ import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.domain.inquirychat.entity.InquiryChatMessage;
 import com.example.ssak3.domain.inquirychat.entity.InquiryChatRoom;
 import com.example.ssak3.domain.inquirychat.model.request.ChatMessageRequest;
-import com.example.ssak3.domain.inquirychat.model.response.ChatCreateResponse;
+import com.example.ssak3.domain.inquirychat.model.response.InquiryChatCreateResponse;
 import com.example.ssak3.domain.inquirychat.repository.InquiryChatMessageRepository;
 import com.example.ssak3.domain.inquirychat.repository.InquiryChatRoomRepository;
 import com.example.ssak3.domain.user.entity.User;
@@ -28,7 +28,7 @@ public class InquiryChatService {
      * 문의 채팅방 생성
      */
     @Transactional
-    public ChatCreateResponse createChatRoom(Long userId) {
+    public InquiryChatCreateResponse createChatRoom(Long userId) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
@@ -41,7 +41,7 @@ public class InquiryChatService {
 
         InquiryChatRoom savedRoom = roomRepository.save(room);
 
-        return ChatCreateResponse.from(savedRoom);
+        return InquiryChatCreateResponse.from(savedRoom);
     }
 
 

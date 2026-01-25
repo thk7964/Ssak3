@@ -28,4 +28,5 @@ public class InquiryChatController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
 }

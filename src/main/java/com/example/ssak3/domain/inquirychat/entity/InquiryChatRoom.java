@@ -2,7 +2,9 @@ package com.example.ssak3.domain.inquirychat.entity;
 
 import com.example.ssak3.common.entity.BaseEntity;
 import com.example.ssak3.common.enums.ChatRoomStatus;
+import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.enums.InquiryStatus;
+import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -43,7 +45,7 @@ public class InquiryChatRoom extends BaseEntity {
     public void assignAdmin(User admin) {
         // 관리자가 배정되지 않았거나 문의대기 상태인 것만 관리자 배정 가능
         if (this.admin != null || this.status != ChatRoomStatus.WAITING) {
-            throw new IllegalStateException("해당 문의를 선택할 수 없습니다.");
+            throw new CustomException(ErrorCode.CHAT_ROOM_ALREADY_ASSIGNED);
         }
         this.admin = admin;
         this.status = ChatRoomStatus.ONGOING;

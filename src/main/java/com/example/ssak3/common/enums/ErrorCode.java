@@ -85,7 +85,7 @@ public enum ErrorCode {
 
     // InquiryChat 에러
     CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "문의 채팅방을 찾을 수 없습니다."),
-
+    CHAT_ROOM_ALREADY_ASSIGNED(HttpStatus.CONFLICT, "이미 배정 완료된 문의입니다.")
 
     ;
 

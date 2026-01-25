@@ -6,10 +6,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
-
 @Getter
 @RequiredArgsConstructor
-public class ChatCreateResponse {
+public class InquiryChatAcceptResponse {
     private final Long id;
     private final Long userId;
     private final Long adminId;
@@ -17,16 +16,14 @@ public class ChatCreateResponse {
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
-    public static ChatCreateResponse from(InquiryChatRoom room) {
-        return new ChatCreateResponse(
+    public static InquiryChatAcceptResponse from(InquiryChatRoom room) {
+        return new InquiryChatAcceptResponse(
                 room.getId(),
                 room.getUser().getId(),
-                null,
+                room.getAdmin().getId(),
                 room.getStatus(),
                 room.getCreatedAt(),
                 room.getUpdatedAt()
         );
     }
 }
-
-

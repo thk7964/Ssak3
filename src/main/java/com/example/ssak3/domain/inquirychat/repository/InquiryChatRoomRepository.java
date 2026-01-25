@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 public interface InquiryChatRoomRepository extends JpaRepository<InquiryChatRoom, Long> {
 
     // 현재 관리자의 모든 채팅방 Id와 아직 배정받지 않은 채팅방(WAITING) 조회
@@ -22,5 +24,11 @@ public interface InquiryChatRoomRepository extends JpaRepository<InquiryChatRoom
             "r.updatedAt DESC") // 그 안에서는 최신 수정순
     Page<InquiryChatRoom> findAllByAdminIdOrWaiting(@Param("adminId") Long adminId, Pageable pageable);
 
+    // 활성화된 채팅방(WAITING, ONGOING) 조회
+    @Query("SELECT r FROM InquiryChatRoom r " +
+            "WHERE r.user.id = :userId " +
+            "AND (r.status = 'WAITING' OR r.status = 'ONGOING') " +
+            "AND r.isDeleted = false")
+    Optional<InquiryChatRoom> findActiveRoomByUserId(@Param("userId") Long userId);
 
 }

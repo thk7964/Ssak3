@@ -22,7 +22,7 @@ public class InquiryChatController {
     @PostMapping
     public ResponseEntity<ApiResponse> createChatRoomApi(@AuthenticationPrincipal AuthUser user) {
 
-        ApiResponse response = ApiResponse.success("문의 채팅방 생성 완료", inquiryChatService.createChatRoom(user.getId()));
+        ApiResponse response = ApiResponse.success("문의 채팅방 연결 완료", inquiryChatService.createChatRoom(user.getId()));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -37,5 +37,7 @@ public class InquiryChatController {
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+
 
 }

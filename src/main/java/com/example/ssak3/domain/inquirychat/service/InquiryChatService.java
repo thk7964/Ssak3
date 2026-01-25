@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,8 +34,15 @@ public class InquiryChatService {
     @Transactional
     public InquiryChatCreateResponse createChatRoom(Long userId) {
 
+        Optional<InquiryChatRoom> activeRoom = roomRepository.findActiveRoomByUserId(userId);
+
+        // 기존에 문의 신청(WAITING)을 해두었거나 상담중인 채팅(ONGOING)이 있다면 기존 채팅방으로 연결
+        if (activeRoom.isPresent()) {
+            return InquiryChatCreateResponse.from(activeRoom.get());
+        }
+
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         InquiryChatRoom room = new InquiryChatRoom(
                 user,
@@ -97,6 +105,4 @@ public class InquiryChatService {
 
         messageRepository.save(message);
     }
-
-
 }

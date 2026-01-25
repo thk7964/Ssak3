@@ -71,8 +71,6 @@ public class InquiryChatHandler extends TextWebSocketHandler {
 
         sessions.add(session);
 
-        // 입장하는 사람이 관리자이므로 관리자가 입장할 경우 ChatRoom에 adminId 추가하기 ✅
-
          System.out.println("1:1 상담이 시작되었습니다.");
     }
 

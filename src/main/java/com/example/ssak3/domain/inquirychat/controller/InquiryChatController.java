@@ -7,13 +7,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/ssak3/chat")
+@RequestMapping("/ssak3/chat/rooms")
 public class InquiryChatController {
 
     private final InquiryChatService inquiryChatService;
@@ -21,12 +19,23 @@ public class InquiryChatController {
     /**
      * 문의 채팅방 생성 API
      */
-    @PostMapping("/rooms")
+    @PostMapping
     public ResponseEntity<ApiResponse> createChatRoomApi(@AuthenticationPrincipal AuthUser user) {
-        Long userId = user.getId();
-        ApiResponse response = ApiResponse.success("문의 채팅방이 생성되었습니다.", inquiryChatService.createChatRoom(userId));
+
+        ApiResponse response = ApiResponse.success("문의 채팅방 생성 완료", inquiryChatService.createChatRoom(user.getId()));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    /**
+     * 문의 채팅 메시지 조회 API
+     */
+    @GetMapping("/{roomId}/messages")
+    public ResponseEntity<ApiResponse> getChatHistoryApi(@AuthenticationPrincipal AuthUser sender , @PathVariable Long roomId) {
+
+        ApiResponse response = ApiResponse.success("문의 채팅 내역 조회 완료", inquiryChatService.getChatHistory(roomId, sender.getId(), sender.getRole()));
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
 }

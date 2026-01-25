@@ -24,7 +24,7 @@ public class InquiryChatMessage extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sender_id")
-    private User user;
+    private User sender;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -40,9 +40,9 @@ public class InquiryChatMessage extends BaseEntity {
     @Column(nullable = false)
     private boolean isDeleted = false;
 
-    public InquiryChatMessage(InquiryChatRoom room, User user, UserRole senderRole, ChatMessageType type, String content) {
+    public InquiryChatMessage(InquiryChatRoom room, User sender, UserRole senderRole, ChatMessageType type, String content) {
         this.room = room;
-        this.user = user;
+        this.sender = sender;
         this.senderRole = senderRole;
         this.type = type;
         this.content = content;

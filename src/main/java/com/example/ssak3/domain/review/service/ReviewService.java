@@ -3,7 +3,6 @@ package com.example.ssak3.domain.review.service;
 import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.common.model.AuthUser;
-import com.example.ssak3.common.model.PageResponse;
 import com.example.ssak3.domain.product.entity.Product;
 import com.example.ssak3.domain.product.repository.ProductRepository;
 import com.example.ssak3.domain.review.entity.Review;
@@ -19,6 +18,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Slf4j
 @Service
@@ -66,10 +67,14 @@ public class ReviewService {
      * 후기 목록조회
      */
     @Transactional(readOnly = true)
-    public PageResponse<ReviewListGetResponse> getReviewList(Long productId, Pageable pageable) {
-        Page<ReviewListGetResponse> reviewList = reviewRepository.findByProductIdAndIsDeletedFalse(productId, pageable)
+    public ReviewPageResponse getReviewList(Long productId, Pageable pageable) {
+        Page<ReviewListGetResponse> reviewPage = reviewRepository.findByProductIdAndIsDeletedFalse(productId, pageable)
                 .map(ReviewListGetResponse::from);
-        return PageResponse.from(reviewList);
+        Double averageScore = reviewRepository.findAverageScoreByProductId(productId);
+        Double roundedAvgScore = BigDecimal.valueOf(averageScore)
+                .setScale(1, RoundingMode.HALF_UP)
+                .doubleValue();
+        return ReviewPageResponse.from(reviewPage, roundedAvgScore);
     }
 
     /**

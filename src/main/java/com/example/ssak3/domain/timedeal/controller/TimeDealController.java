@@ -29,23 +29,12 @@ public class TimeDealController {
     }
 
     /**
-     * 타임딜 목록 조회
-     */
-    @GetMapping
-    public ResponseEntity<ApiResponse> getTimeDealListApi(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-
-        ApiResponse response = ApiResponse.success("타임딜 목록 조회", timeDealService.getTimeDealList(pageable));
-
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
-    /**
      * 타임딜 상태별 목록 조회
      */
-    @GetMapping("/deal")
+    @GetMapping
     public ResponseEntity<ApiResponse> getTimeDealStatusListApi(@RequestParam(required = false) String status, @PageableDefault Pageable pageable) {
 
-        ApiResponse response = ApiResponse.success("타임딜 상태별 목록 조회", timeDealService.getTimeDealStatusList(status,pageable));
+        ApiResponse response = ApiResponse.success("타임딜 상태별 목록 조회", timeDealService.getTimeDealStatusList(status, pageable));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

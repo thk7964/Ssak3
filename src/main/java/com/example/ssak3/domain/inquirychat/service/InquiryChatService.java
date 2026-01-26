@@ -37,7 +37,7 @@ public class InquiryChatService {
 
         Optional<InquiryChatRoom> activeRoom = roomRepository.findActiveRoomByUserId(userId);
 
-        // 기존에 문의 신청(WAITING)을 해두었거나 상담중인 채팅(ONGOING)이 있다면 기존 채팅방으로 연결
+        // 활성화된 채팅방이 있다면 기존 채팅방으로 연결
         if (activeRoom.isPresent()) {
             return InquiryChatCreateResponse.from(activeRoom.get());
         }
@@ -66,7 +66,7 @@ public class InquiryChatService {
         InquiryChatRoom foundRoom= roomRepository.findById(roomId)
                 .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
 
-        // 회원일 경우 본인 방이 아닐 경우 조회 불가
+        // 회원일 경우 본인의 채팅방만 조회 가능
         if (senderRole == UserRole.USER) {
             if (!foundRoom.isDeleted() && !foundRoom.getUser().getId().equals(senderId)) {
                 throw new CustomException(ErrorCode.CHAT_ROOM_ACCESS_DENIED);
@@ -78,7 +78,7 @@ public class InquiryChatService {
             }
         }
 
-        return messageRepository.findAllByRoomIdOrderByCreatedAtAsc(roomId)
+        return messageRepository.findAllByRoomId(roomId)
                 .stream()
                 .map(InquiryChatMessageListGetResponse::from)
                 .toList();

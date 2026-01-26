@@ -3,7 +3,6 @@ package com.example.ssak3.domain.inquirychat.entity;
 import com.example.ssak3.common.entity.BaseEntity;
 import com.example.ssak3.common.enums.ChatRoomStatus;
 import com.example.ssak3.common.enums.ErrorCode;
-import com.example.ssak3.common.enums.InquiryStatus;
 import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.domain.user.entity.User;
 import jakarta.persistence.*;

@@ -6,7 +6,6 @@ import com.example.ssak3.common.model.PageResponse;
 import com.example.ssak3.domain.inquirychat.entity.InquiryChatRoom;
 import com.example.ssak3.domain.inquirychat.model.response.InquiryChatAcceptResponse;
 import com.example.ssak3.domain.inquirychat.model.response.InquiryChatListGetResponse;
-import com.example.ssak3.domain.inquirychat.repository.InquiryChatMessageRepository;
 import com.example.ssak3.domain.inquirychat.repository.InquiryChatRoomRepository;
 import com.example.ssak3.domain.user.entity.User;
 import com.example.ssak3.domain.user.repository.UserRepository;
@@ -21,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class InquiryChatAdminService {
 
     private final InquiryChatRoomRepository inquiryChatRoomRepository;
-    private final InquiryChatMessageRepository messageRepository;
     private final UserRepository userRepository;
 
     /**

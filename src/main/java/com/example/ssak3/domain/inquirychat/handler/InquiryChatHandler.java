@@ -19,7 +19,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 @Slf4j
 public class InquiryChatHandler extends TextWebSocketHandler {
-    // extWebSocketHandler: 텍스트 기반 메시지(JSON, 단순 문자열)를 처리
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final InquiryChatService inquiryChatService;
@@ -35,7 +34,7 @@ public class InquiryChatHandler extends TextWebSocketHandler {
 
         Long roomId = request.getRoomId();  // 채팅방 입장
 
-        // 타입 분리
+        // 타입별 분리
         switch (request.getType()) {
             case ENTER:
                 // 방 세션 관리 및 입장
@@ -94,7 +93,7 @@ public class InquiryChatHandler extends TextWebSocketHandler {
         if (sessions != null) {
             sessions.remove(session);
 
-            // 관리자에게 회원의 상담 종료 신청 알림
+            // 관리자 / 회원의 상담 종료 알림
             broadcastToRoom(roomId, request.getSenderRole() + "님이 상담을 종료하셨습니다.");
 
             // 방 제거

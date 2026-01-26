@@ -26,7 +26,7 @@ public class InquiryChatAdminController {
     @PatchMapping("/rooms/{roomId}/accept")
     public ResponseEntity<ApiResponse> acceptChatApi(@AuthenticationPrincipal AuthUser admin, @PathVariable Long roomId) {
 
-        ApiResponse response = ApiResponse.success("문의가 배정 성공", inquiryChatAdminService.acceptChat(admin.getId(), roomId));
+        ApiResponse response = ApiResponse.success("문의 배정 성공", inquiryChatAdminService.acceptChat(admin.getId(), roomId));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

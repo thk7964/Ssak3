@@ -4,7 +4,6 @@ import com.example.ssak3.common.enums.ChatRoomStatus;
 import com.example.ssak3.domain.inquirychat.entity.InquiryChatRoom;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
 import java.time.LocalDateTime;
 
 @Getter

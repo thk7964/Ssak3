@@ -6,13 +6,14 @@ import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.domain.user.entity.User;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
 @Table(name = "inquiry_chat_rooms")
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class InquiryChatRoom extends BaseEntity {
 
     @Id
@@ -24,7 +25,7 @@ public class InquiryChatRoom extends BaseEntity {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "admin_id", nullable = true)
+    @JoinColumn(name = "admin_id")
     private User admin;
 
     @Enumerated(EnumType.STRING)
@@ -42,8 +43,8 @@ public class InquiryChatRoom extends BaseEntity {
 
     // 관리자 배정
     public void assignAdmin(User admin) {
-        // 관리자가 배정되지 않았거나 문의대기 상태인 것만 관리자 배정 가능
-        if (this.admin != null || this.status != ChatRoomStatus.WAITING) {
+        // 관리자가 배정되지 않고 문의대기 상태인 것만 관리자 배정 가능
+        if (this.admin != null && this.status != ChatRoomStatus.WAITING) {
             throw new CustomException(ErrorCode.CHAT_ROOM_ALREADY_ASSIGNED);
         }
         this.admin = admin;

@@ -5,13 +5,14 @@ import com.example.ssak3.common.enums.ChatMessageType;
 import com.example.ssak3.common.enums.UserRole;
 import com.example.ssak3.domain.user.entity.User;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @Table(name = "inquiry_chat_messages")
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class InquiryChatMessage extends BaseEntity {
 
     @Id

@@ -31,6 +31,7 @@ public class InquiryChatAdminController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+
     /**
      * 관리자 문의 채팅방 목록 조회 API
      */

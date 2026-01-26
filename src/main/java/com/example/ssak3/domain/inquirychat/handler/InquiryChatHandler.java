@@ -86,7 +86,6 @@ public class InquiryChatHandler extends TextWebSocketHandler {
 
     // QUIT: 나간 세션 제거 및 채팅방 삭제
     private void handleQuitRoom(Long roomId, ChatMessageRequest request, WebSocketSession session) throws Exception {
-        inquiryChatService.saveMessage(request);
 
         // 해당 세션 제거
         Set<WebSocketSession> sessions = roomSessions.get(roomId);

@@ -71,8 +71,12 @@ public class ReviewService {
         Page<ReviewListGetResponse> reviewPage = reviewRepository.findByProductIdAndIsDeletedFalse(productId, pageable)
                 .map(ReviewListGetResponse::from);
         Double averageScore = reviewRepository.findAverageScoreByProductId(productId);
+
+        // double은 2진수 기반이기 때문에 정확히 표현불가 -> BigDecimal은 10진수 기반
         Double roundedAvgScore = BigDecimal.valueOf(averageScore)
+                // 소수점 자릿수(scale)를 1자리로 설정, 반올림 규칙은 HALF_UP(5 이상 올림)
                 .setScale(1, RoundingMode.HALF_UP)
+                // 다시 double 타입으로 변환 why? JSON 직렬화(객체를 전송 가능한 형태로 바꾸는 과정)
                 .doubleValue();
         return ReviewPageResponse.from(reviewPage, roundedAvgScore);
     }

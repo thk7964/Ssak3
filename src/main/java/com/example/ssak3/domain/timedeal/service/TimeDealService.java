@@ -23,24 +23,13 @@ public class TimeDealService {
     /**
      * 타임딜 상세 조회
      */
-    @Transactional
+    @Transactional(readOnly = true)
     public TimeDealGetResponse getTimeDeal(Long timeDealId) {
 
         TimeDeal response = timeDealRepository.findByIdAndIsDeletedFalse(timeDealId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TIME_DEAL_NOT_FOUND)
                 );
         return TimeDealGetResponse.from(response);
-    }
-
-    /**
-     * 타임딜 목록(전체) 조회
-     */
-    @Transactional(readOnly = true)
-    public PageResponse<TimeDealListGetResponse> getTimeDealList(Pageable pageable) {
-
-        Page<TimeDealListGetResponse> responsePage = timeDealRepository.findAll(pageable).map(TimeDealListGetResponse::from);
-
-        return PageResponse.from(responsePage);
     }
 
     /**

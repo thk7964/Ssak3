@@ -79,9 +79,17 @@ public enum ErrorCode {
     INQUIRY_ALREADY_ANSWERED(HttpStatus.BAD_REQUEST, "답변완료된 문의입니다."),
     INQUIRY_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "삭제된 문의입니다."),
 
-    // InquiryReply 에러,
+    // InquiryReply 에러
     INQUIRY_REPLY_NOT_FOUND(HttpStatus.NOT_FOUND, "문의 답변 내역을 찾을 수 없습니다."),
-    INQUIRY_REPLY_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "삭제된 문의 답변입니다.");
+    INQUIRY_REPLY_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "삭제된 문의 답변입니다."),
+
+    // InquiryChat 에러
+    CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "문의 채팅방을 찾을 수 없습니다."),
+    CHAT_ROOM_ALREADY_ASSIGNED(HttpStatus.CONFLICT, "이미 배정 완료된 문의입니다."),
+    CHAT_ROOM_ACCESS_DENIED(HttpStatus.FORBIDDEN, "해당 문의 채팅방 접근 권한이 없습니다."),
+    CHAT_ROOM_COMPLETE_ACCESS_DENIED(HttpStatus.FORBIDDEN, "문의 채팅을 종료할 권한이 없습니다."),
+    INQUIRY_CHAT_ALREADY_COMPLETED(HttpStatus.BAD_REQUEST, "이미 종료된 문의 채팅입니다."),
+    ;
 
     private final HttpStatus status;
     private final String message;

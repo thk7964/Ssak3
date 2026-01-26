@@ -15,10 +15,13 @@ import com.example.ssak3.domain.cartproduct.model.response.CartProductListGetRes
 import com.example.ssak3.domain.cartproduct.repository.CartProductRepository;
 import com.example.ssak3.domain.product.entity.Product;
 import com.example.ssak3.domain.product.repository.ProductRepository;
+import com.example.ssak3.domain.timedeal.entity.TimeDeal;
+import com.example.ssak3.domain.timedeal.repository.TimeDealRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -30,6 +33,7 @@ public class CartProductService {
 
     private final CartService cartService;
     private final CartRepository cartRepository;
+    private final TimeDealRepository timeDealRepository;
 
     /**
      * 장바구니에 상품 담기
@@ -41,14 +45,20 @@ public class CartProductService {
         Product product = productRepository.findByIdAndIsDeletedFalse(request.getProductId())
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
-        // 판매중인지 확인
-        if (!product.getStatus().equals(ProductStatus.FOR_SALE)) {
-            throw new CustomException(ErrorCode.PRODUCT_NOT_FOR_SALE);
-        }
-
         // 카트 조회(없으면 생성)
         Cart cart = cartService.getOrCreateCart(userId);
 
+        TimeDeal openTimeDeal = timeDealRepository.findOpenTimeDeal(product.getId(), LocalDateTime.now())
+                .orElse(null);
+
+        // 타임딜 여부
+        boolean isTimeDeal = (openTimeDeal != null);
+        // 일반 판매 중 여부
+        boolean normalSale = product.getStatus().equals(ProductStatus.FOR_SALE);
+
+        if(!isTimeDeal && !normalSale){
+            throw new CustomException(ErrorCode.PRODUCT_NOT_FOR_SALE);
+        }
         // 카트에 같은 상품이 담겨있는지 조히
         Optional<CartProduct> cartProductOptional = cartProductRepository.findByCartIdAndProductId(cart.getId(), request.getProductId());
 
@@ -88,7 +98,7 @@ public class CartProductService {
 
 
         }
-        return CartProductListGetResponse.from(cartProduct);
+        return CartProductListGetResponse.from(cartProduct, openTimeDeal);
 
     }
 
@@ -108,7 +118,13 @@ public class CartProductService {
 
         Product product = cartProduct.getProduct();
 
-        if(!product.getStatus().equals(ProductStatus.FOR_SALE)) {
+        TimeDeal openTimeDeal = timeDealRepository.findOpenTimeDeal(product.getId(), LocalDateTime.now())
+                .orElse(null);
+
+        boolean isTimeDeal = (openTimeDeal != null);
+        boolean normalSale = product.getStatus().equals(ProductStatus.FOR_SALE);
+
+        if (!isTimeDeal && !normalSale){
             throw new CustomException(ErrorCode.PRODUCT_NOT_FOR_SALE);
         }
 
@@ -119,7 +135,7 @@ public class CartProductService {
 
         cartProduct.changeQuantity(newQuantity);
 
-        return CartProductListGetResponse.from(cartProduct);
+        return CartProductListGetResponse.from(cartProduct, openTimeDeal);
     }
 
 

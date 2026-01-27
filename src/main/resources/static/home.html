@@ -450,9 +450,11 @@
     });
 
     const productCards = document.querySelectorAll('.product-card');
-    productCards.forEach(card => {
+    productCards.forEach((card, index) => {
         card.addEventListener('click', function() {
-            alert('상품 상세페이지로 이동합니다.');
+            // 상품 ID는 인덱스 + 1로 가정 (실제로는 서버에서 받아온 ID를 사용해야 함)
+            const productId = index + 1;
+            window.location.href = `product-detail.html?id=${productId}`;
         });
     });
 

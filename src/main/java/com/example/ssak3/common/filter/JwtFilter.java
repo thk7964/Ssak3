@@ -6,6 +6,7 @@ import com.example.ssak3.common.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -28,7 +30,25 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
+        // 1. 헤더에서 토큰 찾기 (일반 로그인)
         String accessToken = request.getHeader(JwtUtil.HEADER);
+
+        // 2. 쿠키에서 토큰 찾기 (카카오 로그인)
+        if (accessToken == null || !accessToken.startsWith(JwtUtil.BEARER_PREFIX)) {
+            if (request.getCookies() != null) {
+                accessToken = Arrays.stream(request.getCookies())
+                        .filter(cookie -> "accessToken".equals(cookie.getName()))
+                        .map(Cookie::getValue)
+                        .findFirst()
+                        .map(token -> {
+                            if (!token.startsWith(JwtUtil.BEARER_PREFIX)) {
+                                return JwtUtil.BEARER_PREFIX + token;
+                            }
+                            return token;
+                        })
+                        .orElse(null);
+            }
+        }
 
         if (accessToken == null || !accessToken.startsWith(JwtUtil.BEARER_PREFIX)) {
             filterChain.doFilter(request, response);

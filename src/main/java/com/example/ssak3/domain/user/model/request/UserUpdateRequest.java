@@ -1,11 +1,11 @@
 package com.example.ssak3.domain.user.model.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
@@ -18,10 +18,10 @@ public class UserUpdateRequest {
     private String name;
 
     @NotBlank
-    @Size(min = 4, max = 30, message = "닉네임은 4자 이상 30자 이하여야 합니다.")
+    @Size(min = 2, max = 30, message = "닉네임은 2자 이상 30자 이하여야 합니다.")
     private String nickname;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birth;
 
     @Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$", message = "전화번호 형식이 올바르지 않습니다.")

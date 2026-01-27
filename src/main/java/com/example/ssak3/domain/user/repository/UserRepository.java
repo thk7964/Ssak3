@@ -31,4 +31,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
         WHERE u.isDeleted = :isDeleted AND u.role = :role
         """)
     Page<User> findUserByRole(@Param("role") UserRole role, @Param("isDeleted") boolean isDeleted, Pageable pageable);
+
+    Optional<User> findByEmail(String email);
 }

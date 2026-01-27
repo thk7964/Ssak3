@@ -1,9 +1,9 @@
 package com.example.ssak3.domain.auth.model.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
@@ -28,7 +28,7 @@ public class SignupRequest {
     private String password;
 
     @NotNull(message = "생일은 필수 입력 사항입니다.")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birth;
 
     @NotBlank(message = "전화번호는 필수 입력 사항입니다.")

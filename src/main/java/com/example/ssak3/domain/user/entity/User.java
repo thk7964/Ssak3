@@ -20,7 +20,6 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private String name;
 
     @Column(nullable = false, unique = true)
@@ -29,16 +28,13 @@ public class User extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
     private LocalDate birth;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String phone;
 
-    @Column(nullable = false)
     private String address;
 
     @Enumerated(EnumType.STRING)
@@ -46,7 +42,7 @@ public class User extends BaseEntity {
     private UserRole role;
 
     @Column(nullable = false, name = "is_deleted")
-    private boolean isDeleted = false;
+    private boolean isDeleted;
 
     // 일반 유저 생성자
     public User(String name, String nickname, String email, String password, LocalDate birth, String phone, String address) {
@@ -58,6 +54,7 @@ public class User extends BaseEntity {
         this.phone = phone;
         this.address = address;
         this.role = UserRole.USER;
+        this.isDeleted = false;
     }
 
     // 관리자 생성자

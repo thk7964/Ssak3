@@ -38,12 +38,11 @@ public class JwtUtil {
         this.key = Keys.hmacShaKeyFor(bytes);
     }
 
-    public String createToken(Long id, String email, String name, UserRole role) {
+    public String createToken(Long id, String email, UserRole role) {
         return BEARER_PREFIX +
                 Jwts.builder()
                         .subject(String.valueOf(id))
                         .claim("email", email)
-                        .claim("name", name)
                         .claim("role", role)
                         .issuedAt(new Date(System.currentTimeMillis()))
                         .expiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_TIME))

@@ -75,7 +75,7 @@ public class AuthService {
             throw new CustomException(ErrorCode.PASSWORD_MISMATCH);
         }
 
-        String accessToken = jwtUtil.createToken(user.getId(), user.getEmail(), user.getName(), user.getRole());
+        String accessToken = jwtUtil.createToken(user.getId(), user.getEmail(), user.getRole());
 
         return new LoginResponse(accessToken);
     }

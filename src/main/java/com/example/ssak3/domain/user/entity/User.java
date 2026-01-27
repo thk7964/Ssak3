@@ -1,6 +1,7 @@
 package com.example.ssak3.domain.user.entity;
 
 import com.example.ssak3.common.entity.BaseEntity;
+import com.example.ssak3.common.enums.OAuthProvider;
 import com.example.ssak3.common.enums.UserRole;
 import com.example.ssak3.domain.user.model.request.UserUpdateRequest;
 import jakarta.persistence.*;
@@ -28,6 +29,7 @@ public class User extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(nullable = false)
     private String password;
 
     private LocalDate birth;
@@ -36,6 +38,9 @@ public class User extends BaseEntity {
     private String phone;
 
     private String address;
+
+    @Enumerated(EnumType.STRING)
+    private OAuthProvider provider;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -57,20 +62,12 @@ public class User extends BaseEntity {
         this.isDeleted = false;
     }
 
-    // 관리자 생성자
-    public User(String name, String nickname, String email, String password, LocalDate birth, String phone, String address, UserRole role) {
-        this.name = name;
-        this.nickname = nickname;
-        this.email = email;
-        this.password = password;
-        this.birth = birth;
-        this.phone = phone;
-        this.address = address;
+    public void updateRole(UserRole role) {
         this.role = role;
     }
 
-    public void updateRole(UserRole role) {
-        this.role = role;
+    public void updateProvider(OAuthProvider provider) {
+        this.provider = provider;
     }
 
     public void update(UserUpdateRequest request) {

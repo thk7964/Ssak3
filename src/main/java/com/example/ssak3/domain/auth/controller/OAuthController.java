@@ -30,8 +30,7 @@ public class OAuthController {
     }
 
     /**
-     * callback 될 url 경로
-     * 인가 코드 발급
+     * callback 될 url 경로 (인가 코드 발급)
      */
     @GetMapping("/callback")
     public String kakaoLogin(@RequestParam String code, HttpServletResponse httpServletResponse) {
@@ -42,7 +41,7 @@ public class OAuthController {
             return "redirect:/additional-info.html";
         }
 
-        return "redirect:/index.html";
+        return "redirect:/home.html";
     }
 
 }

@@ -1,4 +1,4 @@
-package com.example.ssak3.domain.auth.model;
+package com.example.ssak3.domain.auth.model.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class KakaoUserInfo {
+public class KakaoUserInfoResponse {
 
     private final Long id;
 

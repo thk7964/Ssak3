@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>싹쓰리</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+            background: #fafafa;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #ffffff;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            background: #f8f9fa;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s ease;
+            color: #495057;
+        }
+
+        .icon-btn:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+
+        .banner {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            padding: 60px 20px;
+            text-align: center;
+            margin: 24px 20px;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(116, 185, 255, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .banner-title {
+            font-size: 48px;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 12px;
+            position: relative;
+            letter-spacing: -1px;
+        }
+
+        .banner-subtitle {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 400;
+            position: relative;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 20px;
+            flex-wrap: wrap;
+            background: white;
+            margin: 0 20px;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #495057;
+            font-weight: 500;
+            font-size: 14px;
+            padding: 10px 18px;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            background: #f8f9fa;
+        }
+
+        nav a:hover {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
+        }
+
+        .products-section {
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 28px;
+            color: #212529;
+            margin-bottom: 30px;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: -0.5px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 24px;
+            margin-bottom: 50px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border: 1px solid #f0f0f0;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+            border-color: #e9ecef;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 220px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-card:hover .product-image {
+            background: linear-gradient(135deg, #74b9ff15 0%, #a29bfe15 100%);
+        }
+
+        .product-info {
+            padding: 20px;
+        }
+
+        .product-name {
+            font-size: 17px;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 8px;
+            letter-spacing: -0.3px;
+        }
+
+        .product-desc {
+            font-size: 13px;
+            color: #868e96;
+            margin-bottom: 16px;
+            line-height: 1.4;
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .product-price {
+            font-size: 18px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .add-btn {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(116, 185, 255, 0.45);
+        }
+
+        .add-btn:active {
+            transform: translateY(0);
+        }
+
+        footer {
+            background: #212529;
+            color: #adb5bd;
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+        }
+
+        footer p {
+            margin: 10px 0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        footer p:first-child {
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .banner-title {
+                font-size: 32px;
+            }
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+            header {
+                padding: 16px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="logo">🌊 싹쓰리</div>
+    <div class="header-icons">
+        <button class="icon-btn">🔍</button>
+        <button class="icon-btn">🛒</button>
+        <button class="icon-btn my-page-btn" id="myPageBtn" title="마이페이지">👤</button>
+    </div>
+</header>
+
+<div class="banner">
+    <div class="banner-title">싹싹 귀여운 굿즈</div>
+    <div class="banner-subtitle">나만의 귀여운 굿즈를 만나보세요</div>
+</div>
+
+<nav>
+    <a href="#timedeal">⭐ 타임딜</a>
+    <a href="#best">🏍️ 올포원</a>
+    <a href="#sale">🎉 2용준</a>
+    <a href="#all">🌊 싹쓰리</a>
+    <a href="#event">👨‍👩‍👧‍👦 슬개생</a>
+    <a href="#event">🛠️ 펜타곤</a>
+    <a href="#event">👩🏻‍🦰 여걸식스</a>
+    <a href="#event">👊🏻 럭키펀치</a>
+    <a href="#event">♾️ LIMITLESS</a>
+</nav>
+
+<div class="products-section">
+    <h2 class="section-title">인기 조회순 TOP 10 상품</h2>
+
+    <div class="products-grid">
+        <div class="product-card">
+            <div class="product-image">🏍️</div>
+            <div class="product-info">
+                <div class="product-name">올포원 스티커팩</div>
+                <div class="product-desc">귀여운 오토바이 캐릭터</div>
+                <div class="product-footer">
+                    <div class="product-price">8,900원</div>
+                    <button class="add-btn">담기</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="product-card">
+            <div class="product-image">✨</div>
+            <div class="product-info">
+                <div class="product-name">LIMITLESS 담요</div>
+                <div class="product-desc">프리미엄 한정판</div>
+                <div class="product-footer">
+                    <div class="product-price">24,900원</div>
+                    <button class="add-btn">담기</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="product-card">
+            <div class="product-image">⚔️</div>
+            <div class="product-info">
+                <div class="product-name">2용준 방패 배지</div>
+                <div class="product-desc">게임 캐릭터 에디션</div>
+                <div class="product-footer">
+                    <div class="product-price">6,900원</div>
+                    <button class="add-btn">담기</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="product-card">
+            <div class="product-image">🎮</div>
+            <div class="product-info">
+                <div class="product-name">싹쓰리 잠옷</div>
+                <div class="product-desc">시원한 색상 컬렉션</div>
+                <div class="product-footer">
+                    <div class="product-price">23,900원</div>
+                    <button class="add-btn">담기</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="product-card">
+            <div class="product-image">🎵</div>
+            <div class="product-info">
+                <div class="product-name">슬개생 앨범</div>
+                <div class="product-desc">OST 음원 앨범</div>
+                <div class="product-footer">
+                    <div class="product-price">15,900원</div>
+                    <button class="add-btn">담기</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="product-card">
+            <div class="product-image">⚡</div>
+            <div class="product-info">
+                <div class="product-name">펜타곤 에너지 드링크 세트</div>
+                <div class="product-desc">강렬한 스페셜</div>
+                <div class="product-footer">
+                    <div class="product-price">18,900원</div>
+                    <button class="add-btn">담기</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="product-card">
+            <div class="product-image">🌈</div>
+            <div class="product-info">
+                <div class="product-name">여걸식스 텀블러</div>
+                <div class="product-desc">여러 색상 믹스</div>
+                <div class="product-footer">
+                    <div class="product-price">27,900원</div>
+                    <button class="add-btn">담기</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="product-card">
+            <div class="product-image">💎</div>
+            <div class="product-info">
+                <div class="product-name">럭키펀처 헤드셋</div>
+                <div class="product-desc">프리미엄 골드 라인</div>
+                <div class="product-footer">
+                    <div class="product-price">122,900원</div>
+                    <button class="add-btn">담기</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="product-card">
+            <div class="product-image">🎨</div>
+            <div class="product-info">
+                <div class="product-name">아트 포스터 세트</div>
+                <div class="product-desc">고급 인쇄 3장</div>
+                <div class="product-footer">
+                    <div class="product-price">19,900원</div>
+                    <button class="add-btn">담기</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="product-card">
+            <div class="product-image">🧸</div>
+            <div class="product-info">
+                <div class="product-name">귀여운 미니 피규어</div>
+                <div class="product-desc">부드러운 터치</div>
+                <div class="product-footer">
+                    <div class="product-price">9,900원</div>
+                    <button class="add-btn">담기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p>© 2025 싹쓰리 - 모두를 위한 귀여운 굿즈</p>
+    <p>고객센터: 010-1234-5678 | contact@ssak3.com</p>
+    <p>개인정보처리방침 | 이용약관 | 배송정책</p>
+</footer>
+
+<script>
+    const addBtns = document.querySelectorAll('.add-btn');
+    addBtns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            alert('장바구니에 추가되었습니다!');
+        });
+    });
+
+    const productCards = document.querySelectorAll('.product-card');
+    productCards.forEach(card => {
+        card.addEventListener('click', function() {
+            alert('상품 상세페이지로 이동합니다.');
+        });
+    });
+
+    // 마이페이지 버튼 클릭 이벤트
+    document.getElementById('myPageBtn').addEventListener('click', async function () {
+        const token = localStorage.getItem('accessToken');
+
+        const headers = {};
+        if (token) {
+            headers.Authorization = 'Bearer ' + token;
+        }
+
+        try {
+            const response = await fetch('http://localhost:8080/ssak3/users/me', {
+                method: 'GET',
+                headers: headers,
+                credentials: 'include' // 쿠키 자동 전송
+            });
+
+            if (!response.ok) {
+                alert('로그인이 필요한 서비스입니다.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            window.location.href = 'mypage.html';
+        } catch (e) {
+            alert('로그인이 필요한 서비스입니다.');
+            window.location.href = 'login.html';
+        }
+    });
+
+</script>
+</body>
+</html>

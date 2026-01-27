@@ -13,6 +13,7 @@ import static com.example.ssak3.domain.timedeal.utils.TimeDealUtils.formatRemain
 @RequiredArgsConstructor
 public class TimeDealGetResponse {
     private final Long id;
+    private final Long productId;
     private final String productName;
     private final String productInformation;
     private final Integer dealPrice;
@@ -33,6 +34,7 @@ public class TimeDealGetResponse {
 
         return new TimeDealGetResponse(
                 timeDeal.getId(),
+                timeDeal.getProduct().getId(),
                 timeDeal.getProduct().getName(),
                 timeDeal.getProduct().getInformation(),
                 timeDeal.getDealPrice(),

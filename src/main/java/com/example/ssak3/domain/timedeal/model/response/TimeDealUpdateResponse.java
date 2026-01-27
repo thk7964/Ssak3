@@ -26,7 +26,7 @@ public class TimeDealUpdateResponse {
                 timeDeal.getProduct().getName(),
                 timeDeal.getProduct().getInformation(),
                 timeDeal.getDealPrice(),
-                timeDeal.getStatus(LocalDateTime.now()),
+                timeDeal.getStatus(),
                 timeDeal.getStartAt(),
                 timeDeal.getEndAt(),
                 timeDeal.getCreatedAt(),

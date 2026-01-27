@@ -44,9 +44,9 @@ public class AdminService {
      * 유저 목록 조회
      */
     @Transactional(readOnly = true)
-    public PageResponse<UserListGetResponse> getUserList(UserRole role, Pageable pageable) {
+    public PageResponse<UserListGetResponse> getUserList(UserRole role, String nickname, Pageable pageable) {
 
-        Page<UserListGetResponse> userList = userRepository.findUserByRole(role, false, pageable).map(UserListGetResponse::from);
+        Page<UserListGetResponse> userList = userRepository.getUserList(role, nickname, pageable);
 
         return PageResponse.from(userList);
     }

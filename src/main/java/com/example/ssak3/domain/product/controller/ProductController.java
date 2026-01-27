@@ -1,9 +1,9 @@
 package com.example.ssak3.domain.product.controller;
 
 import com.example.ssak3.common.model.ApiResponse;
-import com.example.ssak3.common.model.AuthUser;
 import com.example.ssak3.domain.product.model.request.ProductCreateRequest;
 import com.example.ssak3.domain.product.model.request.ProductUpdateRequest;
+import com.example.ssak3.domain.product.model.request.ProductUpdateStatusRequest;
 import com.example.ssak3.domain.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +13,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -39,7 +38,7 @@ public class ProductController {
     }
 
     /**
-     * 상품 상세조회 API
+     * 상품 상세조회(사용자) API
      */
     @GetMapping("/products/{productId}")
     public ResponseEntity<ApiResponse> getProductApi(@PathVariable Long productId) {
@@ -49,15 +48,40 @@ public class ProductController {
     }
 
     /**
-     * 상품 목록조회 API
+     * 상품 상세조회(관리자) API
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/admin/products/{productId}")
+    public ResponseEntity<ApiResponse> getProductAdminApi(@PathVariable Long productId) {
+        log.info("controller 상품상세조회 - admin id: {}", productId);
+        ApiResponse response = ApiResponse.success("상품을 조회했습니다.", productService.getProductAdmin(productId));
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    /**
+     * 상품 목록조회(사용자) API
      */
     @GetMapping("/products")
     public ResponseEntity<ApiResponse> getProductListApi(
             // 카테고리 아이디값을 활용해서 해당 아이디 보유한 상품만 조회하는 기능
-            @RequestParam(name = "categoryId") Long categoryId,
+            @RequestParam(name = "categoryId", required = false) Long categoryId,
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         log.info("controller 상품목록조회 검색: {}", categoryId);
         ApiResponse response = ApiResponse.success("상품목록을 조회했습니다.",  productService.getProductList(categoryId, pageable));
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    /**
+     * 상품 목록조회(관리자) API
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/admin/products")
+    public ResponseEntity<ApiResponse> getProductListAdminApi(
+            // 카테고리 아이디값을 활용해서 해당 아이디 보유한 상품만 조회하는 기능
+            @RequestParam(name = "categoryId", required = false) Long categoryId,
+            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        log.info("controller 상품목록조회 검색 - admin 카테고리Id: {}", categoryId);
+        ApiResponse response = ApiResponse.success("상품목록을 조회했습니다.",  productService.getProductListAdmin(categoryId, pageable));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
@@ -83,6 +107,16 @@ public class ProductController {
             @PathVariable Long productId) {
         log.info("controller 상품삭제 id: {}", productId);
         ApiResponse response = ApiResponse.success("상품을 삭제하였습니다", productService.deleteProduct(productId));
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    /**
+     * 상품 상태변경 API
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/admin/products/status")
+    public ResponseEntity<ApiResponse> updateProductStatusApi(@RequestBody ProductUpdateStatusRequest request) {
+        ApiResponse response = ApiResponse.success("상품의 상태가 변경되었습니다.", productService.updateProductStatus(request));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

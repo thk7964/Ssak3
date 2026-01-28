@@ -10,7 +10,6 @@ public class AuthUser {
 
     private final Long id;
     private final String email;
-    private final String name;
     private final UserRole role;
 
 }

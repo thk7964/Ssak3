@@ -19,6 +19,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -26,7 +28,6 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
-    private final ProductRankingService productRankingService;
 
     /**
      * 상품생성
@@ -65,11 +66,7 @@ public class ProductService {
             throw new CustomException(ErrorCode.PRODUCT_NOT_VIEWABLE);
         }
 
-        try {
-            productRankingService.increaseViewCount(productId);
-        } catch (Exception e) {
-            log.warn("Redis 조회수 업데이트 실패: productId = {}", foundProduct.getId());
-        }
+        foundProduct.increaseViewCount();
 
         return ProductGetResponse.from(foundProduct);
     }
@@ -145,6 +142,15 @@ public class ProductService {
 
         foundProduct.updateStatus(request.getStatus());
         return ProductUpdateStatusResponse.from(foundProduct);
+    }
+
+    /**
+     * 조회 수 TOP 10
+     */
+    @Transactional(readOnly = true)
+    public List<ProductGetPopularResponse> getPopularProduct() {
+
+        return productRepository.getProductViewCountTop10();
     }
 
 }

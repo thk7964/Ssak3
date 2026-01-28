@@ -21,7 +21,7 @@ public class CartController {
     /**
      * 내 장바구니 조회 API
      */
-    @GetMapping
+    @GetMapping("/me")
     public ResponseEntity<ApiResponse> getMyCartApi(
             @AuthenticationPrincipal AuthUser user) {
 

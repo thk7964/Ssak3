@@ -48,6 +48,7 @@ public class ProductCustomRepositoryImpl implements ProductCustomRepository {
                         product.status.eq(ProductStatus.FOR_SALE)
                 )
                 .orderBy(product.viewCount.desc())
+                .limit(10)
                 .fetch();
     }
 }

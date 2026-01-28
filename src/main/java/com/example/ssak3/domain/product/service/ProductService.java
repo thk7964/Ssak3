@@ -19,8 +19,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -143,14 +141,4 @@ public class ProductService {
         foundProduct.updateStatus(request.getStatus());
         return ProductUpdateStatusResponse.from(foundProduct);
     }
-
-    /**
-     * 조회 수 TOP 10
-     */
-    @Transactional(readOnly = true)
-    public List<ProductGetPopularResponse> getPopularProduct() {
-
-        return productRepository.getProductViewCountTop10();
-    }
-
 }

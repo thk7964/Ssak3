@@ -41,6 +41,9 @@ public class Product extends BaseEntity {
     @Column(nullable = false)
     private Integer quantity;
 
+    @Column
+    private Double averageScore;
+
     @Column(nullable = false, name = "is_deleted")
     private boolean isDeleted = false;
 
@@ -103,5 +106,21 @@ public class Product extends BaseEntity {
 
     public void updateStatus(ProductStatus status) {
         this.status = status;
+    }
+
+    public void updateAverageScore(Double score) {
+
+        this.averageScore = score;
+
+
+
+//        Double i = (this.averageScore == null ? 0.0 : averageScore) + score;
+//        Double averageScore = i / reviewCounts;
+//
+//        Double roundedAvgScore = BigDecimal.valueOf(averageScore)
+//
+//                .setScale(1, RoundingMode.HALF_UP)
+//
+//                .doubleValue();
     }
 }

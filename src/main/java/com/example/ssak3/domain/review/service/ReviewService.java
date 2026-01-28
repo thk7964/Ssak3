@@ -49,6 +49,18 @@ public class ReviewService {
                 request.getScore()
         );
         Review savedReview = reviewRepository.save(createReview);
+
+//        Double reviewCounts = reviewRepository.countByProductId(foundProduct.getId());
+        Double averageScoreByProductId = reviewRepository.findAverageScoreByProductId(foundProduct.getId());
+
+        Double roundedAvgScore = BigDecimal.valueOf(averageScoreByProductId)
+                // 소수점 자릿수(scale)를 1자리로 설정, 반올림 규칙은 HALF_UP(5 이상 올림)
+                .setScale(1, RoundingMode.HALF_UP)
+                // 다시 double 타입으로 변환 why? JSON 직렬화(객체를 전송 가능한 형태로 바꾸는 과정)
+                .doubleValue();
+
+        foundProduct.updateAverageScore(roundedAvgScore);
+
         return ReviewCreateResponse.from(savedReview);
     }
 

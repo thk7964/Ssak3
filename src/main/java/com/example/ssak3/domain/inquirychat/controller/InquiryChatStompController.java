@@ -7,7 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -20,16 +22,20 @@ public class InquiryChatStompController {
      * 채팅 메시지 전송 API
      */
     @MessageMapping("/chat/message")
-    public void sendMessage(@Payload ChatMessageRequest request) {
-        // 1. DB 저장
-        inquiryChatService.saveMessage(request);
+    public void sendMessage(@Payload ChatMessageRequest request, StompHeaderAccessor accessor) {
 
-        // 2. 브로드캐스팅
-        // /sub/chat/room/{roomId} 구독중인 모든 유저에게 메시지 전송
+        // 핸들러의 세션에서 인증된 유저 정보 꺼내기
+        Map<String, Object> sessionAttributes = accessor.getSessionAttributes();
+        Long authenticatedUserId = (Long) sessionAttributes.get("userId");
+        String role = (String) sessionAttributes.get("role");
+
+        inquiryChatService.saveMessage(request, authenticatedUserId, role);
+
+        // 브로드캐스팅
         messagingTemplate.convertAndSend("/sub/chat/room/" + request.getRoomId(), request);
     }
 
-    
+
     /**
      * 문의 채팅방 입장, 퇴장 알림 API
      */

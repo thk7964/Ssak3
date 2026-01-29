@@ -123,7 +123,7 @@ public class InquiryChatService {
      * 문의 채팅방 연결
      */
     @Transactional
-    public void saveMessage(ChatMessageRequest request) {
+    public void saveMessage(ChatMessageRequest request, Long authenticatedUserId, String role) {
 
         InquiryChatRoom foundRoom = roomRepository.findById(request.getRoomId())
                 .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
@@ -133,13 +133,13 @@ public class InquiryChatService {
             throw new CustomException(ErrorCode.INQUIRY_CHAT_ALREADY_COMPLETED);
         }
 
-        User foundUser = userRepository.findById(request.getSenderId())
+        User foundUser = userRepository.findById(authenticatedUserId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         InquiryChatMessage message = new InquiryChatMessage(
                 foundRoom,
                 foundUser,
-                request.getSenderRole(),
+                UserRole.valueOf(role),
                 request.getType(),
                 request.getContent()
         );

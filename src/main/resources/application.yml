@@ -21,3 +21,6 @@ spring:
 jwt:
   secret:
     key: ${SECRET_KEY}
+
+toss:
+  secret-key: ${TOSS_SECRET_KEY}

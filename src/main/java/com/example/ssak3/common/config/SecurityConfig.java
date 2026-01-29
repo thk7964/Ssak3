@@ -47,6 +47,8 @@ public class SecurityConfig {
                 .logout(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/error").permitAll()
+                        .requestMatchers("/ssak3/payments/**").permitAll()
+                        .requestMatchers("/checkout.html", "/fail.html","/success.html","/payments/confirm","/style.css").permitAll()
                         .requestMatchers("/ssak3/auth/signup", "/ssak3/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/ssak3/products/**", "/ssak3/coupons", "/ssak3/categories", "/ssak3/time-deals/**").permitAll()
                         .requestMatchers("/ssak3/admin").hasRole("SUPER_ADMIN")

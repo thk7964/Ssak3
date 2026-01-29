@@ -1,5 +1,6 @@
 package com.example.ssak3.domain.product.repository;
 
+import com.example.ssak3.common.enums.ProductStatus;
 import com.example.ssak3.domain.product.entity.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ProductRepository extends JpaRepository<Product, Long>, ProductCustomRepository {
+public interface ProductRepository extends JpaRepository<Product, Long> {
 
     Optional<Product> findByIdAndIsDeletedFalse(Long id);
 
@@ -32,8 +33,6 @@ public interface ProductRepository extends JpaRepository<Product, Long>, Product
             Pageable pageable
     );
 
-    List<Product> findByIdIn(List<Long> productIdList);
-
     @Query("""
     SELECT p
     FROM Product p
@@ -48,4 +47,6 @@ public interface ProductRepository extends JpaRepository<Product, Long>, Product
 
     // 카테고리 아이디를 통해 상품의 존재확인
     boolean existsByCategoryId(Long categoryId);
+
+    List<Product> findAllByIdInAndStatusAndIsDeletedFalse(List<Long> productIds, ProductStatus productStatus);
 }

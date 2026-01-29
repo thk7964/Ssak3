@@ -38,9 +38,6 @@ public class Product extends BaseEntity {
     @Column(nullable = false)
     private String information;
 
-    @Column(nullable = false, name = "view_count")
-    private Long viewCount = 0L;
-
     @Column(nullable = false)
     private Integer quantity;
 
@@ -108,7 +105,4 @@ public class Product extends BaseEntity {
         this.status = status;
     }
 
-    public void increaseViewCount() {
-        this.viewCount++;
-    }
 }

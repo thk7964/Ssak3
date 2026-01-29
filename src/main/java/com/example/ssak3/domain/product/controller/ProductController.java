@@ -4,7 +4,7 @@ import com.example.ssak3.common.model.ApiResponse;
 import com.example.ssak3.domain.product.model.request.ProductCreateRequest;
 import com.example.ssak3.domain.product.model.request.ProductUpdateRequest;
 import com.example.ssak3.domain.product.model.request.ProductUpdateStatusRequest;
-import com.example.ssak3.domain.product.service.ProductCacheService;
+import com.example.ssak3.domain.product.service.ProductRankingService;
 import com.example.ssak3.domain.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 public class ProductController {
 
     private final ProductService productService;
-    private final ProductCacheService productCacheService;
+    private final ProductRankingService productRankingService;
 
     /**
      * 상품생성 API
@@ -117,7 +117,7 @@ public class ProductController {
     @GetMapping("/products/popular")
     public ResponseEntity<ApiResponse> getPopularProductApi() {
 
-        ApiResponse response = ApiResponse.success("조회 수 인기 TOP 10 상품 검색에 성공했습니다.", productCacheService.getPopularProduct());
+        ApiResponse response = ApiResponse.success("조회 수 인기 TOP 10 상품 검색에 성공했습니다.", productRankingService.getPopularProductTop10());
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

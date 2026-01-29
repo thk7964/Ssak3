@@ -26,6 +26,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final ProductRankingService productRankingService;
 
     /**
      * 상품생성
@@ -53,6 +54,7 @@ public class ProductService {
      */
     @Transactional
     public ProductGetResponse getProduct(Long productId) {
+
         Product foundProduct = productRepository.findByIdAndIsDeletedFalse(productId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
@@ -64,7 +66,11 @@ public class ProductService {
             throw new CustomException(ErrorCode.PRODUCT_NOT_VIEWABLE);
         }
 
-        foundProduct.increaseViewCount();
+        try {
+            productRankingService.increaseViewCount(productId);
+        } catch (Exception e) {
+            log.warn("Redis 조회수 업데이트 실패: productId = {}", foundProduct.getId());
+        }
 
         return ProductGetResponse.from(foundProduct);
     }

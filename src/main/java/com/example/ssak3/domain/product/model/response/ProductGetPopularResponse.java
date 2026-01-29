@@ -20,13 +20,17 @@ public class ProductGetPopularResponse {
     private final LocalDateTime createdAt;
 
     public static ProductGetPopularResponse from(Product product, TimeDeal timeDeal) {
+
+        Long timeDealId = timeDeal != null ? timeDeal.getId() : null;
+        Integer dealPrice = timeDeal != null ? timeDeal.getDealPrice() : null;
+
         return new ProductGetPopularResponse(
                 product.getId(),
-                timeDeal.getId(),
+                timeDealId,
                 product.getCategory().getId(),
                 product.getName(),
                 product.getPrice(),
-                timeDeal.getDealPrice(),
+                dealPrice,
                 product.getCreatedAt()
         );
     }

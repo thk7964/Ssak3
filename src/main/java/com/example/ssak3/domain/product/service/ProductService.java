@@ -13,17 +13,20 @@ import com.example.ssak3.domain.product.model.request.ProductUpdateStatusRequest
 import com.example.ssak3.domain.product.model.response.*;
 import com.example.ssak3.domain.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final ProductRankingService productRankingService;
 
     /**
      * 상품생성
@@ -49,17 +52,26 @@ public class ProductService {
     /**
      * 상품 상세조회(사용자)
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public ProductGetResponse getProduct(Long productId) {
+
         Product foundProduct = productRepository.findByIdAndIsDeletedFalse(productId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
         if (foundProduct.getStatus().equals(ProductStatus.STOP_SALE)) {
             throw new CustomException(ErrorCode.PRODUCT_NOT_VIEWABLE);
         }
+
         if (foundProduct.getStatus().equals(ProductStatus.BEFORE_SALE)) {
             throw new CustomException(ErrorCode.PRODUCT_NOT_VIEWABLE);
         }
+
+        try {
+            productRankingService.increaseViewCount(productId);
+        } catch (Exception e) {
+            log.warn("Redis 조회수 업데이트 실패: productId = {}", foundProduct.getId());
+        }
+
         return ProductGetResponse.from(foundProduct);
     }
 

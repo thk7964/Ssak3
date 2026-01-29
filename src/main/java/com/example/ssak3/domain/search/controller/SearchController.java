@@ -19,6 +19,9 @@ public class SearchController {
 
     private final SearchService searchService;
 
+    /**
+     * 상품 통합 검색 (상품명 키워드, 가격 범위)
+     */
     @GetMapping
     public ResponseEntity<ApiResponse> searchProductApi(
             @RequestParam(required = false) String keyword,

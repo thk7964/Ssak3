@@ -1,6 +1,7 @@
 package com.example.ssak3.domain.search.repository;
 
 import com.example.ssak3.common.enums.ProductStatus;
+import com.example.ssak3.common.enums.TimeDealStatus;
 import com.example.ssak3.domain.search.model.response.ProductSearchResponse;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -32,6 +33,7 @@ public class SearchCustomRepositoryImpl implements SearchCustomRepository {
                 .on(
                         product.id.eq(timeDeal.product.id),
                         timeDeal.isDeleted.eq(false),
+                        timeDeal.status.eq(TimeDealStatus.OPEN),
                         timeDeal.startAt.before(LocalDateTime.now()),
                         timeDeal.endAt.after(LocalDateTime.now())
                 )
@@ -62,6 +64,7 @@ public class SearchCustomRepositoryImpl implements SearchCustomRepository {
                         // 삭제되었거나 종료된 타임딜 상품일 경우 원래 상품 가격으로 조회 되도록 처리
                         product.id.eq(timeDeal.product.id),
                         timeDeal.isDeleted.eq(false),
+                        timeDeal.status.eq(TimeDealStatus.OPEN),
                         timeDeal.startAt.before(LocalDateTime.now()),
                         timeDeal.endAt.after(LocalDateTime.now())
                         )

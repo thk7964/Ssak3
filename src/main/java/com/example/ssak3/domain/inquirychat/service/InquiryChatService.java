@@ -7,6 +7,7 @@ import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.domain.inquirychat.entity.InquiryChatMessage;
 import com.example.ssak3.domain.inquirychat.entity.InquiryChatRoom;
 import com.example.ssak3.domain.inquirychat.model.request.ChatMessageRequest;
+import com.example.ssak3.domain.inquirychat.model.response.ChatMessageResponse;
 import com.example.ssak3.domain.inquirychat.model.response.InquiryChatCreateResponse;
 import com.example.ssak3.domain.inquirychat.model.response.InquiryChatMessageListGetResponse;
 import com.example.ssak3.domain.inquirychat.model.response.InquiryChatStatusUpdateResponse;
@@ -123,7 +124,7 @@ public class InquiryChatService {
      * 문의 채팅방 연결
      */
     @Transactional
-    public void saveMessage(ChatMessageRequest request, Long authenticatedUserId, String role) {
+    public ChatMessageResponse saveMessage(ChatMessageRequest request, Long userId, String role) {
 
         InquiryChatRoom foundRoom = roomRepository.findById(request.getRoomId())
                 .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
@@ -133,7 +134,7 @@ public class InquiryChatService {
             throw new CustomException(ErrorCode.INQUIRY_CHAT_ALREADY_COMPLETED);
         }
 
-        User foundUser = userRepository.findById(authenticatedUserId)
+        User foundUser = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         InquiryChatMessage message = new InquiryChatMessage(
@@ -144,6 +145,8 @@ public class InquiryChatService {
                 request.getContent()
         );
 
-        messageRepository.save(message);
+        InquiryChatMessage savedMessage = messageRepository.save(message);
+
+        return ChatMessageResponse.from(savedMessage);
     }
 }

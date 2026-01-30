@@ -1,9 +1,9 @@
 package com.example.ssak3.domain.auth.model.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
@@ -24,11 +24,11 @@ public class SignupRequest {
     private String email;
 
     @NotBlank(message = "비밀번호는 필수 입력 사항입니다.")
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-={}\\[\\]|;:'\",.<>/?])[a-z\\d!@#$%^&*()_+\\-={}\\[\\]|;:'\",.<>/?]{8,16}$", message = "비밀번호는 8자 이상 16자 이하 영문 소문자, 숫자, 특수 문자를 포함해야 합니다.")
+    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*])[A-Za-z\\d!@#$%^&*]{8,16}$", message = "비밀번호는 8자 이상 16자 이하 영문 대소문자, 숫자, 특수 문자를 포함해야 합니다.")
     private String password;
 
     @NotNull(message = "생일은 필수 입력 사항입니다.")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birth;
 
     @NotBlank(message = "전화번호는 필수 입력 사항입니다.")

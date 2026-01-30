@@ -21,6 +21,12 @@ spring:
     redis:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
+
 jwt:
   secret:
     key: ${SECRET_KEY}
+
+kakao:
+  client_id: ${CLIENT_ID}
+  redirect_uri: ${REDIRECT_URI}
+  client_secret: ${CLIENT_SECRET}

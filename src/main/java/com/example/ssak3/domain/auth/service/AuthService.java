@@ -28,11 +28,13 @@ public class AuthService {
     @Transactional
     public SignupResponse signup(SignupRequest request) {
 
+        String nickname = request.getNickname().replaceAll("\\s", "");
+
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new CustomException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
 
-        if (userRepository.existsByNickname(request.getNickname())) {
+        if (userRepository.existsByNickname(nickname)) {
             throw new CustomException(ErrorCode.NICKNAME_ALREADY_EXISTS);
         }
 
@@ -41,8 +43,8 @@ public class AuthService {
         }
 
         User user = new User(
-                request.getName(),
-                request.getNickname(),
+                request.getName().replaceAll("\\s", ""),
+                nickname,
                 request.getEmail(),
                 passwordEncoder.encode(request.getPassword()),
                 request.getBirth(),
@@ -73,7 +75,7 @@ public class AuthService {
             throw new CustomException(ErrorCode.PASSWORD_MISMATCH);
         }
 
-        String accessToken = jwtUtil.createToken(user.getId(), user.getEmail(), user.getName(), user.getRole());
+        String accessToken = jwtUtil.createToken(user.getId(), user.getEmail(), user.getRole());
 
         return new LoginResponse(accessToken);
     }

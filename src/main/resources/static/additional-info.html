@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>추가 정보 입력 - 싹쓰리</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #e0f7ff; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(77, 184, 232, 0.2);
+            width: 100%;
+            max-width: 450px; /* UI 크기를 살짝 늘렸습니다 */
+        }
+        h2 { color: #4db8e8; text-align: center; margin-bottom: 25px; line-height: 1.4; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-size: 14px; color: #555; font-weight: 600; }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0f7ff;
+            border-radius: 10px;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+        input:focus { outline: none; border-color: #4db8e8; }
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #4db8e8 0%, #87ceeb 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            margin-top: 10px;
+            transition: transform 0.2s;
+        }
+        .submit-btn:hover { transform: scale(1.02); }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>🌊 거의 다 왔어요!<br>나머지 정보를 완성해주세요.</h2>
+    <form id="infoForm">
+        <div class="form-group">
+            <label>본명</label>
+            <input type="text" id="name" required placeholder="홍길동">
+        </div>
+        <div class="form-group">
+            <label>닉네임</label>
+            <input type="text" id="nickname" required placeholder="활동할 이름을 정해주세요">
+        </div>
+        <div class="form-group">
+            <label>생년월일</label>
+            <input type="date" id="birth" required>
+        </div>
+        <div class="form-group">
+            <label>연락처</label>
+            <input type="tel" id="phone" required placeholder="010-1234-5678">
+        </div>
+        <div class="form-group">
+            <label>주소</label>
+            <input type="text" id="address" required placeholder="서울시 강남구...">
+        </div>
+        <button type="submit" class="submit-btn">가입 완료하기</button>
+    </form>
+</div>
+
+<script>
+    // 1. 페이지 로드 시 기존 정보(닉네임) 가져오기
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const token = localStorage.getItem('accessToken');
+
+            const headers = {};
+            if (token) {
+                headers.Authorization = 'Bearer ' + token;
+            }
+
+            const response = await fetch('/ssak3/users/me', {
+                method: 'GET',
+                headers: headers,
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                const user = result.data;
+                // 카카오에서 가져온 기본 닉네임을 입력창에 채워줌
+                if (user.nickname) {
+                    document.getElementById('nickname').value = user.nickname;
+                }
+            }
+        } catch (error) {
+            console.error('기존 정보를 가져오는데 실패했습니다.', error);
+        }
+    });
+
+    // 2. 정보 업데이트
+    document.getElementById('infoForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const data = {
+            name: document.getElementById('name').value,
+            nickname: document.getElementById('nickname').value,
+            birth: document.getElementById('birth').value,
+            phone: document.getElementById('phone').value,
+            address: document.getElementById('address').value
+        };
+
+        try {
+            const token = localStorage.getItem('accessToken');
+
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+
+            if (token) {
+                headers.Authorization = 'Bearer ' + token;
+            }
+
+            const response = await fetch('/ssak3/users/me', {
+                method: 'PATCH',
+                headers: headers,
+                body: JSON.stringify(data),
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                alert('싹쓰리 가입을 축하드립니다! 메인으로 이동합니다.');
+                window.location.href = 'home.html';
+            } else {
+                alert('정보 저장에 실패했습니다. 다시 시도해주세요.');
+            }
+        } catch (error) {
+            alert('오류가 발생했습니다.');
+        }
+    });
+</script>
+</body>
+</html>

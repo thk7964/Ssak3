@@ -58,7 +58,8 @@ public class OrderService {
         User user = userRepository.findByIdAndIsDeletedFalse(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        Product product = productRepository.findByIdAndIsDeletedFalse(request.getProductId())
+        // 비관락
+        Product product = productRepository.findByIdForLock(request.getProductId())
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
         int quantity = request.getQuantity();
@@ -69,10 +70,8 @@ public class OrderService {
         long subtotal = unitPrice * quantity;
 
         Order order = new Order(user, request.getAddress(), null, subtotal);
-        Order savedOrder = orderRepository.save(order);
 
-        OrderProduct orderProduct = new OrderProduct(savedOrder, product, unitPrice, quantity);
-        orderProductRepository.save(orderProduct);
+        OrderProduct orderProduct = new OrderProduct(order, product, unitPrice, quantity);
 
         // 재고 차감
         product.decreaseQuantity(quantity);
@@ -92,17 +91,15 @@ public class OrderService {
                 discount = userCoupon.getCoupon().getDiscountValue();
                 userCoupon.use();
 
-                savedOrder.applyCoupon(userCoupon, discount);
+                order.applyCoupon(userCoupon, discount);
             }
             else {
                 throw new CustomException(ErrorCode.COUPON_MIN_ORDER_PRICE_NOT_MET);
             }
         }
 
-        // 결제
-        // 결제 실패 시 롤백 필요
-
-        savedOrder.updateStatus(OrderStatus.DONE);
+        Order savedOrder = orderRepository.save(order);
+        orderProductRepository.save(orderProduct);
 
         return OrderCreateResponse.from(savedOrder, subtotal, discount);
 
@@ -140,7 +137,8 @@ public class OrderService {
         List<Integer> unitPriceList = new ArrayList<>();
 
         for (CartProduct cartProduct : cartProductList) {
-            Product product = productRepository.findByIdAndIsDeletedFalse(cartProduct.getProduct().getId())
+            // 비관락
+            Product product = productRepository.findByIdForLock(cartProduct.getProduct().getId())
                     .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
             int quantity = cartProduct.getQuantity();
@@ -204,8 +202,6 @@ public class OrderService {
 
         // 주문한 상품 장바구니에서 제거
         cartProductRepository.deleteAll(cartProductList);
-
-        savedOrder.updateStatus(OrderStatus.DONE);
 
         return OrderCreateResponse.from(savedOrder, subtotal, discount);
 

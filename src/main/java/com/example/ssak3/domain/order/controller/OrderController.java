@@ -2,7 +2,9 @@ package com.example.ssak3.domain.order.controller;
 
 import com.example.ssak3.common.model.ApiResponse;
 import com.example.ssak3.common.model.AuthUser;
-import com.example.ssak3.domain.order.model.request.*;
+import com.example.ssak3.domain.order.model.request.OrderCreateFromCartRequest;
+import com.example.ssak3.domain.order.model.request.OrderCreateFromProductRequest;
+import com.example.ssak3.domain.order.model.request.OrderStatusUpdateRequest;
 import com.example.ssak3.domain.order.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -73,7 +75,7 @@ public class OrderController {
             @AuthenticationPrincipal AuthUser user,
             @PageableDefault Pageable pageable
     ) {
-        ApiResponse response = ApiResponse.success("내 주문 목록 조회 성공했습니다.",  orderService.getOrderList(user.getId(), pageable));
+        ApiResponse response = ApiResponse.success("내 주문 목록 조회 성공했습니다.", orderService.getOrderList(user.getId(), pageable));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -86,7 +88,7 @@ public class OrderController {
             @AuthenticationPrincipal AuthUser user,
             @PathVariable Long orderId
     ) {
-        ApiResponse response = ApiResponse.success("주문 취소 성공했습니다.",  orderService.updateOrderCanceled(user.getId(), orderId));
+        ApiResponse response = ApiResponse.success("주문 취소 성공했습니다.", orderService.updateOrderCanceled(user.getId(), orderId));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

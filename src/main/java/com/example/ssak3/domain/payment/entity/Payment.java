@@ -67,6 +67,10 @@ public class Payment {
     }
 
     public void fail(){
+        if (this.status == PaymentStatus.FAILED){
+            return;
+        }
+
         if (this.status == PaymentStatus.SUCCESS){
             throw  new IllegalArgumentException("이미 승인된 결제");
         }

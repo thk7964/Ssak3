@@ -11,10 +11,12 @@ import com.example.ssak3.domain.cart.repository.CartRepository;
 import com.example.ssak3.domain.cartproduct.entity.CartProduct;
 import com.example.ssak3.domain.cartproduct.repository.CartProductRepository;
 import com.example.ssak3.domain.order.entity.Order;
-import com.example.ssak3.domain.order.model.request.*;
+import com.example.ssak3.domain.order.model.request.OrderCreateFromCartRequest;
+import com.example.ssak3.domain.order.model.request.OrderCreateFromProductRequest;
+import com.example.ssak3.domain.order.model.request.OrderStatusUpdateRequest;
+import com.example.ssak3.domain.order.model.response.OrderCreateResponse;
 import com.example.ssak3.domain.order.model.response.OrderGetResponse;
 import com.example.ssak3.domain.order.model.response.OrderListGetResponse;
-import com.example.ssak3.domain.order.model.response.OrderCreateResponse;
 import com.example.ssak3.domain.order.repository.OrderRepository;
 import com.example.ssak3.domain.orderProduct.entity.OrderProduct;
 import com.example.ssak3.domain.orderProduct.repository.OrderProductRepository;
@@ -32,6 +34,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -100,12 +104,17 @@ public class OrderService {
             }
         }
 
-        // 결제
-        // 결제 실패 시 롤백 필요
+        savedOrder.updateStatus(OrderStatus.PAYMENT_PENDING);
 
-        savedOrder.updateStatus(OrderStatus.DONE);
+        String orderId = order.getOrderNo();
+        String orderName = URLEncoder.encode(product.getName(), StandardCharsets.UTF_8);
+        long amount = subtotal - discount;
 
-        return OrderCreateResponse.from(savedOrder, subtotal, discount);
+        //실제 결제 요청
+
+        String url = "http://localhost:8080/checkout.html?orderId=" + orderId + "&orderName=" + orderName + "&amount=" + amount;
+
+        return OrderCreateResponse.from(savedOrder, subtotal, discount, url);
 
     }
 
@@ -133,7 +142,7 @@ public class OrderService {
         List<CartProduct> cartProductList = cartProductRepository.findByCartIdAndIdIn(cart.getId(), cartProductIdList);
 
         // 입력된 아이디 개수와 장바구니에서 찾은 상품의 개수가 같은지 확인
-        if(cartProductList.size() != cartProductIdList.size()) {
+        if (cartProductList.size() != cartProductIdList.size()) {
             throw new CustomException(ErrorCode.CART_PRODUCT_NOT_FOUND);
         }
 
@@ -158,7 +167,7 @@ public class OrderService {
 
         List<OrderProduct> orderProductList = new ArrayList<>();
 
-        for (int i  = 0; i < cartProductList.size(); i++) {
+        for (int i = 0; i < cartProductList.size(); i++) {
             CartProduct cartProduct = cartProductList.get(i);
             Product product = cartProduct.getProduct();
 
@@ -179,36 +188,40 @@ public class OrderService {
         UserCoupon userCoupon = null;
 
         // 쿠폰 적용 가능한지 확인
-        if(request.getUserCouponId() != null){
+        if (request.getUserCouponId() != null) {
             userCoupon = userCouponRepository.findByIdAndUserId(request.getUserCouponId(), userId)
                     .orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
 
-            if(!userCoupon.getStatus().equals(UserCouponStatus.AVAILABLE)){
+            if (!userCoupon.getStatus().equals(UserCouponStatus.AVAILABLE)) {
                 throw new CustomException(ErrorCode.COUPON_NOT_AVAILABLE);
             }
 
-            if(userCoupon.getCoupon().getMinOrderPrice() <= subtotal){
+            if (userCoupon.getCoupon().getMinOrderPrice() <= subtotal) {
                 // 할인할 가격 계산
                 discount = userCoupon.getCoupon().getDiscountValue();
                 // 쿠폰을 사용 완료 상태로 변경
                 userCoupon.use();
 
                 savedOrder.applyCoupon(userCoupon, discount);
-            }
-            else{
+            } else {
                 throw new CustomException(ErrorCode.COUPON_MIN_ORDER_PRICE_NOT_MET);
             }
         }
 
-        // 결제
-        // 결제 실패 시 롤백 필요
+        String orderId = order.getOrderNo();
+        String orderName;
+        long amount = subtotal - discount;
 
-        // 주문한 상품 장바구니에서 제거
-        cartProductRepository.deleteAll(cartProductList);
+        if (cartProductList.size() == 1) {
+            orderName = cartProductList.get(0).getProduct().getName();
+        } else {
+            orderName = cartProductList.get(0).getProduct().getName() + " 외" + (cartProductList.size() - 1) + " 건";
+        }
 
-        savedOrder.updateStatus(OrderStatus.DONE);
+        String url = "http://localhost:8080/checkout.html?orderId=" + orderId + "&orderName=" + orderName + "&amount=" + amount;
+        savedOrder.updateStatus(OrderStatus.PAYMENT_PENDING);
 
-        return OrderCreateResponse.from(savedOrder, subtotal, discount);
+        return OrderCreateResponse.from(savedOrder, subtotal, discount, url);
 
     }
 
@@ -234,10 +247,9 @@ public class OrderService {
 
         // 판매중x and 타임딜 OPEN인지 확인
         TimeDeal timeDeal = timeDealRepository.findOpenTimeDeal(product.getId(), now())
-                .orElseThrow(() -> new  CustomException(ErrorCode.PRODUCT_NOT_FOR_SALE));
+                .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOR_SALE));
 
         return timeDeal.getDealPrice();
-
 
 
     }

@@ -3,7 +3,6 @@ package com.example.ssak3.domain.order.entity;
 import com.example.ssak3.common.entity.BaseEntity;
 import com.example.ssak3.common.enums.OrderStatus;
 import com.example.ssak3.domain.orderProduct.entity.OrderProduct;
-import com.example.ssak3.domain.product.entity.Product;
 import com.example.ssak3.domain.user.entity.User;
 import com.example.ssak3.domain.usercoupon.entity.UserCoupon;
 import jakarta.persistence.*;
@@ -76,10 +75,4 @@ public class Order extends BaseEntity {
         this.status = OrderStatus.CANCELED;
     }
 
-    public void decreaseStock() {
-        for (OrderProduct op : orderProducts) {
-            Product product = op.getProduct();
-            product.decreaseQuantity(op.getQuantity());
-        }
-    }
 }

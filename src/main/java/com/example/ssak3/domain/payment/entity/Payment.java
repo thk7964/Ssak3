@@ -1,7 +1,9 @@
 package com.example.ssak3.domain.payment.entity;
 
+import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.enums.PaymentProvider;
 import com.example.ssak3.common.enums.PaymentStatus;
+import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.domain.order.entity.Order;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -75,5 +77,17 @@ public class Payment {
             throw  new IllegalArgumentException("이미 승인된 결제");
         }
         this.status = PaymentStatus.FAILED;
+    }
+
+    public void cancel(){
+        if (this.status == PaymentStatus.CANCELLED){
+            return;
+        }
+
+        if (this.status != PaymentStatus.SUCCESS){
+            throw new CustomException(ErrorCode.PAYMENT_NOT_CANCELABLE);
+        }
+
+        this.status = PaymentStatus.CANCELLED;
     }
 }

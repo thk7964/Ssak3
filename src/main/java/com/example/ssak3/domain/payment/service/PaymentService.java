@@ -1,7 +1,9 @@
 package com.example.ssak3.domain.payment.service;
 
+import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.enums.OrderStatus;
 import com.example.ssak3.common.enums.PaymentProvider;
+import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.domain.cartproduct.repository.CartProductRepository;
 import com.example.ssak3.domain.order.entity.Order;
 import com.example.ssak3.domain.order.repository.OrderRepository;
@@ -30,7 +32,7 @@ public class PaymentService {
     @Transactional
     public void confirmPayment(PaymentConfirmRequest request) {
         Order order = orderRepository.findByOrderNo(request.getOrderId())
-                .orElseThrow(() -> new IllegalArgumentException("주문 내역 없음"));
+                .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
 
         if (order.getStatus() == OrderStatus.DONE) {
             log.info("이미 결제 완료된 주문: {}", order.getOrderNo());
@@ -38,12 +40,12 @@ public class PaymentService {
         }
 
         if (order.getStatus() != OrderStatus.PAYMENT_PENDING) {
-            throw new IllegalStateException("결제 진행 중인 주문이 아님");
+            throw new CustomException(ErrorCode.ORDER_NOT_IN_PAYMENT_PENDING);
         }
 
         if (!order.getTotalPrice().equals(request.getAmount())) {
             order.updateStatus(OrderStatus.PAYMENT_FAILED);
-            throw new IllegalArgumentException("결제 금액 불일치");
+            throw new CustomException(ErrorCode.PAYMENT_AMOUNT_MISMATCH);
         }
 
         Payment payment = paymentRepository.findByPaymentKey(request.getPaymentKey())
@@ -74,13 +76,10 @@ public class PaymentService {
             order.updateStatus(OrderStatus.DONE);
 
         } catch (Exception e) {
+            log.error("결제 승인 후 처리 실패. orderId={}, paymentKey={}", request.getOrderId(), request.getPaymentKey(), e);
             paymentFailedService.paymentFailed(request.getOrderId(), request.getPaymentKey());
 
             throw e;
         }
     }
-//
-//    @Transactional
-//    public void cancelOrder()
-
 }

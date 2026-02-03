@@ -1,9 +1,6 @@
 package com.example.ssak3.domain.order.service;
 
-import com.example.ssak3.common.enums.ErrorCode;
-import com.example.ssak3.common.enums.OrderStatus;
-import com.example.ssak3.common.enums.ProductStatus;
-import com.example.ssak3.common.enums.UserCouponStatus;
+import com.example.ssak3.common.enums.*;
 import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.common.model.PageResponse;
 import com.example.ssak3.domain.cart.entity.Cart;
@@ -11,6 +8,7 @@ import com.example.ssak3.domain.cart.repository.CartRepository;
 import com.example.ssak3.domain.cartproduct.entity.CartProduct;
 import com.example.ssak3.domain.cartproduct.repository.CartProductRepository;
 import com.example.ssak3.domain.order.entity.Order;
+import com.example.ssak3.domain.order.model.request.OrderCancelRequest;
 import com.example.ssak3.domain.order.model.request.OrderCreateFromCartRequest;
 import com.example.ssak3.domain.order.model.request.OrderCreateFromProductRequest;
 import com.example.ssak3.domain.order.model.request.OrderStatusUpdateRequest;
@@ -20,6 +18,9 @@ import com.example.ssak3.domain.order.model.response.OrderListGetResponse;
 import com.example.ssak3.domain.order.repository.OrderRepository;
 import com.example.ssak3.domain.orderProduct.entity.OrderProduct;
 import com.example.ssak3.domain.orderProduct.repository.OrderProductRepository;
+import com.example.ssak3.domain.payment.client.TossPaymentClient;
+import com.example.ssak3.domain.payment.entity.Payment;
+import com.example.ssak3.domain.payment.repository.PaymentRepository;
 import com.example.ssak3.domain.product.entity.Product;
 import com.example.ssak3.domain.product.repository.ProductRepository;
 import com.example.ssak3.domain.timedeal.entity.TimeDeal;
@@ -53,6 +54,8 @@ public class OrderService {
     private final OrderProductRepository orderProductRepository;
     private final ProductRepository productRepository;
     private final TimeDealRepository timeDealRepository;
+    private final PaymentRepository paymentRepository;
+    private final TossPaymentClient tossPaymentClient;
 
     /**
      * 상품 페이지에서 단일 상품 구매
@@ -98,8 +101,7 @@ public class OrderService {
                 userCoupon.use();
 
                 savedOrder.applyCoupon(userCoupon, discount);
-            }
-            else {
+            } else {
                 throw new CustomException(ErrorCode.COUPON_MIN_ORDER_PRICE_NOT_MET);
             }
         }
@@ -287,21 +289,41 @@ public class OrderService {
      * 주문 취소
      */
     @Transactional
-    public OrderGetResponse updateOrderCanceled(Long userId, Long orderId) {
+    public OrderGetResponse updateOrderCanceled(Long userId, OrderCancelRequest request) {
 
-        Order order = orderRepository.findByIdAndUserId(orderId, userId)
+        Order order = orderRepository.findByIdAndUserId(request.getOrderId(), userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
 
         // 주문 완료 상태일 때만 취소 가능
         if (!order.getStatus().equals(OrderStatus.DONE)) {
             throw new CustomException(ErrorCode.ORDER_CAN_NOT_BE_CANCELED);
         }
+
+        Payment payment = paymentRepository.findByOrder(order)
+                .orElseThrow(() -> new CustomException(ErrorCode.PAYMENT_NOT_FOUND));
+
+        if (payment.getStatus() == PaymentStatus.CANCELLED) {
+            return OrderGetResponse.from(order, order.getOrderProducts());
+        }
+
+        tossPaymentClient.cancel(payment.getPaymentKey(), request.getCancelReason());
+
+        orderCancel(order, payment);
+
+        return OrderGetResponse.from(order, order.getOrderProducts());
+    }
+
+    @Transactional
+    protected void orderCancel(Order order, Payment payment) {
+        for (OrderProduct op : order.getOrderProducts()) {
+            op.getProduct().rollbackQuantity(op.getQuantity());
+        }
+        if (order.getUserCoupon() != null) {
+            order.getUserCoupon().rollback();
+        }
+
+        payment.cancel();
         order.canceled();
-
-        List<OrderProduct> orderProductList = orderProductRepository.findByOrderId(order.getId());
-
-        return OrderGetResponse.from(order, orderProductList);
-
     }
 
     /**

@@ -83,10 +83,17 @@ public enum ErrorCode {
 
     // InquiryReply 에러,
     INQUIRY_REPLY_NOT_FOUND(HttpStatus.NOT_FOUND, "문의 답변 내역을 찾을 수 없습니다."),
-    INQUIRY_REPLY_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "삭제된 문의 답변입니다.")
+    INQUIRY_REPLY_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "삭제된 문의 답변입니다."),
 
-
+    // Payment 에러
+    PAYMENT_NOT_CANCELABLE(HttpStatus.BAD_REQUEST, "결제 취소 가능한 상태가 아닙니다."),
+    PAYMENT_CANCEL_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "결제 취소에 실패했습니다."),
+    PAYMENT_NOT_FOUND(HttpStatus.BAD_REQUEST, "결제 내역이 없습니다."),
+    ORDER_NOT_IN_PAYMENT_PENDING(HttpStatus.BAD_REQUEST, "결제 진행 중인 주문이 아닙니다."),
+    PAYMENT_AMOUNT_MISMATCH( HttpStatus.BAD_REQUEST,"결제 금액이 주문 금액과 일치하지 않습니다."),
     ;
+
+
 
     private final HttpStatus status;
     private final String message;

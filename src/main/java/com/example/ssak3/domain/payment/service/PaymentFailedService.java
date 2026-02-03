@@ -18,16 +18,11 @@ public class PaymentFailedService {
     private final OrderRepository orderRepository;
     private final PaymentRepository paymentRepository;
 
-
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void paymentFailed(String orderId, String paymentKey){
 
         Order order = orderRepository.findByOrderNo(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("주문 내역 없음"));
-
-        if (order.getStatus() ==OrderStatus.PAYMENT_FAILED){
-            return;
-        }
 
         Payment payment = paymentRepository.findByPaymentKey(paymentKey)
                 .orElseThrow(() -> new IllegalArgumentException("결제 내역 없음"));

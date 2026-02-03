@@ -34,10 +34,8 @@ public class CategoryController {
      * 카테고리 목록조회 API
      */
     @GetMapping("/categories")
-    public ResponseEntity<ApiResponse> getCategoryListApi(
-            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC)Pageable pageable
-            ) {
-        ApiResponse response = ApiResponse.success("카테고리목록을 조회했습니다.", categoryService.getCategoryList(pageable));
+    public ResponseEntity<ApiResponse> getCategoryListApi() {
+        ApiResponse response = ApiResponse.success("카테고리목록을 조회했습니다.", categoryService.getCategoryList());
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

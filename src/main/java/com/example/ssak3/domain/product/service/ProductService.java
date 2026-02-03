@@ -89,7 +89,7 @@ public class ProductService {
      * 상품 목록조회(관리자)
      */
     @Transactional(readOnly = true)
-    public Object getProductListAdmin(Long categoryId, Pageable pageable) {
+    public PageResponse getProductListAdmin(Long categoryId, Pageable pageable) {
         Page<ProductListGetResponse> productList = productRepository.findProductListByCategoryIdForAdmin(categoryId, pageable)
                 .map(ProductListGetResponse::from);
         return PageResponse.from(productList);

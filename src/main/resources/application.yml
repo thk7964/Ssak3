@@ -17,6 +17,10 @@ spring:
     show-sql: true
   jackson:
     time-zone: Asia/Seoul
+  cache:
+    cache-names: "categoryCache"
+    caffeine:
+      spec: "maximumSize=100,expireAfterAccess=600s"
 
 jwt:
   secret:

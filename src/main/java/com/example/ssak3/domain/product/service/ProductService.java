@@ -53,7 +53,7 @@ public class ProductService {
      * 상품 상세조회(사용자)
      */
     @Transactional
-    public ProductGetResponse getProduct(Long productId) {
+    public ProductGetResponse getProduct(Long productId, String ip) {
 
         Product foundProduct = productRepository.findByIdAndIsDeletedFalse(productId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
@@ -67,7 +67,7 @@ public class ProductService {
         }
 
         try {
-            productRankingService.increaseViewCount(productId);
+            productRankingService.increaseViewCount(productId, ip);
         } catch (Exception e) {
             log.warn("Redis 조회수 업데이트 실패: productId = {}", foundProduct.getId());
         }

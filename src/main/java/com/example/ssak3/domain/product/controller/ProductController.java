@@ -6,6 +6,7 @@ import com.example.ssak3.domain.product.model.request.ProductUpdateRequest;
 import com.example.ssak3.domain.product.model.request.ProductUpdateStatusRequest;
 import com.example.ssak3.domain.product.service.ProductRankingService;
 import com.example.ssak3.domain.product.service.ProductService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -42,9 +43,12 @@ public class ProductController {
      * 상품 상세조회(사용자) API
      */
     @GetMapping("/products/{productId}")
-    public ResponseEntity<ApiResponse> getProductApi(@PathVariable Long productId) {
+    public ResponseEntity<ApiResponse> getProductApi(@PathVariable Long productId, HttpServletRequest request) {
         log.info("controller 상품상세조회 id: {}", productId);
-       ApiResponse response = ApiResponse.success("상품을 조회했습니다.", productService.getProduct(productId));
+
+        String ip = request.getRemoteAddr();
+
+       ApiResponse response = ApiResponse.success("상품을 조회했습니다.", productService.getProduct(productId, ip));
        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상품 상세 - 싹쓰리</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+            background: #fafafa;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #ffffff;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+            cursor: pointer;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            background: #f8f9fa;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s ease;
+            color: #495057;
+        }
+
+        .icon-btn:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+
+        .back-btn {
+            background: #f8f9fa;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #495057;
+            transition: all 0.2s ease;
+            margin: 20px 40px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn:hover {
+            background: #e9ecef;
+        }
+
+        .product-detail-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .product-main {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 60px;
+        }
+
+        .product-image-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 500px;
+        }
+
+        .product-image {
+            font-size: 200px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .product-info-section {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .product-category {
+            display: inline-block;
+            background: linear-gradient(135deg, #74b9ff15 0%, #a29bfe15 100%);
+            color: #74b9ff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            width: fit-content;
+        }
+
+        .product-name {
+            font-size: 36px;
+            font-weight: 700;
+            color: #212529;
+            line-height: 1.3;
+            letter-spacing: -0.5px;
+        }
+
+        .product-price {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 12px 0;
+        }
+
+        .product-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            width: fit-content;
+        }
+
+        .product-status.available {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .product-status.soldout {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .divider {
+            height: 1px;
+            background: #e5e7eb;
+            margin: 20px 0;
+        }
+
+        .product-description {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .description-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 16px;
+        }
+
+        .description-text {
+            font-size: 15px;
+            color: #6b7280;
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 20px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .quantity-label {
+            font-size: 15px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .quantity-btn {
+            width: 36px;
+            height: 36px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 600;
+            color: #495057;
+            transition: all 0.2s ease;
+        }
+
+        .quantity-btn:hover {
+            border-color: #74b9ff;
+            color: #74b9ff;
+        }
+
+        .quantity-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #212529;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .cart-btn, .buy-btn {
+            flex: 1;
+            padding: 18px;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .cart-btn {
+            background: white;
+            border: 2px solid #74b9ff;
+            color: #74b9ff;
+        }
+
+        .cart-btn:hover {
+            background: #74b9ff;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(116, 185, 255, 0.3);
+        }
+
+        .buy-btn {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(116, 185, 255, 0.4);
+        }
+
+        .buy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(116, 185, 255, 0.5);
+        }
+
+        .buy-btn:disabled, .cart-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 500px;
+            font-size: 18px;
+            color: #6b7280;
+        }
+
+        .error {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .error-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: 12px;
+        }
+
+        .error-message {
+            font-size: 16px;
+            color: #6b7280;
+        }
+
+        footer {
+            background: #212529;
+            color: #adb5bd;
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+        }
+
+        footer p {
+            margin: 10px 0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        footer p:first-child {
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .product-main {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .product-image {
+                font-size: 120px;
+            }
+
+            .product-name {
+                font-size: 28px;
+            }
+
+            .product-price {
+                font-size: 26px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .back-btn {
+                margin: 20px;
+            }
+
+            header {
+                padding: 16px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
+    <div class="header-icons">
+        <button class="icon-btn">🔍</button>
+        <button class="icon-btn">🛒</button>
+        <button class="icon-btn">👤</button>
+    </div>
+</header>
+
+<button class="back-btn" onclick="history.back()">← 뒤로가기</button>
+
+<div class="product-detail-container" id="productContainer">
+    <div class="loading" id="loading">상품 정보를 불러오는 중...</div>
+</div>
+
+<footer>
+    <p>© 2025 싹쓰리 - 모두를 위한 귀여운 굿즈</p>
+    <p>고객센터: 010-1234-5678 | contact@ssak3.com</p>
+    <p>개인정보처리방침 | 이용약관 | 배송정책</p>
+</footer>
+
+<script>
+    // URL에서 상품 ID 가져오기
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('id');
+
+    // 상품별 이모지 매핑 (실제로는 서버에서 이미지 URL을 받아와야 함)
+    const productEmojis = {
+        1: '🏍️',
+        2: '✨',
+        3: '⚔️',
+        4: '🎮',
+        5: '🎵',
+        6: '⚡',
+        7: '🌈',
+        8: '💎',
+        9: '🎨',
+        10: '🧸'
+    };
+
+    // 상품 상태 한글 변환
+    const statusText = {
+        'AVAILABLE': '판매중',
+        'SOLDOUT': '품절',
+        'DISCONTINUED': '단종'
+    };
+
+    // 상품 정보 로드
+    async function loadProductDetail() {
+        if (!productId) {
+            showError('상품을 찾을 수 없습니다.');
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:8080/ssak3/products/${productId}`);
+
+            if (!response.ok) {
+                throw new Error('상품을 불러올 수 없습니다.');
+            }
+
+            const result = await response.json();
+            const product = result.data;
+
+            displayProduct(product);
+        } catch (error) {
+            console.error('상품 로드 오류:', error);
+            showError('상품 정보를 불러오는데 실패했습니다.');
+        }
+    }
+
+    // 상품 정보 표시
+    function displayProduct(product) {
+        const container = document.getElementById('productContainer');
+        const isAvailable = product.status === 'AVAILABLE';
+        const emoji = productEmojis[product.id] || '📦';
+
+        container.innerHTML = `
+            <div class="product-main">
+                <div class="product-image-section">
+                    <div class="product-image">${emoji}</div>
+                </div>
+
+                <div class="product-info-section">
+                    <span class="product-category">카테고리 ${product.categoryId}</span>
+                    <h1 class="product-name">${product.name}</h1>
+
+                    <div class="product-price">${product.price.toLocaleString()}원</div>
+
+                    <span class="product-status ${isAvailable ? 'available' : 'soldout'}">
+                        ${isAvailable ? '✓' : '✕'} ${statusText[product.status] || product.status}
+                    </span>
+
+                    <div class="divider"></div>
+
+                    ${product.information ? `
+                        <div class="product-description">
+                            <div class="description-title">상품 정보</div>
+                            <div class="description-text">${product.information}</div>
+                        </div>
+                    ` : ''}
+
+                    <div class="quantity-selector">
+                        <span class="quantity-label">수량</span>
+                        <div class="quantity-controls">
+                            <button class="quantity-btn" onclick="decreaseQuantity()" ${!isAvailable ? 'disabled' : ''}>-</button>
+                            <span class="quantity-value" id="quantityValue">1</span>
+                            <button class="quantity-btn" onclick="increaseQuantity()" ${!isAvailable ? 'disabled' : ''}>+</button>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="cart-btn" onclick="addToCart()" ${!isAvailable ? 'disabled' : ''}>
+                            🛒 장바구니
+                        </button>
+                        <button class="buy-btn" onclick="buyNow()" ${!isAvailable ? 'disabled' : ''}>
+                            바로 구매
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // 에러 표시
+    function showError(message) {
+        const container = document.getElementById('productContainer');
+        container.innerHTML = `
+            <div class="error">
+                <div class="error-title">😢 오류가 발생했습니다</div>
+                <div class="error-message">${message}</div>
+            </div>
+        `;
+    }
+
+    // 수량 증가
+    function increaseQuantity() {
+        const quantityElement = document.getElementById('quantityValue');
+        let quantity = parseInt(quantityElement.textContent);
+        quantityElement.textContent = quantity + 1;
+    }
+
+    // 수량 감소
+    function decreaseQuantity() {
+        const quantityElement = document.getElementById('quantityValue');
+        let quantity = parseInt(quantityElement.textContent);
+        if (quantity > 1) {
+            quantityElement.textContent = quantity - 1;
+        }
+    }
+
+    // 장바구니 추가
+    function addToCart() {
+        const quantity = document.getElementById('quantityValue').textContent;
+        alert(`장바구니에 ${quantity}개가 추가되었습니다!`);
+    }
+
+    // 바로 구매
+    function buyNow() {
+        const quantity = document.getElementById('quantityValue').textContent;
+        alert(`${quantity}개 구매하기`);
+        // 실제로는 구매 페이지로 이동
+    }
+
+    // 페이지 로드 시 상품 정보 가져오기
+    loadProductDetail();
+</script>
+</body>
+</html>

@@ -4,6 +4,8 @@ import com.example.ssak3.common.model.ApiResponse;
 import com.example.ssak3.domain.auth.model.request.LoginRequest;
 import com.example.ssak3.domain.auth.model.request.SignupRequest;
 import com.example.ssak3.domain.auth.service.AuthService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -38,6 +40,22 @@ public class AuthController {
     public ResponseEntity<ApiResponse> loginApi(@RequestBody LoginRequest request) {
 
         ApiResponse response = ApiResponse.success("로그인에 성공했습니다.", authService.login(request));
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    /**
+     * 로그아웃 API (카카오 로그인 시)
+     */
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse> logoutApi(HttpServletResponse httpServletResponse) {
+
+        Cookie cookie = new Cookie("accessToken", null);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        httpServletResponse.addCookie(cookie);
+
+        ApiResponse response = ApiResponse.success("로그아웃에 성공했습니다.", null);
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

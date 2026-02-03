@@ -15,6 +15,7 @@ import com.example.ssak3.domain.order.model.request.OrderStatusUpdateRequest;
 import com.example.ssak3.domain.order.model.response.OrderCreateResponse;
 import com.example.ssak3.domain.order.model.response.OrderGetResponse;
 import com.example.ssak3.domain.order.model.response.OrderListGetResponse;
+import com.example.ssak3.domain.order.model.response.OrderCreateResponse;
 import com.example.ssak3.domain.order.repository.OrderRepository;
 import com.example.ssak3.domain.orderProduct.entity.OrderProduct;
 import com.example.ssak3.domain.orderProduct.repository.OrderProductRepository;
@@ -37,10 +38,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import static java.time.LocalDateTime.now;
 
 @Service
 @RequiredArgsConstructor
@@ -248,14 +248,11 @@ public class OrderService {
         }
 
         // 판매중x and 타임딜 OPEN인지 확인
-        TimeDeal timeDeal = timeDealRepository.findOpenTimeDeal(product.getId(), now())
+        TimeDeal timeDeal = timeDealRepository.findOpenTimeDeal(product.getId(), LocalDateTime.now())
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOR_SALE));
 
         return timeDeal.getDealPrice();
-
-
     }
-
 
     /**
      * 주문 상세 조회

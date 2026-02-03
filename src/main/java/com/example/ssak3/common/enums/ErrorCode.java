@@ -15,6 +15,7 @@ public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."),
     WITHDRAWN_USER(HttpStatus.NOT_FOUND, "탈퇴한 유저입니다."),
     INVALID_USER_ROLE(HttpStatus.BAD_REQUEST, "유효하지 않은 권한입니다."),
+    NOT_ALLOWED_CHANGE_SUPER_ADMIN(HttpStatus.BAD_REQUEST, "최고 관리자로는 변경할 수 없습니다."),
 
     // Product 에러
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다."),
@@ -23,7 +24,6 @@ public enum ErrorCode {
     INVALID_QUANTITY(HttpStatus.BAD_REQUEST, "유효한 재고값이 아닙니다."),
     PRODUCT_NOT_VIEWABLE(HttpStatus.BAD_REQUEST, "현재 상품 상태에서는 조회할 수 없습니다."),
     INVALID_ROLLBACK_QUANTITY(HttpStatus.BAD_REQUEST, "복구할 수량은 1 이상이어야 합니다."),
-
 
     // Review 에러
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "후기를 찾을 수 없습니다."),
@@ -81,9 +81,19 @@ public enum ErrorCode {
     INQUIRY_ALREADY_ANSWERED(HttpStatus.BAD_REQUEST, "답변완료된 문의입니다."),
     INQUIRY_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "삭제된 문의입니다."),
 
-    // InquiryReply 에러,
+    // InquiryReply 에러
     INQUIRY_REPLY_NOT_FOUND(HttpStatus.NOT_FOUND, "문의 답변 내역을 찾을 수 없습니다."),
     INQUIRY_REPLY_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "삭제된 문의 답변입니다."),
+
+    // InquiryChat 에러
+    CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "문의 채팅방을 찾을 수 없습니다."),
+    CHAT_ROOM_ALREADY_ASSIGNED(HttpStatus.CONFLICT, "이미 배정 완료된 문의입니다."),
+    CHAT_ROOM_ACCESS_DENIED(HttpStatus.FORBIDDEN, "해당 문의 채팅방 접근 권한이 없습니다."),
+    CHAT_ROOM_COMPLETE_ACCESS_DENIED(HttpStatus.FORBIDDEN, "문의 채팅을 종료할 권한이 없습니다."),
+    INQUIRY_CHAT_ALREADY_COMPLETED(HttpStatus.BAD_REQUEST, "이미 종료된 문의 채팅입니다."),
+
+    // 서버 에러
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "내부 서버 에러입니다."),
 
     // Payment 에러
     PAYMENT_NOT_CANCELABLE(HttpStatus.BAD_REQUEST, "결제 취소 가능한 상태가 아닙니다."),

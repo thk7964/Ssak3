@@ -57,6 +57,12 @@ dependencies {
 
     // WebSocket 의존성
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+    // Redis 의존성
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    
+    // LocalDate & LocalDateTime 파싱 의존성
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 }
 
 tasks.named('test') {

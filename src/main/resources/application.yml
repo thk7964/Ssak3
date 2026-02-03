@@ -17,6 +17,10 @@ spring:
     show-sql: true
   jackson:
     time-zone: Asia/Seoul
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
   cache:
     cache-names: "categoryCache"
     caffeine:

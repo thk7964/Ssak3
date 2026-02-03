@@ -21,7 +21,7 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
     public Page<UserListGetResponse> getUserList(UserRole role, String nickname, Pageable pageable) {
 
         Long total = queryFactory
-                .select(user.countDistinct())
+                .select(user.count())
                 .from(user)
                 .where(
                         roleEq(role),

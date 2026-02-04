@@ -1,0 +1,75 @@
+name: ssak3 User Server CI/CD
+
+on:
+  push:
+    branches: [ "production" ]
+
+env:
+  AWS_REGION: ap-northeast-2
+  ECR_REPOSITORY: ssak3-user
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 1. Java 17 및 Gradle 빌드
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Build with Gradle
+        run: |
+          chmod +x gradlew
+          ./gradlew clean build -x test
+
+      # 2. AWS 인증 (Secrets에 저장한 키 사용)
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # 3. ECR 로그인 및 이미지 빌드/푸시
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: latest
+        run: |
+          # Docker 이미지를 빌드하고 ECR 주소로 태그를 붙여 푸시합니다.
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          # 다음 단계를 위해 저장소 주소를 출력값으로 저장합니다.
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      # 4. EC2에 접속하여 배포 실행 (SSH)
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.USER_EC2_HOST }}
+          username: ${{ secrets.USER_EC2_USERNAME }}
+          key: ${{ secrets.USER_SSH_PRIVATE_KEY }}
+          script: |
+            # 1. ECR 로그인
+            aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
+            
+            # 2. 기존 컨테이너 중지 및 삭제 (실행 중이 아니어도 에러 무시)
+            docker stop ssak3-user || true
+            docker rm ssak3-user || true
+            
+            # 3. 최신 이미지 Pull 및 실행
+            docker pull ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+            docker run -d --name ssak3-user -p 8080:8080 ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+            
+            # 4. 사용하지 않는 이미지 정리 (용량 확보)
+            docker image prune -f

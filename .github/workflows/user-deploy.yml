@@ -2,7 +2,7 @@ name: ssak3 User Server CI/CD
 
 on:
   push:
-    branches: [ "production" ] # production 브랜치에 push될 때 작동
+    branches: [ "production" ]
 
 env:
   AWS_REGION: ap-northeast-2
@@ -68,7 +68,7 @@ jobs:
             docker compose pull
             
             # 4. 컨테이너 재시작 (기존 정지/삭제/실행을 이 명령 하나가 다 처리함)
-            docker compose up -d
+            docker compose up -d --force-recreate 
             
             # 5. 사용하지 않는 이미지 정리
             docker image prune -f

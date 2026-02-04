@@ -54,13 +54,13 @@ jobs:
       - name: Deploy to Private EC2 via Bastion
         uses: appleboy/ssh-action@master
         with:
-          # [관문] Bastion 서버 정보
-          host: ${{ secrets.USER_EC2_HOST }}
+          # [목적지] Private 서버 정보
+          host: ${{ secrets.USER_PRIVATE_IP }}
           username: ${{ secrets.USER_EC2_USERNAME }}
           key: ${{ secrets.USER_SSH_PRIVATE_KEY }}
 
-          # [목적지] Private 서버 정보
-          proxy_host: ${{ secrets.USER_PRIVATE_IP }}
+          # [관문] Bastion 서버 정보
+          proxy_host: ${{ secrets.USER_EC2_HOST }}
           proxy_username: ${{ secrets.USER_EC2_USERNAME }}
           proxy_key: ${{ secrets.USER_SSH_PRIVATE_KEY }}
 

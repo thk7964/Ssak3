@@ -51,33 +51,46 @@ jobs:
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
       # 4. EC2에 접속하여 Docker Compose로 배포 실행 (Bastion을 거쳐 Private 서버로)
-      - name: Deploy to Private EC2 via Bastion
+      - name: Bastion Connection Test
         uses: appleboy/ssh-action@master
         with:
-          # [관문] Bastion 서버 정보
           host: ${{ secrets.USER_EC2_HOST }}
           username: ${{ secrets.USER_EC2_USERNAME }}
           key: ${{ secrets.USER_SSH_PRIVATE_KEY }}
           port: 22
-
-          # [목적지] Private 서버 정보
-          proxy_host: ${{ secrets.USER_PRIVATE_IP }}
-          proxy_username: ${{ secrets.USER_EC2_USERNAME }}
-          proxy_key: ${{ secrets.USER_SSH_PRIVATE_KEY }}
-          proxy_port: 22
-
           script: |
-            # 1. ECR 로그인
-            aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
-            
-            # 2. docker-compose.yml이 있는 위치로 이동
-            cd /home/ubuntu 
-            
-            # 3. 최신 이미지 가져오기
-            docker compose pull
-            
-            # 4. 컨테이너 재시작
-            docker compose up -d --force-recreate 
-            
-            # 5. 사용하지 않는 이미지 정리
-            docker image prune -f
+            echo "Bastion 접속 성공!"
+            hostname -I
+            ls -al
+#      - name: Deploy to Private EC2 via Bastion
+#        uses: appleboy/ssh-action@master
+#        with:
+#          # [관문] Bastion 서버 정보
+#          host: ${{ secrets.USER_EC2_HOST }}
+#          username: ${{ secrets.USER_EC2_USERNAME }}
+#          key: ${{ secrets.USER_SSH_PRIVATE_KEY }}
+#          port: 22
+#
+#          # [목적지] Private 서버 정보
+#          proxy_host: ${{ secrets.USER_PRIVATE_IP }}
+#          proxy_port: 22
+#          proxy_username: ${{ secrets.USER_EC2_USERNAME }}
+#          proxy_key: ${{ secrets.USER_SSH_PRIVATE_KEY }}
+#          timeout: 60s
+#          command_timeout: 10m
+#
+#          script: |
+#            # 1. ECR 로그인
+#            aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
+#
+#            # 2. docker-compose.yml이 있는 위치로 이동
+#            cd /home/ubuntu
+#
+#            # 3. 최신 이미지 가져오기
+#            docker compose pull
+#
+#            # 4. 컨테이너 재시작
+#            docker compose up -d --force-recreate
+#
+#            # 5. 사용하지 않는 이미지 정리
+#            docker image prune -f

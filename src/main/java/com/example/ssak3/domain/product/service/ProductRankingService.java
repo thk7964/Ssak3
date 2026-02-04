@@ -12,10 +12,12 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,26 +27,38 @@ public class ProductRankingService {
     private final StringRedisTemplate redisTemplate;
     private static final String PRODUCT_DAILY_RANKING_PREFIX = "product:ranking:";
     private static final String PRODUCT_WEEKLY_RANKING_KEY = "product:ranking:weekly";
+    private static final String PRODUCT_VIEW_CHECK_PREFIX = "product:view:check:ip:";
     private final ProductRepository productRepository;
     private final TimeDealRepository timeDealRepository;
 
     /**
      * 조회수 증가 메소드
      */
-    public void increaseViewCount(Long productId) {
+    public void increaseViewCount(Long productId, String ip) {
 
-        LocalDate now = LocalDate.now();
+        LocalDateTime now = LocalDateTime.now();
 
-        Double score = redisTemplate.opsForZSet().incrementScore(PRODUCT_DAILY_RANKING_PREFIX + now, productId.toString(), 1);
+        String key = PRODUCT_VIEW_CHECK_PREFIX + ip + ":productId:" + productId; // 오늘 조회 했는지 체크할 Key
+        LocalDateTime midnight = LocalDate.now().plusDays(1).atStartOfDay(); // 다음 날 자정 만료
+        Boolean isFirstView = redisTemplate.opsForValue().setIfAbsent(key, "1", Duration.between(now, midnight).getSeconds(), TimeUnit.SECONDS);
+
+        // 오늘 첫 조회가 아니면 조회수 증가 x
+        if (Boolean.FALSE.equals(isFirstView)) {
+            return;
+        }
+
+        LocalDate nowDay =  LocalDate.now();
+
+        Double score = redisTemplate.opsForZSet().incrementScore(PRODUCT_DAILY_RANKING_PREFIX + nowDay, productId.toString(), 1);
 
         // 최초 한 번만 TTL 설정
         if (score != null && score == 1.0) {
 
             // 오늘로부터 10일 뒤 자정 시점 구하기
-            LocalDateTime expirationTime = now.plusDays(10).atStartOfDay();
+            LocalDateTime dayViewCountExp = nowDay.plusDays(10).atStartOfDay();
 
             // TTL 설정: Redis에서 오늘로부터 10일 뒤 데이터 만료
-            redisTemplate.expireAt(PRODUCT_DAILY_RANKING_PREFIX + now, expirationTime.atZone(ZoneId.systemDefault()).toInstant());
+            redisTemplate.expireAt(PRODUCT_DAILY_RANKING_PREFIX + nowDay, dayViewCountExp.atZone(ZoneId.systemDefault()).toInstant());
         }
 
     }

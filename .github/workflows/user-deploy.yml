@@ -58,11 +58,13 @@ jobs:
           host: ${{ secrets.USER_EC2_HOST }}
           username: ${{ secrets.USER_EC2_USERNAME }}
           key: ${{ secrets.USER_SSH_PRIVATE_KEY }}
+          port: 22
 
           # [목적지] Private 서버 정보
           proxy_host: ${{ secrets.USER_PRIVATE_IP }}
           proxy_username: ${{ secrets.USER_EC2_USERNAME }}
           proxy_key: ${{ secrets.USER_SSH_PRIVATE_KEY }}
+          proxy_port: 22
 
           script: |
             # 1. ECR 로그인

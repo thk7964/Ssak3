@@ -75,7 +75,7 @@ public class SecurityConfig {
                                 "/ssak3/time-deals/**",
                                 "/ssak3/search").permitAll()
                         .requestMatchers("/ssak3/admin").hasRole("SUPER_ADMIN")
-                        .requestMatchers("/ssak3/admin/**", "/ssak3/coupons").hasRole("ADMIN")
+                        .requestMatchers("/ssak3/admin/**").hasRole("ADMIN")
                         .requestMatchers("/ssak3/chat/**").permitAll()
                         .requestMatchers("/**/*.html").permitAll()
                         .anyRequest().authenticated())

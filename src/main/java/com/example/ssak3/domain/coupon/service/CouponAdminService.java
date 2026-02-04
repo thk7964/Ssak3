@@ -2,18 +2,14 @@ package com.example.ssak3.domain.coupon.service;
 
 import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.exception.CustomException;
-import com.example.ssak3.common.model.PageResponse;
 import com.example.ssak3.domain.coupon.entity.Coupon;
 import com.example.ssak3.domain.coupon.model.request.CouponCreateRequest;
 import com.example.ssak3.domain.coupon.model.request.CouponUpdateRequest;
 import com.example.ssak3.domain.coupon.model.response.CouponCreateResponse;
 import com.example.ssak3.domain.coupon.model.response.CouponDeleteResponse;
-import com.example.ssak3.domain.coupon.model.response.CouponListGetResponse;
 import com.example.ssak3.domain.coupon.model.response.CouponUpdateResponse;
 import com.example.ssak3.domain.coupon.repository.CouponRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +17,7 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class CouponService {
+public class CouponAdminService {
 
     private final CouponRepository couponRepository;
 
@@ -30,6 +26,11 @@ public class CouponService {
      */
     @Transactional
     public CouponCreateResponse createCoupon(CouponCreateRequest request) {
+
+        // 시작일이 현재 시간보다 이전인 경우 예외
+        if (request.getIssueStartDate().isBefore(LocalDateTime.now())) {
+            throw new CustomException(ErrorCode.COUPON_INVALID_START_TIME);
+        }
 
         // 종료일이 시작일보다 빠른 경우 예외
         if (request.getIssueEndDate().isBefore(request.getIssueStartDate())) {
@@ -52,18 +53,6 @@ public class CouponService {
     }
 
     /**
-     * 쿠폰 목록 조회 로직
-     */
-    @Transactional(readOnly = true)
-    public PageResponse<CouponListGetResponse> getCouponList(Pageable pageable) {
-
-        Page<CouponListGetResponse> couponListPage = couponRepository.findAllAvailableCoupons(LocalDateTime.now(), pageable)
-                .map(CouponListGetResponse::from);
-
-        return PageResponse.from(couponListPage);
-    }
-
-    /**
      * 쿠폰 수정 로직
      */
     @Transactional
@@ -71,6 +60,16 @@ public class CouponService {
 
         Coupon coupon = couponRepository.findById(couponId)
                 .orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
+
+        // 종료일이 현재 시간보다 이전으로 수정되는 것 방지
+        if (request.getIssueEndDate().isBefore(LocalDateTime.now())) {
+            throw new CustomException(ErrorCode.COUPON_INVALID_END_TIME);
+        }
+
+        // 종료일이 시작일보다 빠른 경우 예외
+        if (request.getIssueEndDate().isBefore(coupon.getIssueStartDate())) {
+            throw new CustomException(ErrorCode.COUPON_INVALID_TIME_RANGE);
+        }
 
         coupon.update(request);
 

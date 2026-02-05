@@ -65,17 +65,42 @@ jobs:
           proxy_key: ${{ secrets.ADMIN_SSH_PRIVATE_KEY }}
 
           script: |
-            # 1. ECR 로그인
+            echo "========== STEP 1: ECR Login =========="
             aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
+            echo "ECR Login Result: $?"
             
-            # 2. docker-compose.yml이 있는 위치로 이동
-            cd /home/ubuntu 
+            echo "========== STEP 2: Check Current Location =========="
+            pwd
+            ls -la
             
-            # 3. 최신 이미지 가져오기
+            echo "========== STEP 3: Move to Directory =========="
+            cd /home/ubuntu
+            pwd
+            
+            echo "========== STEP 4: Check docker-compose.yml =========="
+            cat docker-compose.yml
+            
+            echo "========== STEP 5: Current Docker Images =========="
+            docker images
+            
+            echo "========== STEP 6: Pull Latest Image =========="
             docker compose pull
+            echo "Pull Result: $?"
             
-            # 4. 컨테이너 재시작
-            docker compose up -d --force-recreate 
+            echo "========== STEP 7: Check Images After Pull =========="
+            docker images
             
-            # 5. 사용하지 않는 이미지 정리
+            echo "========== STEP 8: Current Containers =========="
+            docker ps -a
+            
+            echo "========== STEP 9: Restart Containers =========="
+            docker compose up -d --force-recreate
+            echo "Restart Result: $?"
+            
+            echo "========== STEP 10: Check Containers After Restart =========="
+            docker ps -a
+            
+            echo "========== STEP 11: Cleanup =========="
             docker image prune -f
+            
+            echo "========== DEPLOYMENT COMPLETE =========="

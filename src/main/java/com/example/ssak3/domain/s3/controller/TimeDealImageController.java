@@ -13,7 +13,7 @@ import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/ssak3/time-deals/{timeDealId}/images")
+@RequestMapping("/ssak3/admin/time-deals/{timeDealId}/images")
 public class TimeDealImageController {
 
     private final TimeDealImageService timeDealImageService;
@@ -25,7 +25,7 @@ public class TimeDealImageController {
     @PostMapping
     public ResponseEntity<ApiResponse> createTimeDealImageApi(@PathVariable Long timeDealId, @RequestPart(value = "image") MultipartFile file) throws IOException {
 
-        ApiResponse response = ApiResponse.success("타임딜 이미지 저장에 성공했습니다.", timeDealImageService.uploadTimeDealImage(timeDealId, file));
+        ApiResponse response = ApiResponse.success("타임딜 이미지 저장에 성공했습니다.", timeDealImageService.createTimeDealImage(timeDealId, file));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -46,7 +46,7 @@ public class TimeDealImageController {
      */
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping
-    public ResponseEntity<ApiResponse> UpdateTimeDealImageApi(@PathVariable Long timeDealId, @RequestPart(value = "image")  MultipartFile file) throws IOException {
+    public ResponseEntity<ApiResponse> updateTimeDealImageApi(@PathVariable Long timeDealId, @RequestPart(value = "image")  MultipartFile file) throws IOException {
 
         ApiResponse response = ApiResponse.success("타임딜 이미지 변경에 성공했습니다.", timeDealImageService.updateTimeDealImage(timeDealId, file));
 

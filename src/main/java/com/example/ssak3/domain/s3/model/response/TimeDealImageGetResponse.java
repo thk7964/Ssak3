@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@RequiredArgsConstructor
 @Getter
+@RequiredArgsConstructor
 public class TimeDealImageGetResponse {
     private final Long productId;
     private final String imageUrl;

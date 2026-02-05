@@ -21,7 +21,7 @@ public class ProductImageService {
      * 상품 이미지 업로드
      */
     @Transactional
-    public ProductImageGetResponse uploadProductImage(Long productId, MultipartFile multipartFile) {
+    public ProductImageGetResponse createProductImage(Long productId, MultipartFile multipartFile) {
         Product product = productRepository.findByIdAndIsDeletedFalse(productId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 

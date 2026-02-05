@@ -21,7 +21,7 @@ public class TimeDealImageService {
      * 타임딜 이미지 업로드
      */
     @Transactional
-    public TimeDealImageGetResponse uploadTimeDealImage(Long timeDealId, MultipartFile multipartFile) {
+    public TimeDealImageGetResponse createTimeDealImage(Long timeDealId, MultipartFile multipartFile) {
         TimeDeal timeDeal = timeDealRepository.findByIdAndIsDeletedFalse(timeDealId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TIME_DEAL_NOT_FOUND));
 

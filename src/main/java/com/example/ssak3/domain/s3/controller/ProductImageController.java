@@ -13,7 +13,7 @@ import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/ssak3/products/{productId}/images")
+@RequestMapping("/ssak3/admin/products/{productId}/images")
 public class ProductImageController {
 
     private final ProductImageService productImageService;
@@ -25,7 +25,7 @@ public class ProductImageController {
     @PostMapping
     public ResponseEntity<ApiResponse> createProductImageApi(@PathVariable Long productId, @RequestPart(value = "image") MultipartFile file) throws IOException {
 
-        ApiResponse response = ApiResponse.success("상품 이미지 저장에 성공했습니다.", productImageService.uploadProductImage(productId, file));
+        ApiResponse response = ApiResponse.success("상품 이미지 저장에 성공했습니다.", productImageService.createProductImage(productId, file));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -46,7 +46,7 @@ public class ProductImageController {
      */
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping
-    public ResponseEntity<ApiResponse> UpdateProductImageApi(@PathVariable Long productId, @RequestPart(value = "image")  MultipartFile file) throws IOException {
+    public ResponseEntity<ApiResponse> updateProductImageApi(@PathVariable Long productId, @RequestPart(value = "image")  MultipartFile file) throws IOException {
 
         ApiResponse response = ApiResponse.success("상품 이미지 변경에 성공했습니다.", productImageService.updateProductImage(productId, file));
 

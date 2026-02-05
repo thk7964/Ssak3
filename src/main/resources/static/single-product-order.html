@@ -411,38 +411,38 @@
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('productId');
     const initialQuantity = parseInt(urlParams.get('quantity')) || 1;
-    
+
     let quantity = initialQuantity;
     let productData = null;
-    
+
     const SHIPPING_FEE = 3000;
     const FREE_SHIPPING_THRESHOLD = 30000;
-    
+
     const productEmojis = {
         1: '🏍️', 2: '✨', 3: '⚔️', 4: '🎮', 5: '🎵',
         6: '⚡', 7: '🌈', 8: '💎', 9: '🎨', 10: '🧸'
     };
-    
+
     function formatPrice(price) {
         return price.toLocaleString('ko-KR') + '원';
     }
-    
+
     async function loadProductInfo() {
         if (!productId) {
             alert('상품 정보가 없습니다.');
             history.back();
             return;
         }
-        
+
         try {
             const response = await fetch(`http://localhost:8080/ssak3/products/${productId}`);
             if (!response.ok) throw new Error('상품 정보를 불러올 수 없습니다.');
             const result = await response.json();
             productData = result.data;
-            
+
             // 사용자 쿠폰 목록 불러오기
             await loadUserCoupons();
-            
+
             renderOrderPage();
         } catch (error) {
             console.error('상품 로드 오류:', error);
@@ -450,24 +450,24 @@
             history.back();
         }
     }
-    
+
     let userCoupons = [];
-    
+
     async function loadUserCoupons() {
         try {
             const token = localStorage.getItem('accessToken');
             const headers = {};
-            
+
             if (token) {
                 headers.Authorization = 'Bearer ' + token;
             }
-            
+
             const response = await fetch('http://localhost:8080/ssak3/user-coupons', {
                 method: 'GET',
                 headers: headers,
                 credentials: 'include'
             });
-            
+
             if (response.ok) {
                 const result = await response.json();
                 userCoupons = result.data || [];
@@ -480,16 +480,16 @@
             userCoupons = [];
         }
     }
-    
+
     function renderOrderPage() {
         const emoji = productEmojis[productData.id] || '📦';
         const container = document.getElementById('mainContainer');
-        
+
         // 초기 배송비 계산 (5만원 이상이면 무료)
         const initialSubtotal = productData.price * quantity;
         const initialShipping = initialSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
         const initialTotal = initialSubtotal + initialShipping;
-        
+
         // 쿠폰 옵션 생성
         let couponOptions = '<option value="">쿠폰을 선택해주세요</option>';
         if (userCoupons.length > 0) {
@@ -501,7 +501,7 @@
                 }
             });
         }
-        
+
         container.innerHTML = `
             <h1 class="page-title">상품 주문</h1>
             
@@ -561,7 +561,7 @@
             </div>
         `;
     }
-    
+
     function updateQuantity(change) {
         const newQuantity = quantity + change;
         if (newQuantity >= 1 && newQuantity <= 99) {
@@ -570,18 +570,18 @@
             updateSummary();
         }
     }
-    
+
     function updateSummary() {
         const subtotal = productData.price * quantity;
         const couponSelect = document.getElementById('couponSelect');
         const selectedOption = couponSelect.options[couponSelect.selectedIndex];
         let discount = 0;
-        
+
         // 쿠폰 선택 시 최소 주문 금액 검증
         if (selectedOption.value) {
             const couponDiscount = parseInt(selectedOption.dataset.discount || 0);
             const minOrderPrice = parseInt(selectedOption.dataset.minPrice || 0);
-            
+
             if (subtotal >= minOrderPrice) {
                 discount = couponDiscount;
             } else {
@@ -590,20 +590,20 @@
                 discount = 0;
             }
         }
-        
+
         const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
         const total = subtotal - discount + shipping;
-        
+
         document.getElementById('subtotal').textContent = formatPrice(subtotal);
         document.getElementById('discount').textContent = discount > 0 ? '-' + formatPrice(discount) : formatPrice(0);
         document.getElementById('shipping').textContent = formatPrice(shipping);
         document.getElementById('total').textContent = formatPrice(total);
     }
-    
+
     function validateAddress() {
         const addressInput = document.getElementById('addressInput');
         const addressError = document.getElementById('addressError');
-        
+
         if (!addressInput.value.trim()) {
             addressInput.classList.add('error');
             addressError.classList.add('show');
@@ -614,71 +614,72 @@
             return true;
         }
     }
-    
+
     function submitOrder() {
         const addressInput = document.getElementById('addressInput');
         const couponSelect = document.getElementById('couponSelect');
-        
+
         if (!validateAddress()) {
             addressInput.focus();
             return;
         }
-        
+
         const orderData = {
             productId: parseInt(productId),
             quantity: quantity,
             address: addressInput.value.trim(),
             userCouponId: couponSelect.value ? parseInt(couponSelect.value) : null
         };
-        
+
         console.log('주문 데이터:', orderData);
-        
+
         // 실제 API 호출
         const token = localStorage.getItem('accessToken');
         const headers = {
             'Content-Type': 'application/json'
         };
-        
+
         if (token) {
             headers.Authorization = 'Bearer ' + token;
         }
-        
+
         fetch('http://localhost:8080/ssak3/orders/products', {
             method: 'POST',
             headers: headers,
             credentials: 'include',
             body: JSON.stringify(orderData)
         })
-        .then(response => {
-            if (!response.ok) {
-                if (response.status === 401) {
-                    alert('로그인이 필요한 서비스입니다.');
-                    window.location.href = 'login.html';
-                    throw new Error('Unauthorized');
+            .then(response => {
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        alert('로그인이 필요한 서비스입니다.');
+                        window.location.href = 'login.html';
+                        throw new Error('Unauthorized');
+                    }
+                    return response.json().then(err => {
+                        throw new Error(err.message || '주문 생성 실패');
+                    });
                 }
-                return response.json().then(err => {
-                    throw new Error(err.message || '주문 생성 실패');
-                });
-            }
-            return response.text();
-        })
-        .then(redirectUrl => {
-            console.log('서버 응답 URL:', redirectUrl);
-            // 서버에서 "redirect:http://localhost:8080/checkout.html?orderId=xxx" 형태로 오면
-            // "redirect:" 부분 제거
-            const url = redirectUrl.replace('redirect:', '').trim();
-            
-            console.log('이동 URL:', url);
-            window.location.href = url;
-        })
-        .catch(error => {
-            console.error('주문 실패:', error);
-            if (error.message !== 'Unauthorized') {
-                alert('주문 처리 중 오류가 발생했습니다: ' + error.message);
-            }
-        });
+                return response.json(); //  text → json
+            })
+            .then(responseData => {
+                console.log('서버 응답:', responseData);
+
+                //  서버에서 paymentUrl 내려준다는 가정
+                if (!responseData.data.url) {
+                    throw new Error('결제 URL이 없습니다.');
+                }
+
+                window.location.href = responseData.data.url; //  여기서 브라우저 이동
+            })
+            .catch(error => {
+                console.error('주문 실패:', error);
+                if (error.message !== 'Unauthorized') {
+                    alert('주문 처리 중 오류가 발생했습니다: ' + error.message);
+                }
+            });
     }
-    
+
     loadProductInfo();
 </script>
 </body>

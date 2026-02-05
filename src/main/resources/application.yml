@@ -33,3 +33,7 @@ kakao:
 
 toss:
   secret-key: ${TOSS_SECRET_KEY}
+
+app:
+  frontend:
+    base-url: http://localhost:8080

@@ -34,6 +34,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -55,6 +56,9 @@ public class OrderService {
     private final TimeDealRepository timeDealRepository;
     private final PaymentRepository paymentRepository;
     private final TossPaymentClient tossPaymentClient;
+
+    @Value("${app.frontend.base-url}")
+    private String frontendBaseUrl;
 
     /**
      * 상품 페이지에서 단일 상품 구매
@@ -109,8 +113,7 @@ public class OrderService {
 
         String orderName = URLEncoder.encode(product.getName(), StandardCharsets.UTF_8);
 
-        //실제 결제 요청
-        String url = "http://localhost:8080/checkout.html?orderId=" + savedOrder.getId()+"&orderName=" + orderName;
+        String url = frontendBaseUrl + "/checkout.html?orderId=" + savedOrder.getId() + "&orderName=" + orderName;
 
         return OrderCreateResponse.from(savedOrder, subtotal, discount, url);
     }
@@ -214,7 +217,7 @@ public class OrderService {
         }
 
         savedOrder.updateStatus(OrderStatus.PAYMENT_PENDING);
-        String url = "http://localhost:8080/checkout.html?orderId=" + savedOrder.getId()+"&orderName=" + orderName;
+        String url = frontendBaseUrl + "/checkout.html?orderId=" + savedOrder.getId() + "&orderName=" + orderName;
 
         return OrderCreateResponse.from(savedOrder, subtotal, discount, url);
 

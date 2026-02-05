@@ -2,6 +2,7 @@ package com.example.ssak3.common.config;
 
 import com.example.ssak3.common.filter.JwtExceptionFilter;
 import com.example.ssak3.common.filter.JwtFilter;
+import com.example.ssak3.common.filter.LoggingFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -57,7 +58,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtFilter jwtFilter, JwtExceptionFilter jwtExceptionFilter) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtFilter jwtFilter, JwtExceptionFilter jwtExceptionFilter, LoggingFilter loggingFilter) throws Exception {
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
@@ -79,7 +80,8 @@ public class SecurityConfig {
                         .requestMatchers("/ssak3/chat/**").permitAll()
                         .requestMatchers("/**/*.html").permitAll()
                         .anyRequest().authenticated())
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(loggingFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtFilter, LoggingFilter.class)
                 .addFilterBefore(jwtExceptionFilter, JwtFilter.class)
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(authenticationEntryPointImpl)

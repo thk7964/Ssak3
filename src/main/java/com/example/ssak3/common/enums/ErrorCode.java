@@ -16,6 +16,8 @@ public enum ErrorCode {
     WITHDRAWN_USER(HttpStatus.NOT_FOUND, "탈퇴한 유저입니다."),
     INVALID_USER_ROLE(HttpStatus.BAD_REQUEST, "유효하지 않은 권한입니다."),
     NOT_ALLOWED_CHANGE_SUPER_ADMIN(HttpStatus.BAD_REQUEST, "최고 관리자로는 변경할 수 없습니다."),
+    UNAUTHORIZED_USER(HttpStatus.UNAUTHORIZED, "인증되지 않은 사용자입니다."),
+    FORBIDDEN_USER(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
 
     // Product 에러
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다."),
@@ -57,7 +59,6 @@ public enum ErrorCode {
     TIME_DEAL_DELETED_STATUS_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "삭제된 타임딜 상태로는 조회할 수 없습니다."),
     TIME_DEAL_START_TIME_MUST_BE_IN_FUTURE(HttpStatus.BAD_REQUEST,"타임딜 시작 시간은 현재 시간 이후여야 합니다." ),
 
-
     // Token 에러
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
@@ -91,8 +92,8 @@ public enum ErrorCode {
     CHAT_ROOM_COMPLETE_ACCESS_DENIED(HttpStatus.FORBIDDEN, "문의 채팅을 종료할 권한이 없습니다."),
     INQUIRY_CHAT_ALREADY_COMPLETED(HttpStatus.BAD_REQUEST, "이미 종료된 문의 채팅입니다."),
 
-    // 서버 에러
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "내부 서버 에러입니다."),
+    // Redis 에러
+    REDIS_CONNECTION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Redis 연결에 실패했습니다."),
     ;
 
     private final HttpStatus status;

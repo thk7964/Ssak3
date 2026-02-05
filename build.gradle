@@ -57,6 +57,12 @@ dependencies {
     
     // LocalDate & LocalDateTime 파싱 의존성
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+    // AOP 의존성
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+    // Logstash Logback Encoder 의존성 (JSON 로그 변환 및 Logstash 전송용)
+    implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
 }
 
 tasks.named('test') {

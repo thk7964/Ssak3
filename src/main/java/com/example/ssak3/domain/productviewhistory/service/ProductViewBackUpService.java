@@ -1,5 +1,7 @@
 package com.example.ssak3.domain.productviewhistory.service;
 
+import com.example.ssak3.common.enums.ErrorCode;
+import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.domain.product.entity.Product;
 import com.example.ssak3.domain.product.repository.ProductRepository;
 import com.example.ssak3.domain.productviewhistory.entity.ProductViewHistory;
@@ -29,8 +31,14 @@ public class ProductViewBackUpService {
         LocalDate now = LocalDate.now();
         String key = PRODUCT_DAILY_RANKING_PREFIX + now;
 
-        // Redis에서 값 가져오기
-        Set<ZSetOperations.TypedTuple<String>> redisData = redisTemplate.opsForZSet().rangeWithScores(key, 0, -1);
+        Set<ZSetOperations.TypedTuple<String>> redisData = null;
+
+        try {
+            // Redis에서 값 가져오기
+             redisData = redisTemplate.opsForZSet().rangeWithScores(key, 0, -1);
+        } catch (Exception e) {
+            throw new CustomException(ErrorCode.REDIS_CONNECTION_ERROR);
+        }
 
         if (redisData == null || redisData.isEmpty()) {
             return;

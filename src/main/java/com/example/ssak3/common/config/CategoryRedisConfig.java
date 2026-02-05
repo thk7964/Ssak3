@@ -22,7 +22,6 @@ import java.util.List;
 @Configuration(proxyBeanMethods = false)
 public class CategoryRedisConfig {
 
-    // TTL설정을 여기서!!
     @Bean
     public CacheManager cacheManager(RedisConnectionFactory connectionFactory) {
 

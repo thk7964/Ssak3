@@ -38,6 +38,9 @@ public class TimeDeal extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private TimeDealStatus status;
 
+    @Column
+    private String image;
+
     @Column(nullable = false, name = "is_deleted")
     private boolean isDeleted;
 
@@ -91,6 +94,10 @@ public class TimeDeal extends BaseEntity {
     private void productClosed() {
         if (isDeleted) return;
         product.restoreStatusAfterTimeDeal();
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
 }

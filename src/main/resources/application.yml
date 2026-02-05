@@ -30,3 +30,15 @@ kakao:
   client_id: ${CLIENT_ID}
   redirect_uri: ${REDIRECT_URI}
   client_secret: ${CLIENT_SECRET}
+
+cloud:
+  aws:
+    credentials:
+      accessKey: ${AWS_ACCESS_KEY_ID}
+      secretKey: ${AWS_SECRET_ACCESS_KEY}
+    s3:
+      bucket: ssak3-s3
+    region:
+      static: eu-north-1
+    stack:
+      auto: false

@@ -41,6 +41,9 @@ public class Product extends BaseEntity {
     @Column(nullable = false)
     private Integer quantity;
 
+    @Column
+    private String image;
+
     @Column(nullable = false, name = "is_deleted")
     private boolean isDeleted = false;
 
@@ -103,6 +106,10 @@ public class Product extends BaseEntity {
 
     public void updateStatus(ProductStatus status) {
         this.status = status;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
 }

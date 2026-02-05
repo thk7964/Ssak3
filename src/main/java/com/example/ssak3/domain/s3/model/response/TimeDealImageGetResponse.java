@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 public class TimeDealImageGetResponse {
     private final Long productId;
     private final String imageUrl;
+    private final String detailImageUrl;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
@@ -19,6 +20,7 @@ public class TimeDealImageGetResponse {
         return new TimeDealImageGetResponse(
                 timeDeal.getId(),
                 timeDeal.getImage(),
+                timeDeal.getDetailImage(),
                 timeDeal.getCreatedAt(),
                 timeDeal.getUpdatedAt()
         );

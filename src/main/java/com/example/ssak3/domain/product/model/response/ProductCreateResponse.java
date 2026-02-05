@@ -18,6 +18,10 @@ public class ProductCreateResponse {
     private final ProductStatus status;
     private final String information;
     private final Integer quantity;
+
+    private final String imageUrl;
+    private final String detailImageUrl;
+
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
@@ -30,6 +34,8 @@ public class ProductCreateResponse {
                 product.getStatus(),
                 product.getInformation(),
                 product.getQuantity(),
+                product.getImage(),
+                product.getDetailImage(),
                 product.getCreatedAt(),
                 product.getUpdatedAt()
         );

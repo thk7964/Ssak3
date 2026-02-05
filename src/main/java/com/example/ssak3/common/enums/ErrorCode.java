@@ -60,8 +60,7 @@ public enum ErrorCode {
     // Image 에러
     PRODUCT_IMAGE_ALREADY_EXIST(HttpStatus.CONFLICT, "상품 이미지가 이미 있습니다."),
     TIME_DEAL_IMAGE_ALREADY_EXIST(HttpStatus.CONFLICT, "타임딜 이미지가 이미 있습니다."),
-    PRODUCT_IMAGE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "상품 이미지 저장 실패했습니다."),
-    TIME_DEAL_IMAGE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "타임딜 이미지 저장 실패했습니다."),
+    IMAGE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 저장 실패했습니다."),
     INVALID_FILE(HttpStatus.BAD_REQUEST, "유효하지 않은 파일입니다."),
     INVALID_URL(HttpStatus.BAD_REQUEST, "유효하지 않은 url입니다."),
 

@@ -29,7 +29,8 @@ public class TimeDealImageService {
             throw new CustomException(ErrorCode.TIME_DEAL_IMAGE_ALREADY_EXIST);
         }
 
-        s3Uploader.uploadTimeDealImage(timeDeal, multipartFile, "timeDeals");
+        String url = s3Uploader.uploadImage(multipartFile, "timeDeals");
+        timeDeal.setImage(url);
 
         return TimeDealImageGetResponse.from(timeDeal);
     }
@@ -56,7 +57,7 @@ public class TimeDealImageService {
 
         String oldUrl = timeDeal.getImage();
 
-        s3Uploader.uploadTimeDealImage(timeDeal, multipartFile, "timeDeals");
+        s3Uploader.uploadImage(multipartFile, "timeDeals");
         s3Uploader.deleteImage(oldUrl);
 
         return TimeDealImageGetResponse.from(timeDeal);

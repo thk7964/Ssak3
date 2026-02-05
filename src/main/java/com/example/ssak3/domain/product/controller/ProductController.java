@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RequestMapping("/ssak3")
@@ -32,10 +33,12 @@ public class ProductController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/admin/products")
     public ResponseEntity<ApiResponse> createProductApi(
-            @RequestBody ProductCreateRequest request
-    ) {
+            @RequestPart(value = "request") ProductCreateRequest request,
+            @RequestPart(value = "image", required = false) MultipartFile image,
+            @RequestPart(value = "detailImage", required = false) MultipartFile detailImage
+            ) {
         log.info("controller 상품생성 상품명: {}", request.getName());
-        ApiResponse response = ApiResponse.success("상품을 생성하셨습니다.", productService.createProduct(request));
+        ApiResponse response = ApiResponse.success("상품을 생성하셨습니다.", productService.createProduct(request, image, detailImage));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -97,9 +100,12 @@ public class ProductController {
     @PatchMapping("/admin/products/{productId}")
     public ResponseEntity<ApiResponse> updateProductApi(
             @PathVariable Long productId,
-            @RequestBody ProductUpdateRequest request) {
+            @RequestPart ProductUpdateRequest request,
+            @RequestPart(value = "image", required = false) MultipartFile image,
+            @RequestPart(value = "detailImage", required = false) MultipartFile detailImage
+    ) {
         log.info("controller 상품수정 id: {}", productId);
-        ApiResponse response = ApiResponse.success("상품을 수정하였습니다.", productService.updateProduct(productId, request));
+        ApiResponse response = ApiResponse.success("상품을 수정하였습니다.", productService.updateProduct(productId, request, image, detailImage));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

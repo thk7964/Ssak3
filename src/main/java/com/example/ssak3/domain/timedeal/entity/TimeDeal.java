@@ -41,6 +41,9 @@ public class TimeDeal extends BaseEntity {
     @Column
     private String image;
 
+    @Column
+    private String detailImage;
+
     @Column(nullable = false, name = "is_deleted")
     private boolean isDeleted;
 

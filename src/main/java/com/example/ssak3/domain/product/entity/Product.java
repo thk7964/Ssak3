@@ -115,4 +115,8 @@ public class Product extends BaseEntity {
         this.image = image;
     }
 
+    public void setDetailImage(String detailImage) {
+        this.detailImage = detailImage;
+    }
+
 }

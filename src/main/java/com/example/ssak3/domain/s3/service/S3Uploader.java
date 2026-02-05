@@ -5,10 +5,7 @@ import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.exception.CustomException;
-import com.example.ssak3.domain.product.entity.Product;
-import com.example.ssak3.domain.timedeal.entity.TimeDeal;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,9 +25,9 @@ public class S3Uploader {
     private String bucket;
 
     /**
-     * 상품 이미지 업로드
+     * 이미지 업로드
      */
-    public void uploadProductImage(Product product, MultipartFile multipartFile, String dirName) {
+    public String uploadImage(MultipartFile multipartFile, String dirName) {
         validateMultipartFile(multipartFile);
 
         // S3 key 만들기
@@ -39,32 +36,16 @@ public class S3Uploader {
         try {
             String uploadImageUrl = putS3(multipartFile, key);
 
-            product.setImage(uploadImageUrl);
+            return uploadImageUrl;
 
         } catch (IOException e) {
-            throw new CustomException(ErrorCode.PRODUCT_IMAGE_UPLOAD_ERROR);
+            throw new CustomException(ErrorCode.IMAGE_UPLOAD_ERROR);
         }
     }
 
     /**
-     * 타임딜 이미지 업로드
+     * 이미지 삭제
      */
-    public void uploadTimeDealImage(TimeDeal timeDeal, MultipartFile multipartFile, String dirName) {
-        validateMultipartFile(multipartFile);
-
-        // S3 key 만들기
-        String key = buildS3Key(dirName, multipartFile.getOriginalFilename());
-
-        try {
-            String uploadImageUrl = putS3(multipartFile, key);
-
-            timeDeal.setImage(uploadImageUrl);
-
-        } catch (IOException e) {
-            throw new CustomException(ErrorCode.TIME_DEAL_IMAGE_UPLOAD_ERROR);
-        }
-    }
-
     public void deleteImage(String fileUrl) {
         if (fileUrl == null || fileUrl.isBlank()) return;
 

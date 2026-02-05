@@ -18,7 +18,6 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
-@Slf4j
 @RequiredArgsConstructor
 @Component
 public class S3Uploader {
@@ -43,7 +42,6 @@ public class S3Uploader {
             product.setImage(uploadImageUrl);
 
         } catch (IOException e) {
-            log.error("S3 업로드 실패: {}", e.getMessage(), e);
             throw new CustomException(ErrorCode.PRODUCT_IMAGE_UPLOAD_ERROR);
         }
     }
@@ -63,7 +61,6 @@ public class S3Uploader {
             timeDeal.setImage(uploadImageUrl);
 
         } catch (IOException e) {
-            log.error("S3 업로드 실패: {}", e.getMessage(), e);
             throw new CustomException(ErrorCode.TIME_DEAL_IMAGE_UPLOAD_ERROR);
         }
     }
@@ -82,7 +79,6 @@ public class S3Uploader {
         // 한글 파일명 등 퍼센트 인코딩 디코딩
         String key = URLDecoder.decode(encodedKey, StandardCharsets.UTF_8);
 
-        log.info("S3 delete bucket={}, key={}", bucket, key);
         amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, key));
     }
 

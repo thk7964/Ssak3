@@ -37,8 +37,8 @@ cloud:
       accessKey: ${AWS_ACCESS_KEY_ID}
       secretKey: ${AWS_SECRET_ACCESS_KEY}
     s3:
-      bucket: ssak3-s3
+      bucket: ssak3-s3-real
     region:
-      static: eu-north-1
+      static: ap-northeast-2
     stack:
       auto: false

@@ -23,6 +23,7 @@ public class TimeDealGetResponse {
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
     private final String remainingTime;
+
     public static TimeDealGetResponse from(TimeDeal timeDeal) {
         LocalDateTime now = LocalDateTime.now();
         TimeDealStatus status = timeDeal.getStatus();

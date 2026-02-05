@@ -27,9 +27,6 @@
         </div>
     </div>
 </div>
-<p id="orderId"></p>
-<p id="orderName"></p>
-<p id="amount"></p>
 <script>
     main();
 
@@ -37,7 +34,30 @@
         const urlParam = new URLSearchParams(window.location.search);
         const orderId = urlParam.get("orderId");
         const orderName = urlParam.get("orderName");
-        const amount = urlParam.get("amount");
+
+        if (!orderId){
+            alert("주문 정보가 없습니다.");
+            return;
+        }
+
+        const response = await fetch(`/ssak3/orders/${orderId}`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+            }
+        });
+
+        if (!response.ok) {
+            alert("주문 정보를 불러올 수 없습니다.");
+            return;
+        }
+
+        const result = await response.json();
+        const order = result.data;
+
+        const amount = order.totalPrice;
+        console.log(order);
+        console.log("totalPrice:", order.totalPrice);
+        console.log("type:", typeof order.totalPrice);
 
         const button = document.getElementById("payment-button");
 
@@ -84,7 +104,7 @@
             // 결제를 요청하기 전에 orderId, amount를 서버에 저장하세요.
             // 결제 과정에서 악의적으로 결제 금액이 바뀌는 것을 확인하는 용도입니다.
             await widgets.requestPayment({
-                orderId: orderId,
+                orderId: order.orderNo,
                 orderName: orderName,
                 successUrl: window.location.origin + "/success.html",
                 failUrl: window.location.origin + "/fail.html"

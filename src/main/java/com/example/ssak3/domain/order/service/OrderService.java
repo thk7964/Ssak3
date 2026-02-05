@@ -15,7 +15,6 @@ import com.example.ssak3.domain.order.model.request.OrderStatusUpdateRequest;
 import com.example.ssak3.domain.order.model.response.OrderCreateResponse;
 import com.example.ssak3.domain.order.model.response.OrderGetResponse;
 import com.example.ssak3.domain.order.model.response.OrderListGetResponse;
-import com.example.ssak3.domain.order.model.response.OrderCreateResponse;
 import com.example.ssak3.domain.order.repository.OrderRepository;
 import com.example.ssak3.domain.orderProduct.entity.OrderProduct;
 import com.example.ssak3.domain.orderProduct.repository.OrderProductRepository;
@@ -108,16 +107,12 @@ public class OrderService {
 
         savedOrder.updateStatus(OrderStatus.PAYMENT_PENDING);
 
-        String orderId = order.getOrderNo();
         String orderName = URLEncoder.encode(product.getName(), StandardCharsets.UTF_8);
-        long amount = subtotal - discount;
 
         //실제 결제 요청
-
-        String url = "http://localhost:8080/checkout.html?orderId=" + orderId + "&orderName=" + orderName + "&amount=" + amount;
+        String url = "http://localhost:8080/checkout.html?orderId=" + savedOrder.getId()+"&orderName=" + orderName;
 
         return OrderCreateResponse.from(savedOrder, subtotal, discount, url);
-
     }
 
     /**
@@ -210,9 +205,7 @@ public class OrderService {
             }
         }
 
-        String orderId = order.getOrderNo();
         String orderName;
-        long amount = subtotal - discount;
 
         if (cartProductList.size() == 1) {
             orderName = cartProductList.get(0).getProduct().getName();
@@ -220,8 +213,8 @@ public class OrderService {
             orderName = cartProductList.get(0).getProduct().getName() + " 외" + (cartProductList.size() - 1) + " 건";
         }
 
-        String url = "http://localhost:8080/checkout.html?orderId=" + orderId + "&orderName=" + orderName + "&amount=" + amount;
         savedOrder.updateStatus(OrderStatus.PAYMENT_PENDING);
+        String url = "http://localhost:8080/checkout.html?orderId=" + savedOrder.getId()+"&orderName=" + orderName;
 
         return OrderCreateResponse.from(savedOrder, subtotal, discount, url);
 

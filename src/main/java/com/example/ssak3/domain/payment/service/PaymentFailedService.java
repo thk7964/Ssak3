@@ -1,6 +1,8 @@
 package com.example.ssak3.domain.payment.service;
 
+import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.enums.OrderStatus;
+import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.domain.order.entity.Order;
 import com.example.ssak3.domain.order.repository.OrderRepository;
 import com.example.ssak3.domain.orderProduct.entity.OrderProduct;
@@ -22,10 +24,10 @@ public class PaymentFailedService {
     public void paymentFailed(String orderId, String paymentKey){
 
         Order order = orderRepository.findByOrderNo(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("주문 내역 없음"));
+                .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
 
         Payment payment = paymentRepository.findByPaymentKey(paymentKey)
-                .orElseThrow(() -> new IllegalArgumentException("결제 내역 없음"));
+                .orElseThrow(() -> new CustomException(ErrorCode.PAYMENT_NOT_FOUND));
 
         for (OrderProduct op : order.getOrderProducts()){
             op.getProduct().rollbackQuantity(op.getQuantity());

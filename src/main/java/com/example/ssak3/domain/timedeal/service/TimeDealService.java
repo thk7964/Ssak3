@@ -9,6 +9,7 @@ import com.example.ssak3.domain.timedeal.model.response.TimeDealListGetResponse;
 import com.example.ssak3.domain.timedeal.model.response.TimeDealGetResponse;
 import com.example.ssak3.domain.timedeal.repository.TimeDealRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,12 @@ public class TimeDealService {
     /**
      * 타임딜 상태별 목록 조회
      */
+    @Cacheable(
+            value = "timeDealsOpen",
+            key = "'OPEN:' + #pageable.pageNumber + ':' + #pageable.pageSize",
+            condition = "#status == 'OPEN' && (#pageable.pageNumber == 0 || #pageable.pageNumber == 1)",
+            sync = true
+    )
     @Transactional(readOnly = true)
     public PageResponse<TimeDealListGetResponse> getTimeDealStatusList(String status,Pageable pageable) {
         TimeDealStatus timeDealStatus= parseStatus(status);

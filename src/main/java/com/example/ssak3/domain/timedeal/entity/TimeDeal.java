@@ -50,19 +50,23 @@ public class TimeDeal extends BaseEntity {
         this.status = TimeDealStatus.READY;
     }
 
-
     public void setStatus(TimeDealStatus newStatus) {
-        if (this.status != newStatus) {
-            this.status = newStatus;
-            if (newStatus == TimeDealStatus.READY || newStatus == TimeDealStatus.CLOSED) productOpen();
-            if (newStatus == TimeDealStatus.OPEN) productClosed();
 
+        if (this.status == newStatus) return;
+
+        this.status = newStatus;
+
+        if (newStatus == TimeDealStatus.OPEN) {
+            closeNormalProduct();
+        }else {
+            openNormalProduct();
         }
+
     }
 
     public void softDelete() {
         this.isDeleted = true;
-        this.status=TimeDealStatus.DELETED;
+        this.status = TimeDealStatus.DELETED;
     }
 
     public void update(TimeDealUpdateRequest request) {
@@ -83,14 +87,15 @@ public class TimeDeal extends BaseEntity {
         return status == TimeDealStatus.READY || status == TimeDealStatus.CLOSED;
     }
 
-    private void productOpen() {
+    private void openNormalProduct() {
         if (isDeleted) return;
-        product.stopSaleForTimeDeal();
+
+        product.restoreStatusAfterTimeDeal();
     }
 
-    private void productClosed() {
+    private void closeNormalProduct() {
         if (isDeleted) return;
-        product.restoreStatusAfterTimeDeal();
+        product.stopSaleForTimeDeal();
     }
 
 }

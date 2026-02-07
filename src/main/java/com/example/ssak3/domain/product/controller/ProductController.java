@@ -4,7 +4,6 @@ import com.example.ssak3.common.model.ApiResponse;
 import com.example.ssak3.domain.product.model.request.ProductCreateRequest;
 import com.example.ssak3.domain.product.model.request.ProductUpdateRequest;
 import com.example.ssak3.domain.product.model.request.ProductUpdateStatusRequest;
-import com.example.ssak3.domain.product.service.ProductRankingService;
 import com.example.ssak3.domain.product.service.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 public class ProductController {
 
     private final ProductService productService;
-    private final ProductRankingService productRankingService;
 
     /**
      * 상품생성 API
@@ -112,17 +110,6 @@ public class ProductController {
             @PathVariable Long productId) {
         log.info("controller 상품삭제 id: {}", productId);
         ApiResponse response = ApiResponse.success("상품을 삭제하였습니다", productService.deleteProduct(productId));
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
-    /**
-     * 조회 수 TOP 10
-     */
-    @GetMapping("/products/popular")
-    public ResponseEntity<ApiResponse> getPopularProductApi() {
-
-        ApiResponse response = ApiResponse.success("조회 수 인기 TOP 10 상품 검색에 성공했습니다.", productRankingService.getPopularProductTop10());
-
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

@@ -18,6 +18,7 @@ public class ProductGetPopularResponse {
     private final Integer price;
     private final Integer dealPrice;
     private final LocalDateTime createdAt;
+    private final LocalDateTime updatedAt;
 
     public static ProductGetPopularResponse from(Product product, TimeDeal timeDeal) {
 
@@ -31,7 +32,8 @@ public class ProductGetPopularResponse {
                 product.getName(),
                 product.getPrice(),
                 dealPrice,
-                product.getCreatedAt()
+                product.getCreatedAt(),
+                product.getUpdatedAt()
         );
     }
 }

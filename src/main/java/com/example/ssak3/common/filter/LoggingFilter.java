@@ -37,14 +37,13 @@ public class LoggingFilter extends OncePerRequestFilter {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Long userId = null;
 
-        if (auth != null && auth.isAuthenticated()) {
-            AuthUser user = (AuthUser) auth.getPrincipal();
+        if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof AuthUser user) {
             userId = user.getId();
         }
 
         // TraceId 생성
         String traceId = UUID.randomUUID().toString().substring(0, 8);
-        
+
         // MDC에 저장: 이 스레드에서 찍히는 모든 로그에 traceId가 붙음
         MDC.put("traceId", traceId);
 

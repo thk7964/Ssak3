@@ -11,7 +11,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 @EnableJpaAuditing
 @EnableScheduling
 @EnableAspectJAutoProxy
-@EnableMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
 public class Ssak3Application {
 
     public static void main(String[] args) {

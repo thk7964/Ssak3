@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.time.format.DateTimeParseException;
-
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -37,14 +35,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    @ExceptionHandler(DateTimeParseException.class)
-    public ResponseEntity<ApiResponse> dateTimeParseException(DateTimeParseException e) {
-
-        ApiResponse response = ApiResponse.error("올바른 날짜 형식이 아닙니다.");
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-    }
-
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiResponse> HttpMessageNotReadableException(HttpMessageNotReadableException e) {
 
@@ -62,7 +52,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse> handleAllException(Exception e) {
+    public ResponseEntity<ApiResponse> internalServerException(Exception e) {
 
         ApiResponse response = ApiResponse.error("내부 서버 에러입니다.");
 

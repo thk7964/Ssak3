@@ -18,11 +18,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
@@ -30,6 +26,21 @@ public class SecurityConfig {
 
     private final AuthenticationEntryPoint authenticationEntryPointImpl;
     private final AccessDeniedHandler accessDeniedHandlerImpl;
+
+    private static final String[] PUBLIC_URLS = {
+            "/ssak3/auth/**",
+            "/ssak3/chat/**",
+            "/error",
+            "/**/*.html",
+            "/favicon.ico"
+    };
+
+    private static final String[] GET_METHOD_PUBLIC_URLS = {
+            "/ssak3/products/**",
+            "/ssak3/coupons",
+            "/ssak3/categories",
+            "/ssak3/time-deals/**"
+    };
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -44,41 +55,19 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:63342"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-        config.setAllowCredentials(true);
-        config.setExposedHeaders(List.of("Authorization"));
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        return source;
-    }
-
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtFilter jwtFilter, JwtExceptionFilter jwtExceptionFilter, LoggingFilter loggingFilter) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtFilter jwtFilter, JwtExceptionFilter jwtExceptionFilter, LoggingFilter loggingFilter, CorsConfigurationSource corsConfigurationSource) throws Exception {
         return http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/error").permitAll()
-                        .requestMatchers("/ssak3/auth/signup", "/ssak3/auth/login/**", "/ssak3/auth/logout").permitAll()
-                        .requestMatchers(HttpMethod.GET,
-                                "/ssak3/products/**",
-                                "/ssak3/coupons",
-                                "/ssak3/categories",
-                                "/ssak3/time-deals/**",
-                                "/ssak3/search").permitAll()
-                        .requestMatchers("/ssak3/admin").hasRole("SUPER_ADMIN")
-                        .requestMatchers("/ssak3/admin/**", "/ssak3/coupons").hasRole("ADMIN")
-                        .requestMatchers("/ssak3/chat/**").permitAll()
-                        .requestMatchers("/**/*.html").permitAll()
+                        .requestMatchers(PUBLIC_URLS).permitAll()
+                        .requestMatchers(HttpMethod.GET, GET_METHOD_PUBLIC_URLS).permitAll()
+                        .requestMatchers(HttpMethod.PATCH, "/ssak3/admin/users/**").hasRole("SUPER_ADMIN")
+                        .requestMatchers("/ssak3/admin/**", "/ssak3/coupons/**").hasAnyRole("SUPER_ADMIN", "ADMIN")
                         .anyRequest().authenticated())
                 .addFilterBefore(loggingFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtFilter, LoggingFilter.class)

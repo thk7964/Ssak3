@@ -33,8 +33,8 @@ public class TimeDealScheduler {
         LocalDateTime now = LocalDateTime.now();
 
         List<TimeDeal> open = timeDealRepository.findReadyToOpen(now);
-        for (TimeDeal deal : open) {
-            deal.setStatus(TimeDealStatus.OPEN);
+        for (TimeDeal timeDeal : open) {
+            timeDeal.setStatus(TimeDealStatus.OPEN);
         }
 
         List<TimeDeal> close = timeDealRepository.findOpenToClose(now);

@@ -20,6 +20,7 @@ import com.example.ssak3.domain.orderProduct.entity.OrderProduct;
 import com.example.ssak3.domain.orderProduct.repository.OrderProductRepository;
 import com.example.ssak3.domain.product.entity.Product;
 import com.example.ssak3.domain.product.repository.ProductRepository;
+import com.example.ssak3.domain.product.service.InventoryService;
 import com.example.ssak3.domain.timedeal.entity.TimeDeal;
 import com.example.ssak3.domain.timedeal.repository.TimeDealRepository;
 import com.example.ssak3.domain.user.entity.User;
@@ -48,7 +49,7 @@ public class OrderService {
     private final OrderProductRepository orderProductRepository;
     private final ProductRepository productRepository;
     private final TimeDealRepository timeDealRepository;
-
+    private final InventoryService inventoryService;
     /**
      * 상품 페이지에서 단일 상품 구매
      */
@@ -75,7 +76,7 @@ public class OrderService {
         orderProductRepository.save(orderProduct);
 
         // 재고 차감
-        product.decreaseQuantity(quantity);
+        inventoryService.decreaseProductStock(product, quantity);
 
         long discount = 0L;
         UserCoupon userCoupon = null;
@@ -168,7 +169,7 @@ public class OrderService {
             orderProductList.add(orderProduct);
 
             // 재고 차감
-            product.decreaseQuantity(quantity);
+            inventoryService.decreaseProductStock(product, quantity);
 
         }
 

@@ -26,4 +26,6 @@ public interface TimeDealRepository extends JpaRepository<TimeDeal, Long>, TimeD
     Optional<TimeDeal> findByIdAndIsDeletedFalse(Long timeDealId);
 
     List<TimeDeal> findAllByProductIdInAndStatusAndIsDeletedFalse(List<Long> productIds, TimeDealStatus timeDealStatus);
+
+    List<TimeDeal> findOpenByProductId(Long id);
 }

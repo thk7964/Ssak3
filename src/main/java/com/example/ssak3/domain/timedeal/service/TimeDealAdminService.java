@@ -63,7 +63,6 @@ public class TimeDealAdminService {
             throw new CustomException(ErrorCode.INVALID_TIME_RANGE);
         }
 
-
         TimeDeal timeDeal = new TimeDeal(
                 product,
                 request.getDealPrice(),

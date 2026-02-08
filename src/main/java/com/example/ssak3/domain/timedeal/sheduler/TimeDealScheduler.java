@@ -34,7 +34,7 @@ public class TimeDealScheduler {
         }
     }
 
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "0 0/5 * * * *")
     @SchedulerLock(
             name = "timeDealScheduler",
             lockAtMostFor = "PT1M",

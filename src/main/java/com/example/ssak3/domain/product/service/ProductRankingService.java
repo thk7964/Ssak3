@@ -97,7 +97,7 @@ public class ProductRankingService {
         }
 
         // DB에서 TOP 10 상품 id 리스트 가져오기: Redis가 정렬해준 순서 보장함
-        List<Long> productIdList = result.stream().map(tuple -> Long.parseLong(tuple.getValue())).toList();
+        List<Long> productIdList = result.stream().map(id -> Long.parseLong(id.getValue())).toList();
 
         // DB에서 Product 가져오기: in 연산은 Redis가 정렬해준 순서를 보장해주지 않음
         List<Product> productList = productRepository.findAllByIdInAndStatusAndIsDeletedFalse(productIdList, ProductStatus.FOR_SALE);

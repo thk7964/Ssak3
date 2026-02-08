@@ -6,7 +6,7 @@ import com.example.ssak3.domain.timedeal.repository.TimeDealRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +35,11 @@ public class TimeDealScheduler {
     }
 
     @Scheduled(cron = "0 * * * * *")
+    @SchedulerLock(
+            name = "timeDealScheduler",
+            lockAtMostFor = "PT1M",
+            lockAtLeastFor = "PT10S"
+    )
     @Transactional
     public void updateTimeDealStatus() {
         LocalDateTime now = LocalDateTime.now();

@@ -57,6 +57,11 @@ dependencies {
     
     // LocalDate & LocalDateTime 파싱 의존성
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+    // ShedLock 의존성
+    implementation 'net.javacrumbs.shedlock:shedlock-spring:5.14.0'
+    implementation 'net.javacrumbs.shedlock:shedlock-provider-jdbc-template:5.14.0'
+
 }
 
 tasks.named('test') {

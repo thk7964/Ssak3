@@ -27,7 +27,7 @@ public class RedisCacheConfig {
                                 .fromSerializer(new GenericJackson2JsonRedisSerializer())
                 );
 
-        RedisCacheConfiguration timeDealsConfig= defaultConfig.entryTtl(Duration.ofSeconds(10));
+        RedisCacheConfiguration timeDealsConfig = defaultConfig.entryTtl(Duration.ofMinutes(10));
 
         Map<String, RedisCacheConfiguration> cacheConfigs = new HashMap<>();
         cacheConfigs.put("timeDealsOpen", timeDealsConfig);

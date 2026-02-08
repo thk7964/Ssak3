@@ -6,6 +6,7 @@ import com.example.ssak3.domain.timedeal.repository.TimeDealRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,7 @@ public class TimeDealScheduler {
             lockAtLeastFor = "PT10S"
     )
     @Transactional
+    @CacheEvict(value = "timeDealsOpen", allEntries = true)
     public void updateTimeDealStatus() {
         LocalDateTime now = LocalDateTime.now();
 

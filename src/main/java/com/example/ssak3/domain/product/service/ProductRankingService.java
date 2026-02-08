@@ -68,27 +68,6 @@ public class ProductRankingService {
      */
     public List<ProductGetPopularResponse> getPopularProductTop10() {
 
-        LocalDate now = LocalDate.now();
-
-        List<String> otherKeys = new ArrayList<>();
-
-        // 현재 시점으로부터 일주일치 키 리스트 생성 (오늘은 제외)
-        for (int i = 0; i < 6; i++) {
-            otherKeys.add(PRODUCT_DAILY_RANKING_PREFIX + now.minusDays(i + 1));
-        }
-
-        // 일주일치 결과 집계
-        redisTemplate.opsForZSet().unionAndStore(
-                PRODUCT_DAILY_RANKING_PREFIX + now,
-                    otherKeys,
-                    PRODUCT_WEEKLY_RANKING_KEY);
-
-        // 오늘로부터 10일 뒤 자정 시점 구하기
-        LocalDateTime expirationTime = now.plusDays(10).atStartOfDay();
-
-        // TTL 설정: 덮어씌워질 때마다 만료 시간을 10일 뒤로 갱신
-        redisTemplate.expireAt(PRODUCT_WEEKLY_RANKING_KEY, expirationTime.atZone(ZoneId.systemDefault()).toInstant());
-
         // 랭킹으로 조회
         Set<ZSetOperations.TypedTuple<String>> result = redisTemplate.opsForZSet().reverseRangeWithScores(PRODUCT_WEEKLY_RANKING_KEY, 0, 9);
 
@@ -119,6 +98,26 @@ public class ProductRankingService {
                 })
                 .filter(Objects::nonNull) // null인 애들은 걸러냄
                 .toList();
+    }
+
+    /**
+     * 주간 인기 집계
+     */
+    public void updateWeeklyRanking() {
+        LocalDate now = LocalDate.now();
+
+        List<String> otherKeys = new ArrayList<>();
+
+        // 현재 시점으로부터 일주일치 키 리스트 생성 (오늘은 제외)
+        for (int i = 0; i < 6; i++) {
+            otherKeys.add(PRODUCT_DAILY_RANKING_PREFIX + now.minusDays(i + 1));
+        }
+
+        // 일주일치 결과 집계
+        redisTemplate.opsForZSet().unionAndStore(
+                PRODUCT_DAILY_RANKING_PREFIX + now,
+                otherKeys,
+                PRODUCT_WEEKLY_RANKING_KEY);
     }
 
 }

@@ -30,3 +30,10 @@ kakao:
   client_id: ${CLIENT_ID}
   redirect_uri: ${REDIRECT_URI}
   client_secret: ${CLIENT_SECRET}
+
+toss:
+  secret-key: ${TOSS_SECRET_KEY}
+
+app:
+  frontend:
+    base-url: http://localhost:8080

@@ -18,10 +18,12 @@ public class OrderCreateResponse {
     private final Long discount; // 쿠폰 할인 금액
     private final Long totalPrice; // 최종 금액
     private final Long userCouponId; // 쿠폰 사용 x시 null
+    private final String orderNo; //결제시 사용
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
+    private final String url;
 
-    public static OrderCreateResponse from(Order order, Long subtotal, Long discount) {
+    public static OrderCreateResponse from(Order order, Long subtotal, Long discount, String url) {
         return new OrderCreateResponse(
                 order.getId(),
                 order.getStatus(),
@@ -30,8 +32,10 @@ public class OrderCreateResponse {
                 discount,
                 order.getTotalPrice(),
                 order.getUserCoupon() ==  null ? null : order.getUserCoupon().getId(),
+                order.getOrderNo(),
                 order.getCreatedAt(),
-                order.getUpdatedAt()
+                order.getUpdatedAt(),
+                url
         );
     }
 

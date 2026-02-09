@@ -42,6 +42,10 @@ public class ReviewService {
         Product foundProduct = productRepository.findByIdAndIsDeletedFalse(request.getProductId())
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
+        if (reviewRepository.existsByUserId(foundUser.getId())) {
+            throw new CustomException(ErrorCode.ALREADY_REVIEWED);
+        }
+
         Review createReview = new Review(
                 foundUser,
                 foundProduct,
@@ -50,7 +54,6 @@ public class ReviewService {
         );
         Review savedReview = reviewRepository.save(createReview);
 
-//        Double reviewCounts = reviewRepository.countByProductId(foundProduct.getId());
         Double averageScoreByProductId = reviewRepository.findAverageScoreByProductId(foundProduct.getId());
 
         Double roundedAvgScore = BigDecimal.valueOf(averageScoreByProductId)

@@ -19,11 +19,11 @@ import java.time.Duration;
 import java.util.List;
 
 
-@Configuration(proxyBeanMethods = false)
+@Configuration
 public class CategoryRedisConfig {
 
     @Bean
-    public CacheManager cacheManager(RedisConnectionFactory connectionFactory) {
+    public CacheManager categoryCacheManager(RedisConnectionFactory connectionFactory) {
 
         // Serializer 에게 줄 규칙 정의
         ObjectMapper objectMapper = new ObjectMapper();

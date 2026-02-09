@@ -55,7 +55,7 @@ public class ProductService {
     @Transactional
     public ProductGetResponse getProduct(Long productId, String ip) {
 
-        Product foundProduct = productRepository.findByIdAndIsDeletedFalse(productId)
+        Product foundProduct = productRepository.findByIdAndIsDeletedFalseAndStatusIn(productId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
         if (foundProduct.getStatus().equals(ProductStatus.STOP_SALE)) {
@@ -80,8 +80,10 @@ public class ProductService {
      */
     @Transactional(readOnly = true)
     public ProductGetResponse getProductAdmin(Long productId) {
+        log.info("product service 조회 전: {}", productId);
         Product foundProduct = productRepository.findByIdAndIsDeletedFalse(productId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
+        log.info("product service 조회 후: {}", foundProduct.getId());
         return ProductGetResponse.from(foundProduct);
     }
 
@@ -141,10 +143,11 @@ public class ProductService {
      */
     @Transactional
     public ProductUpdateStatusResponse updateProductStatus(ProductUpdateStatusRequest request) {
+        log.info("productService 상태변경 전: {}", request.getStatus());
         Product foundProduct = productRepository.findByIdAndIsDeletedFalse(request.getProductId())
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
-
         foundProduct.updateStatus(request.getStatus());
+        log.info("productService 상태변경 후: {}", foundProduct.getStatus());
         return ProductUpdateStatusResponse.from(foundProduct);
     }
 }

@@ -16,6 +16,7 @@ public enum ErrorCode {
     WITHDRAWN_USER(HttpStatus.NOT_FOUND, "탈퇴한 유저입니다."),
     INVALID_USER_ROLE(HttpStatus.BAD_REQUEST, "유효하지 않은 권한입니다."),
     NOT_ALLOWED_CHANGE_SUPER_ADMIN(HttpStatus.BAD_REQUEST, "최고 관리자로는 변경할 수 없습니다."),
+    ALREADY_REVIEWED(HttpStatus.BAD_REQUEST, "이미 후기를 작성한 유저입니다."),
 
     // Product 에러
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다."),

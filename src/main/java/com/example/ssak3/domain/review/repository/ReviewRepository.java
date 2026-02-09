@@ -22,4 +22,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     and r.product.id = :productId
 """)
     Double findAverageScoreByProductId(Long productId);
+
+    Boolean existsByUserId(Long id);
+
 }

@@ -41,7 +41,7 @@ public class TimeDeal extends BaseEntity {
     @Column
     private String image;
 
-    @Column
+    @Column(name = "detail_image")
     private String detailImage;
 
     @Column(nullable = false, name = "is_deleted")
@@ -101,6 +101,10 @@ public class TimeDeal extends BaseEntity {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public void setDetailImage(String detailImage) {
+        this.detailImage = detailImage;
     }
 
 }

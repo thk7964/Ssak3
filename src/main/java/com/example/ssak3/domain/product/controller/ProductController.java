@@ -18,6 +18,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
 @Slf4j
 @RequestMapping("/ssak3")
 @RestController
@@ -35,8 +37,7 @@ public class ProductController {
     public ResponseEntity<ApiResponse> createProductApi(
             @RequestPart(value = "request") ProductCreateRequest request,
             @RequestPart(value = "image", required = false) MultipartFile image,
-            @RequestPart(value = "detailImage", required = false) MultipartFile detailImage
-            ) {
+            @RequestPart(value = "detailImage", required = false) MultipartFile detailImage) {
         log.info("controller 상품생성 상품명: {}", request.getName());
         ApiResponse response = ApiResponse.success("상품을 생성하셨습니다.", productService.createProduct(request, image, detailImage));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -51,8 +52,8 @@ public class ProductController {
 
         String ip = request.getRemoteAddr();
 
-       ApiResponse response = ApiResponse.success("상품을 조회했습니다.", productService.getProduct(productId, ip));
-       return ResponseEntity.status(HttpStatus.OK).body(response);
+        ApiResponse response = ApiResponse.success("상품을 조회했습니다.", productService.getProduct(productId, ip));
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     /**
@@ -75,7 +76,7 @@ public class ProductController {
             @RequestParam(name = "categoryId", required = false) Long categoryId,
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         log.info("controller 상품목록조회 검색: {}", categoryId);
-        ApiResponse response = ApiResponse.success("상품목록을 조회했습니다.",  productService.getProductList(categoryId, pageable));
+        ApiResponse response = ApiResponse.success("상품목록을 조회했습니다.", productService.getProductList(categoryId, pageable));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
@@ -89,7 +90,7 @@ public class ProductController {
             @RequestParam(name = "categoryId", required = false) Long categoryId,
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         log.info("controller 상품목록조회 검색 - admin 카테고리Id: {}", categoryId);
-        ApiResponse response = ApiResponse.success("상품목록을 조회했습니다.",  productService.getProductListAdmin(categoryId, pageable));
+        ApiResponse response = ApiResponse.success("상품목록을 조회했습니다.", productService.getProductListAdmin(categoryId, pageable));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
@@ -102,8 +103,7 @@ public class ProductController {
             @PathVariable Long productId,
             @RequestPart ProductUpdateRequest request,
             @RequestPart(value = "image", required = false) MultipartFile image,
-            @RequestPart(value = "detailImage", required = false) MultipartFile detailImage
-    ) {
+            @RequestPart(value = "detailImage", required = false) MultipartFile detailImage) {
         log.info("controller 상품수정 id: {}", productId);
         ApiResponse response = ApiResponse.success("상품을 수정하였습니다.", productService.updateProduct(productId, request, image, detailImage));
         return ResponseEntity.status(HttpStatus.OK).body(response);

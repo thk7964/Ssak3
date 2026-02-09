@@ -49,12 +49,12 @@ public class ProductService {
                 request.getQuantity()
         );
 
-        if (image != null && !image.isEmpty()){
+        if (image != null || !image.isEmpty()){
             String imageUrl = s3Uploader.uploadImage(image, "products");
             product.setImage(imageUrl);
         }
 
-        if (detailImage != null && !detailImage.isEmpty()){
+        if (detailImage != null || !detailImage.isEmpty()){
             String detailImageUrl = s3Uploader.uploadImage(detailImage, "products/details");
             product.setDetailImage(detailImageUrl);
         }
@@ -134,7 +134,7 @@ public class ProductService {
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
         // 이미지 파일 입력 확인
-        if (image!=null && !image.isEmpty()){
+        if (image!=null || !image.isEmpty()){
 
             // 저장되어 있는 이미지 파일이 있는지 확인
             if (foundProduct.getImage()!=null) {
@@ -147,7 +147,7 @@ public class ProductService {
         }
 
         // 상세 이미지 파일 입력 확인
-        if (detailImage!=null && !detailImage.isEmpty()){
+        if (detailImage!=null || !detailImage.isEmpty()){
 
             // 저장되어 있는 이미지 파일이 있는지 확인
             if (foundProduct.getDetailImage() != null) {

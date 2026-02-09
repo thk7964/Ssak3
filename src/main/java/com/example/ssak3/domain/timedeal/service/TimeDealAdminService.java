@@ -6,6 +6,7 @@ import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.common.model.PageResponse;
 import com.example.ssak3.domain.product.entity.Product;
 import com.example.ssak3.domain.product.repository.ProductRepository;
+import com.example.ssak3.domain.s3.service.S3Uploader;
 import com.example.ssak3.domain.timedeal.entity.TimeDeal;
 import com.example.ssak3.domain.timedeal.model.request.TimeDealCreateRequest;
 import com.example.ssak3.domain.timedeal.model.request.TimeDealUpdateRequest;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
@@ -28,12 +30,13 @@ public class TimeDealAdminService {
 
     private final TimeDealRepository timeDealRepository;
     private final ProductRepository productRepository;
+    private final S3Uploader s3Uploader;
 
     /**
      * 타임딜 생성
      */
     @Transactional
-    public TimeDealCreateResponse createTimeDeal(TimeDealCreateRequest request) {
+    public TimeDealCreateResponse createTimeDeal(TimeDealCreateRequest request, MultipartFile image, MultipartFile detailImage) {
 
         Product product = productRepository.findByIdAndIsDeletedFalse(request.getProductId())
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
@@ -70,6 +73,16 @@ public class TimeDealAdminService {
                 request.getEndAt()
         );
 
+        if (image!=null || !image.isEmpty()) {
+            String imageUrl = s3Uploader.uploadImage(image, "timeDeals");
+            timeDeal.setImage(imageUrl);
+        }
+
+        if (detailImage!=null || !detailImage.isEmpty()) {
+            String detailImageUrl = s3Uploader.uploadImage(detailImage, "timeDeals/details");
+            timeDeal.setDetailImage(detailImageUrl);
+        }
+
         TimeDeal saved = timeDealRepository.save(timeDeal);
 
         return TimeDealCreateResponse.from(saved);
@@ -91,7 +104,7 @@ public class TimeDealAdminService {
      * 타임딜 수정
      */
     @Transactional
-    public TimeDealUpdateResponse updateTimeDeal(Long timeDealId, TimeDealUpdateRequest request) {
+    public TimeDealUpdateResponse updateTimeDeal(Long timeDealId, TimeDealUpdateRequest request, MultipartFile image, MultipartFile detailImage) {
 
         TimeDeal timeDeal = timeDealRepository.findByIdAndIsDeletedFalse(timeDealId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TIME_DEAL_NOT_FOUND));
@@ -116,6 +129,32 @@ public class TimeDealAdminService {
             throw new CustomException(ErrorCode.INVALID_TIME_RANGE);
         }
 
+        // 이미지 파일 입력 확인
+        if (image!=null || !image.isEmpty()){
+
+            // 저장되어 있는 이미지 파일이 있는지 확인
+            if (timeDeal.getImage()!=null) {
+                // 기존 파일 먼저 삭제
+                s3Uploader.deleteImage(timeDeal.getImage());
+            }
+            String imageUrl = s3Uploader.uploadImage(image, "timeDeals");
+            timeDeal.setImage(imageUrl);
+
+        }
+
+        // 상세 이미지 파일 입력 확인
+        if (detailImage!=null || !detailImage.isEmpty()){
+
+            // 저장되어 있는 이미지 파일이 있는지 확인
+            if (timeDeal.getDetailImage() != null) {
+                // 기존 파일 먼저 삭제
+                s3Uploader.deleteImage(timeDeal.getDetailImage());
+            }
+            String imageUrl = s3Uploader.uploadImage(detailImage, "timeDeals/details");
+            timeDeal.setDetailImage(imageUrl);
+
+        }
+
         timeDeal.update(request);
 
         return TimeDealUpdateResponse.from(timeDeal);
@@ -131,6 +170,16 @@ public class TimeDealAdminService {
 
         if (!timeDeal.isDeletable()) {
             throw new CustomException(ErrorCode.TIME_DEAL_CANNOT_DELETE);
+        }
+
+        if (timeDeal.getImage()!=null) {
+            s3Uploader.deleteImage(timeDeal.getImage());
+            timeDeal.setImage(null);
+        }
+
+        if (timeDeal.getDetailImage()!=null) {
+            s3Uploader.deleteImage(timeDeal.getDetailImage());
+            timeDeal.setDetailImage(null);
         }
 
         timeDeal.softDelete();

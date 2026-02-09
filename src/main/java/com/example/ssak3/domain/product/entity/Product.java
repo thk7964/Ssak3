@@ -44,7 +44,7 @@ public class Product extends BaseEntity {
     @Column
     private String image;
 
-    @Column
+    @Column(name = "detail_image")
     private String detailImage;
 
     @Column(nullable = false, name = "is_deleted")

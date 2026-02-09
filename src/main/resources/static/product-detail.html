@@ -397,32 +397,20 @@
 </footer>
 
 <script>
-    // URL에서 상품 ID 가져오기
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('id');
 
-    // 상품별 이모지 매핑 (실제로는 서버에서 이미지 URL을 받아와야 함)
     const productEmojis = {
-        1: '🏍️',
-        2: '✨',
-        3: '⚔️',
-        4: '🎮',
-        5: '🎵',
-        6: '⚡',
-        7: '🌈',
-        8: '💎',
-        9: '🎨',
-        10: '🧸'
+        1: '🏍️', 2: '✨', 3: '⚔️', 4: '🎮', 5: '🎵',
+        6: '⚡', 7: '🌈', 8: '💎', 9: '🎨', 10: '🧸'
     };
 
-    // 상품 상태 한글 변환
     const statusText = {
         'AVAILABLE': '판매중',
         'SOLDOUT': '품절',
         'DISCONTINUED': '단종'
     };
 
-    // 상품 정보 로드
     async function loadProductDetail() {
         if (!productId) {
             showError('상품을 찾을 수 없습니다.');
@@ -431,22 +419,15 @@
 
         try {
             const response = await fetch(`http://localhost:8080/ssak3/products/${productId}`);
-
-            if (!response.ok) {
-                throw new Error('상품을 불러올 수 없습니다.');
-            }
-
+            if (!response.ok) throw new Error('상품을 불러올 수 없습니다.');
             const result = await response.json();
-            const product = result.data;
-
-            displayProduct(product);
+            displayProduct(result.data);
         } catch (error) {
             console.error('상품 로드 오류:', error);
             showError('상품 정보를 불러오는데 실패했습니다.');
         }
     }
 
-    // 상품 정보 표시
     function displayProduct(product) {
         const container = document.getElementById('productContainer');
         const isAvailable = product.status === 'AVAILABLE';
@@ -457,26 +438,20 @@
                 <div class="product-image-section">
                     <div class="product-image">${emoji}</div>
                 </div>
-
                 <div class="product-info-section">
                     <span class="product-category">카테고리 ${product.categoryId}</span>
                     <h1 class="product-name">${product.name}</h1>
-
                     <div class="product-price">${product.price.toLocaleString()}원</div>
-
                     <span class="product-status ${isAvailable ? 'available' : 'soldout'}">
                         ${isAvailable ? '✓' : '✕'} ${statusText[product.status] || product.status}
                     </span>
-
                     <div class="divider"></div>
-
                     ${product.information ? `
                         <div class="product-description">
                             <div class="description-title">상품 정보</div>
                             <div class="description-text">${product.information}</div>
                         </div>
                     ` : ''}
-
                     <div class="quantity-selector">
                         <span class="quantity-label">수량</span>
                         <div class="quantity-controls">
@@ -485,24 +460,17 @@
                             <button class="quantity-btn" onclick="increaseQuantity()" ${!isAvailable ? 'disabled' : ''}>+</button>
                         </div>
                     </div>
-
                     <div class="action-buttons">
-                        <button class="cart-btn" onclick="addToCart()" ${!isAvailable ? 'disabled' : ''}>
-                            🛒 장바구니
-                        </button>
-                        <button class="buy-btn" onclick="buyNow()" ${!isAvailable ? 'disabled' : ''}>
-                            바로 구매
-                        </button>
+                        <button class="cart-btn" onclick="addToCart()">🛒 장바구니</button>
+                        <button class="buy-btn" onclick="buyNow()" >바로 구매</button>
                     </div>
                 </div>
             </div>
         `;
     }
 
-    // 에러 표시
     function showError(message) {
-        const container = document.getElementById('productContainer');
-        container.innerHTML = `
+        document.getElementById('productContainer').innerHTML = `
             <div class="error">
                 <div class="error-title">😢 오류가 발생했습니다</div>
                 <div class="error-message">${message}</div>
@@ -510,36 +478,27 @@
         `;
     }
 
-    // 수량 증가
     function increaseQuantity() {
-        const quantityElement = document.getElementById('quantityValue');
-        let quantity = parseInt(quantityElement.textContent);
-        quantityElement.textContent = quantity + 1;
+        const el = document.getElementById('quantityValue');
+        el.textContent = parseInt(el.textContent) + 1;
     }
 
-    // 수량 감소
     function decreaseQuantity() {
-        const quantityElement = document.getElementById('quantityValue');
-        let quantity = parseInt(quantityElement.textContent);
-        if (quantity > 1) {
-            quantityElement.textContent = quantity - 1;
-        }
+        const el = document.getElementById('quantityValue');
+        const qty = parseInt(el.textContent);
+        if (qty > 1) el.textContent = qty - 1;
     }
 
-    // 장바구니 추가
     function addToCart() {
         const quantity = document.getElementById('quantityValue').textContent;
         alert(`장바구니에 ${quantity}개가 추가되었습니다!`);
     }
 
-    // 바로 구매
     function buyNow() {
         const quantity = document.getElementById('quantityValue').textContent;
-        alert(`${quantity}개 구매하기`);
-        // 실제로는 구매 페이지로 이동
+        window.location.href = `single-product-order.html?productId=${productId}&quantity=${quantity}`;
     }
 
-    // 페이지 로드 시 상품 정보 가져오기
     loadProductDetail();
 </script>
 </body>

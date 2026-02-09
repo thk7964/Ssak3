@@ -20,6 +20,7 @@ public class OrderGetResponse {
     private final Long totalPrice;
     private final Long userCouponId;
     private final List<OrderProductGetResponse> orderProductList;
+    private final String orderNo; //결제시 사용
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
@@ -36,6 +37,7 @@ public class OrderGetResponse {
                 order.getTotalPrice(),
                 order.getUserCoupon() == null ? null : order.getUserCoupon().getId(),
                 list,
+                order.getOrderNo(),
                 order.getCreatedAt(),
                 order.getUpdatedAt()
         );

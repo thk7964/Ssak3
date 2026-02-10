@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>문의 상담 - 싹쓰리 관리자</title>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+            background: #f5f7fa;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 헤더 */
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-2px);
+        }
+
+        .header-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .user-info {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* 상태 바 */
+        .status-bar {
+            background: #d4edda;
+            border-bottom: 1px solid #c3e6cb;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #155724;
+        }
+
+        .status-icon {
+            font-size: 16px;
+        }
+
+        /* 메시지 영역 */
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #fafbfc;
+        }
+
+        .messages-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .messages-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .messages-container::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 3px;
+        }
+
+        /* 메시지 */
+        .message {
+            margin-bottom: 16px;
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.mine {
+            flex-direction: row-reverse;
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            word-wrap: break-word;
+            line-height: 1.5;
+        }
+
+        .message.mine .message-bubble {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.other .message-bubble {
+            background: white;
+            color: #212529;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: #868e96;
+            margin: 0 4px;
+        }
+
+        .sender-name {
+            font-size: 12px;
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        /* 공지 메시지 */
+        .notice-message {
+            text-align: center;
+            margin: 20px 0;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .notice-text {
+            display: inline-block;
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        /* 입력 영역 */
+        .input-container {
+            background: white;
+            border-top: 1px solid #e9ecef;
+            padding: 16px 20px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .message-input {
+            flex: 1;
+            border: 2px solid #e9ecef;
+            border-radius: 24px;
+            padding: 12px 20px;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .message-input:focus {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35);
+        }
+
+        .send-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.45);
+        }
+
+        .send-btn:active {
+            transform: translateY(0);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* 사이드 패널 (사용자 정보) */
+        .side-panel {
+            position: fixed;
+            right: -320px;
+            top: 0;
+            width: 320px;
+            height: 100vh;
+            background: white;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .side-panel.active {
+            right: 0;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .panel-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #212529;
+        }
+
+        .close-panel-btn {
+            background: #f8f9fa;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .close-panel-btn:hover {
+            background: #e9ecef;
+        }
+
+        .user-detail {
+            margin-bottom: 20px;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: #868e96;
+            margin-bottom: 6px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .detail-value {
+            font-size: 15px;
+            color: #212529;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        /* 로딩 */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e9ecef;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 모바일 반응형 */
+        @media (max-width: 768px) {
+            .chat-container {
+                max-width: 100%;
+            }
+
+            .message-bubble {
+                max-width: 80%;
+            }
+
+            .side-panel {
+                width: 100%;
+                right: -100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<div id="loadingOverlay" class="loading-overlay">
+    <div class="loading-spinner"></div>
+</div>
+
+<div class="chat-container">
+    <!-- 헤더 -->
+    <div class="chat-header">
+        <div class="header-left">
+            <button class="back-btn" onclick="goBack()">←</button>
+            <div class="header-info">
+                <div class="header-title">👨‍💼 관리자 상담</div>
+                <div class="user-info" id="userInfo">문의 #<span id="roomIdDisplay"></span></div>
+            </div>
+        </div>
+        <button class="close-btn" onclick="closeChat()">종료하기</button>
+    </div>
+
+    <!-- 상태 바 -->
+    <div id="statusBar" class="status-bar">
+        <span class="status-icon">✅</span>
+        <span id="statusText">상담 진행중</span>
+    </div>
+
+    <!-- 메시지 영역 -->
+    <div id="messagesContainer" class="messages-container">
+        <!-- 메시지가 동적으로 추가됩니다 -->
+    </div>
+
+    <!-- 입력 영역 -->
+    <div class="input-container">
+        <input
+                type="text"
+                id="messageInput"
+                class="message-input"
+                placeholder="메시지를 입력하세요..."
+                disabled
+        >
+        <button id="sendBtn" class="send-btn" disabled>📤</button>
+    </div>
+</div>
+
+<script>
+    let stompClient = null;
+    let currentUser = null;
+    let roomId = null;
+    let roomInfo = null;
+    let isConnected = false;
+
+    // 페이지 로드 시 초기화
+    window.addEventListener('DOMContentLoaded', async () => {
+        try {
+            // 사용자 정보 가져오기
+            currentUser = await getCurrentUser();
+            if (!currentUser) return;
+
+            // 관리자 권한 체크
+            if (currentUser.role !== 'ADMIN') {
+                alert('관리자만 접근할 수 있습니다.');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // roomId 가져오기
+            const urlParams = new URLSearchParams(window.location.search);
+            roomId = urlParams.get('roomId');
+
+            if (!roomId) {
+                alert('잘못된 접근입니다.');
+                window.location.href = 'admin-inquiry-list.html';
+                return;
+            }
+
+            // roomId 표시
+            document.getElementById('roomIdDisplay').textContent = roomId;
+
+            // 채팅 기록 불러오기
+            await loadChatHistory();
+
+            // WebSocket 연결
+            connectWebSocket();
+
+            // 입력창 활성화
+            document.getElementById('messageInput').disabled = false;
+            document.getElementById('sendBtn').disabled = false;
+
+            // 로딩 숨기기
+            document.getElementById('loadingOverlay').style.display = 'none';
+
+            // Enter 키로 전송
+            document.getElementById('messageInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+
+            // 전송 버튼 클릭
+            document.getElementById('sendBtn').addEventListener('click', sendMessage);
+
+        } catch (error) {
+            console.error('초기화 실패:', error);
+            alert('채팅방을 불러오는데 실패했습니다.');
+            window.location.href = 'admin-inquiry-list.html';
+        }
+    });
+
+    // 현재 로그인 사용자 정보 가져오기
+    async function getCurrentUser() {
+        const token = localStorage.getItem('accessToken');
+
+        if (!token) {
+            alert('로그인이 필요한 서비스입니다.');
+            window.location.href = 'login.html';
+            return null;
+        }
+
+        try {
+            const response = await fetch('http://localhost:8080/ssak3/users/me', {
+                headers: { 'Authorization': `Bearer ${token}` },
+                credentials: 'include'
+            });
+
+            if (!response.ok) throw new Error('인증 실패');
+
+            const result = await response.json();
+            return {
+                userId: result.data.id,
+                role: result.data.role,
+                token: token
+            };
+        } catch (e) {
+            alert('로그인이 필요한 서비스입니다.');
+            window.location.href = 'login.html';
+            return null;
+        }
+    }
+
+    // 채팅 기록 불러오기
+    async function loadChatHistory() {
+        const response = await fetch(`http://localhost:8080/ssak3/chat/rooms/${roomId}/messages`, {
+            headers: {
+                'Authorization': `Bearer ${currentUser.token}`
+            },
+            credentials: 'include'
+        });
+
+        if (!response.ok) {
+            if (response.status === 403) {
+                alert('이 채팅방에 접근할 권한이 없습니다.');
+                window.location.href = 'admin-inquiry-list.html';
+            }
+            throw new Error('채팅 기록 불러오기 실패');
+        }
+
+        const result = await response.json();
+        const messages = result.data;
+
+        const container = document.getElementById('messagesContainer');
+        messages.forEach(msg => {
+            displayMessage(msg);
+        });
+
+        scrollToBottom();
+    }
+
+    // WebSocket 연결
+    function connectWebSocket() {
+        stompClient = new StompJs.Client({
+            brokerURL: 'ws://localhost:8080/ssak3/stomp/chat',
+            connectHeaders: {
+                'Authorization': `Bearer ${currentUser.token}`
+            }
+        });
+
+        stompClient.onConnect = function(frame) {
+            console.log('WebSocket 연결 성공');
+            isConnected = true;
+
+            // 채팅방 구독
+            stompClient.subscribe(`/sub/chat/room/${roomId}`, (message) => {
+                const receivedMsg = JSON.parse(message.body);
+                displayMessage(receivedMsg);
+                scrollToBottom();
+            });
+
+            // 입장 알림 전송
+            sendNotice('ENTER');
+        };
+
+        stompClient.onStompError = function(frame) {
+            console.error('STOMP 에러:', frame.headers['message']);
+            if (frame.body) {
+                console.error('상세:', frame.body);
+            }
+            alert('실시간 채팅 연결에 실패했습니다.');
+        };
+
+        stompClient.onWebSocketError = function(error) {
+            console.error('WebSocket 연결 실패:', error);
+            alert('실시간 채팅 연결에 실패했습니다.');
+        };
+
+        stompClient.activate();
+    }
+
+    // 메시지 전송
+    function sendMessage() {
+        const input = document.getElementById('messageInput');
+        const content = input.value.trim();
+
+        if (!content || !isConnected) return;
+
+        stompClient.publish({
+            destination: '/pub/chat/message',
+            body: JSON.stringify({
+                type: 'TALK',
+                roomId: roomId,
+                senderId: currentUser.userId,
+                senderRole: currentUser.role,
+                content: content
+            })
+        });
+
+        input.value = '';
+    }
+
+    // 공지 전송 (입장/퇴장)
+    function sendNotice(type) {
+        if (!isConnected) return;
+
+        stompClient.publish({
+            destination: '/pub/chat/notice',
+            body: JSON.stringify({
+                type: type,
+                roomId: roomId,
+                senderId: currentUser.userId,
+                senderRole: '관리자',
+                content: ''
+            })
+        });
+    }
+
+    // 메시지 화면에 표시
+    function displayMessage(msg) {
+        const container = document.getElementById('messagesContainer');
+
+        // 공지 메시지 (입장/퇴장)
+        if (msg.type === 'ENTER' || msg.type === 'QUIT') {
+            const noticeDiv = document.createElement('div');
+            noticeDiv.className = 'notice-message';
+            noticeDiv.innerHTML = `<span class="notice-text">${msg.content}</span>`;
+            container.appendChild(noticeDiv);
+
+            // 사용자가 종료한 경우 처리
+            if (msg.type === 'QUIT' && msg.senderRole === 'USER') {
+                // 입력창 비활성화
+                document.getElementById('messageInput').disabled = true;
+                document.getElementById('sendBtn').disabled = true;
+
+                // 안내 메시지 추가
+                setTimeout(() => {
+                    const endNotice = document.createElement('div');
+                    endNotice.className = 'notice-message';
+                    endNotice.innerHTML = `<span class="notice-text" style="background: #ffeded; color: #ff6b6b;">⚠️ 사용자가 상담을 종료했습니다.</span>`;
+                    container.appendChild(endNotice);
+                    scrollToBottom();
+                }, 500);
+            }
+
+            return;
+        }
+
+        // 일반 메시지
+        const messageDiv = document.createElement('div');
+        const isMine = msg.senderId === currentUser.userId;
+        messageDiv.className = `message ${isMine ? 'mine' : 'other'}`;
+
+        const time = new Date(msg.createdAt).toLocaleTimeString('ko-KR', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        let messageHTML = '';
+
+        if (!isMine) {
+            messageHTML += `<div class="sender-name">${msg.senderRole === 'ADMIN' ? '관리자' : '사용자'}</div>`;
+        }
+
+        messageHTML += `
+                <div class="message-bubble">${escapeHtml(msg.content)}</div>
+                <span class="message-time">${time}</span>
+            `;
+
+        messageDiv.innerHTML = messageHTML;
+        container.appendChild(messageDiv);
+    }
+
+    // 자동 스크롤
+    function scrollToBottom() {
+        const container = document.getElementById('messagesContainer');
+        container.scrollTop = container.scrollHeight;
+    }
+
+    // HTML 이스케이프
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // 뒤로가기 (종료하지 않고 나가기)
+    function goBack() {
+        if (confirm('채팅을 종료하지 않고 목록으로 돌아가시겠습니까?\n나중에 다시 이어서 상담할 수 있습니다.')) {
+            if (isConnected && stompClient) {
+                stompClient.deactivate();
+            }
+            window.location.href = 'admin-inquiry-list.html';
+        }
+    }
+
+    // 채팅 종료
+    async function closeChat() {
+        if (!confirm('상담을 종료하시겠습니까?\n종료 후에는 채팅방이 완료 상태가 됩니다.')) {
+            return;
+        }
+
+        try {
+            // 퇴장 알림 전송
+            sendNotice('QUIT');
+
+            // 채팅방 상태 COMPLETED로 변경
+            const response = await fetch(`http://localhost:8080/ssak3/chat/rooms/${roomId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${currentUser.token}`
+                },
+                credentials: 'include'
+            });
+
+            if (!response.ok) throw new Error('채팅 종료 실패');
+
+            // WebSocket 연결 종료
+            if (isConnected && stompClient) {
+                stompClient.deactivate();
+            }
+
+            alert('상담이 종료되었습니다.');
+            window.location.href = 'admin-inquiry-list.html';
+
+        } catch (error) {
+            console.error('채팅 종료 실패:', error);
+            alert('채팅 종료에 실패했습니다.');
+        }
+    }
+
+    // 페이지 이탈 경고
+    window.addEventListener('beforeunload', (e) => {
+        if (isConnected) {
+            e.preventDefault();
+            e.returnValue = '상담이 진행 중입니다. 정말 나가시겠습니까?';
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1:1 문의 게시판 - 싹쓰리</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+            background: #fafafa;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #ffffff;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+            cursor: pointer;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            background: #f8f9fa;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s ease;
+            color: #495057;
+        }
+
+        .icon-btn:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #212529;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .create-btn {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
+        }
+
+        .create-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(116, 185, 255, 0.45);
+        }
+
+        .inquiry-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .inquiry-card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border: 1px solid #f0f0f0;
+        }
+
+        .inquiry-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+            border-color: #e9ecef;
+        }
+
+        .inquiry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .inquiry-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #212529;
+            flex: 1;
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-left: 12px;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-answered {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .inquiry-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+            color: #868e96;
+        }
+
+        .inquiry-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #868e96;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .empty-state-text {
+            font-size: 18px;
+            margin-bottom: 24px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 40px;
+        }
+
+        .page-btn {
+            background: white;
+            border: 1px solid #e9ecef;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #495057;
+            transition: all 0.2s ease;
+        }
+
+        .page-btn:hover:not(:disabled) {
+            background: #f8f9fa;
+            border-color: #dee2e6;
+        }
+
+        .page-btn.active {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .back-btn {
+            background: #f8f9fa;
+            color: #495057;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            margin-bottom: 20px;
+        }
+
+        .back-btn:hover {
+            background: #e9ecef;
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .inquiry-card {
+                padding: 20px;
+            }
+
+            .inquiry-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
+    <div class="header-icons">
+        <button class="icon-btn" onclick="location.href='home.html'">🏠</button>
+        <button class="icon-btn" onclick="location.href='mypage.html'">👤</button>
+    </div>
+</header>
+
+<div class="container">
+    <button class="back-btn" onclick="location.href='mypage.html'">← 마이페이지로 돌아가기</button>
+
+    <div class="page-header">
+        <h1 class="page-title">💬 1:1 문의 게시판</h1>
+        <button class="create-btn" onclick="location.href='user-inquiry-create.html'">✏️ 새 문의 작성</button>
+    </div>
+
+    <div class="inquiry-list" id="inquiryList">
+        <!-- 문의 목록이 여기에 동적으로 추가됩니다 -->
+    </div>
+
+    <div class="pagination" id="pagination">
+        <!-- 페이지네이션이 여기에 동적으로 추가됩니다 -->
+    </div>
+</div>
+
+<script>
+    let currentPage = 0;
+    let totalPages = 0;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadInquiries(currentPage);
+    });
+
+    async function loadInquiries(page = 0) {
+        const token = localStorage.getItem('accessToken');
+
+        if (!token) {
+            alert('로그인이 필요합니다.');
+            location.href = 'login.html';
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:8080/ssak3/inquiries?page=${page}&size=10&sort=createdAt,desc`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                },
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch inquiries');
+            }
+
+            const result = await response.json();
+            const data = result.data;
+
+            currentPage = data.currentPage;
+            totalPages = data.totalPages;
+
+            renderInquiries(data.content);
+            renderPagination();
+
+        } catch (error) {
+            console.error('Error loading inquiries:', error);
+            alert('문의 목록을 불러오는데 실패했습니다.');
+        }
+    }
+
+    function renderInquiries(inquiries) {
+        const listContainer = document.getElementById('inquiryList');
+
+        if (!inquiries || inquiries.length === 0) {
+            listContainer.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">📭</div>
+                    <div class="empty-state-text">아직 작성한 문의가 없습니다.</div>
+                    <button class="create-btn" onclick="location.href='user-inquiry-create.html'">첫 문의 작성하기</button>
+                </div>
+            `;
+            return;
+        }
+
+        listContainer.innerHTML = inquiries.map(inquiry => {
+            const statusClass = inquiry.status === 'PENDING' ? 'status-pending' : 'status-answered';
+            const statusText = inquiry.status === 'PENDING' ? '🟠 대기중' : '🟢 답변완료';
+            const createdDate = formatDate(inquiry.createdAt);
+
+            return `
+                <div class="inquiry-card" onclick="location.href='user-inquiry-detail.html?id=${inquiry.id}'">
+                    <div class="inquiry-header">
+                        <div class="inquiry-title">${escapeHtml(inquiry.title)}</div>
+                        <span class="status-badge ${statusClass}">${statusText}</span>
+                    </div>
+                    <div class="inquiry-meta">
+                        <span>📅 ${createdDate}</span>
+                        <span>🆔 #${inquiry.id}</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function renderPagination() {
+        const paginationContainer = document.getElementById('pagination');
+
+        if (totalPages <= 1) {
+            paginationContainer.innerHTML = '';
+            return;
+        }
+
+        let paginationHTML = `
+            <button class="page-btn" onclick="loadInquiries(${currentPage - 1})" ${currentPage === 0 ? 'disabled' : ''}>◀</button>
+        `;
+
+        for (let i = 0; i < totalPages; i++) {
+            paginationHTML += `
+                <button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="loadInquiries(${i})">${i + 1}</button>
+            `;
+        }
+
+        paginationHTML += `
+            <button class="page-btn" onclick="loadInquiries(${currentPage + 1})" ${currentPage === totalPages - 1 ? 'disabled' : ''}>▶</button>
+        `;
+
+        paginationContainer.innerHTML = paginationHTML;
+    }
+
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${year}-${month}-${day} ${hours}:${minutes}`;
+    }
+
+    function escapeHtml(text) {
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return text.replace(/[&<>"']/g, m => map[m]);
+    }
+</script>
+
+</body>
+</html>

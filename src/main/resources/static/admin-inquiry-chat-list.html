@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>문의 채팅 관리 - 싹쓰리</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+            background: #fafafa;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #ffffff;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+            cursor: pointer;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            background: #f8f9fa;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s ease;
+            color: #495057;
+        }
+
+        .icon-btn:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: #212529;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-subtitle {
+            font-size: 15px;
+            color: #868e96;
+            margin-bottom: 30px;
+        }
+
+        /* 상태 필터 */
+        .status-filters {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            border: 2px solid #e9ecef;
+            background: white;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #495057;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn:hover {
+            border-color: #74b9ff;
+            color: #74b9ff;
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        /* 채팅방 카드 */
+        .chat-rooms-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .chat-room-card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-room-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            border-color: #74b9ff;
+        }
+
+        .chat-room-card.waiting {
+            border-left: 4px solid #ffc107;
+        }
+
+        .chat-room-card.ongoing {
+            border-left: 4px solid #28a745;
+        }
+
+        .chat-room-card.completed {
+            opacity: 0.7;
+            border-left: 4px solid #6c757d;
+        }
+
+        .room-info {
+            flex: 1;
+        }
+
+        .room-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .room-id {
+            font-size: 18px;
+            font-weight: 700;
+            color: #212529;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-badge.waiting {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-badge.ongoing {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-badge.completed {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+
+        .room-details {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            color: #868e96;
+        }
+
+        .room-detail-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .room-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .action-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .accept-btn {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
+        }
+
+        .accept-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(116, 185, 255, 0.45);
+        }
+
+        .enter-btn {
+            background: #f8f9fa;
+            color: #495057;
+            border: 2px solid #e9ecef;
+        }
+
+        .enter-btn:hover {
+            background: #e9ecef;
+        }
+
+        /* 빈 상태 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-text {
+            font-size: 18px;
+            color: #868e96;
+        }
+
+        /* 페이지네이션 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 40px;
+        }
+
+        .page-btn {
+            padding: 10px 16px;
+            border: 2px solid #e9ecef;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #495057;
+            transition: all 0.2s ease;
+        }
+
+        .page-btn:hover {
+            border-color: #74b9ff;
+            color: #74b9ff;
+        }
+
+        .page-btn.active {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* 로딩 */
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e9ecef;
+            border-top-color: #74b9ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            header {
+                padding: 16px 20px;
+            }
+
+            .container {
+                padding: 24px 16px;
+            }
+
+            .chat-room-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .room-actions {
+                width: 100%;
+                margin-top: 16px;
+            }
+
+            .action-btn {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
+    <div class="header-icons">
+        <button class="icon-btn" onclick="location.href='home.html'">🏠</button>
+    </div>
+</header>
+
+<div class="container">
+    <h1 class="page-title">📞 문의 채팅 관리</h1>
+    <p class="page-subtitle">고객 문의를 확인하고 상담을 진행하세요</p>
+
+    <!-- 상태 필터 -->
+    <div class="status-filters">
+        <button class="filter-btn active" data-status="ALL" onclick="filterByStatus('ALL')">
+            전체
+        </button>
+        <button class="filter-btn" data-status="WAITING" onclick="filterByStatus('WAITING')">
+            ⏱️ 대기중
+        </button>
+        <button class="filter-btn" data-status="ONGOING" onclick="filterByStatus('ONGOING')">
+            ✅ 진행중
+        </button>
+        <button class="filter-btn" data-status="COMPLETED" onclick="filterByStatus('COMPLETED')">
+            🏁 완료
+        </button>
+    </div>
+
+    <!-- 채팅방 목록 -->
+    <div id="chatRoomsContainer" class="chat-rooms-grid">
+        <div class="loading">
+            <div class="loading-spinner"></div>
+        </div>
+    </div>
+
+    <!-- 페이지네이션 -->
+    <div id="paginationContainer" class="pagination" style="display: none;">
+        <!-- 페이지네이션 버튼이 동적으로 추가됩니다 -->
+    </div>
+</div>
+
+<script>
+    let currentUser = null;
+    let currentPage = 0;
+    let totalPages = 0;
+    let currentFilter = 'ALL';
+
+    // 페이지 로드 시 초기화
+    window.addEventListener('DOMContentLoaded', async () => {
+        try {
+            currentUser = await getCurrentUser();
+            if (!currentUser) return;
+
+            // 관리자 권한 체크
+            if (currentUser.role !== 'ADMIN') {
+                alert('관리자만 접근할 수 있습니다.');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            await loadChatRooms();
+        } catch (error) {
+            console.error('초기화 실패:', error);
+            alert('채팅방 목록을 불러오는데 실패했습니다.');
+        }
+    });
+
+    // 현재 로그인 사용자 정보 가져오기
+    async function getCurrentUser() {
+        const token = localStorage.getItem('accessToken');
+
+        if (!token) {
+            alert('로그인이 필요한 서비스입니다.');
+            window.location.href = 'login.html';
+            return null;
+        }
+
+        try {
+            const response = await fetch('http://localhost:8080/ssak3/users/me', {
+                headers: { 'Authorization': `Bearer ${token}` },
+                credentials: 'include'
+            });
+
+            if (!response.ok) throw new Error('인증 실패');
+
+            const result = await response.json();
+            return {
+                userId: result.data.id,
+                role: result.data.role,
+                token: token
+            };
+        } catch (e) {
+            alert('로그인이 필요한 서비스입니다.');
+            window.location.href = 'login.html';
+            return null;
+        }
+    }
+
+    // 채팅방 목록 불러오기
+    async function loadChatRooms(page = 0) {
+        try {
+            const response = await fetch(
+                `http://localhost:8080/ssak3/admin/chat/rooms?page=${page}&size=10`,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${currentUser.token}`
+                    },
+                    credentials: 'include'
+                }
+            );
+
+            if (!response.ok) throw new Error('채팅방 목록 불러오기 실패');
+
+            const result = await response.json();
+            const data = result.data;
+
+            currentPage = data.currentPage;
+            totalPages = data.totalPages;
+
+            displayChatRooms(data.content);
+            displayPagination();
+
+        } catch (error) {
+            console.error('채팅방 목록 불러오기 실패:', error);
+            document.getElementById('chatRoomsContainer').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">⚠️</div>
+                        <div class="empty-text">채팅방 목록을 불러오는데 실패했습니다.</div>
+                    </div>
+                `;
+        }
+    }
+
+    // 채팅방 목록 화면에 표시
+    function displayChatRooms(rooms) {
+        const container = document.getElementById('chatRoomsContainer');
+
+        // 필터 적용
+        let filteredRooms = rooms;
+        if (currentFilter !== 'ALL') {
+            filteredRooms = rooms.filter(room => room.status === currentFilter);
+        }
+
+        if (filteredRooms.length === 0) {
+            container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">💬</div>
+                        <div class="empty-text">표시할 채팅방이 없습니다.</div>
+                    </div>
+                `;
+            return;
+        }
+
+        container.innerHTML = filteredRooms.map(room => {
+            const statusText = {
+                'WAITING': '대기중',
+                'ONGOING': '진행중',
+                'COMPLETED': '완료'
+            }[room.status];
+
+            const statusClass = room.status.toLowerCase();
+            const createdAt = new Date(room.createdAt).toLocaleString('ko-KR');
+
+            let actionButtons = '';
+            let clickHandler = '';
+
+            if (room.status === 'WAITING') {
+                actionButtons = `
+                        <button class="action-btn accept-btn" onclick="acceptChat(event, ${room.id})">
+                            수락하기
+                        </button>
+                    `;
+                clickHandler = `onclick="enterChat(${room.id})"`;
+            } else if (room.status === 'ONGOING' && room.adminId === currentUser.userId) {
+                actionButtons = `
+                        <button class="action-btn enter-btn" onclick="enterChat(${room.id})">
+                            입장하기
+                        </button>
+                    `;
+                clickHandler = `onclick="enterChat(${room.id})"`;
+            } else if (room.status === 'COMPLETED') {
+                // COMPLETED 상태면 클릭 불가
+                clickHandler = `style="cursor: not-allowed;" onclick="alert('종료된 채팅방입니다.')"`;
+            }
+
+            return `
+                    <div class="chat-room-card ${statusClass}" ${clickHandler}>>
+                        <div class="room-info">
+                            <div class="room-header">
+                                <span class="room-id">문의 #${room.id}</span>
+                                <span class="status-badge ${statusClass}">${statusText}</span>
+                            </div>
+                            <div class="room-details">
+                                <div class="room-detail-item">
+                                    <span>👤</span>
+                                    <span>${room.userName || '사용자'}</span>
+                                </div>
+                                <div class="room-detail-item">
+                                    <span>🕐</span>
+                                    <span>${createdAt}</span>
+                                </div>
+                                ${room.adminId ? `
+                                    <div class="room-detail-item">
+                                        <span>👨‍💼</span>
+                                        <span>담당: 관리자 #${room.adminId}</span>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                        <div class="room-actions" onclick="event.stopPropagation()">
+                            ${actionButtons}
+                        </div>
+                    </div>
+                `;
+        }).join('');
+    }
+
+    // 페이지네이션 표시
+    function displayPagination() {
+        const container = document.getElementById('paginationContainer');
+
+        if (totalPages <= 1) {
+            container.style.display = 'none';
+            return;
+        }
+
+        container.style.display = 'flex';
+
+        let html = '';
+
+        // 이전 버튼
+        html += `
+                <button class="page-btn" onclick="changePage(${currentPage - 1})" ${currentPage === 0 ? 'disabled' : ''}>
+                    ←
+                </button>
+            `;
+
+        // 페이지 번호들
+        for (let i = 0; i < totalPages; i++) {
+            html += `
+                    <button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">
+                        ${i + 1}
+                    </button>
+                `;
+        }
+
+        // 다음 버튼
+        html += `
+                <button class="page-btn" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages - 1 ? 'disabled' : ''}>
+                    →
+                </button>
+            `;
+
+        container.innerHTML = html;
+    }
+
+    // 페이지 변경
+    function changePage(page) {
+        if (page < 0 || page >= totalPages) return;
+        loadChatRooms(page);
+    }
+
+    // 상태 필터
+    function filterByStatus(status) {
+        currentFilter = status;
+
+        // 필터 버튼 활성화 상태 변경
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        event.target.classList.add('active');
+
+        // 현재 페이지 데이터 다시 표시
+        loadChatRooms(currentPage);
+    }
+
+    // 채팅 수락
+    async function acceptChat(event, roomId) {
+        event.stopPropagation();
+
+        if (!confirm('이 문의를 수락하시겠습니까?')) return;
+
+        try {
+            const response = await fetch(
+                `http://localhost:8080/ssak3/admin/chat/rooms/${roomId}/accept`,
+                {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${currentUser.token}`
+                    },
+                    credentials: 'include'
+                }
+            );
+
+            if (!response.ok) throw new Error('채팅 수락 실패');
+
+            alert('문의를 수락했습니다.');
+
+            // 채팅방으로 이동
+            window.location.href = `admin-inquiry-chat.html?roomId=${roomId}`;
+
+        } catch (error) {
+            console.error('채팅 수락 실패:', error);
+            alert('채팅 수락에 실패했습니다. 이미 다른 관리자가 수락했을 수 있습니다.');
+            loadChatRooms(currentPage);
+        }
+    }
+
+    // 채팅방 입장
+    function enterChat(roomId) {
+        window.location.href = `admin-inquiry-chat.html?roomId=${roomId}`;
+    }
+</script>
+</body>
+</html>

@@ -21,7 +21,7 @@ public class ChatMessageResponse {
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
-    // 채팅 메시지 Response
+    // 채팅 메시지 Response(DB 조회 메시지)
     public static ChatMessageResponse from(InquiryChatMessage inquiryChatMessage) {
         return new ChatMessageResponse(
                 inquiryChatMessage.getRoom().getId(),
@@ -43,6 +43,19 @@ public class ChatMessageResponse {
                 request.getType(),
                 noticeMessage,
                 LocalDateTime.now(),
+                LocalDateTime.now()
+        );
+    }
+
+    // 메시지 요청으로부터 임시 Response 생성(DB 저장 전 Redis로 먼저 보냄)
+    public static ChatMessageResponse fromRequest(ChatMessageRequest request, Long userId, String role) {
+        return new ChatMessageResponse(
+                request.getRoomId(),
+                userId,
+                UserRole.valueOf(role),
+                request.getType(),
+                request.getContent(),
+                LocalDateTime.now(),  // DB 저장 전이므로 현재 시간 기준
                 LocalDateTime.now()
         );
     }

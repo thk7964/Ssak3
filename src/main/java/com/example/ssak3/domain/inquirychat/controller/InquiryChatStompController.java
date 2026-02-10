@@ -33,10 +33,13 @@ public class InquiryChatStompController {
         Long userId = (Long) sessionAttributes.get("userId");
         String role = (String) sessionAttributes.get("role");
 
-        ChatMessageResponse response =  inquiryChatService.saveMessage(request, userId, role);
+        // Redis 먼저 발행
+        ChatMessageResponse tempResponse = ChatMessageResponse.fromRequest(request, userId, role);
 
-        // 브로드캐스팅
-        redisTemplate.convertAndSend(chatTopic.getTopic(), response);  // Redis로 변환 및 전송
+        redisTemplate.convertAndSend(chatTopic.getTopic(), tempResponse);
+
+        // DB 저장은 비동기로 처리
+        inquiryChatService.saveMessageAsync(request, userId, role);
     }
 
 

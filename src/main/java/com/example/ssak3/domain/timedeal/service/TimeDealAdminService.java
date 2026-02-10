@@ -125,7 +125,6 @@ public class TimeDealAdminService {
     /**
      * 타임딜 삭제
      */
-    @CacheEvict(value = "timeDealsOpen", allEntries = true)
     @Transactional
     public TimeDealDeleteResponse deleteTimeDeal(Long timeDealId) {
         TimeDeal timeDeal = timeDealRepository.findByIdAndIsDeletedFalse(timeDealId)

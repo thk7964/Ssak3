@@ -2,6 +2,7 @@ package com.example.ssak3.domain.cartproduct.service;
 
 import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.enums.ProductStatus;
+import com.example.ssak3.common.enums.TimeDealStatus;
 import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.domain.cart.entity.Cart;
 import com.example.ssak3.domain.cart.repository.CartRepository;
@@ -32,7 +33,6 @@ public class CartProductService {
     private final ProductRepository productRepository;
 
     private final CartService cartService;
-    private final CartRepository cartRepository;
     private final TimeDealRepository timeDealRepository;
 
     /**
@@ -48,19 +48,29 @@ public class CartProductService {
         // 카트 조회(없으면 생성)
         Cart cart = cartService.getOrCreateCart(userId);
 
-        TimeDeal openTimeDeal = timeDealRepository.findOpenTimeDeal(product.getId(), LocalDateTime.now())
-                .orElse(null);
+        TimeDeal timeDeal = null;
+        boolean isTimeDeal = false;
 
-        // 타임딜 여부
-        boolean isTimeDeal = (openTimeDeal != null);
+        if (request.getTimedealId() != null) {
+            timeDeal = timeDealRepository.findByIdAndIsDeletedFalse(request.getTimedealId())
+                    .orElseThrow(() -> new CustomException(ErrorCode.TIME_DEAL_NOT_FOUND));
+
+            if (timeDeal != null && !timeDeal.getStatus().equals(TimeDealStatus.OPEN)) {
+                throw new CustomException(ErrorCode.TIME_DEAL_INVALID_STATUS);
+            }
+
+            isTimeDeal = true;
+
+        }
+
         // 일반 판매 중 여부
         boolean normalSale = product.getStatus().equals(ProductStatus.FOR_SALE);
 
         if(!isTimeDeal && !normalSale){
             throw new CustomException(ErrorCode.PRODUCT_NOT_FOR_SALE);
         }
-        // 카트에 같은 상품이 담겨있는지 조히
-        Optional<CartProduct> cartProductOptional = cartProductRepository.findByCartIdAndProductId(cart.getId(), request.getProductId());
+        // 카트에 같은 상품이 담겨있는지 조회
+        Optional<CartProduct> cartProductOptional = cartProductRepository.findByCartIdAndProductIdAndTimeDealId(cart.getId(), request.getProductId(), request.getTimedealId());
 
         CartProduct cartProduct;
 
@@ -92,13 +102,13 @@ public class CartProductService {
                 throw new CustomException(ErrorCode.PRODUCT_INSUFFICIENT);
             }
 
-            cartProduct = new CartProduct(cart, product, request.getQuantity());
+            cartProduct = new CartProduct(cart, product, timeDeal, request.getQuantity());
 
             cartProductRepository.save(cartProduct);
 
 
         }
-        return CartProductListGetResponse.from(cartProduct, openTimeDeal);
+        return CartProductListGetResponse.from(cartProduct, timeDeal);
 
     }
 
@@ -118,7 +128,7 @@ public class CartProductService {
 
         Product product = cartProduct.getProduct();
 
-        TimeDeal openTimeDeal = timeDealRepository.findOpenTimeDeal(product.getId(), LocalDateTime.now())
+        TimeDeal openTimeDeal = timeDealRepository.findByIdAndIsDeletedFalse(cartProduct.getTimedeal().getId())
                 .orElse(null);
 
         boolean isTimeDeal = (openTimeDeal != null);

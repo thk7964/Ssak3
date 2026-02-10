@@ -19,18 +19,16 @@ public class CartProductListGetResponse {
     private final long linePrice; // 수량 * 개당 가격
     private final boolean purchasable; // 구매 가능 여부
 
-    private final boolean isTimeDeal; // 타임딜 여부
+    private final Long timeDealId; // 타임딜
 
     public static CartProductListGetResponse from(CartProduct cartProduct, TimeDeal timeDeal) {
         Product product = cartProduct.getProduct();
 
-        boolean isTimeDeal = (timeDeal != null);
-
         long unitPrice;
         boolean purchasable;
 
-        if (isTimeDeal) {
-            unitPrice =timeDeal.getDealPrice();
+        if (timeDeal != null) {
+            unitPrice = timeDeal.getDealPrice();
             purchasable = timeDeal.getProduct().getQuantity() >= cartProduct.getQuantity();
         }
         else {
@@ -52,7 +50,7 @@ public class CartProductListGetResponse {
                 unitPrice,
                 linePrice,
                 purchasable,
-                isTimeDeal
+                timeDeal.getId()
         );
     }
 

@@ -36,9 +36,10 @@ public class CartProduct extends BaseEntity {
         this.quantity = quantity;
     }
 
-    public CartProduct(Cart cart, Product product, Integer quantity) {
+    public CartProduct(Cart cart, Product product, TimeDeal timeDeal, Integer quantity) {
         this.cart = cart;
         this.product = product;
+        this.timedeal = timeDeal;
         this.quantity = quantity;
     }
 

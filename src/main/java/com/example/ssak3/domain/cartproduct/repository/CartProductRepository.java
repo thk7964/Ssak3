@@ -10,7 +10,7 @@ public interface CartProductRepository extends JpaRepository<CartProduct, Long> 
 
     List<CartProduct> findAllByCartIdOrderByUpdatedAtDesc(Long cartId);
 
-    Optional<CartProduct> findByCartIdAndProductId(Long cartId, Long productId);
+    Optional<CartProduct> findByCartIdAndProductIdAndTimeDealId(Long cartId, Long productId, Long timeDealId);
 
     Optional<CartProduct> findByIdAndCartId(Long cartProductId, Long cartId);
 

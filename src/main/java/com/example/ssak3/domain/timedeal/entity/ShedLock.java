@@ -1,6 +1,10 @@
 package com.example.ssak3.domain.timedeal.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -12,11 +16,11 @@ public class ShedLock {
     private String name;
 
     @Column(nullable = false)
-    private LocalDateTime lockUntil;
+    private LocalDateTime lockUntil;        // 락 만료시간
 
     @Column(nullable = false)
-    private LocalDateTime lockedAt;
+    private LocalDateTime lockedAt;         // 락 획득 시간
 
     @Column(nullable = false)
-    private String lockedBy;
+    private String lockedBy;                // 락 식별자
 }

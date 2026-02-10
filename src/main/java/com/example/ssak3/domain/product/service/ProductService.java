@@ -35,7 +35,7 @@ public class ProductService {
      * 상품생성
      */
     @Transactional
-    public ProductCreateResponse createProduct(ProductCreateRequest request, MultipartFile image, MultipartFile detailImage) {
+    public ProductCreateResponse createProduct(ProductCreateRequest request) {
         // 카테고리 존재여부 확인 및 객체 가져오기
         Category findCategory = categoryRepository.findByIdAndIsDeletedFalse(request.getCategoryId())
                 .orElseThrow(()-> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
@@ -49,14 +49,14 @@ public class ProductService {
                 request.getQuantity()
         );
 
-        if (image != null || !image.isEmpty()){
-            String imageUrl = s3Uploader.uploadImage(image, "products");
-            product.setImage(imageUrl);
+        if (request.getImage() != null){
+            //String imageUrl = s3Uploader.uploadImage(image, "products");
+            product.setImage(request.getImage());
         }
 
-        if (detailImage != null || !detailImage.isEmpty()){
-            String detailImageUrl = s3Uploader.uploadImage(detailImage, "products/details");
-            product.setDetailImage(detailImageUrl);
+        if (request.getDetailImage() != null){
+            //String detailImageUrl = s3Uploader.uploadImage(detailImage, "products/details");
+            product.setDetailImage(request.getDetailImage());
         }
 
         Product createdProduct = productRepository.save(product);
@@ -86,7 +86,10 @@ public class ProductService {
             log.warn("Redis 조회수 업데이트 실패: productId = {}", foundProduct.getId());
         }
 
-        return ProductGetResponse.from(foundProduct);
+        String viewImageUrl = s3Uploader.createPresignedGetUrl(foundProduct.getImage(), 5);
+        String viewDetailImageUrl = s3Uploader.createPresignedGetUrl(foundProduct.getDetailImage(), 5);
+
+        return ProductGetResponse.from(foundProduct, viewImageUrl, viewDetailImageUrl);
     }
 
     /**
@@ -96,7 +99,11 @@ public class ProductService {
     public ProductGetResponse getProductAdmin(Long productId) {
         Product foundProduct = productRepository.findByIdAndIsDeletedFalse(productId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
-        return ProductGetResponse.from(foundProduct);
+
+        String viewImageUrl = s3Uploader.createPresignedGetUrl(foundProduct.getImage(), 5);
+        String viewDetailImageUrl = s3Uploader.createPresignedGetUrl(foundProduct.getDetailImage(), 5);
+
+        return ProductGetResponse.from(foundProduct, viewImageUrl, viewDetailImageUrl);
     }
 
     /**
@@ -105,10 +112,15 @@ public class ProductService {
     @Transactional(readOnly = true)
     public PageResponse<ProductListGetResponse> getProductList(Long categoryId, Pageable pageable) {
 
-        Page<ProductListGetResponse> productList = productRepository.findProductListByCategoryId(categoryId, pageable)
-                .map(ProductListGetResponse::from);
+        Page<Product> productList = productRepository.findProductListByCategoryId(categoryId, pageable);
 
-       return PageResponse.from(productList);
+        Page<ProductListGetResponse> mapped = productList.map(p -> {
+            String viewImageUrl = s3Uploader.createPresignedGetUrl(p.getImage(), 5);
+            return ProductListGetResponse.from(p, viewImageUrl);
+        });
+
+
+       return PageResponse.from(mapped);
     }
 
     /**
@@ -116,16 +128,21 @@ public class ProductService {
      */
     @Transactional(readOnly = true)
     public Object getProductListAdmin(Long categoryId, Pageable pageable) {
-        Page<ProductListGetResponse> productList = productRepository.findProductListByCategoryIdForAdmin(categoryId, pageable)
-                .map(ProductListGetResponse::from);
-        return PageResponse.from(productList);
+        Page<Product> productList = productRepository.findProductListByCategoryIdForAdmin(categoryId, pageable);
+
+        Page<ProductListGetResponse> mapped = productList.map(p -> {
+            String viewImageUrl = s3Uploader.createPresignedGetUrl(p.getImage(), 5);
+            return ProductListGetResponse.from(p, viewImageUrl);
+        });
+
+        return PageResponse.from(mapped);
     }
 
     /**
      * 상품수정
      */
     @Transactional
-    public ProductUpdateResponse updateProduct(Long productId, ProductUpdateRequest request, MultipartFile image, MultipartFile detailImage) {
+    public ProductUpdateResponse updateProduct(Long productId, ProductUpdateRequest request) {
         Category category = categoryRepository.findByIdAndIsDeletedFalse(request.getCategoryId())
                 .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
 
@@ -134,28 +151,28 @@ public class ProductService {
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
         // 이미지 파일 입력 확인
-        if (image!=null || !image.isEmpty()){
+        if (request.getImage() != null){
 
             // 저장되어 있는 이미지 파일이 있는지 확인
             if (foundProduct.getImage()!=null) {
                 // 기존 파일 먼저 삭제
                 s3Uploader.deleteImage(foundProduct.getImage());
             }
-            String imageUrl = s3Uploader.uploadImage(image, "products");
-            foundProduct.setImage(imageUrl);
+            //String imageUrl = s3Uploader.uploadImage(image, "products");
+            foundProduct.setImage(request.getImage());
 
         }
 
         // 상세 이미지 파일 입력 확인
-        if (detailImage!=null || !detailImage.isEmpty()){
+        if (request.getDetailImage() != null){
 
             // 저장되어 있는 이미지 파일이 있는지 확인
             if (foundProduct.getDetailImage() != null) {
                 // 기존 파일 먼저 삭제
                 s3Uploader.deleteImage(foundProduct.getDetailImage());
             }
-            String imageUrl = s3Uploader.uploadImage(detailImage, "products/details");
-            foundProduct.setDetailImage(imageUrl);
+            //String imageUrl = s3Uploader.uploadImage(detailImage, "products/details");
+            foundProduct.setDetailImage(request.getDetailImage());
 
         }
 

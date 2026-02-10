@@ -35,11 +35,9 @@ public class ProductController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/admin/products")
     public ResponseEntity<ApiResponse> createProductApi(
-            @RequestPart(value = "request") ProductCreateRequest request,
-            @RequestPart(value = "image", required = false) MultipartFile image,
-            @RequestPart(value = "detailImage", required = false) MultipartFile detailImage) {
+            @RequestBody ProductCreateRequest request) {
         log.info("controller 상품생성 상품명: {}", request.getName());
-        ApiResponse response = ApiResponse.success("상품을 생성하셨습니다.", productService.createProduct(request, image, detailImage));
+        ApiResponse response = ApiResponse.success("상품을 생성하셨습니다.", productService.createProduct(request));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -101,11 +99,9 @@ public class ProductController {
     @PatchMapping("/admin/products/{productId}")
     public ResponseEntity<ApiResponse> updateProductApi(
             @PathVariable Long productId,
-            @RequestPart ProductUpdateRequest request,
-            @RequestPart(value = "image", required = false) MultipartFile image,
-            @RequestPart(value = "detailImage", required = false) MultipartFile detailImage) {
+            @RequestBody ProductUpdateRequest request) {
         log.info("controller 상품수정 id: {}", productId);
-        ApiResponse response = ApiResponse.success("상품을 수정하였습니다.", productService.updateProduct(productId, request, image, detailImage));
+        ApiResponse response = ApiResponse.success("상품을 수정하였습니다.", productService.updateProduct(productId, request));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

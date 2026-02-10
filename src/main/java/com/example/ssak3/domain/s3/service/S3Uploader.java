@@ -1,18 +1,23 @@
 package com.example.ssak3.domain.s3.service;
 
+import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.exception.CustomException;
+import com.example.ssak3.domain.s3.model.response.ImagePutUrlResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -44,10 +49,58 @@ public class S3Uploader {
     }
 
     /**
-     * 이미지 삭제
+     * put presigned url 생성
      */
-    public void deleteImage(String fileUrl) {
-        if (fileUrl == null || fileUrl.isBlank()) return;
+    public ImagePutUrlResponse createPresignedPutUrl(String dirName, String originalFilename, int expireMinutes) {
+        if (originalFilename == null || originalFilename.isBlank()) {
+            throw new CustomException(ErrorCode.INVALID_FILE);
+        }
+
+        String key = buildS3Key(dirName, originalFilename);
+
+        Date expiration = new Date(System.currentTimeMillis() + expireMinutes * 60 * 1000L);
+
+        GeneratePresignedUrlRequest request = new GeneratePresignedUrlRequest(bucket, key)
+                .withMethod(HttpMethod.PUT)
+                .withExpiration(expiration);
+
+        URL presignedUrl =  amazonS3Client.generatePresignedUrl(request);
+
+        String uploadUrl = presignedUrl.toString();
+
+        String imageUrl = amazonS3Client.getUrl(bucket, key).toString();
+
+        return ImagePutUrlResponse.from(uploadUrl, imageUrl);
+    }
+
+    /**
+     * get presigned url 생성
+     */
+    public String createPresignedGetUrl(String fileUrl, int expireMinutes) {
+        if (fileUrl == null) {
+            return null;
+        }
+
+        String key = extractKey(fileUrl);
+
+        Date expiration = new Date(System.currentTimeMillis() + expireMinutes * 60 * 1000L);
+
+        GeneratePresignedUrlRequest request = new GeneratePresignedUrlRequest(bucket, key)
+                .withMethod(HttpMethod.GET)
+                .withExpiration(expiration);
+
+        URL presignedUrl = amazonS3Client.generatePresignedUrl(request);
+
+        return presignedUrl.toString();
+    }
+
+    /**
+     * url에서 key 추출
+     */
+    public String extractKey(String fileUrl) {
+        if (fileUrl == null || fileUrl.isBlank()) {
+            throw new CustomException(ErrorCode.INVALID_URL);
+        }
 
         int idx = fileUrl.indexOf("amazonaws.com/");
         if (idx < 0) {
@@ -58,7 +111,16 @@ public class S3Uploader {
         String encodedKey = fileUrl.substring(idx + "amazonaws.com/".length());
 
         // 한글 파일명 등 퍼센트 인코딩 디코딩
-        String key = URLDecoder.decode(encodedKey, StandardCharsets.UTF_8);
+        return URLDecoder.decode(encodedKey, StandardCharsets.UTF_8);
+    }
+
+    /**
+     * 이미지 삭제
+     */
+    public void deleteImage(String fileUrl) {
+        if (fileUrl == null || fileUrl.isBlank()) return;
+
+        String key = extractKey(fileUrl);
 
         amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, key));
     }

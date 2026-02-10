@@ -13,4 +13,7 @@ public class ProductCreateRequest {
     private String information;
     private Integer quantity;
 
+    private String image;
+    private String detailImage;
+
 }

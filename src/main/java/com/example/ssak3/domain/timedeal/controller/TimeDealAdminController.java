@@ -30,11 +30,9 @@ public class TimeDealAdminController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ApiResponse> createTimeDealApi(
-            @Valid @RequestPart TimeDealCreateRequest request,
-            @RequestPart(value = "image", required = false) MultipartFile image,
-            @RequestPart(value = "detailImage", required = false) MultipartFile detailImage) {
+            @Valid @RequestParam TimeDealCreateRequest request) {
 
-        ApiResponse response = ApiResponse.success("타임딜 상품 생성", timeDealAdminService.createTimeDeal(request, image, detailImage));
+        ApiResponse response = ApiResponse.success("타임딜 상품 생성", timeDealAdminService.createTimeDeal(request));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -58,11 +56,9 @@ public class TimeDealAdminController {
     @PatchMapping("/{timeDealId}")
     public ResponseEntity<ApiResponse> updateTimeDealApi(
             @PathVariable Long timeDealId,
-            @RequestPart TimeDealUpdateRequest request,
-            @RequestPart(value = "image", required = false) MultipartFile image,
-            @RequestPart(value = "detailImage", required = false) MultipartFile detailImage) {
+            @RequestParam TimeDealUpdateRequest request) {
 
-        ApiResponse response = ApiResponse.success("타임딜 상품 수정", timeDealAdminService.updateTimeDeal(timeDealId, request, image, detailImage));
+        ApiResponse response = ApiResponse.success("타임딜 상품 수정", timeDealAdminService.updateTimeDeal(timeDealId, request));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

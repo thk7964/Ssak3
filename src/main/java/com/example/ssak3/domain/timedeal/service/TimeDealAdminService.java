@@ -36,7 +36,7 @@ public class TimeDealAdminService {
      * 타임딜 생성
      */
     @Transactional
-    public TimeDealCreateResponse createTimeDeal(TimeDealCreateRequest request, MultipartFile image, MultipartFile detailImage) {
+    public TimeDealCreateResponse createTimeDeal(TimeDealCreateRequest request) {
 
         Product product = productRepository.findByIdAndIsDeletedFalse(request.getProductId())
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
@@ -73,14 +73,14 @@ public class TimeDealAdminService {
                 request.getEndAt()
         );
 
-        if (image!=null || !image.isEmpty()) {
-            String imageUrl = s3Uploader.uploadImage(image, "timeDeals");
-            timeDeal.setImage(imageUrl);
+        if (request.getImage()!=null || !request.getImage().isEmpty()) {
+
+            timeDeal.setImage(request.getImage());
         }
 
-        if (detailImage!=null || !detailImage.isEmpty()) {
-            String detailImageUrl = s3Uploader.uploadImage(detailImage, "timeDeals/details");
-            timeDeal.setDetailImage(detailImageUrl);
+        if (request.getDetailImage()!=null || !request.getDetailImage().isEmpty()) {
+
+            timeDeal.setDetailImage(request.getDetailImage());
         }
 
         TimeDeal saved = timeDealRepository.save(timeDeal);
@@ -104,7 +104,7 @@ public class TimeDealAdminService {
      * 타임딜 수정
      */
     @Transactional
-    public TimeDealUpdateResponse updateTimeDeal(Long timeDealId, TimeDealUpdateRequest request, MultipartFile image, MultipartFile detailImage) {
+    public TimeDealUpdateResponse updateTimeDeal(Long timeDealId, TimeDealUpdateRequest request) {
 
         TimeDeal timeDeal = timeDealRepository.findByIdAndIsDeletedFalse(timeDealId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TIME_DEAL_NOT_FOUND));
@@ -130,28 +130,28 @@ public class TimeDealAdminService {
         }
 
         // 이미지 파일 입력 확인
-        if (image!=null || !image.isEmpty()){
+        if (request.getImage()!=null || !request.getImage().isEmpty()){
 
             // 저장되어 있는 이미지 파일이 있는지 확인
             if (timeDeal.getImage()!=null) {
                 // 기존 파일 먼저 삭제
                 s3Uploader.deleteImage(timeDeal.getImage());
             }
-            String imageUrl = s3Uploader.uploadImage(image, "timeDeals");
-            timeDeal.setImage(imageUrl);
+
+            timeDeal.setImage(request.getImage());
 
         }
 
         // 상세 이미지 파일 입력 확인
-        if (detailImage!=null || !detailImage.isEmpty()){
+        if (request.getDetailImage()!=null || !request.getDetailImage().isEmpty()){
 
             // 저장되어 있는 이미지 파일이 있는지 확인
             if (timeDeal.getDetailImage() != null) {
                 // 기존 파일 먼저 삭제
                 s3Uploader.deleteImage(timeDeal.getDetailImage());
             }
-            String imageUrl = s3Uploader.uploadImage(detailImage, "timeDeals/details");
-            timeDeal.setDetailImage(imageUrl);
+
+            timeDeal.setDetailImage(request.getDetailImage());
 
         }
 

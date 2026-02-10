@@ -60,13 +60,24 @@ public class Product extends BaseEntity {
     }
 
     public void decreaseQuantity(Integer orderProductQuantity) {
-        if(this.quantity < orderProductQuantity) {
+        if (this.quantity < orderProductQuantity) {
             throw new CustomException(ErrorCode.PRODUCT_INSUFFICIENT);
         }
         this.quantity -= orderProductQuantity;
 
         if (this.quantity == 0) {
             this.status = ProductStatus.SOLD_OUT;
+        }
+    }
+
+    public void rollbackQuantity(Integer quantity) {
+        if (quantity <= 0) {
+            throw new CustomException(ErrorCode.INVALID_ROLLBACK_QUANTITY);
+        }
+
+        this.quantity += quantity;
+        if (this.quantity > 0 && this.status == ProductStatus.SOLD_OUT) {
+            this.status = ProductStatus.FOR_SALE;
         }
     }
 
@@ -96,14 +107,14 @@ public class Product extends BaseEntity {
     }
 
     public void restoreStatusAfterTimeDeal() {
-        if (status!= ProductStatus.STOP_SALE){
-            status= ProductStatus.STOP_SALE;
+        if (status != ProductStatus.STOP_SALE) {
+            status = ProductStatus.STOP_SALE;
         }
     }
 
     public void stopSaleForTimeDeal() {
-        if (status!= ProductStatus.FOR_SALE){
-            status=ProductStatus.FOR_SALE;
+        if (status != ProductStatus.FOR_SALE) {
+            status = ProductStatus.FOR_SALE;
         }
     }
 

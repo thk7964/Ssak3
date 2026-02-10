@@ -1,9 +1,6 @@
 package com.example.ssak3.domain.order.service;
 
-import com.example.ssak3.common.enums.ErrorCode;
-import com.example.ssak3.common.enums.OrderStatus;
-import com.example.ssak3.common.enums.ProductStatus;
-import com.example.ssak3.common.enums.UserCouponStatus;
+import com.example.ssak3.common.enums.*;
 import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.common.model.PageResponse;
 import com.example.ssak3.domain.cart.entity.Cart;
@@ -11,13 +8,19 @@ import com.example.ssak3.domain.cart.repository.CartRepository;
 import com.example.ssak3.domain.cartproduct.entity.CartProduct;
 import com.example.ssak3.domain.cartproduct.repository.CartProductRepository;
 import com.example.ssak3.domain.order.entity.Order;
-import com.example.ssak3.domain.order.model.request.*;
+import com.example.ssak3.domain.order.model.request.OrderCancelRequest;
+import com.example.ssak3.domain.order.model.request.OrderCreateFromCartRequest;
+import com.example.ssak3.domain.order.model.request.OrderCreateFromProductRequest;
+import com.example.ssak3.domain.order.model.request.OrderStatusUpdateRequest;
+import com.example.ssak3.domain.order.model.response.OrderCreateResponse;
 import com.example.ssak3.domain.order.model.response.OrderGetResponse;
 import com.example.ssak3.domain.order.model.response.OrderListGetResponse;
-import com.example.ssak3.domain.order.model.response.OrderCreateResponse;
 import com.example.ssak3.domain.order.repository.OrderRepository;
 import com.example.ssak3.domain.orderProduct.entity.OrderProduct;
 import com.example.ssak3.domain.orderProduct.repository.OrderProductRepository;
+import com.example.ssak3.domain.payment.client.TossPaymentClient;
+import com.example.ssak3.domain.payment.entity.Payment;
+import com.example.ssak3.domain.payment.repository.PaymentRepository;
 import com.example.ssak3.domain.product.entity.Product;
 import com.example.ssak3.domain.product.repository.ProductRepository;
 import com.example.ssak3.domain.timedeal.entity.TimeDeal;
@@ -31,7 +34,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Value;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +54,11 @@ public class OrderService {
     private final OrderProductRepository orderProductRepository;
     private final ProductRepository productRepository;
     private final TimeDealRepository timeDealRepository;
+    private final PaymentRepository paymentRepository;
+    private final TossPaymentClient tossPaymentClient;
+
+    @Value("${app.frontend.base-url}")
+    private String frontendBaseUrl;
 
     /**
      * 상품 페이지에서 단일 상품 구매
@@ -93,19 +104,18 @@ public class OrderService {
                 userCoupon.use();
 
                 savedOrder.applyCoupon(userCoupon, discount);
-            }
-            else {
+            } else {
                 throw new CustomException(ErrorCode.COUPON_MIN_ORDER_PRICE_NOT_MET);
             }
         }
 
-        // 결제
-        // 결제 실패 시 롤백 필요
+        savedOrder.updateStatus(OrderStatus.PAYMENT_PENDING);
 
-        savedOrder.updateStatus(OrderStatus.DONE);
+        String orderName = URLEncoder.encode(product.getName(), StandardCharsets.UTF_8);
 
-        return OrderCreateResponse.from(savedOrder, subtotal, discount);
+        String url = frontendBaseUrl + "/checkout.html?orderId=" + savedOrder.getId() + "&orderName=" + orderName;
 
+        return OrderCreateResponse.from(savedOrder, subtotal, discount, url);
     }
 
     /**
@@ -132,7 +142,7 @@ public class OrderService {
         List<CartProduct> cartProductList = cartProductRepository.findByCartIdAndIdIn(cart.getId(), cartProductIdList);
 
         // 입력된 아이디 개수와 장바구니에서 찾은 상품의 개수가 같은지 확인
-        if(cartProductList.size() != cartProductIdList.size()) {
+        if (cartProductList.size() != cartProductIdList.size()) {
             throw new CustomException(ErrorCode.CART_PRODUCT_NOT_FOUND);
         }
 
@@ -157,7 +167,7 @@ public class OrderService {
 
         List<OrderProduct> orderProductList = new ArrayList<>();
 
-        for (int i  = 0; i < cartProductList.size(); i++) {
+        for (int i = 0; i < cartProductList.size(); i++) {
             CartProduct cartProduct = cartProductList.get(i);
             Product product = cartProduct.getProduct();
 
@@ -178,36 +188,38 @@ public class OrderService {
         UserCoupon userCoupon = null;
 
         // 쿠폰 적용 가능한지 확인
-        if(request.getUserCouponId() != null){
+        if (request.getUserCouponId() != null) {
             userCoupon = userCouponRepository.findByIdAndUserId(request.getUserCouponId(), userId)
                     .orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
 
-            if(!userCoupon.getStatus().equals(UserCouponStatus.AVAILABLE)){
+            if (!userCoupon.getStatus().equals(UserCouponStatus.AVAILABLE)) {
                 throw new CustomException(ErrorCode.COUPON_NOT_AVAILABLE);
             }
 
-            if(userCoupon.getCoupon().getMinOrderPrice() <= subtotal){
+            if (userCoupon.getCoupon().getMinOrderPrice() <= subtotal) {
                 // 할인할 가격 계산
                 discount = userCoupon.getCoupon().getDiscountValue();
                 // 쿠폰을 사용 완료 상태로 변경
                 userCoupon.use();
 
                 savedOrder.applyCoupon(userCoupon, discount);
-            }
-            else{
+            } else {
                 throw new CustomException(ErrorCode.COUPON_MIN_ORDER_PRICE_NOT_MET);
             }
         }
 
-        // 결제
-        // 결제 실패 시 롤백 필요
+        String orderName;
 
-        // 주문한 상품 장바구니에서 제거
-        cartProductRepository.deleteAll(cartProductList);
+        if (cartProductList.size() == 1) {
+            orderName = cartProductList.get(0).getProduct().getName();
+        } else {
+            orderName = cartProductList.get(0).getProduct().getName() + " 외" + (cartProductList.size() - 1) + " 건";
+        }
 
-        savedOrder.updateStatus(OrderStatus.DONE);
+        savedOrder.updateStatus(OrderStatus.PAYMENT_PENDING);
+        String url = frontendBaseUrl + "/checkout.html?orderId=" + savedOrder.getId() + "&orderName=" + orderName;
 
-        return OrderCreateResponse.from(savedOrder, subtotal, discount);
+        return OrderCreateResponse.from(savedOrder, subtotal, discount, url);
 
     }
 
@@ -233,14 +245,10 @@ public class OrderService {
 
         // 판매중x and 타임딜 OPEN인지 확인
         TimeDeal timeDeal = timeDealRepository.findOpenTimeDeal(product.getId(), LocalDateTime.now())
-                .orElseThrow(() -> new  CustomException(ErrorCode.PRODUCT_NOT_FOR_SALE));
+                .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOR_SALE));
 
         return timeDeal.getDealPrice();
-
-
-
     }
-
 
     /**
      * 주문 상세 조회
@@ -274,21 +282,41 @@ public class OrderService {
      * 주문 취소
      */
     @Transactional
-    public OrderGetResponse updateOrderCanceled(Long userId, Long orderId) {
+    public OrderGetResponse updateOrderCanceled(Long userId, OrderCancelRequest request) {
 
-        Order order = orderRepository.findByIdAndUserId(orderId, userId)
+        Order order = orderRepository.findByIdAndUserId(request.getOrderId(), userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
 
         // 주문 완료 상태일 때만 취소 가능
         if (!order.getStatus().equals(OrderStatus.DONE)) {
             throw new CustomException(ErrorCode.ORDER_CAN_NOT_BE_CANCELED);
         }
+
+        Payment payment = paymentRepository.findByOrder(order)
+                .orElseThrow(() -> new CustomException(ErrorCode.PAYMENT_NOT_FOUND));
+
+        if (payment.getStatus() == PaymentStatus.CANCELLED) {
+            return OrderGetResponse.from(order, order.getOrderProducts());
+        }
+
+        tossPaymentClient.cancel(payment.getPaymentKey(), request.getCancelReason());
+
+        orderCancel(order, payment);
+
+        return OrderGetResponse.from(order, order.getOrderProducts());
+    }
+
+    @Transactional
+    protected void orderCancel(Order order, Payment payment) {
+        for (OrderProduct op : order.getOrderProducts()) {
+            op.getProduct().rollbackQuantity(op.getQuantity());
+        }
+        if (order.getUserCoupon() != null) {
+            order.getUserCoupon().rollback();
+        }
+
+        payment.cancel();
         order.canceled();
-
-        List<OrderProduct> orderProductList = orderProductRepository.findByOrderId(order.getId());
-
-        return OrderGetResponse.from(order, orderProductList);
-
     }
 
     /**

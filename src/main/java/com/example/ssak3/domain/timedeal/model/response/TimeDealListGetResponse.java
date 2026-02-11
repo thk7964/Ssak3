@@ -18,6 +18,7 @@ public class TimeDealListGetResponse {
     private final TimeDealStatus status;
     private final LocalDateTime startAt;
     private final LocalDateTime endAt;
+    private final String imageUrl;
     private final String remainingTime;
     public static TimeDealListGetResponse from(TimeDeal timeDeal) {
 
@@ -36,6 +37,7 @@ public class TimeDealListGetResponse {
                 status,
                 timeDeal.getStartAt(),
                 timeDeal.getEndAt(),
+                timeDeal.getImage(),
                 remainingTime
         );
     }

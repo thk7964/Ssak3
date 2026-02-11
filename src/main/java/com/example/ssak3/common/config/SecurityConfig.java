@@ -30,8 +30,14 @@ public class SecurityConfig {
     private static final String[] PUBLIC_URLS = {
             "/ssak3/auth/**",
             "/ssak3/chat/**",
+            "/ssak3/payments/**", //확인
+            "/payments/confirm",
             "/error",
-            "/**/*.html",
+            "/home.html",
+            "/product-detail.html",
+            "/fail.html",
+            "/success.html",
+            "/style.css",
             "/favicon.ico"
     };
 

@@ -22,4 +22,7 @@ public class TimeDealUpdateRequest {
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH")
     private LocalDateTime endAt;
+
+    private String image;
+    private String detailImage;
 }

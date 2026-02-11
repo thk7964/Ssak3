@@ -25,6 +25,7 @@ public enum ErrorCode {
     PRODUCT_INSUFFICIENT(HttpStatus.BAD_REQUEST, "상품 재고가 부족합니다."),
     INVALID_QUANTITY(HttpStatus.BAD_REQUEST, "유효한 재고값이 아닙니다."),
     PRODUCT_NOT_VIEWABLE(HttpStatus.BAD_REQUEST, "현재 상품 상태에서는 조회할 수 없습니다."),
+    INVALID_ROLLBACK_QUANTITY(HttpStatus.BAD_REQUEST, "복구할 수량은 1 이상이어야 합니다."),
 
     // Review 에러
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "후기를 찾을 수 없습니다."),
@@ -59,6 +60,13 @@ public enum ErrorCode {
     TIME_DEAL_DELETED_STATUS_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "삭제된 타임딜 상태로는 조회할 수 없습니다."),
     TIME_DEAL_START_TIME_MUST_BE_IN_FUTURE(HttpStatus.BAD_REQUEST,"타임딜 시작 시간은 현재 시간 이후여야 합니다." ),
 
+    // Image 에러
+    PRODUCT_IMAGE_ALREADY_EXIST(HttpStatus.CONFLICT, "상품 이미지가 이미 있습니다."),
+    TIME_DEAL_IMAGE_ALREADY_EXIST(HttpStatus.CONFLICT, "타임딜 이미지가 이미 있습니다."),
+    IMAGE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 저장 실패했습니다."),
+    INVALID_FILE(HttpStatus.BAD_REQUEST, "유효하지 않은 파일입니다."),
+    INVALID_URL(HttpStatus.BAD_REQUEST, "유효하지 않은 url입니다."),
+
     // Token 에러
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
@@ -91,6 +99,16 @@ public enum ErrorCode {
     CHAT_ROOM_ACCESS_DENIED(HttpStatus.FORBIDDEN, "해당 문의 채팅방 접근 권한이 없습니다."),
     CHAT_ROOM_COMPLETE_ACCESS_DENIED(HttpStatus.FORBIDDEN, "문의 채팅을 종료할 권한이 없습니다."),
     INQUIRY_CHAT_ALREADY_COMPLETED(HttpStatus.BAD_REQUEST, "이미 종료된 문의 채팅입니다."),
+
+    // 서버 에러
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "내부 서버 에러입니다."),
+
+    // Payment 에러
+    PAYMENT_NOT_CANCELABLE(HttpStatus.BAD_REQUEST, "결제 취소 가능한 상태가 아닙니다."),
+    PAYMENT_CANCEL_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "결제 취소에 실패했습니다."),
+    PAYMENT_NOT_FOUND(HttpStatus.BAD_REQUEST, "결제 내역이 없습니다."),
+    ORDER_NOT_IN_PAYMENT_PENDING(HttpStatus.BAD_REQUEST, "결제 진행 중인 주문이 아닙니다."),
+    PAYMENT_AMOUNT_MISMATCH( HttpStatus.BAD_REQUEST,"결제 금액이 주문 금액과 일치하지 않습니다."),
 
     // Redis 에러
     REDIS_CONNECTION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Redis 연결에 실패했습니다."),

@@ -41,26 +41,45 @@ public class Product extends BaseEntity {
     @Column(nullable = false)
     private Integer quantity;
 
+    @Column
+    private String image;
+
+    @Column(name = "detail_image")
+    private String detailImage;
+
     @Column(nullable = false, name = "is_deleted")
     private boolean isDeleted = false;
 
-    public Product(Category category, String name, Integer price, ProductStatus status, String information, Integer quantity) {
+    public Product(Category category, String name, Integer price, ProductStatus status, String information, Integer quantity, String image, String detailImage) {
         this.category = category;
         this.name = name;
         this.price = price;
         this.status = status;
         this.information = information;
         this.quantity = quantity;
+        this.image = image;
+        this.detailImage = detailImage;
     }
 
     public void decreaseQuantity(Integer orderProductQuantity) {
-        if(this.quantity < orderProductQuantity) {
+        if (this.quantity < orderProductQuantity) {
             throw new CustomException(ErrorCode.PRODUCT_INSUFFICIENT);
         }
         this.quantity -= orderProductQuantity;
 
         if (this.quantity == 0) {
             this.status = ProductStatus.SOLD_OUT;
+        }
+    }
+
+    public void rollbackQuantity(Integer quantity) {
+        if (quantity <= 0) {
+            throw new CustomException(ErrorCode.INVALID_ROLLBACK_QUANTITY);
+        }
+
+        this.quantity += quantity;
+        if (this.quantity > 0 && this.status == ProductStatus.SOLD_OUT) {
+            this.status = ProductStatus.FOR_SALE;
         }
     }
 
@@ -83,21 +102,35 @@ public class Product extends BaseEntity {
         if (request.getQuantity() != null) {
             this.quantity = request.getQuantity();
         }
+        if (request.getImage() != null) {
+            this.image = request.getImage();
+        }
+        if (request.getDetailImage() != null) {
+            this.detailImage = request.getDetailImage();
+        }
     }
 
     public void softDelete() {
         this.isDeleted = true;
+
+        if (this.image != null) {
+            this.image = null;
+        }
+
+        if (this.detailImage != null) {
+            this.detailImage = null;
+        }
     }
 
     public void restoreStatusAfterTimeDeal() {
-        if (status!= ProductStatus.STOP_SALE){
-            status= ProductStatus.STOP_SALE;
+        if (status != ProductStatus.STOP_SALE) {
+            status = ProductStatus.STOP_SALE;
         }
     }
 
     public void stopSaleForTimeDeal() {
-        if (status!= ProductStatus.FOR_SALE){
-            status=ProductStatus.FOR_SALE;
+        if (status != ProductStatus.FOR_SALE) {
+            status = ProductStatus.FOR_SALE;
         }
     }
 

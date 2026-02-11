@@ -50,10 +50,11 @@ public class ProductViewBackUpService {
                     Long productId = Long.parseLong(tuple.getValue());
                     int viewCount = tuple.getScore().intValue();
 
-                    Product product = productRepository.getReferenceById(productId);
-
-                    return new ProductViewHistory(product, now, viewCount);
+                    return productRepository.findById(productId)
+                            .map(product -> new ProductViewHistory(product, now, viewCount))
+                            .orElse(null);
                 })
+                .filter(history -> history != null)
                 .toList();
 
         // DB에 저장하기

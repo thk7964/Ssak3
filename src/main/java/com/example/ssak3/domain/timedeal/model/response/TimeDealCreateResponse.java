@@ -18,6 +18,8 @@ public class TimeDealCreateResponse {
     private final TimeDealStatus status;
     private final LocalDateTime startAt;
     private final LocalDateTime endAt;
+    private final String imageUrl;
+    private final String detailImageUrl;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
@@ -30,6 +32,8 @@ public class TimeDealCreateResponse {
                 timeDeal.getStatus(),
                 timeDeal.getStartAt(),
                 timeDeal.getEndAt(),
+                timeDeal.getImage(),
+                timeDeal.getDetailImage(),
                 timeDeal.getCreatedAt(),
                 timeDeal.getUpdatedAt()
 

@@ -37,3 +37,15 @@ toss:
 app:
   frontend:
     base-url: http://localhost:8080
+
+cloud:
+  aws:
+    credentials:
+      accessKey: ${AWS_ACCESS_KEY_ID}
+      secretKey: ${AWS_SECRET_ACCESS_KEY}
+    s3:
+      bucket: ${AWS_S3_BUCKET}
+    region:
+      static: ${AWS_S3_REGION}
+    stack:
+      auto: false

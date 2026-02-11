@@ -60,6 +60,12 @@ dependencies {
 
     //WebClient 의존성
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    // s3
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
+    // Logstash Logback Encoder 의존성 (JSON 로그 변환 및 Logstash 전송용)
+    implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
 }
 
 tasks.named('test') {

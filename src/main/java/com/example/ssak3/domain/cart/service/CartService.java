@@ -9,6 +9,7 @@ import com.example.ssak3.domain.cart.repository.CartRepository;
 import com.example.ssak3.domain.cartproduct.entity.CartProduct;
 import com.example.ssak3.domain.cartproduct.model.response.CartProductListGetResponse;
 import com.example.ssak3.domain.cartproduct.repository.CartProductRepository;
+import com.example.ssak3.domain.s3.service.S3Uploader;
 import com.example.ssak3.domain.timedeal.entity.TimeDeal;
 import com.example.ssak3.domain.timedeal.repository.TimeDealRepository;
 import com.example.ssak3.domain.user.entity.User;
@@ -31,6 +32,7 @@ public class CartService {
     private final UserRepository userRepository;
     private final CartProductRepository cartProductRepository;
     private final TimeDealRepository timeDealRepository;
+    private final S3Uploader s3Uploader;
 
     /**
      * 내 장바구니 불러오기 + 장바구니 없으면 생성
@@ -53,8 +55,7 @@ public class CartService {
 
         Map<Long, TimeDeal> timeDealMap = timeDealIds.isEmpty()
                 ? Map.of()
-                : timeDealRepository.findAllById(timeDealIds)
-                .stream()
+                : timeDealRepository.findAllById(timeDealIds).stream()
                 .collect(Collectors.toMap(TimeDeal::getId, Function.identity(), (a, b) -> a));
 
         List<CartProductListGetResponse> productList = cartProductList.stream()
@@ -63,7 +64,10 @@ public class CartService {
                     if (cp.getTimeDeal() != null) {
                         td = timeDealMap.get(cp.getTimeDeal().getId());
                     }
-                    return CartProductListGetResponse.from(cp, td);
+
+                    String originImageUrl = (td != null) ? td.getImage() : cp.getProduct().getImage();
+                    String viewImageUrl = s3Uploader.createPresignedGetUrl(originImageUrl, 5);
+                    return CartProductListGetResponse.from(cp, td, viewImageUrl);
                 })
                 .toList();
 

@@ -20,8 +20,9 @@ public class CartProductListGetResponse {
     private final long linePrice; // 수량 * 개당 가격
     private final boolean purchasable; // 구매 가능 여부
     private final Long timeDealId; // 타임딜
+    private final String imageUrl; // 상품 대표 이미지
 
-    public static CartProductListGetResponse from(CartProduct cartProduct, TimeDeal timeDeal) {
+    public static CartProductListGetResponse from(CartProduct cartProduct, TimeDeal timeDeal, String imageUrl) {
         Product product = cartProduct.getProduct();
 
         long unitPrice;
@@ -52,7 +53,8 @@ public class CartProductListGetResponse {
                 unitPrice,
                 linePrice,
                 purchasable,
-                timeDealId
+                timeDealId,
+                imageUrl
         );
     }
 

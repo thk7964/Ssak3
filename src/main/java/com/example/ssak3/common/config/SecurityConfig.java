@@ -70,7 +70,7 @@ public class SecurityConfig {
                         .requestMatchers("/ssak3/auth/signup", "/ssak3/auth/login/**", "/ssak3/auth/logout").permitAll()
                         .requestMatchers(HttpMethod.GET,
                                 "/ssak3/products/**",
-                                "/ssak3/coupons",
+                                "/ssak3/user-coupons",
                                 "/ssak3/categories",
                                 "/ssak3/time-deals/**",
                                 "/ssak3/search").permitAll()

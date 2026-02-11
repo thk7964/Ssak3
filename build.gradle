@@ -54,11 +54,16 @@ dependencies {
 
     // Redis 의존성
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
     // LocalDate & LocalDateTime 파싱 의존성
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
-    //WebClient 의존성
+    // MacOS 환경에서 Netty DNS 에러 해결을 위한 의존성
+    developmentOnly 'io.netty:netty-resolver-dns-native-macos:4.1.111.Final:osx-aarch_64'
+
+    // WebClient 의존성
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
 }
 

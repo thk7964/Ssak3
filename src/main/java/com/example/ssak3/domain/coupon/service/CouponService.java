@@ -2,14 +2,19 @@ package com.example.ssak3.domain.coupon.service;
 
 import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.exception.CustomException;
+import com.example.ssak3.common.model.PageResponse;
 import com.example.ssak3.domain.coupon.entity.Coupon;
 import com.example.ssak3.domain.coupon.model.request.CouponCreateRequest;
 import com.example.ssak3.domain.coupon.model.request.CouponUpdateRequest;
 import com.example.ssak3.domain.coupon.model.response.CouponCreateResponse;
 import com.example.ssak3.domain.coupon.model.response.CouponDeleteResponse;
+import com.example.ssak3.domain.coupon.model.response.CouponListGetResponse;
 import com.example.ssak3.domain.coupon.model.response.CouponUpdateResponse;
 import com.example.ssak3.domain.coupon.repository.CouponRepository;
+import com.example.ssak3.domain.usercoupon.service.UserCouponCacheService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,9 +22,10 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class CouponAdminService {
+public class CouponService {
 
     private final CouponRepository couponRepository;
+    private final UserCouponCacheService userCouponCacheService;
 
     /**
      * 쿠폰 생성 로직
@@ -53,6 +59,18 @@ public class CouponAdminService {
     }
 
     /**
+     * 쿠폰 목록 조회 로직
+     */
+    @Transactional(readOnly = true)
+    public PageResponse<CouponListGetResponse> getCouponList(Pageable pageable) {
+
+        Page<CouponListGetResponse> couponListPage = couponRepository.findAllAvailableCoupons(LocalDateTime.now(), pageable)
+                .map(CouponListGetResponse::from);
+
+        return PageResponse.from(couponListPage);
+    }
+
+    /**
      * 쿠폰 수정 로직
      */
     @Transactional
@@ -73,6 +91,9 @@ public class CouponAdminService {
 
         coupon.update(request);
 
+        // 쿠폰 정보가 변경되었으므로 사용자용 목록 캐시를 비움
+        userCouponCacheService.clearUserCouponListCache();
+
         return CouponUpdateResponse.from(coupon);
     }
 
@@ -88,7 +109,11 @@ public class CouponAdminService {
         if (coupon.isDeleted()) {
             throw new CustomException(ErrorCode.COUPON_ALREADY_DELETED);
         }
+
         coupon.delete();
+
+        // 쿠폰이 삭제되었으므로 캐시된 목록에서 사라지도록 처리
+        userCouponCacheService.clearUserCouponListCache();
 
         return CouponDeleteResponse.from(coupon);
     }

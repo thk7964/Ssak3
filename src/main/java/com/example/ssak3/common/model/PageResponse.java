@@ -1,17 +1,20 @@
 package com.example.ssak3.common.model;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PageResponse<T> {
 
-    private final List<T> content;
-    private final long totalElements;
-    private final int size;
-    private final int page;
+    private List<T> content;
+    private long totalElements;
+    private int size;
+    private int page;
 
     private PageResponse(List<T> content, long totalElements, int size, int page) {
         this.content = content;

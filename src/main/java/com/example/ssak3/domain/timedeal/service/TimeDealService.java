@@ -39,7 +39,7 @@ public class TimeDealService {
     @Cacheable(
             value = "timeDealsOpen",
             key = "#pageable.pageNumber + ':' + #pageable.pageSize",
-            condition = "#status == 'OPEN' &&#pageable.pageNumber <= 1"
+            condition = "#status != null && #status.equalsIgnoreCase('OPEN') && #pageable.pageNumber <= 1"
     )
     @Transactional(readOnly = true)
     public PageResponse<TimeDealListGetResponse> getTimeDealStatusList(String status, Pageable pageable) {

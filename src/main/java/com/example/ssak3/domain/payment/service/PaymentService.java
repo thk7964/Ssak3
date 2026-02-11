@@ -73,7 +73,10 @@ public class PaymentService {
                     .filter(Objects::nonNull)
                     .toList();
 
-            cartProductRepository.deletePaidProductsFromCart(order.getUser().getId(), cartProductIds);
+            if (!cartProductIds.isEmpty()) {
+                cartProductRepository.deletePaidProductsFromCart(order.getUser().getId(), cartProductIds);
+            }
+
             payment.approve();
             order.updateStatus(OrderStatus.DONE);
 

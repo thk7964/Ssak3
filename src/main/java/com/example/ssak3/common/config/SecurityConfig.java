@@ -18,11 +18,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
@@ -37,17 +33,14 @@ public class SecurityConfig {
             "/ssak3/payments/**",
             "/payments/confirm",
             "/error",
-            "/home.html",
-            "/product-detail.html",
-            "/fail.html",
-            "/success.html",
+            "/*.html",
             "/style.css",
             "/favicon.ico"
     };
 
     private static final String[] GET_METHOD_PUBLIC_URLS = {
             "/ssak3/products/**",
-            "/ssak3/coupons",
+            "/ssak3/user-coupons",
             "/ssak3/categories",
             "/ssak3/time-deals/**"
     };

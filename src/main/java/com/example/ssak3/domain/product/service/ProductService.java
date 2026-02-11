@@ -38,7 +38,7 @@ public class ProductService {
     public ProductCreateResponse createProduct(ProductCreateRequest request) {
         // 카테고리 존재여부 확인 및 객체 가져오기
         Category findCategory = categoryRepository.findByIdAndIsDeletedFalse(request.getCategoryId())
-                .orElseThrow(()-> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
 
         Product product = new Product(
                 findCategory,
@@ -46,18 +46,10 @@ public class ProductService {
                 request.getPrice(),
                 ProductStatus.BEFORE_SALE,
                 request.getInformation(),
-                request.getQuantity()
+                request.getQuantity(),
+                request.getImage(),
+                request.getDetailImage()
         );
-
-        if (request.getImage() != null){
-            //String imageUrl = s3Uploader.uploadImage(image, "products");
-            product.setImage(request.getImage());
-        }
-
-        if (request.getDetailImage() != null){
-            //String detailImageUrl = s3Uploader.uploadImage(detailImage, "products/details");
-            product.setDetailImage(request.getDetailImage());
-        }
 
         Product createdProduct = productRepository.save(product);
         return ProductCreateResponse.from(createdProduct);
@@ -120,7 +112,7 @@ public class ProductService {
         });
 
 
-       return PageResponse.from(mapped);
+        return PageResponse.from(mapped);
     }
 
     /**
@@ -150,30 +142,16 @@ public class ProductService {
         Product foundProduct = productRepository.findByIdAndIsDeletedFalse(productId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
-        // 이미지 파일 입력 확인
-        if (request.getImage() != null){
-
-            // 저장되어 있는 이미지 파일이 있는지 확인
-            if (foundProduct.getImage()!=null) {
-                // 기존 파일 먼저 삭제
-                s3Uploader.deleteImage(foundProduct.getImage());
-            }
-            //String imageUrl = s3Uploader.uploadImage(image, "products");
-            foundProduct.setImage(request.getImage());
-
+        // 저장되어 있는 이미지 파일이 있는지 확인
+        if (foundProduct.getImage() != null) {
+            // 기존 파일 먼저 삭제
+            s3Uploader.deleteImage(foundProduct.getImage());
         }
 
-        // 상세 이미지 파일 입력 확인
-        if (request.getDetailImage() != null){
-
-            // 저장되어 있는 이미지 파일이 있는지 확인
-            if (foundProduct.getDetailImage() != null) {
-                // 기존 파일 먼저 삭제
-                s3Uploader.deleteImage(foundProduct.getDetailImage());
-            }
-            //String imageUrl = s3Uploader.uploadImage(detailImage, "products/details");
-            foundProduct.setDetailImage(request.getDetailImage());
-
+        // 저장되어 있는 이미지 파일이 있는지 확인
+        if (foundProduct.getDetailImage() != null) {
+            // 기존 파일 먼저 삭제
+            s3Uploader.deleteImage(foundProduct.getDetailImage());
         }
 
         foundProduct.update(request, category);
@@ -189,14 +167,12 @@ public class ProductService {
         Product foundProduct = productRepository.findByIdAndIsDeletedFalse(productId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
-        if (foundProduct.getImage()!=null) {
+        if (foundProduct.getImage() != null) {
             s3Uploader.deleteImage(foundProduct.getImage());
-            foundProduct.setImage(null);
         }
 
-        if (foundProduct.getDetailImage()!=null) {
+        if (foundProduct.getDetailImage() != null) {
             s3Uploader.deleteImage(foundProduct.getDetailImage());
-            foundProduct.setDetailImage(null);
         }
 
         foundProduct.softDelete();

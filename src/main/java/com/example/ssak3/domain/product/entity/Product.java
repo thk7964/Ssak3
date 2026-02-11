@@ -50,13 +50,15 @@ public class Product extends BaseEntity {
     @Column(nullable = false, name = "is_deleted")
     private boolean isDeleted = false;
 
-    public Product(Category category, String name, Integer price, ProductStatus status, String information, Integer quantity) {
+    public Product(Category category, String name, Integer price, ProductStatus status, String information, Integer quantity, String image, String detailImage) {
         this.category = category;
         this.name = name;
         this.price = price;
         this.status = status;
         this.information = information;
         this.quantity = quantity;
+        this.image = image;
+        this.detailImage = detailImage;
     }
 
     public void decreaseQuantity(Integer orderProductQuantity) {
@@ -100,10 +102,24 @@ public class Product extends BaseEntity {
         if (request.getQuantity() != null) {
             this.quantity = request.getQuantity();
         }
+        if (request.getImage() != null) {
+            this.image = request.getImage();
+        }
+        if (request.getDetailImage() != null) {
+            this.detailImage = request.getDetailImage();
+        }
     }
 
     public void softDelete() {
         this.isDeleted = true;
+
+        if (this.image != null) {
+            this.image = null;
+        }
+
+        if (this.detailImage != null) {
+            this.detailImage = null;
+        }
     }
 
     public void restoreStatusAfterTimeDeal() {
@@ -120,14 +136,6 @@ public class Product extends BaseEntity {
 
     public void updateStatus(ProductStatus status) {
         this.status = status;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public void setDetailImage(String detailImage) {
-        this.detailImage = detailImage;
     }
 
 }

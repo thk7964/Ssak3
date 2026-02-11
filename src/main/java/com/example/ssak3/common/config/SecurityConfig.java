@@ -45,7 +45,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:63342"));
+        config.setAllowedOrigins(List.of("http://localhost:63342", "https://ssak3-front.s3.ap-northeast-2.amazonaws.com"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         config.setAllowCredentials(true);
@@ -74,10 +74,13 @@ public class SecurityConfig {
                                 "/ssak3/categories",
                                 "/ssak3/time-deals/**",
                                 "/ssak3/search").permitAll()
+                        .requestMatchers("/ssak3/payments/**").permitAll()
+                        .requestMatchers( "/fail.html","/success.html","/payments/confirm","/style.css").permitAll()
                         .requestMatchers("/ssak3/admin").hasRole("SUPER_ADMIN")
                         .requestMatchers("/ssak3/admin/**", "/ssak3/coupons").hasRole("ADMIN")
                         .requestMatchers("/ssak3/chat/**").permitAll()
                         .requestMatchers("/**/*.html").permitAll()
+                        .requestMatchers("/checkout.html").authenticated()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtExceptionFilter, JwtFilter.class)

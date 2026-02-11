@@ -30,7 +30,7 @@ public class TimeDealAdminController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ApiResponse> createTimeDealApi(
-            @Valid @RequestParam TimeDealCreateRequest request) {
+            @Valid @RequestBody TimeDealCreateRequest request) {
 
         ApiResponse response = ApiResponse.success("타임딜 상품 생성", timeDealAdminService.createTimeDeal(request));
 
@@ -56,7 +56,7 @@ public class TimeDealAdminController {
     @PatchMapping("/{timeDealId}")
     public ResponseEntity<ApiResponse> updateTimeDealApi(
             @PathVariable Long timeDealId,
-            @RequestParam TimeDealUpdateRequest request) {
+            @RequestBody TimeDealUpdateRequest request) {
 
         ApiResponse response = ApiResponse.success("타임딜 상품 수정", timeDealAdminService.updateTimeDeal(timeDealId, request));
 

@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
-public class  CouponUpdateRequest {
+public class CouponUpdateRequest {
 
     private Integer totalQuantity;
     private LocalDateTime issueEndDate;

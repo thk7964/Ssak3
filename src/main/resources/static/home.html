@@ -162,6 +162,31 @@
             background: #e9ecef;
         }
 
+        /* 전체 상품 버튼 스타일 추가 */
+        .all-products-btn {
+            background: white;
+            border: 2px solid #74b9ff;
+            color: #74b9ff;
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .all-products-btn:hover {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            border-color: transparent;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(116, 185, 255, 0.35);
+        }
+
         .banner {
             background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
             padding: 60px 20px;
@@ -426,6 +451,7 @@
 
 <nav>
     <a href="#timedeal">⭐ 타임딜</a>
+    <a href="product-search.html">📦 전체 상품</a>
     <a href="#best">🏍️ 올포원</a>
     <a href="#sale">🎉 2용준</a>
     <a href="#all">🌊 싹쓰리</a>
@@ -436,129 +462,11 @@
     <a href="#event">♾️ LIMITLESS</a>
 </nav>
 
+
 <div class="products-section">
     <h2 class="section-title">인기 조회수 TOP 10 상품</h2>
 
-    <div class="products-grid">
-        <div class="product-card">
-            <div class="product-image">🏍️</div>
-            <div class="product-info">
-                <div class="product-name">올포원 스티커팩</div>
-                <div class="product-desc">귀여운 오토바이 캐릭터</div>
-                <div class="product-footer">
-                    <div class="product-price">8,900원</div>
-                    <button class="add-btn">담기</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="product-card">
-            <div class="product-image">✨</div>
-            <div class="product-info">
-                <div class="product-name">LIMITLESS 담요</div>
-                <div class="product-desc">프리미엄 한정판</div>
-                <div class="product-footer">
-                    <div class="product-price">24,900원</div>
-                    <button class="add-btn">담기</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="product-card">
-            <div class="product-image">⚔️</div>
-            <div class="product-info">
-                <div class="product-name">2용준 방패 배지</div>
-                <div class="product-desc">게임 캐릭터 에디션</div>
-                <div class="product-footer">
-                    <div class="product-price">6,900원</div>
-                    <button class="add-btn">담기</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="product-card">
-            <div class="product-image">🎮</div>
-            <div class="product-info">
-                <div class="product-name">싹쓰리 잠옷</div>
-                <div class="product-desc">시원한 색상 컬렉션</div>
-                <div class="product-footer">
-                    <div class="product-price">23,900원</div>
-                    <button class="add-btn">담기</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="product-card">
-            <div class="product-image">🎵</div>
-            <div class="product-info">
-                <div class="product-name">슬개생 앨범</div>
-                <div class="product-desc">OST 음원 앨범</div>
-                <div class="product-footer">
-                    <div class="product-price">15,900원</div>
-                    <button class="add-btn">담기</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="product-card">
-            <div class="product-image">⚡</div>
-            <div class="product-info">
-                <div class="product-name">펜타곤 에너지 드링크 세트</div>
-                <div class="product-desc">강렬한 스페셜</div>
-                <div class="product-footer">
-                    <div class="product-price">18,900원</div>
-                    <button class="add-btn">담기</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="product-card">
-            <div class="product-image">🌈</div>
-            <div class="product-info">
-                <div class="product-name">여걸식스 텀블러</div>
-                <div class="product-desc">여러 색상 믹스</div>
-                <div class="product-footer">
-                    <div class="product-price">27,900원</div>
-                    <button class="add-btn">담기</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="product-card">
-            <div class="product-image">💎</div>
-            <div class="product-info">
-                <div class="product-name">럭키펀처 헤드셋</div>
-                <div class="product-desc">프리미엄 골드 라인</div>
-                <div class="product-footer">
-                    <div class="product-price">122,900원</div>
-                    <button class="add-btn">담기</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="product-card">
-            <div class="product-image">🎨</div>
-            <div class="product-info">
-                <div class="product-name">아트 포스터 세트</div>
-                <div class="product-desc">고급 인쇄 3장</div>
-                <div class="product-footer">
-                    <div class="product-price">19,900원</div>
-                    <button class="add-btn">담기</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="product-card">
-            <div class="product-image">🧸</div>
-            <div class="product-info">
-                <div class="product-name">귀여운 미니 피규어</div>
-                <div class="product-desc">부드러운 터치</div>
-                <div class="product-footer">
-                    <div class="product-price">9,900원</div>
-                    <button class="add-btn">담기</button>
-                </div>
-            </div>
-        </div>
+    <div class="products-grid" id="popularProducts">
     </div>
 </div>
 
@@ -569,6 +477,52 @@
 </footer>
 
 <script>
+    async function loadPopularProducts() {
+        try {
+            const response = await fetch('http://localhost:8080/ssak3/products/popular');
+            const result = await response.json();
+
+            if (!result.success) {
+                console.error(result.message);
+                return;
+            }
+
+            const products = result.data;
+
+            const container = document.getElementById('popularProducts');
+            container.innerHTML = '';
+
+            products.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                <div class="product-image">🛍️</div>
+                <div class="product-info">
+                    <div class="product-name">${product.name}</div>
+                    <div class="product-desc">카테고리 ${product.categoryId}</div>
+                    <div class="product-footer">
+                        <div class="product-price">
+                            ${product.dealPrice ?? product.price}원
+                        </div>
+                        <button class="add-btn">담기</button>
+                    </div>
+                </div>
+            `;
+
+                card.addEventListener('click', () => {
+                    window.location.href = `product-detail.html?id=${product.id}`;
+                });
+
+                container.appendChild(card);
+            });
+
+        } catch (error) {
+            console.error('인기 상품 로딩 실패:', error);
+        }
+    }
+
+    loadPopularProducts();
+
     // [공통] 검색 처리 함수
     function handleSearch() {
         const keyword = document.getElementById('searchInput').value.trim();
@@ -672,11 +626,11 @@
         });
     });
 
-    document.querySelectorAll('.product-card').forEach((card, index) => {
-        card.addEventListener('click', () => {
-            window.location.href = `product-detail.html?id=${index + 1}`;
-        });
-    });
+    // document.querySelectorAll('.product-card').forEach((card, index) => {
+    //     card.addEventListener('click', () => {
+    //         window.location.href = `product-detail.html?id=${index + 1}`;
+    //     });
+    // });
 </script>
 </body>
 </html>

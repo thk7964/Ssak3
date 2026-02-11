@@ -410,6 +410,26 @@
                 margin-top: 12px;
             }
         }
+
+        .rank-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            color: white;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 6px 10px;
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(255, 154, 158, 0.35);
+            z-index: 10;
+        }
+
+        .rank-1 {
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            box-shadow: 0 6px 16px rgba(253, 160, 133, 0.5);
+        }
+
     </style>
 </head>
 <body>
@@ -492,22 +512,28 @@
             const container = document.getElementById('popularProducts');
             container.innerHTML = '';
 
-            products.forEach(product => {
+            products.forEach((product, index) => {
                 const card = document.createElement('div');
                 card.className = 'product-card';
                 card.innerHTML = `
-                <div class="product-image">🛍️</div>
-                <div class="product-info">
-                    <div class="product-name">${product.name}</div>
-                    <div class="product-desc">카테고리 ${product.categoryId}</div>
-                    <div class="product-footer">
-                        <div class="product-price">
-                            ${product.dealPrice ?? product.price}원
-                        </div>
-                        <button class="add-btn">담기</button>
-                    </div>
+            <div class="product-image">
+                <div class="rank-badge ${index === 0 ? 'rank-1' : ''}">
+                    ${index + 1}등
                 </div>
-            `;
+                🛍️
+            </div>
+            <div class="product-info">
+                <div class="product-name">${product.name}</div>
+                <div class="product-desc">카테고리 ${product.categoryId}</div>
+                <div class="product-footer">
+                    <div class="product-price">
+                        ${product.dealPrice ?? product.price}원
+                    </div>
+                    <button class="add-btn">담기</button>
+                </div>
+            </div>
+        `;
+
 
                 card.addEventListener('click', () => {
                     window.location.href = `product-detail.html?id=${product.id}`;

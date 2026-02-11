@@ -670,24 +670,24 @@
     function displayPagination(currentPage, totalPages) {
         const pagination = document.getElementById('pagination');
 
-        if (totalPages <= 1) {
-            pagination.innerHTML = '';
-            return;
-        }
+        // totalPages가 0일 수도 있으므로, 최소 1개는 보이도록 설정
+        const displayTotal = Math.max(1, totalPages);
 
         let paginationHTML = '';
 
-        // 이전 버튼
+        // 이전 버튼 (페이지가 1개뿐이면 비활성화)
         paginationHTML += `
-            <button class="page-btn" onclick="goToPage(${currentPage - 1})" ${currentPage === 0 ? 'disabled' : ''}>
-                ◀
-            </button>
-        `;
+        <button class="page-btn" onclick="goToPage(${currentPage - 1})"
+            ${currentPage <= 0 ? 'disabled' : ''}>
+            ◀
+        </button>
+    `;
 
-        // 페이지 번호
+        // 페이지 번호 계산
         const startPage = Math.max(0, currentPage - 2);
-        const endPage = Math.min(totalPages - 1, currentPage + 2);
+        const endPage = Math.min(displayTotal - 1, currentPage + 2);
 
+        // 첫 페이지로 가기 (1페이지가 현재 화면에 없을 때만)
         if (startPage > 0) {
             paginationHTML += `<button class="page-btn" onclick="goToPage(0)">1</button>`;
             if (startPage > 1) {
@@ -695,27 +695,30 @@
             }
         }
 
+        // 숫자 버튼 생성 (페이지가 1개여도 i=0부터 i=0까지 실행되므로 '1'이 생성됨)
         for (let i = startPage; i <= endPage; i++) {
             paginationHTML += `
-                <button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">
-                    ${i + 1}
-                </button>
-            `;
-        }
-
-        if (endPage < totalPages - 1) {
-            if (endPage < totalPages - 2) {
-                paginationHTML += `<span style="padding: 0 8px;">...</span>`;
-            }
-            paginationHTML += `<button class="page-btn" onclick="goToPage(${totalPages - 1})">${totalPages}</button>`;
-        }
-
-        // 다음 버튼
-        paginationHTML += `
-            <button class="page-btn" onclick="goToPage(${currentPage + 1})" ${currentPage >= totalPages - 1 ? 'disabled' : ''}>
-                ▶
+            <button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">
+                ${i + 1}
             </button>
         `;
+        }
+
+        // 마지막 페이지로 가기
+        if (endPage < displayTotal - 1) {
+            if (endPage < displayTotal - 2) {
+                paginationHTML += `<span style="padding: 0 8px;">...</span>`;
+            }
+            paginationHTML += `<button class="page-btn" onclick="goToPage(${displayTotal - 1})">${displayTotal}</button>`;
+        }
+
+        // 다음 버튼 (현재 페이지가 마지막 페이지면 비활성화)
+        paginationHTML += `
+        <button class="page-btn" onclick="goToPage(${currentPage + 1})"
+            ${currentPage >= displayTotal - 1 ? 'disabled' : ''}>
+            ▶
+        </button>
+    `;
 
         pagination.innerHTML = paginationHTML;
     }

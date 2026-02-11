@@ -35,17 +35,32 @@ public class InquiryReplyController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+
     /**
-     * 문의 답변 목록 조회 API
+     * 문의 목록 조회 API
      */
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping
-    public ResponseEntity<ApiResponse> getInquiryReplyListApi(@PageableDefault(size = 10, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable) {
+    @GetMapping("/inquiries")
+    public ResponseEntity<ApiResponse> getInquiryListApi(@PageableDefault(size = 10, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        ApiResponse response = ApiResponse.success("문의 답변 목록 조회 성공", inquiryReplyService.getInquiryReplyList(pageable));
+        ApiResponse response = ApiResponse.success("문의 목록 조회 성공", inquiryReplyService.getInquiryList(pageable));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+
+    /**
+     * 관리자용 문의 상세 조회 API
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/inquiries/{inquiryId}")
+    public ResponseEntity<ApiResponse> getInquiryForAdminApi(@PathVariable Long inquiryId) {
+
+        ApiResponse response = ApiResponse.success("문의 상세 조회 성공", inquiryReplyService.getInquiryForAdmin(inquiryId));
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
 
     /**
      * 문의 답변 상세 조회 API

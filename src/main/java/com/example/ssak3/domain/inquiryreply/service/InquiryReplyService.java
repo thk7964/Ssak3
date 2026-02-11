@@ -6,6 +6,8 @@ import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.common.model.PageResponse;
 import com.example.ssak3.domain.inquiry.entity.Inquiry;
 import com.example.ssak3.domain.inquiry.model.response.InquiryDeleteResponse;
+import com.example.ssak3.domain.inquiry.model.response.InquiryGetResponse;
+import com.example.ssak3.domain.inquiry.model.response.InquiryListGetResponse;
 import com.example.ssak3.domain.inquiry.repository.InquiryRepository;
 import com.example.ssak3.domain.inquiryreply.entity.InquiryReply;
 import com.example.ssak3.domain.inquiryreply.model.request.InquiryReplyCreateRequest;
@@ -56,27 +58,44 @@ public class InquiryReplyService {
         return InquiryReplyCreateResponse.from(savedInquiryReply);
     }
 
+
     /**
      * 문의 답변 목록 조회
      */
     @Transactional(readOnly = true)
-    public PageResponse<InquiryReplyListGetResponse> getInquiryReplyList(Pageable pageable) {
+    public PageResponse<InquiryListGetResponse> getInquiryList(Pageable pageable) {
 
-        Page<InquiryReplyListGetResponse> inquiryReplyListPage = inquiryReplyRepository
+        Page<InquiryListGetResponse> inquiryListPage = inquiryRepository
                 .findAllByIsDeletedFalse(pageable)  // 관리자는 adminId 상관없이 작성한 모든 답변을 볼 수 있음
-                .map(InquiryReplyListGetResponse::from);
+                .map(InquiryListGetResponse::from);
 
-        return PageResponse.from(inquiryReplyListPage);
+        return PageResponse.from(inquiryListPage);
     }
+
+
+    /**
+     * 관리자용 문의 상세 조회
+     */
+    @Transactional(readOnly = true)
+    public InquiryGetResponse getInquiryForAdmin(Long inquiryId) {
+
+        Inquiry foundInquiry = inquiryRepository.findById(inquiryId)
+                .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_NOT_FOUND));
+
+        foundInquiry.validateDeleted(); // 삭제된 문의인지 검증
+
+        InquiryReply foundInquiryReply = inquiryReplyRepository.findByInquiryIdAndIsDeletedFalse(inquiryId)
+                .orElse(null);  // 문의 답변 없는 경우 null
+
+        return InquiryGetResponse.from(foundInquiry, foundInquiryReply);
+    }
+
 
     /**
      * 문의 답변 상세 조회
      */
     @Transactional(readOnly = true)
     public InquiryReplyGetResponse getInquiryReply(Long inquiryReplyId) {
-
-        Inquiry foundInquiry = inquiryRepository.findById(inquiryReplyId)
-                .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_NOT_FOUND));
 
         InquiryReply foundInquiryReply = inquiryReplyRepository.findById(inquiryReplyId)
                 .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_REPLY_NOT_FOUND));
@@ -85,6 +104,7 @@ public class InquiryReplyService {
 
         return InquiryReplyGetResponse.from(foundInquiryReply);
     }
+
 
     /**
      * 문의 답변 수정
@@ -104,6 +124,7 @@ public class InquiryReplyService {
 
         return InquiryReplyUpdateResponse.from(foundInquiryReply);
     }
+
 
     /**
      * 문의 답변 삭제

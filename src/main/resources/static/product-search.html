@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>전체 상품 - 싹쓰리</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+            background: #fafafa;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #ffffff;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+            cursor: pointer;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            background: #f8f9fa;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s ease;
+            color: #495057;
+        }
+
+        .icon-btn:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+
+        .auth-btn {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
+            white-space: nowrap;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(116, 185, 255, 0.45);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logout-btn {
+            background: #f8f9fa;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: #495057;
+            transition: all 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background: #e9ecef;
+        }
+
+        .back-btn {
+            background: #f8f9fa;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #495057;
+            transition: all 0.2s ease;
+            margin: 20px 40px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn:hover {
+            background: #e9ecef;
+        }
+
+        .products-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: 32px;
+            text-align: center;
+        }
+
+        .search-section {
+            background: white;
+            padding: 32px;
+            border-radius: 20px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            margin-bottom: 40px;
+        }
+
+        .search-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 24px;
+        }
+
+        .search-filters {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .filter-input {
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .filter-input:focus {
+            border-color: #74b9ff;
+            box-shadow: 0 0 0 4px rgba(116, 185, 255, 0.1);
+        }
+
+        .price-range {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .price-range input {
+            flex: 1;
+        }
+
+        .search-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .search-btn, .reset-btn {
+            padding: 12px 32px;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(116, 185, 255, 0.45);
+        }
+
+        .reset-btn {
+            background: #f8f9fa;
+            color: #495057;
+        }
+
+        .reset-btn:hover {
+            background: #e9ecef;
+        }
+
+        .products-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .products-count {
+            font-size: 16px;
+            color: #6b7280;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border: 1px solid #f0f0f0;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+            border-color: #e9ecef;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 70px;
+        }
+
+        .product-card:hover .product-image {
+            background: linear-gradient(135deg, #74b9ff15 0%, #a29bfe15 100%);
+        }
+
+        .product-info {
+            padding: 20px;
+        }
+
+        .product-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .product-desc {
+            font-size: 13px;
+            color: #868e96;
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .product-prices {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .product-price {
+            font-size: 18px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .product-deal-price {
+            font-size: 14px;
+            color: #ef4444;
+            font-weight: 600;
+            text-decoration: line-through;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin: 40px 0;
+        }
+
+        .page-btn {
+            padding: 10px 16px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #495057;
+            transition: all 0.2s ease;
+        }
+
+        .page-btn:hover:not(:disabled) {
+            border-color: #74b9ff;
+            color: #74b9ff;
+        }
+
+        .page-btn.active {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .loading, .no-results {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .loading-icon, .no-results-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .loading-text, .no-results-title {
+            font-size: 18px;
+            color: #6b7280;
+            font-weight: 600;
+        }
+
+        .no-results-desc {
+            font-size: 14px;
+            color: #9ca3af;
+            margin-top: 8px;
+        }
+
+        footer {
+            background: #212529;
+            color: #adb5bd;
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+        }
+
+        footer p {
+            margin: 10px 0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        footer p:first-child {
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .search-filters {
+                grid-template-columns: 1fr;
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .back-btn {
+                margin: 20px;
+            }
+
+            header {
+                padding: 16px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
+
+    <div class="header-icons">
+        <button class="icon-btn">🛒</button>
+
+        <!-- 로그인 안 된 경우 -->
+        <button class="auth-btn" id="loginBtn" style="display: none;">로그인 / 회원가입</button>
+
+        <!-- 로그인 된 경우 -->
+        <div class="user-info" id="userInfo" style="display: none;">
+            <button class="icon-btn" id="myPageBtn" title="마이페이지">👤</button>
+            <button class="logout-btn" id="logoutBtn">로그아웃</button>
+        </div>
+    </div>
+</header>
+
+<button class="back-btn" onclick="location.href='home.html'">← 홈으로</button>
+
+<div class="products-container">
+    <h1 class="page-title">전체 상품</h1>
+
+    <div class="search-section">
+        <div class="search-title">🔍 상품 검색</div>
+
+        <div class="search-filters">
+            <div class="filter-group">
+                <label class="filter-label">키워드</label>
+                <input type="text" class="filter-input" id="keywordInput" placeholder="상품명을 입력하세요">
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">가격 범위</label>
+                <div class="price-range">
+                    <input type="number" class="filter-input" id="minPriceInput" placeholder="최소 가격" step="1000">
+                    <span>~</span>
+                    <input type="number" class="filter-input" id="maxPriceInput" placeholder="최대 가격" step="1000">
+                </div>
+            </div>
+        </div>
+
+        <div class="search-actions">
+            <button class="reset-btn" onclick="resetFilters()">초기화</button>
+            <button class="search-btn" onclick="applyFilters()">검색</button>
+        </div>
+    </div>
+
+    <div class="products-info">
+        <div class="products-count" id="productsCount">상품을 불러오는 중...</div>
+    </div>
+
+    <div id="productsContainer">
+        <div class="loading">
+            <div class="loading-icon">⏳</div>
+            <div class="loading-text">상품을 불러오는 중...</div>
+        </div>
+    </div>
+
+    <div class="pagination" id="pagination"></div>
+</div>
+
+<footer>
+    <p>© 2025 싹쓰리 - 모두를 위한 귀여운 굿즈</p>
+    <p>고객센터: 010-1234-5678 | <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c6a5a9a8b2a7a5b286b5b5a7adf5e8a5a9ab">[email&#160;protected]</a></p>
+    <p>개인정보처리방침 | 이용약관 | 배송정책</p>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    // 로그인 상태 확인 및 UI 업데이트
+    async function checkLoginStatus() {
+        const token = localStorage.getItem('accessToken');
+        const loginBtn = document.getElementById('loginBtn');
+        const userInfo = document.getElementById('userInfo');
+
+        try {
+            const headers = {};
+            if (token) {
+                headers.Authorization = 'Bearer ' + token;
+            }
+
+            const response = await fetch('http://localhost:8080/ssak3/users/me', {
+                method: 'GET',
+                headers: headers,
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                loginBtn.style.display = 'none';
+                userInfo.style.display = 'flex';
+            } else {
+                localStorage.removeItem('accessToken');
+                loginBtn.style.display = 'block';
+                userInfo.style.display = 'none';
+            }
+        } catch (error) {
+            localStorage.removeItem('accessToken');
+            loginBtn.style.display = 'block';
+            userInfo.style.display = 'none';
+        }
+    }
+
+    document.getElementById('loginBtn').addEventListener('click', function() {
+        window.location.href = 'login.html';
+    });
+
+    document.getElementById('myPageBtn').addEventListener('click', function() {
+        window.location.href = 'mypage.html';
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+        if (confirm('로그아웃 하시겠습니까?')) {
+            localStorage.removeItem('accessToken');
+            alert('로그아웃 되었습니다.');
+            location.reload();
+        }
+    });
+
+    checkLoginStatus();
+
+    // URL 파라미터 가져오기
+    const urlParams = new URLSearchParams(window.location.search);
+    let currentPage = parseInt(urlParams.get('page')) || 0;
+    let currentKeyword = urlParams.get('keyword') || '';
+    let currentMinPrice = urlParams.get('minPrice') || '';
+    let currentMaxPrice = urlParams.get('maxPrice') || '';
+
+    // 초기값 설정
+    document.getElementById('keywordInput').value = currentKeyword;
+    document.getElementById('minPriceInput').value = currentMinPrice;
+    document.getElementById('maxPriceInput').value = currentMaxPrice;
+
+    // 상품 이모지
+    const productEmojis = ['🏍️', '✨', '⚔️', '🎮', '🎵', '⚡', '🌈', '💎', '🎨', '🧸', '🎁', '🎪', '🎯', '🎸', '🎹'];
+
+    // 필터 적용
+    function applyFilters() {
+        const keyword = document.getElementById('keywordInput').value.trim();
+        const minPrice = document.getElementById('minPriceInput').value;
+        const maxPrice = document.getElementById('maxPriceInput').value;
+
+        // 가격 유효성 검사
+        if (minPrice && maxPrice && parseInt(minPrice) > parseInt(maxPrice)) {
+            alert('최소 가격이 최대 가격보다 클 수 없습니다!');
+            return;
+        }
+
+        let url = 'product-search.html?page=0';
+        if (keyword) url += `&keyword=${encodeURIComponent(keyword)}`;
+        if (minPrice) url += `&minPrice=${minPrice}`;
+        if (maxPrice) url += `&maxPrice=${maxPrice}`;
+
+        window.location.href = url;
+    }
+
+    // 필터 초기화
+    function resetFilters() {
+        window.location.href = 'product-search.html';
+    }
+
+    // 페이지 이동
+    function goToPage(page) {
+        let url = `product-search.html?page=${page}`;
+        if (currentKeyword) url += `&keyword=${encodeURIComponent(currentKeyword)}`;
+        if (currentMinPrice) url += `&minPrice=${currentMinPrice}`;
+        if (currentMaxPrice) url += `&maxPrice=${currentMaxPrice}`;
+
+        window.location.href = url;
+    }
+
+    // 상품 조회 API 호출
+    async function loadProducts() {
+        try {
+            let url = `http://localhost:8080/ssak3/products/search?page=${currentPage}&size=20`;
+            if (currentKeyword) url += `&keyword=${encodeURIComponent(currentKeyword)}`;
+            if (currentMinPrice) url += `&minPrice=${currentMinPrice}`;
+            if (currentMaxPrice) url += `&maxPrice=${currentMaxPrice}`;
+
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                throw new Error('상품 조회 실패');
+            }
+
+            const result = await response.json();
+            displayProducts(result.data);
+        } catch (error) {
+            console.error('상품 조회 오류:', error);
+            showError();
+        }
+    }
+
+    // 상품 표시
+    function displayProducts(data) {
+        const container = document.getElementById('productsContainer');
+        const products = data.content || [];
+        const totalElements = data.totalElements || 0;
+        const totalPages = data.totalPages || 0;
+
+        // 상품 개수 표시
+        document.getElementById('productsCount').textContent = `총 ${totalElements}개의 상품`;
+
+        if (products.length === 0) {
+            container.innerHTML = `
+                <div class="no-results">
+                    <div class="no-results-icon">🔍</div>
+                    <div class="no-results-title">검색 결과가 없습니다</div>
+                    <div class="no-results-desc">다른 검색어나 필터를 시도해보세요</div>
+                </div>
+            `;
+            document.getElementById('pagination').innerHTML = '';
+            return;
+        }
+
+        const productsHTML = products.map((product, index) => {
+            const emoji = productEmojis[index % productEmojis.length];
+            const description = product.information || '상품 설명이 없습니다';
+            const hasDeal = product.dealPrice && product.dealPrice < product.price;
+
+            return `
+                <div class="product-card" onclick="location.href='product-detail.html?id=${product.productId}'">
+                    <div class="product-image">${emoji}</div>
+                    <div class="product-info">
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-desc">${description}</div>
+                        <div class="product-prices">
+                            ${hasDeal ? `<div class="product-deal-price">${product.price.toLocaleString()}원</div>` : ''}
+                            <div class="product-price">${(hasDeal ? product.dealPrice : product.price).toLocaleString()}원</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        container.innerHTML = `<div class="products-grid">${productsHTML}</div>`;
+
+        // 페이지네이션 표시
+        displayPagination(currentPage, totalPages);
+    }
+
+    // 페이지네이션 표시
+    function displayPagination(currentPage, totalPages) {
+        const pagination = document.getElementById('pagination');
+
+        if (totalPages <= 1) {
+            pagination.innerHTML = '';
+            return;
+        }
+
+        let paginationHTML = '';
+
+        // 이전 버튼
+        paginationHTML += `
+            <button class="page-btn" onclick="goToPage(${currentPage - 1})" ${currentPage === 0 ? 'disabled' : ''}>
+                ◀
+            </button>
+        `;
+
+        // 페이지 번호
+        const startPage = Math.max(0, currentPage - 2);
+        const endPage = Math.min(totalPages - 1, currentPage + 2);
+
+        if (startPage > 0) {
+            paginationHTML += `<button class="page-btn" onclick="goToPage(0)">1</button>`;
+            if (startPage > 1) {
+                paginationHTML += `<span style="padding: 0 8px;">...</span>`;
+            }
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            paginationHTML += `
+                <button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">
+                    ${i + 1}
+                </button>
+            `;
+        }
+
+        if (endPage < totalPages - 1) {
+            if (endPage < totalPages - 2) {
+                paginationHTML += `<span style="padding: 0 8px;">...</span>`;
+            }
+            paginationHTML += `<button class="page-btn" onclick="goToPage(${totalPages - 1})">${totalPages}</button>`;
+        }
+
+        // 다음 버튼
+        paginationHTML += `
+            <button class="page-btn" onclick="goToPage(${currentPage + 1})" ${currentPage >= totalPages - 1 ? 'disabled' : ''}>
+                ▶
+            </button>
+        `;
+
+        pagination.innerHTML = paginationHTML;
+    }
+
+    function showError() {
+        const container = document.getElementById('productsContainer');
+        container.innerHTML = `
+        <div class="no-results">
+            <div class="no-results-icon">😢</div>
+            <div class="no-results-title">오류가 발생했습니다</div>
+            <div class="no-results-desc">서버 연결을 확인해주세요</div>
+        </div>
+        `;
+    }
+
+    // 페이지 최초 진입 시 상품 로드
+    document.addEventListener('DOMContentLoaded', function () {
+        loadProducts();
+    });
+</script>
+</body>
+</html>

@@ -1,8 +1,8 @@
-package com.example.ssak3.domain.search.repository;
+package com.example.ssak3.domain.product.repository;
 
 import com.example.ssak3.common.enums.ProductStatus;
 import com.example.ssak3.common.enums.TimeDealStatus;
-import com.example.ssak3.domain.search.model.response.ProductSearchResponse;
+import com.example.ssak3.domain.product.model.response.ProductGetSearchResponse;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -19,12 +19,12 @@ import static com.example.ssak3.domain.timedeal.entity.QTimeDeal.timeDeal;
 
 @Repository
 @RequiredArgsConstructor
-public class SearchCustomRepositoryImpl implements SearchCustomRepository {
+public class ProductSearchCustomRepositoryImpl implements ProductSearchCustomRepository {
 
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<ProductSearchResponse> searchProduct(String keyword, Integer minPrice, Integer maxPrice, Pageable pageable) {
+    public Page<ProductGetSearchResponse> searchProduct(String keyword, Integer minPrice, Integer maxPrice, Pageable pageable) {
 
         Long total = queryFactory
                 .select(product.countDistinct())
@@ -49,19 +49,20 @@ public class SearchCustomRepositoryImpl implements SearchCustomRepository {
         long totalCount = (total != null) ? total : 0L;
 
         return new PageImpl<>(queryFactory
-                .select(Projections.constructor(ProductSearchResponse.class,
+                .select(Projections.constructor(ProductGetSearchResponse.class,
                         product.id,
                         timeDeal.id,
+                        product.category.id,
                         product.name,
-                        timeDeal.dealPrice.coalesce(product.price).as("price"),
                         product.information,
+                        product.price,
+                        timeDeal.dealPrice,
                         product.createdAt,
                         product.updatedAt
                 ))
                 .from(product)
                 .leftJoin(timeDeal)
                 .on(
-                        // 삭제되었거나 종료된 타임딜 상품일 경우 원래 상품 가격으로 조회 되도록 처리
                         product.id.eq(timeDeal.product.id),
                         timeDeal.isDeleted.eq(false),
                         timeDeal.status.eq(TimeDealStatus.OPEN),
@@ -77,7 +78,7 @@ public class SearchCustomRepositoryImpl implements SearchCustomRepository {
                         priceGoe(minPrice),
                         priceLoe(maxPrice)
                 )
-                .orderBy(product.name.asc())
+                .orderBy(product.price.asc(), timeDeal.dealPrice.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch(),

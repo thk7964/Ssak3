@@ -16,6 +16,8 @@ public enum ErrorCode {
     WITHDRAWN_USER(HttpStatus.NOT_FOUND, "탈퇴한 유저입니다."),
     INVALID_USER_ROLE(HttpStatus.BAD_REQUEST, "유효하지 않은 권한입니다."),
     NOT_ALLOWED_CHANGE_SUPER_ADMIN(HttpStatus.BAD_REQUEST, "최고 관리자로는 변경할 수 없습니다."),
+    UNAUTHORIZED_USER(HttpStatus.UNAUTHORIZED, "인증되지 않은 사용자입니다."),
+    FORBIDDEN_USER(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
 
     // Product 에러
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다."),
@@ -107,9 +109,10 @@ public enum ErrorCode {
     PAYMENT_NOT_FOUND(HttpStatus.BAD_REQUEST, "결제 내역이 없습니다."),
     ORDER_NOT_IN_PAYMENT_PENDING(HttpStatus.BAD_REQUEST, "결제 진행 중인 주문이 아닙니다."),
     PAYMENT_AMOUNT_MISMATCH( HttpStatus.BAD_REQUEST,"결제 금액이 주문 금액과 일치하지 않습니다."),
+
+    // Redis 에러
+    REDIS_CONNECTION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Redis 연결에 실패했습니다."),
     ;
-
-
 
     private final HttpStatus status;
     private final String message;

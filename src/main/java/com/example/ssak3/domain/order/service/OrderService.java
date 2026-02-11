@@ -103,21 +103,19 @@ public class OrderService {
                 userCoupon.use();
 
                 order.applyCoupon(userCoupon, discount);
-            }
-            else {
-                savedOrder.applyCoupon(userCoupon, discount);
             } else {
                 throw new CustomException(ErrorCode.COUPON_MIN_ORDER_PRICE_NOT_MET);
             }
         }
 
-        savedOrder.updateStatus(OrderStatus.PAYMENT_PENDING);
+        order.updateStatus(OrderStatus.PAYMENT_PENDING);
 
         String orderName = URLEncoder.encode(product.getName(), StandardCharsets.UTF_8);
+
+        String url = frontendBaseUrl + "/checkout.html?orderId=" + order.getId() + "&orderName=" + orderName;
+
         Order savedOrder = orderRepository.save(order);
         orderProductRepository.save(orderProduct);
-
-        String url = frontendBaseUrl + "/checkout.html?orderId=" + savedOrder.getId() + "&orderName=" + orderName;
 
         return OrderCreateResponse.from(savedOrder, subtotal, discount, url);
     }
@@ -221,7 +219,6 @@ public class OrderService {
             orderName = cartProductList.get(0).getProduct().getName() + " 외" + (cartProductList.size() - 1) + " 건";
         }
 
-        return OrderCreateResponse.from(savedOrder, subtotal, discount);
         savedOrder.updateStatus(OrderStatus.PAYMENT_PENDING);
         String url = frontendBaseUrl + "/checkout.html?orderId=" + savedOrder.getId() + "&orderName=" + orderName;
 
@@ -250,11 +247,8 @@ public class OrderService {
         }
 
         // 판매중x and 타임딜 OPEN인지 확인
-        TimeDeal timeDeal = timeDealRepository.findOpenTimeDeal(product.getId(), LocalDateTime.now())
+        TimeDeal timeDeal = timeDealRepository.findByProductIdAndStatusAndIsDeletedFalse(product.getId(), TimeDealStatus.OPEN)
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOR_SALE));
-        // TODO : findby... open된 타임딜을 확인하도록 수정. 임시
-        TimeDeal timeDeal = timeDealRepository.findByIdAndIsDeletedFalse(product.getId())
-                .orElseThrow(() -> new  CustomException(ErrorCode.PRODUCT_NOT_FOR_SALE));
 
         return timeDeal.getDealPrice();
     }

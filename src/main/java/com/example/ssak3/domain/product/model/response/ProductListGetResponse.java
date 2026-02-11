@@ -13,15 +13,17 @@ public class ProductListGetResponse {
     private final Long categoryId;
     private final String name;
     private final Integer price;
+    private final String imageUrl;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
-    public static ProductListGetResponse from(Product product) {
+    public static ProductListGetResponse from(Product product, String imageUrl) {
         return new ProductListGetResponse(
                 product.getId(),
                 product.getCategory().getId(),
                 product.getName(),
                 product.getPrice(),
+                imageUrl,
                 product.getCreatedAt(),
                 product.getUpdatedAt()
         );

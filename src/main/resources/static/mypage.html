@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>마이 페이지</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #e0f7ff 0%, #f0faff 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .profile-container {
+            background: white;
+            width: 100%;
+            max-width: 500px;
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(77, 184, 232, 0.2);
+            text-align: center;
+        }
+
+        .profile-header h2 {
+            color: #4db8e8;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .profile-image {
+            width: 100px;
+            height: 100px;
+            background: #e0f7ff;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+        }
+
+        .info-group {
+            text-align: left;
+            margin-bottom: 15px;
+            background: #f8fdff;
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid #e0f7ff;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 16px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .btn-group {
+            margin-top: 30px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .base-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 15px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .back-btn { background: #e0f7ff; color: #4db8e8; }
+        .logout-btn { background: #ffeded; color: #ff6b6b; }
+    </style>
+</head>
+<body>
+
+<div class="profile-container">
+    <div class="profile-header">
+        <div class="profile-image">🌊</div>
+        <h2 id="userNickname">안녕하세요!</h2>
+    </div>
+
+    <div class="info-group">
+        <div class="info-label">이름</div>
+        <div id="userName" class="info-value">-</div>
+    </div>
+
+    <div class="info-group">
+        <div class="info-label">이메일</div>
+        <div id="userEmail" class="info-value">-</div>
+    </div>
+
+    <div class="info-group">
+        <div class="info-label">생년월일</div>
+        <div id="userBirth" class="info-value">-</div>
+    </div>
+
+    <div class="info-group">
+        <div class="info-label">연락처</div>
+        <div id="userPhone" class="info-value">-</div>
+    </div>
+
+    <div class="info-group">
+        <div class="info-label">주소</div>
+        <div id="userAddress" class="info-value">-</div>
+    </div>
+
+    <div class="btn-group">
+        <button class="base-btn back-btn" onclick="location.href='home.html'">홈으로</button>
+        <button class="base-btn logout-btn" id="logoutBtn" onclick="handleLogout()">로그아웃</button>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const token = localStorage.getItem('accessToken');
+
+        const headers = {};
+        if (token) {
+            headers.Authorization = 'Bearer ' + token;
+        }
+
+        fetch('http://localhost:8080/ssak3/users/me', {
+            method: 'GET',
+            headers: headers,
+            credentials: 'include'
+        })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error('unauthorized');
+                }
+                return res.json();
+            })
+            .then(result => {
+                const user = result.data;
+
+                document.getElementById('userNickname').innerText = `${user.name}님, 안녕하세요!`;
+                document.getElementById('userName').innerText = user.name ?? '미설정';
+                document.getElementById('userEmail').innerText = user.email;
+                document.getElementById('userBirth').innerText = user.birth ?? '미설정';
+                document.getElementById('userPhone').innerText = user.phone ?? '미설정';
+                document.getElementById('userAddress').innerText = user.address ?? '미설정';
+            })
+            .catch(() => {
+                alert('로그인이 필요합니다.');
+                location.href = 'login.html';
+            });
+    });
+
+    async function handleLogout() {
+        // 1. 일반 로그인 청소: 로컬스토리지 비우기
+        localStorage.removeItem('accessToken');
+
+        try {
+            // 2. 카카오 로그인 청소: 백엔드에 알려서 쿠키 날리기
+            // (일반 로그인 유저가 호출해도 상관없음, 서버에서 쿠키 없으면 그냥 넘어가면 됨)
+            const response = await fetch('http://localhost:8080/ssak3/auth/logout', {
+                method: 'POST',
+                credentials: 'include' // 쿠키를 지우려면 쿠키를 들고 가야 함
+            });
+
+            if (response.ok) {
+                alert('로그아웃 되었습니다.');
+                window.location.href = 'home.html';
+            }
+        } catch (error) {
+            console.error('Logout error:', error);
+
+            window.location.href = 'home.html'; // 에러가 나더라도 로컬은 비워졌으니 메인으로 보냄
+        }
+    }
+</script>
+
+</body>
+</html>

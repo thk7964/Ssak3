@@ -5,6 +5,7 @@ import com.example.ssak3.domain.product.model.request.ProductCreateRequest;
 import com.example.ssak3.domain.product.model.request.ProductUpdateRequest;
 import com.example.ssak3.domain.product.model.request.ProductUpdateStatusRequest;
 import com.example.ssak3.domain.product.service.ProductService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -14,7 +15,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 
 @Slf4j
 @RequestMapping("/ssak3")
@@ -30,8 +33,7 @@ public class ProductController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/admin/products")
     public ResponseEntity<ApiResponse> createProductApi(
-            @RequestBody ProductCreateRequest request
-    ) {
+            @RequestBody ProductCreateRequest request) {
         log.info("controller 상품생성 상품명: {}", request.getName());
         ApiResponse response = ApiResponse.success("상품을 생성하셨습니다.", productService.createProduct(request));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -41,10 +43,13 @@ public class ProductController {
      * 상품 상세조회(사용자) API
      */
     @GetMapping("/products/{productId}")
-    public ResponseEntity<ApiResponse> getProductApi(@PathVariable Long productId) {
+    public ResponseEntity<ApiResponse> getProductApi(@PathVariable Long productId, HttpServletRequest request) {
         log.info("controller 상품상세조회 id: {}", productId);
-       ApiResponse response = ApiResponse.success("상품을 조회했습니다.", productService.getProduct(productId));
-       return ResponseEntity.status(HttpStatus.OK).body(response);
+
+        String ip = request.getRemoteAddr();
+
+        ApiResponse response = ApiResponse.success("상품을 조회했습니다.", productService.getProduct(productId, ip));
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     /**
@@ -67,7 +72,7 @@ public class ProductController {
             @RequestParam(name = "categoryId", required = false) Long categoryId,
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         log.info("controller 상품목록조회 검색: {}", categoryId);
-        ApiResponse response = ApiResponse.success("상품목록을 조회했습니다.",  productService.getProductList(categoryId, pageable));
+        ApiResponse response = ApiResponse.success("상품목록을 조회했습니다.", productService.getProductList(categoryId, pageable));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
@@ -81,7 +86,7 @@ public class ProductController {
             @RequestParam(name = "categoryId", required = false) Long categoryId,
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         log.info("controller 상품목록조회 검색 - admin 카테고리Id: {}", categoryId);
-        ApiResponse response = ApiResponse.success("상품목록을 조회했습니다.",  productService.getProductListAdmin(categoryId, pageable));
+        ApiResponse response = ApiResponse.success("상품목록을 조회했습니다.", productService.getProductListAdmin(categoryId, pageable));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

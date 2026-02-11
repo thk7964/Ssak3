@@ -17,7 +17,35 @@ spring:
     show-sql: true
   jackson:
     time-zone: Asia/Seoul
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
 
 jwt:
   secret:
     key: ${SECRET_KEY}
+
+kakao:
+  client_id: ${CLIENT_ID}
+  redirect_uri: ${REDIRECT_URI}
+  client_secret: ${CLIENT_SECRET}
+
+toss:
+  secret-key: ${TOSS_SECRET_KEY}
+
+app:
+  frontend:
+    base-url: http://localhost:8080
+
+cloud:
+  aws:
+    credentials:
+      accessKey: ${AWS_ACCESS_KEY_ID}
+      secretKey: ${AWS_SECRET_ACCESS_KEY}
+    s3:
+      bucket: ${AWS_S3_BUCKET}
+    region:
+      static: ${AWS_S3_REGION}
+    stack:
+      auto: false

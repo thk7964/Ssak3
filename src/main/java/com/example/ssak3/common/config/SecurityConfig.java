@@ -2,6 +2,7 @@ package com.example.ssak3.common.config;
 
 import com.example.ssak3.common.filter.JwtExceptionFilter;
 import com.example.ssak3.common.filter.JwtFilter;
+import com.example.ssak3.common.filter.LoggingFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +18,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @RequiredArgsConstructor
@@ -24,6 +26,27 @@ public class SecurityConfig {
 
     private final AuthenticationEntryPoint authenticationEntryPointImpl;
     private final AccessDeniedHandler accessDeniedHandlerImpl;
+
+    private static final String[] PUBLIC_URLS = {
+            "/ssak3/auth/**",
+            "/ssak3/chat/**",
+            "/ssak3/payments/**",
+            "/payments/confirm",
+            "/error",
+            "/home.html",
+            "/product-detail.html",
+            "/fail.html",
+            "/success.html",
+            "/style.css",
+            "/favicon.ico"
+    };
+
+    private static final String[] GET_METHOD_PUBLIC_URLS = {
+            "/ssak3/products/**",
+            "/ssak3/coupons",
+            "/ssak3/categories",
+            "/ssak3/time-deals/**"
+    };
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -38,22 +61,22 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtFilter jwtFilter, JwtExceptionFilter jwtExceptionFilter) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtFilter jwtFilter, JwtExceptionFilter jwtExceptionFilter, LoggingFilter loggingFilter, CorsConfigurationSource corsConfigurationSource) throws Exception {
         return http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/error").permitAll()
-                        .requestMatchers("/ssak3/auth/signup", "/ssak3/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/ssak3/products/**", "/ssak3/coupons", "/ssak3/categories", "/ssak3/time-deals/**").permitAll()
-                        .requestMatchers("/ssak3/admin").hasRole("SUPER_ADMIN")
-                        .requestMatchers("/ssak3/admin/**", "/ssak3/coupons").hasRole("ADMIN")
-                        .requestMatchers("/ssak3/chat/**").permitAll()
+                        .requestMatchers(PUBLIC_URLS).permitAll()
+                        .requestMatchers(HttpMethod.GET, GET_METHOD_PUBLIC_URLS).permitAll()
+                        .requestMatchers(HttpMethod.PATCH, "/ssak3/admin/users/**").hasRole("SUPER_ADMIN")
+                        .requestMatchers("/ssak3/admin/**", "/ssak3/coupons/**").hasAnyRole("SUPER_ADMIN", "ADMIN")
                         .anyRequest().authenticated())
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(loggingFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtFilter, LoggingFilter.class)
                 .addFilterBefore(jwtExceptionFilter, JwtFilter.class)
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(authenticationEntryPointImpl)

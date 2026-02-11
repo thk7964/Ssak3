@@ -1,5 +1,6 @@
 package com.example.ssak3.domain.user.model.response;
 
+import com.example.ssak3.common.enums.UserRole;
 import com.example.ssak3.domain.user.entity.User;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ public class MyProfileGetResponse {
     private final LocalDate birth;
     private final String phone;
     private final String address;
+    private final UserRole role;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
@@ -30,6 +32,7 @@ public class MyProfileGetResponse {
                 user.getBirth(),
                 user.getPhone(),
                 user.getAddress(),
+                user.getRole(),
                 user.getCreatedAt(),
                 user.getUpdatedAt()
         );

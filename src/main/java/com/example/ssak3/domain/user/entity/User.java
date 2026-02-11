@@ -1,6 +1,7 @@
 package com.example.ssak3.domain.user.entity;
 
 import com.example.ssak3.common.entity.BaseEntity;
+import com.example.ssak3.common.enums.OAuthProvider;
 import com.example.ssak3.common.enums.UserRole;
 import com.example.ssak3.domain.user.model.request.UserUpdateRequest;
 import jakarta.persistence.*;
@@ -20,7 +21,6 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private String name;
 
     @Column(nullable = false, unique = true)
@@ -32,21 +32,22 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
     private LocalDate birth;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String phone;
 
-    @Column(nullable = false)
     private String address;
+
+    @Enumerated(EnumType.STRING)
+    private OAuthProvider provider;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserRole role;
 
     @Column(nullable = false, name = "is_deleted")
-    private boolean isDeleted = false;
+    private boolean isDeleted;
 
     // 일반 유저 생성자
     public User(String name, String nickname, String email, String password, LocalDate birth, String phone, String address) {
@@ -58,22 +59,15 @@ public class User extends BaseEntity {
         this.phone = phone;
         this.address = address;
         this.role = UserRole.USER;
-    }
-
-    // 관리자 생성자
-    public User(String name, String nickname, String email, String password, LocalDate birth, String phone, String address, UserRole role) {
-        this.name = name;
-        this.nickname = nickname;
-        this.email = email;
-        this.password = password;
-        this.birth = birth;
-        this.phone = phone;
-        this.address = address;
-        this.role = role;
+        this.isDeleted = false;
     }
 
     public void updateRole(UserRole role) {
         this.role = role;
+    }
+
+    public void updateProvider(OAuthProvider provider) {
+        this.provider = provider;
     }
 
     public void update(UserUpdateRequest request) {
@@ -90,5 +84,9 @@ public class User extends BaseEntity {
 
     public void softDelete() {
         this.isDeleted = true;
+    }
+
+    public void updatePhone() {
+        this.phone = null;
     }
 }

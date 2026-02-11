@@ -58,6 +58,12 @@ public enum ErrorCode {
     TIME_DEAL_DELETED_STATUS_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "삭제된 타임딜 상태로는 조회할 수 없습니다."),
     TIME_DEAL_START_TIME_MUST_BE_IN_FUTURE(HttpStatus.BAD_REQUEST,"타임딜 시작 시간은 현재 시간 이후여야 합니다." ),
 
+    // Image 에러
+    PRODUCT_IMAGE_ALREADY_EXIST(HttpStatus.CONFLICT, "상품 이미지가 이미 있습니다."),
+    TIME_DEAL_IMAGE_ALREADY_EXIST(HttpStatus.CONFLICT, "타임딜 이미지가 이미 있습니다."),
+    IMAGE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 저장 실패했습니다."),
+    INVALID_FILE(HttpStatus.BAD_REQUEST, "유효하지 않은 파일입니다."),
+    INVALID_URL(HttpStatus.BAD_REQUEST, "유효하지 않은 url입니다."),
 
     // Token 에러
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),

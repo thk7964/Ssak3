@@ -13,6 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RequiredArgsConstructor
 @RestController
@@ -26,7 +29,8 @@ public class TimeDealAdminController {
      */
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<ApiResponse> createTimeDealApi(@Valid @RequestBody TimeDealCreateRequest request) {
+    public ResponseEntity<ApiResponse> createTimeDealApi(
+            @Valid @RequestBody TimeDealCreateRequest request) {
 
         ApiResponse response = ApiResponse.success("타임딜 상품 생성", timeDealAdminService.createTimeDeal(request));
 
@@ -50,7 +54,9 @@ public class TimeDealAdminController {
      */
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{timeDealId}")
-    public ResponseEntity<ApiResponse> updateTimeDealApi(@PathVariable Long timeDealId, @RequestBody TimeDealUpdateRequest request) {
+    public ResponseEntity<ApiResponse> updateTimeDealApi(
+            @PathVariable Long timeDealId,
+            @RequestBody TimeDealUpdateRequest request) {
 
         ApiResponse response = ApiResponse.success("타임딜 상품 수정", timeDealAdminService.updateTimeDeal(timeDealId, request));
 

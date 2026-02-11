@@ -228,7 +228,8 @@ public class OrderService {
         }
 
         // 판매중x and 타임딜 OPEN인지 확인
-        TimeDeal timeDeal = timeDealRepository.findOpenTimeDeal(product.getId(), LocalDateTime.now())
+        // TODO : findby... open된 타임딜을 확인하도록 수정. 임시
+        TimeDeal timeDeal = timeDealRepository.findByIdAndIsDeletedFalse(product.getId())
                 .orElseThrow(() -> new  CustomException(ErrorCode.PRODUCT_NOT_FOR_SALE));
 
         return timeDeal.getDealPrice();

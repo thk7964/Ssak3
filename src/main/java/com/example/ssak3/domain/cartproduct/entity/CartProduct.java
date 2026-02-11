@@ -30,7 +30,7 @@ public class CartProduct extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "timedeal_id")
-    private TimeDeal timedeal;
+    private TimeDeal timeDeal;
 
     public void changeQuantity(int quantity) {
         this.quantity = quantity;
@@ -39,7 +39,7 @@ public class CartProduct extends BaseEntity {
     public CartProduct(Cart cart, Product product, TimeDeal timeDeal, Integer quantity) {
         this.cart = cart;
         this.product = product;
-        this.timedeal = timeDeal;
+        this.timeDeal = timeDeal;
         this.quantity = quantity;
     }
 

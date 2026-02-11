@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -35,35 +36,36 @@ public class CartService {
      * 내 장바구니 불러오기 + 장바구니 없으면 생성
      */
     @Transactional
-    public CartGetResponse getMyCart(Long userId){
+    public CartGetResponse getMyCart(Long userId) {
 
         Cart cart = getOrCreateCart(userId);
 
         // 장바구니 상품 조회
         List<CartProduct> cartProductList = cartProductRepository.findAllByCartIdOrderByUpdatedAtDesc(cart.getId());
 
-        // 상품 id
-        List<Long> productIdList = cartProductList
-                .stream()
-                .map(cp -> cp.getProduct().getId())
+        // 장바구니에 담긴 타임딜의 id
+        List<Long> timeDealIds = cartProductList.stream()
+                .map(CartProduct::getTimeDeal)
+                .filter(Objects::nonNull)
+                .map(TimeDeal::getId)
                 .distinct()
                 .toList();
 
-        List<TimeDeal> timeDealList = timeDealRepository.findAllByProductIdInAndStatusAndIsDeletedFalse(productIdList, TimeDealStatus.OPEN);
-
-        Map<Long, TimeDeal> timeDealMap = timeDealList
+        Map<Long, TimeDeal> timeDealMap = timeDealIds.isEmpty()
+                ? Map.of()
+                : timeDealRepository.findAllById(timeDealIds)
                 .stream()
-                .collect(Collectors.toMap(
-                        td -> td.getProduct().getId(),
-                        Function.identity()
-                ));
+                .collect(Collectors.toMap(TimeDeal::getId, Function.identity(), (a, b) -> a));
 
-        List<CartProductListGetResponse> productList = cartProductList
-                .stream()
-                .map(cp -> CartProductListGetResponse.from(
-                        cp,
-                        timeDealMap.get(cp.getProduct().getId())
-                )).toList();
+        List<CartProductListGetResponse> productList = cartProductList.stream()
+                .map(cp -> {
+                    TimeDeal td = null;
+                    if (cp.getTimeDeal() != null) {
+                        td = timeDealMap.get(cp.getTimeDeal().getId());
+                    }
+                    return CartProductListGetResponse.from(cp, td);
+                })
+                .toList();
 
         return CartGetResponse.from(cart, productList);
     }
@@ -72,7 +74,7 @@ public class CartService {
      * 장바구니가 있으면 조회 없으면 생성
      */
     @Transactional
-    public Cart getOrCreateCart(Long userId){
+    public Cart getOrCreateCart(Long userId) {
 
         return cartRepository.findByUserId(userId)
                 .orElseGet(() -> {

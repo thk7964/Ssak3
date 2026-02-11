@@ -55,7 +55,7 @@ public enum ErrorCode {
     TIME_DEAL_INVALID_STATUS(HttpStatus.BAD_REQUEST, "유효하지 않은 타임딜 상태입니다."),
     TIME_DEAL_DELETED_STATUS_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "삭제된 타임딜 상태로는 조회할 수 없습니다."),
     TIME_DEAL_START_TIME_MUST_BE_IN_FUTURE(HttpStatus.BAD_REQUEST,"타임딜 시작 시간은 현재 시간 이후여야 합니다." ),
-
+    TIME_DEAL_PRODUCT_MISMATCH(HttpStatus.BAD_REQUEST, "해당 상품의 타임딜이 아닙니다."),
 
     // Token 에러
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),

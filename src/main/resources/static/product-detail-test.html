@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>SSAK3 상품 상세 테스트</title>
+    <style>
+        body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 16px; }
+        input { padding: 8px; width: 360px; max-width: 100%; }
+        button { padding: 8px 12px; margin-left: 6px; }
+        pre { background: #f6f6f6; padding: 12px; overflow: auto; }
+        .row { margin: 10px 0; }
+        img { max-width: 520px; width: 100%; border: 1px solid #ddd; margin: 6px 0; }
+        .muted { color: #666; font-size: 12px; }
+    </style>
+</head>
+<body>
+<h2>상품 상세 페이지 테스트</h2>
+
+<div class="row">
+    <label>API Base URL</label><br />
+    <input id="baseUrl" value="https://ssak3.store" />
+</div>
+
+<div class="row">
+    <label>상품 ID</label><br />
+    <input id="productId" value="40" />
+    <button id="loadBtn">불러오기</button>
+    <button id="clearBtn">지우기</button>
+</div>
+
+<p class="muted">
+    - 호출: <code>GET /ssak3/products/{productId}</code><br>
+    - 응답에 <code>imageUrl</code>, <code>detailImageUrl</code>이 presigned로 내려온다고 가정
+</p>
+
+<hr />
+
+<h3>1) 요약 정보</h3>
+<div id="summary"></div>
+
+<h3>2) 대표 이미지</h3>
+<div id="imageWrap"></div>
+
+<h3>3) 상세 이미지</h3>
+<div id="detailWrap"></div>
+
+<h3>4) 원본 응답(JSON)</h3>
+<pre id="raw"></pre>
+
+<script>
+    const $ = (id) => document.getElementById(id);
+
+    function escapeHtml(str) {
+        return String(str ?? "")
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;");
+    }
+
+    function clearAll() {
+        $("summary").innerHTML = "";
+        $("imageWrap").innerHTML = "";
+        $("detailWrap").innerHTML = "";
+        $("raw").textContent = "";
+    }
+
+    function renderImg(container, url, label) {
+        if (!url) {
+            container.innerHTML = `<p class="muted">${label}: 없음</p>`;
+            return;
+        }
+
+        const safeUrl = escapeHtml(url);
+        container.innerHTML = `
+      <div class="muted">${label} URL:</div>
+      <div style="word-break: break-all; font-size: 12px; margin-bottom: 6px;">
+        <a href="${safeUrl}" target="_blank" rel="noreferrer">${safeUrl}</a>
+      </div>
+      <img src="${safeUrl}" alt="${label}" />
+      <div class="muted" id="${label}-status">로딩 중...</div>
+    `;
+
+        const img = container.querySelector("img");
+        const status = container.querySelector(`#${CSS.escape(label)}-status`);
+
+        img.onload = () => status.textContent = "✅ 로드 성공";
+        img.onerror = () => status.textContent = "❌ 로드 실패 (presigned 만료/CORS/권한/URL 확인)";
+    }
+
+    $("clearBtn").addEventListener("click", clearAll);
+
+    $("loadBtn").addEventListener("click", async () => {
+        clearAll();
+
+        const baseUrl = $("baseUrl").value.trim().replace(/\/+$/, "");
+        const productId = $("productId").value.trim();
+
+        const url = `${baseUrl}/ssak3/products/${encodeURIComponent(productId)}`;
+
+        $("raw").textContent = `요청 중... ${url}\n`;
+
+        try {
+            const res = await fetch(url, { method: "GET" });
+            const json = await res.json().catch(() => ({}));
+
+            $("raw").textContent = JSON.stringify(json, null, 2);
+
+            if (!res.ok || json?.success === false) {
+                $("summary").innerHTML = `<p style="color:#c00;">❌ API 실패 (${res.status})</p>`;
+                return;
+            }
+
+            // ApiResponse.success 구조 가정: { success, message, data }
+            const data = json.data ?? json;
+
+            const infoHtml = `
+        <div>id: <b>${escapeHtml(data.id)}</b></div>
+        <div>name: <b>${escapeHtml(data.name)}</b></div>
+        <div>price: <b>${escapeHtml(data.price)}</b></div>
+        <div>status: <b>${escapeHtml(data.status)}</b></div>
+        <div>information: <b>${escapeHtml(data.information)}</b></div>
+        <div>quantity: <b>${escapeHtml(data.quantity)}</b></div>
+        <div class="muted">createdAt: ${escapeHtml(data.createdAt)}</div>
+        <div class="muted">updatedAt: ${escapeHtml(data.updatedAt)}</div>
+      `;
+            $("summary").innerHTML = infoHtml;
+
+            // 필드명은 너 응답 DTO에 맞춰 조정 가능
+            const imageUrl = data.imageUrl ?? data.image ?? null;
+            const detailImageUrl = data.detailImageUrl ?? data.detailImage ?? null;
+
+            renderImg($("imageWrap"), imageUrl, "대표이미지");
+            renderImg($("detailWrap"), detailImageUrl, "상세이미지");
+
+        } catch (e) {
+            $("summary").innerHTML = `<p style="color:#c00;">❌ fetch 실패: ${escapeHtml(e.message)}</p>`;
+            $("raw").textContent += `\n\n에러: ${e.message}`;
+        }
+    });
+</script>
+</body>
+</html>

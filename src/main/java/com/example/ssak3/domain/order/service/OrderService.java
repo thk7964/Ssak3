@@ -80,8 +80,10 @@ public class OrderService {
         long subtotal = unitPrice * quantity;
 
         Order order = new Order(user, request.getAddress(), null, subtotal);
+        Order savedOrder = orderRepository.save(order);
 
-        OrderProduct orderProduct = new OrderProduct(order, product, unitPrice, quantity);
+        OrderProduct orderProduct = new OrderProduct(savedOrder, product, unitPrice, quantity);
+        orderProductRepository.save(orderProduct);
 
         // 재고 차감
         product.decreaseQuantity(quantity);
@@ -101,20 +103,17 @@ public class OrderService {
                 discount = userCoupon.getCoupon().getDiscountValue();
                 userCoupon.use();
 
-                order.applyCoupon(userCoupon, discount);
+                savedOrder.applyCoupon(userCoupon, discount);
             } else {
                 throw new CustomException(ErrorCode.COUPON_MIN_ORDER_PRICE_NOT_MET);
             }
         }
 
-        order.updateStatus(OrderStatus.PAYMENT_PENDING);
+        savedOrder.updateStatus(OrderStatus.PAYMENT_PENDING);
 
         String orderName = URLEncoder.encode(product.getName(), StandardCharsets.UTF_8);
 
-        String url = frontendBaseUrl + "/checkout.html?orderId=" + order.getId() + "&orderName=" + orderName;
-
-        Order savedOrder = orderRepository.save(order);
-        orderProductRepository.save(orderProduct);
+        String url = frontendBaseUrl + "/checkout.html?orderId=" + savedOrder.getId() + "&orderName=" + orderName;
 
         return OrderCreateResponse.from(savedOrder, subtotal, discount, url);
     }

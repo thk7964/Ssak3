@@ -6,6 +6,7 @@ import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.common.model.PageResponse;
 import com.example.ssak3.domain.product.entity.Product;
 import com.example.ssak3.domain.product.repository.ProductRepository;
+import com.example.ssak3.domain.s3.service.S3Uploader;
 import com.example.ssak3.domain.timedeal.entity.TimeDeal;
 import com.example.ssak3.domain.timedeal.model.request.TimeDealCreateRequest;
 import com.example.ssak3.domain.timedeal.model.request.TimeDealUpdateRequest;
@@ -20,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
@@ -29,6 +31,7 @@ public class TimeDealAdminService {
 
     private final TimeDealRepository timeDealRepository;
     private final ProductRepository productRepository;
+    private final S3Uploader s3Uploader;
 
     /**
      * 타임딜 생성
@@ -67,7 +70,9 @@ public class TimeDealAdminService {
                 product,
                 request.getDealPrice(),
                 request.getStartAt(),
-                request.getEndAt()
+                request.getEndAt(),
+                request.getImage(),
+                request.getDetailImage()
         );
 
         TimeDeal saved = timeDealRepository.save(timeDeal);
@@ -117,6 +122,18 @@ public class TimeDealAdminService {
             throw new CustomException(ErrorCode.INVALID_TIME_RANGE);
         }
 
+        // 저장되어 있는 이미지 파일이 있는지 확인
+        if (timeDeal.getImage() != null) {
+            // 기존 파일 먼저 삭제
+            s3Uploader.deleteImage(timeDeal.getImage());
+        }
+
+        // 저장되어 있는 이미지 파일이 있는지 확인
+        if (timeDeal.getDetailImage() != null) {
+            // 기존 파일 먼저 삭제
+            s3Uploader.deleteImage(timeDeal.getDetailImage());
+        }
+
         timeDeal.update(request);
 
         return TimeDealUpdateResponse.from(timeDeal);
@@ -132,6 +149,14 @@ public class TimeDealAdminService {
 
         if (!timeDeal.isDeletable()) {
             throw new CustomException(ErrorCode.TIME_DEAL_CANNOT_DELETE);
+        }
+
+        if (timeDeal.getImage() != null) {
+            s3Uploader.deleteImage(timeDeal.getImage());
+        }
+
+        if (timeDeal.getDetailImage() != null) {
+            s3Uploader.deleteImage(timeDeal.getDetailImage());
         }
 
         timeDeal.softDelete();

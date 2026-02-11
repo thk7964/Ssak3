@@ -16,6 +16,8 @@ public enum ErrorCode {
     WITHDRAWN_USER(HttpStatus.NOT_FOUND, "탈퇴한 유저입니다."),
     INVALID_USER_ROLE(HttpStatus.BAD_REQUEST, "유효하지 않은 권한입니다."),
     NOT_ALLOWED_CHANGE_SUPER_ADMIN(HttpStatus.BAD_REQUEST, "최고 관리자로는 변경할 수 없습니다."),
+    UNAUTHORIZED_USER(HttpStatus.UNAUTHORIZED, "인증되지 않은 사용자입니다."),
+    FORBIDDEN_USER(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
 
     // Product 에러
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다."),
@@ -58,6 +60,12 @@ public enum ErrorCode {
     TIME_DEAL_DELETED_STATUS_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "삭제된 타임딜 상태로는 조회할 수 없습니다."),
     TIME_DEAL_START_TIME_MUST_BE_IN_FUTURE(HttpStatus.BAD_REQUEST,"타임딜 시작 시간은 현재 시간 이후여야 합니다." ),
 
+    // Image 에러
+    PRODUCT_IMAGE_ALREADY_EXIST(HttpStatus.CONFLICT, "상품 이미지가 이미 있습니다."),
+    TIME_DEAL_IMAGE_ALREADY_EXIST(HttpStatus.CONFLICT, "타임딜 이미지가 이미 있습니다."),
+    IMAGE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 저장 실패했습니다."),
+    INVALID_FILE(HttpStatus.BAD_REQUEST, "유효하지 않은 파일입니다."),
+    INVALID_URL(HttpStatus.BAD_REQUEST, "유효하지 않은 url입니다."),
 
     // Token 에러
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
@@ -101,9 +109,10 @@ public enum ErrorCode {
     PAYMENT_NOT_FOUND(HttpStatus.BAD_REQUEST, "결제 내역이 없습니다."),
     ORDER_NOT_IN_PAYMENT_PENDING(HttpStatus.BAD_REQUEST, "결제 진행 중인 주문이 아닙니다."),
     PAYMENT_AMOUNT_MISMATCH( HttpStatus.BAD_REQUEST,"결제 금액이 주문 금액과 일치하지 않습니다."),
+
+    // Redis 에러
+    REDIS_CONNECTION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Redis 연결에 실패했습니다."),
     ;
-
-
 
     private final HttpStatus status;
     private final String message;

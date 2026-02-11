@@ -14,5 +14,7 @@ public class ProductUpdateRequest {
     private ProductStatus status;
     private String information;
     private Integer quantity;
+    private String image;
+    private String detailImage;
 
 }

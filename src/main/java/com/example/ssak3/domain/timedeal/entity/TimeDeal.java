@@ -38,16 +38,24 @@ public class TimeDeal extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private TimeDealStatus status;
 
+    @Column
+    private String image;
+
+    @Column(name = "detail_image")
+    private String detailImage;
+
     @Column(nullable = false, name = "is_deleted")
     private boolean isDeleted;
 
-    public TimeDeal(Product product, Integer dealPrice, LocalDateTime startAt, LocalDateTime endAt) {
+    public TimeDeal(Product product, Integer dealPrice, LocalDateTime startAt, LocalDateTime endAt, String image, String detailImage) {
         this.product = product;
         this.dealPrice = dealPrice;
         this.startAt = startAt;
         this.endAt = endAt;
         this.isDeleted = false;
         this.status = TimeDealStatus.READY;
+        this.image = image;
+        this.detailImage = detailImage;
     }
 
     public void setStatus(TimeDealStatus newStatus) {
@@ -67,6 +75,14 @@ public class TimeDeal extends BaseEntity {
     public void softDelete() {
         this.isDeleted = true;
         this.status = TimeDealStatus.DELETED;
+
+        if (this.image!=null) {
+            this.image=this.image;
+        }
+        if (this.detailImage!=null) {
+            this.detailImage=this.detailImage;
+        }
+
     }
 
     public void update(TimeDealUpdateRequest request) {
@@ -80,6 +96,12 @@ public class TimeDeal extends BaseEntity {
         }
         if (request.getEndAt() != null) {
             this.endAt = request.getEndAt();
+        }
+        if (request.getImage() != null) {
+            this.image = request.getImage();
+        }
+        if (request.getDetailImage() != null) {
+            this.detailImage = request.getDetailImage();
         }
     }
 

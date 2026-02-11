@@ -11,18 +11,20 @@ import java.time.LocalDateTime;
 public class UserGetResponse {
 
     private final Long id;
-    private final String email;
     private final String name;
     private final String nickname;
+    private final String email;
+    private final String phone;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
     public static UserGetResponse from(User user) {
         return new UserGetResponse(
                 user.getId(),
-                user.getEmail(),
                 user.getName(),
                 user.getNickname(),
+                user.getEmail(),
+                user.getPhone(),
                 user.getCreatedAt(),
                 user.getUpdatedAt()
         );

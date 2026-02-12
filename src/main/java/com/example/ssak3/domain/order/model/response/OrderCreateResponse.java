@@ -22,8 +22,9 @@ public class OrderCreateResponse {
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
     private final String url;
+    private final long deliveryFee;
 
-    public static OrderCreateResponse from(Order order, Long subtotal, Long discount, String url) {
+    public static OrderCreateResponse from(Order order, Long subtotal, Long discount, String url, long deliveryFee) {
         return new OrderCreateResponse(
                 order.getId(),
                 order.getStatus(),
@@ -35,7 +36,8 @@ public class OrderCreateResponse {
                 order.getOrderNo(),
                 order.getCreatedAt(),
                 order.getUpdatedAt(),
-                url
+                url,
+                deliveryFee
         );
     }
 

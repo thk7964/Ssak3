@@ -78,12 +78,12 @@ public class InquiryReplyController {
      * 문의 답변 수정 API
      */
     @PreAuthorize("hasRole('ADMIN')")
-    @PatchMapping("/{inquiryReplyId}")
-    public ResponseEntity<ApiResponse> updateInquiryReplyApi(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long inquiryReplyId, @RequestBody InquiryReplyUpdateRequest request) {
+    @PatchMapping("/inquiries/{inquiryId}")
+    public ResponseEntity<ApiResponse> updateInquiryReplyApi(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long inquiryId, @RequestBody InquiryReplyUpdateRequest request) {
 
         Long adminId = authUser.getId();
 
-        ApiResponse response = ApiResponse.success("문의 답변 수정 성공", inquiryReplyService.updateInquiryReply(adminId, inquiryReplyId, request));
+        ApiResponse response = ApiResponse.success("문의 답변 수정 성공", inquiryReplyService.updateInquiryReply(adminId, inquiryId, request));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -92,9 +92,10 @@ public class InquiryReplyController {
      * 문의 답변 삭제 API
      */
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/{inquiryReplyId}")
-    public ResponseEntity<ApiResponse> deleteInquiryReplyApi(@PathVariable Long inquiryReplyId) {
-        ApiResponse response = ApiResponse.success("문의 답변 삭제 성공", inquiryReplyService.deleteInquiryReply(inquiryReplyId));
+    @DeleteMapping("/inquiries/{inquiryId}")
+    public ResponseEntity<ApiResponse> deleteInquiryReplyApi(@PathVariable Long inquiryId) {
+        
+        ApiResponse response = ApiResponse.success("문의 답변 삭제 성공", inquiryReplyService.deleteInquiryReply(inquiryId));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

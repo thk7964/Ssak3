@@ -110,12 +110,13 @@ public class InquiryReplyService {
      * 문의 답변 수정
      */
     @Transactional
-    public InquiryReplyUpdateResponse updateInquiryReply(Long adminId, Long inquiryReplyId, InquiryReplyUpdateRequest request) {
+    public InquiryReplyUpdateResponse updateInquiryReply(Long adminId, Long inquiryId, InquiryReplyUpdateRequest request) {
 
         User admin = userRepository.findById(adminId)
                 .orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        InquiryReply foundInquiryReply = inquiryReplyRepository.findById(inquiryReplyId)
+        InquiryReply foundInquiryReply = inquiryReplyRepository
+                .findByInquiryIdAndIsDeletedFalse(inquiryId)
                 .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_REPLY_NOT_FOUND));
 
         foundInquiryReply.validateDeleted();  // 삭제된 문의 답변인지 검증
@@ -130,14 +131,19 @@ public class InquiryReplyService {
      * 문의 답변 삭제
      */
     @Transactional
-    public InquiryReplyDeleteResponse deleteInquiryReply(Long inquiryReplyId) {
+    public InquiryReplyDeleteResponse deleteInquiryReply(Long inquiryId) {
 
-        InquiryReply foundInquiryReply = inquiryReplyRepository.findById(inquiryReplyId)
+        InquiryReply foundInquiryReply = inquiryReplyRepository
+                .findByInquiryIdAndIsDeletedFalse(inquiryId)
                 .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_REPLY_NOT_FOUND));
 
         foundInquiryReply.validateDeleted();  // 삭제된 문의 답변인지 검증
 
         foundInquiryReply.softDelete();
+
+        // 답변 삭제 시 문의 상태를 PENDING으로 되돌림
+        Inquiry inquiry = foundInquiryReply.getInquiry();
+        inquiry.updateStatus(InquiryStatus.PENDING);
 
         return InquiryReplyDeleteResponse.from(foundInquiryReply);
     }

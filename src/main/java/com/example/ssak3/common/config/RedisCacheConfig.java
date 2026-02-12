@@ -51,9 +51,11 @@ public class RedisCacheConfig {
                 );
 
         RedisCacheConfiguration timeDealsConfig = defaultConfig.entryTtl(Duration.ofMinutes(10));
+//        RedisCacheConfiguration categoryConfig = defaultConfig.entryTtl(Duration.ofMinutes(30));
 
         Map<String, RedisCacheConfiguration> cacheConfigs = new HashMap<>();
         cacheConfigs.put("timeDealsOpen", timeDealsConfig);
+//        cacheConfigs.put("categoryRedisCache", categoryConfig);
 
         return RedisCacheManager.builder(redisConnectionFactory)
                 .cacheDefaults(defaultConfig)

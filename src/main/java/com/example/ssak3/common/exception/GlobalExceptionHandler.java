@@ -53,7 +53,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse> internalServerException(Exception e) {
-
+        log.error("EXCEPTION: {}", e.getMessage());
         ApiResponse response = ApiResponse.error("내부 서버 에러입니다.");
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);

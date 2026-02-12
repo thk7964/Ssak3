@@ -381,7 +381,7 @@ public class OrderService {
         long discount = subtotal - total;
         if (discount < 0) discount = 0;
 
-        String url = frontendBaseUrl + "/checkout.html?orderId=" + order.getOrderNo() + "&orderName=" + orderName;
+        String url = frontendBaseUrl + "/checkout.html?orderId=" + order.getId() + "&orderName=" + orderName;
 
         return OrderCreateResponse.from(order, subtotal, discount, url);
     }

@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @Getter
 @Entity
 @Table(
-        name = "product_view_history",
+        name = "product_view_histories",
         uniqueConstraints = {
                 @UniqueConstraint(
                         name = "uk_product_id_view_date",
@@ -31,10 +31,10 @@ public class ProductViewHistory extends BaseEntity {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @Column(name = "view_date")
+    @Column(name = "view_date", nullable = false)
     private LocalDate viewDate;
 
-    @Column(name = "view_count")
+    @Column(name = "view_count", nullable = false)
     private Integer viewCount;
 
     public ProductViewHistory(Product product, LocalDate viewDate, Integer viewCount) {

@@ -19,12 +19,13 @@ public class ProductGetPopularResponse {
     private final Integer dealPrice;
     private final String imageUrl;
     private final LocalDateTime createdAt;
+    private final LocalDateTime updatedAt;
 
-    public static ProductGetPopularResponse from(Product product, TimeDeal timeDeal) {
+    public static ProductGetPopularResponse from(Product product, TimeDeal timeDeal, String productImageUrl, String timeDealImageUrl) {
 
         Long timeDealId = timeDeal != null ? timeDeal.getId() : null;
         Integer dealPrice = timeDeal != null ? timeDeal.getDealPrice() : null;
-        String imageUrl = timeDeal != null ? timeDeal.getImage() : product.getImage();
+        String imageUrl = timeDeal != null ? timeDealImageUrl : productImageUrl;
 
         return new ProductGetPopularResponse(
                 product.getId(),
@@ -34,7 +35,8 @@ public class ProductGetPopularResponse {
                 product.getPrice(),
                 dealPrice,
                 imageUrl,
-                product.getCreatedAt()
+                product.getCreatedAt(),
+                product.getUpdatedAt()
         );
     }
 }

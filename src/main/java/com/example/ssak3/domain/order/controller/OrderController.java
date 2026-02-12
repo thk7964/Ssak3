@@ -20,8 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/ssak3")
-@Slf4j
+@RequestMapping("/ssak3/orders")
 public class OrderController {
 
     private final OrderService orderService;
@@ -29,7 +28,7 @@ public class OrderController {
     /**
      * 단일 상품 주문
      */
-    @PostMapping("/orders/products")
+    @PostMapping("/products")
     public ResponseEntity<ApiResponse> createOrderDraftFromProductApi(
             @AuthenticationPrincipal AuthUser user,
             @Valid @RequestBody OrderCreateFromProductRequest request
@@ -43,7 +42,7 @@ public class OrderController {
     /**
      * 장바구니 상품 주문
      */
-    @PostMapping("/orders/carts")
+    @PostMapping("/carts")
     public ResponseEntity<ApiResponse> createOrderFromCartApi(
             @AuthenticationPrincipal AuthUser user,
             @Valid @RequestBody OrderCreateFromCartRequest request
@@ -57,7 +56,7 @@ public class OrderController {
     /**
      * 주문 상세 조회
      */
-    @GetMapping("/orders/{orderId}")
+    @GetMapping("/{orderId}")
     public ResponseEntity<ApiResponse> getOrderApi(
             @AuthenticationPrincipal AuthUser user,
             @PathVariable("orderId") Long orderId
@@ -71,7 +70,7 @@ public class OrderController {
     /**
      * 내 주문 목록 조회
      */
-    @GetMapping("/orders")
+    @GetMapping
     public ResponseEntity<ApiResponse> getOrderListApi(
             @AuthenticationPrincipal AuthUser user,
             @PageableDefault Pageable pageable
@@ -84,31 +83,40 @@ public class OrderController {
     /**
      * 주문 취소
      */
-    @PatchMapping("/orders/cancel")
+    @PatchMapping("cancel")
     public ResponseEntity<ApiResponse> updateOrderCanceledApi(
             @AuthenticationPrincipal AuthUser user,
             @Valid @RequestBody OrderCancelRequest request
-            ) {
+    ) {
         ApiResponse response = ApiResponse.success("주문 취소 성공했습니다.", orderService.updateOrderCanceled(user.getId(), request));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     /**
-     * 주문 상태 변경(admin)
+     * 결제 대기 상태에서 주문 취소
      */
-    @PreAuthorize("hasRole('ADMIN')")
-    @PatchMapping("/admin/orders/{orderId}")
-    public ResponseEntity<ApiResponse> updateOrderStatusApi(
-            @PathVariable Long orderId,
-            @Valid @RequestBody OrderStatusUpdateRequest request
+    @PatchMapping("/{orderId}/cancel-pending")
+    public ResponseEntity<ApiResponse> cancelPendingOrderApi(
+            @AuthenticationPrincipal AuthUser user,
+            @PathVariable Long orderId
     ) {
-
-        ApiResponse response = ApiResponse.success("주문 상태 변경 성공했습니다.", orderService.updateOrderStatus(orderId, request));
+        ApiResponse response = ApiResponse.success("결제 대기 주문 취소 성공했습니다.", orderService.cancelPendingOrder(user.getId(), orderId));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
-
     }
 
+    /**
+     * 주문 재결제
+     */
+    @PostMapping("/{orderId}/retry-payment")
+    public ResponseEntity<ApiResponse> retryPaymentApi(
+            @AuthenticationPrincipal AuthUser user,
+            @PathVariable Long orderId
+    ) {
+        ApiResponse response = ApiResponse.success("재결제 성공했습니다.",  orderService.retryPayment(user.getId(), orderId));
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 
 }

@@ -54,10 +54,23 @@ dependencies {
 
     // Redis 의존성
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
     // LocalDate & LocalDateTime 파싱 의존성
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
+    // MacOS 환경에서 Netty DNS 에러 해결을 위한 의존성
+    developmentOnly 'io.netty:netty-resolver-dns-native-macos:4.1.111.Final:osx-aarch_64'
+
+    // WebClient 의존성
+    // AOP 의존성
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+    // Logstash Logback Encoder 의존성 (JSON 로그 변환 및 Logstash 전송용)
+    implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
+
+    // WebClient 의존성
     // ShedLock 의존성
     implementation 'net.javacrumbs.shedlock:shedlock-spring:5.14.0'
     implementation 'net.javacrumbs.shedlock:shedlock-provider-jdbc-template:5.14.0'
@@ -66,7 +79,7 @@ dependencies {
     //WebClient 의존성
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
-    // s3
+    // s3 의존성
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
     // Logstash Logback Encoder 의존성 (JSON 로그 변환 및 Logstash 전송용)

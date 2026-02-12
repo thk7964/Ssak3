@@ -366,10 +366,6 @@ public class OrderService {
             throw new CustomException(ErrorCode.ORDER_PRODUCT_IS_NULL);
         }
 
-        // orderNo 새로 생성
-        String newOrderNo = order.generateOrderNo();
-        order.updateOrderNo(newOrderNo);
-
         // 주문명 생성
         String orderNameRaw = (ops.size() == 1)
                 ? ops.get(0).getProduct().getName()
@@ -385,7 +381,7 @@ public class OrderService {
         long discount = subtotal - total;
         if (discount < 0) discount = 0;
 
-        String url = frontendBaseUrl + "/checkout.html?orderId=" + newOrderNo + "&orderName=" + orderName;
+        String url = frontendBaseUrl + "/checkout.html?orderId=" + order.getOrderNo() + "&orderName=" + orderName;
 
         return OrderCreateResponse.from(order, subtotal, discount, url);
     }

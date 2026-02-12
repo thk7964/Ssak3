@@ -2,24 +2,27 @@ package com.example.ssak3.domain.timedeal.model.response;
 
 import com.example.ssak3.common.enums.TimeDealStatus;
 import com.example.ssak3.domain.timedeal.entity.TimeDeal;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 import static com.example.ssak3.domain.timedeal.utils.TimeDealUtils.formatRemainingTime;
 
 @Getter
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 public class TimeDealListGetResponse {
-    private final Long id;
-    private final String productName;
-    private final Integer dealPrice;
-    private final TimeDealStatus status;
-    private final LocalDateTime startAt;
-    private final LocalDateTime endAt;
-    private final String imageUrl;
-    private final String remainingTime;
+    private Long id;
+    private String productName;
+    private Integer dealPrice;
+    private TimeDealStatus status;
+    private LocalDateTime startAt;
+    private LocalDateTime endAt;
+    private String imageUrl;
+    private String remainingTime;
+
     public static TimeDealListGetResponse from(TimeDeal timeDeal) {
 
         LocalDateTime now = LocalDateTime.now();

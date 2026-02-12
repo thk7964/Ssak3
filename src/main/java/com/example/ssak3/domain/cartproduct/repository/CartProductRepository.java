@@ -12,7 +12,9 @@ public interface CartProductRepository extends JpaRepository<CartProduct, Long> 
 
     List<CartProduct> findAllByCartIdOrderByUpdatedAtDesc(Long cartId);
 
-    Optional<CartProduct> findByCartIdAndProductId(Long cartId, Long productId);
+    Optional<CartProduct> findByCartIdAndProductIdAndTimeDealId(Long cartId, Long productId, Long timeDealId);
+
+    Optional<CartProduct> findByCartIdAndProductIdAndTimeDealIsNull(Long cartId, Long productId);
 
     Optional<CartProduct> findByIdAndCartId(Long cartProductId, Long cartId);
 
@@ -23,8 +25,9 @@ public interface CartProductRepository extends JpaRepository<CartProduct, Long> 
     @Modifying
     @Query("""
                 delete from CartProduct cp
-                where cp.cart.user.id= :userId
-                and cp.product.id in :productIds
+                where cp.cart.user.id = :userId
+                  and cp.id in :cartProductIds
             """)
-    void deletePaidProductsFromCart(Long userId, List<Long> productIds);
+    void deletePaidProductsFromCart(Long userId, List<Long> cartProductIds);
+
 }

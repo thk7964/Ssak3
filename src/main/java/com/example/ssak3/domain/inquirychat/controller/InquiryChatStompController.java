@@ -18,7 +18,7 @@ import java.util.Map;
 public class InquiryChatStompController {
 
     private final InquiryChatService inquiryChatService;
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, Object> chatRedisTemplate;
     private final ChannelTopic chatTopic = new ChannelTopic("chat");
 
     /**
@@ -36,7 +36,7 @@ public class InquiryChatStompController {
         // Redis 먼저 발행
         ChatMessageResponse tempResponse = ChatMessageResponse.fromRequest(request, userId, role);
 
-        redisTemplate.convertAndSend(chatTopic.getTopic(), tempResponse);
+        chatRedisTemplate.convertAndSend(chatTopic.getTopic(), tempResponse);
 
         // DB 저장은 비동기로 처리
         inquiryChatService.saveMessageAsync(request, userId, role);
@@ -56,6 +56,6 @@ public class InquiryChatStompController {
 
         ChatMessageResponse response = ChatMessageResponse.from(request, message);
 
-        redisTemplate.convertAndSend(chatTopic.getTopic(), response);  //
+        chatRedisTemplate.convertAndSend(chatTopic.getTopic(), response);  //
     }
 }

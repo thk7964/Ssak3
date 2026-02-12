@@ -21,11 +21,10 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 public class RedisConfig {
 
     @Bean
-    public RedisTemplate<String, PageResponse<CouponListForUserGetResponse>> redisTemplate(RedisConnectionFactory connectionFactory) {
+    public RedisTemplate<String, PageResponse<CouponListForUserGetResponse>> couponRedisTemplate(RedisConnectionFactory connectionFactory) {
 
         RedisTemplate<String, PageResponse<CouponListForUserGetResponse>> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
-
 
         ObjectMapper mapper = new ObjectMapper()
                 .registerModule(new JavaTimeModule())

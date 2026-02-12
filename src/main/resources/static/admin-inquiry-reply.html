@@ -419,10 +419,8 @@
         const token = localStorage.getItem('accessToken');
 
         try {
-            // 실제로는 문의 상세 조회 API를 호출해야 하지만
-            // 현재 API 구조상 사용자용 상세 조회를 사용
-            // TODO: 관리자용 문의 상세 조회 API 필요
-            const response = await fetch(`http://localhost:8080/ssak3/inquiries/${inquiryId}`, {
+            // 🆕 관리자용 문의 상세 조회 API 사용
+            const response = await fetch(`http://localhost:8080/ssak3/admin/inquiry-replies/inquiries/${inquiryId}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + token

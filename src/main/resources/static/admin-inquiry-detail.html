@@ -401,7 +401,7 @@
         const token = localStorage.getItem('accessToken');
 
         try {
-            const response = await fetch(`http://localhost:8080/ssak3/inquiries/${inquiryId}`, {
+            const response = await fetch(`http://localhost:8080/ssak3/admin/inquiry-replies/inquiries/${inquiryId}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + token
@@ -481,17 +481,119 @@
     }
 
     function editReply() {
-        // 답변 수정 기능 (구현 필요)
-        alert('답변 수정 기능은 준비 중입니다.');
+        // 수정 모드로 전환
+        const replySection = document.getElementById('replySection');
+
+        replySection.innerHTML = `
+            <div class="reply-header">
+                <div class="reply-title-group">
+                    <span class="reply-title">✍️ 답변 수정</span>
+                    <span class="reply-badge">🔐 ADMIN</span>
+                </div>
+            </div>
+            <div style="margin-top: 20px;">
+                <textarea
+                    id="editReplyContent"
+                    style="width: 100%; min-height: 300px; padding: 16px; border: 2px solid #e8ebff; border-radius: 12px; font-size: 15px; font-family: inherit; background: #f8f9ff; resize: vertical;"
+                    placeholder="답변 내용을 수정해주세요"
+                >${escapeHtml(currentInquiry.replyContent)}</textarea>
+                <div style="text-align: right; font-size: 13px; color: #868e96; margin-top: 8px;">
+                    <span id="editCharCount">${currentInquiry.replyContent.length} / 2000</span>
+                </div>
+            </div>
+            <div class="button-group" style="margin-top: 24px;">
+                <button class="btn btn-delete" onclick="cancelEdit()">취소</button>
+                <button class="btn btn-edit" onclick="saveReply()">저장하기</button>
+            </div>
+        `;
+
+        // 글자 수 카운터
+        const textarea = document.getElementById('editReplyContent');
+        const charCount = document.getElementById('editCharCount');
+        textarea.addEventListener('input', () => {
+            charCount.textContent = `${textarea.value.length} / 2000`;
+        });
     }
 
-    async function deleteReply() {
-        if (!confirm('정말 이 답변을 삭제하시겠습니까?')) {
+    function cancelEdit() {
+        // 수정 취소 - 다시 렌더링
+        renderInquiryDetail(currentInquiry);
+    }
+
+    async function saveReply() {
+        const content = document.getElementById('editReplyContent').value.trim();
+
+        if (!content) {
+            alert('답변 내용을 입력해주세요.');
             return;
         }
 
-        // 답변 삭제 기능 (구현 필요)
-        alert('답변 삭제 기능은 준비 중입니다.');
+        if (content.length > 2000) {
+            alert('답변 내용은 2000자를 초과할 수 없습니다.');
+            return;
+        }
+
+        if (!confirm('답변을 수정하시겠습니까?')) {
+            return;
+        }
+
+        const token = localStorage.getItem('accessToken');
+
+        try {
+            const response = await fetch(`http://localhost:8080/ssak3/admin/inquiry-replies/inquiries/${currentInquiry.id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                credentials: 'include',
+                body: JSON.stringify({ content })
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.message || '답변 수정에 실패했습니다.');
+            }
+
+            alert('답변이 수정되었습니다.');
+            location.reload();
+
+        } catch (error) {
+            console.error('Error updating reply:', error);
+            alert(error.message || '답변 수정에 실패했습니다.');
+        }
+    }
+
+    async function deleteReply() {
+        if (!confirm('정말 이 답변을 삭제하시겠습니까?\n\n답변을 삭제하면 문의 상태가 "대기중"으로 변경됩니다.')) {
+            return;
+        }
+
+        const token = localStorage.getItem('accessToken');
+
+        try {
+            const response = await fetch(`http://localhost:8080/ssak3/admin/inquiry-replies/inquiries/${currentInquiry.id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                },
+                credentials: 'include'
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.message || '답변 삭제에 실패했습니다.');
+            }
+
+            alert('답변이 삭제되었습니다.');
+            location.href = 'admin-inquiry-list.html';
+
+        } catch (error) {
+            console.error('Error deleting reply:', error);
+            alert(error.message || '답변 삭제에 실패했습니다.');
+        }
     }
 
     function formatDate(dateString) {
@@ -505,6 +607,7 @@
     }
 
     function escapeHtml(text) {
+        if (!text) return '';
         const map = {
             '&': '&amp;',
             '<': '&lt;',

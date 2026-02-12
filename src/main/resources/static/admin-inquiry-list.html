@@ -342,9 +342,9 @@
     </div>
 
     <div class="filter-tabs">
-        <button class="filter-tab active" onclick="filterInquiries('ALL')">전체</button>
-        <button class="filter-tab" onclick="filterInquiries('PENDING')">🟠 대기중</button>
-        <button class="filter-tab" onclick="filterInquiries('ANSWERED')">🟢 답변완료</button>
+        <button class="filter-tab active" data-filter="ALL" onclick="filterInquiries('ALL', event)">전체</button>
+        <button class="filter-tab" data-filter="PENDING" onclick="filterInquiries('PENDING', event)">🟠 대기중</button>
+        <button class="filter-tab" data-filter="ANSWERED" onclick="filterInquiries('ANSWERED', event)">🟢 답변완료</button>
     </div>
 
     <div class="inquiry-grid" id="inquiryGrid">
@@ -361,11 +361,11 @@
     let filteredInquiries = [];
     let currentFilter = 'ALL';
     let currentPage = 0;
-    const itemsPerPage = 12;
+    let totalPages = 0;
 
     document.addEventListener('DOMContentLoaded', () => {
         checkAdminAuth();
-        loadAllInquiries();
+        loadInquiries(currentPage);
     });
 
     async function checkAdminAuth() {
@@ -401,12 +401,12 @@
         }
     }
 
-    async function loadAllInquiries() {
+    async function loadInquiries(page = 0) {
         const token = localStorage.getItem('accessToken');
 
         try {
-            // 답변 목록 조회 (관리자용)
-            const response = await fetch('http://localhost:8080/ssak3/admin/inquiry-replies?size=1000', {
+            // 🆕 새로운 API: 관리자용 전체 문의 조회
+            const response = await fetch(`http://localhost:8080/ssak3/admin/inquiry-replies/inquiries?page=${page}&size=10&sort=createdAt,desc`, {
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + token
@@ -419,24 +419,13 @@
             }
 
             const result = await response.json();
+            const data = result.data;
 
-            // 답변된 문의들의 ID를 Set으로 저장
-            const answeredInquiryIds = new Set(
-                result.data.content.map(reply => reply.inquiryId)
-            );
+            currentPage = data.currentPage;
+            totalPages = data.totalPages;
+            allInquiries = data.content;
 
-            // 실제로는 전체 문의 목록을 가져와야 하지만,
-            // 현재 API 구조상 답변 목록만 있으므로 임시로 이렇게 처리
-            // TODO: 전체 문의 조회 API 필요
-            allInquiries = result.data.content.map(reply => ({
-                id: reply.inquiryId,
-                title: `문의 #${reply.inquiryId}`,
-                status: reply.status,
-                userId: null,
-                userName: '사용자',
-                createdAt: reply.createdAt,
-                updatedAt: reply.updatedAt
-            }));
+            console.log(`총 ${allInquiries.length}개의 문의를 불러왔습니다.`);
 
             filterInquiries(currentFilter);
 
@@ -446,15 +435,18 @@
         }
     }
 
-    function filterInquiries(filter) {
+    function filterInquiries(filter, event) {
         currentFilter = filter;
-        currentPage = 0;
 
         // 필터 탭 활성화
         document.querySelectorAll('.filter-tab').forEach(tab => {
             tab.classList.remove('active');
         });
-        event.target.classList.add('active');
+        if (event) {
+            event.target.classList.add('active');
+        } else {
+            document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
+        }
 
         // 필터링
         if (filter === 'ALL') {
@@ -480,13 +472,7 @@
             return;
         }
 
-        // 페이지네이션 계산
-        const totalPages = Math.ceil(filteredInquiries.length / itemsPerPage);
-        const startIndex = currentPage * itemsPerPage;
-        const endIndex = startIndex + itemsPerPage;
-        const pageInquiries = filteredInquiries.slice(startIndex, endIndex);
-
-        gridContainer.innerHTML = pageInquiries.map(inquiry => {
+        gridContainer.innerHTML = filteredInquiries.map(inquiry => {
             const statusClass = inquiry.status === 'PENDING' ? 'status-pending' : 'status-answered';
             const statusText = inquiry.status === 'PENDING' ? '🟠 대기중' : '🟢 답변완료';
             const createdDate = formatDate(inquiry.createdAt);
@@ -499,7 +485,7 @@
                     </div>
                     <div class="card-info">
                         <div class="card-info-row">
-                            👤 작성자: ${escapeHtml(inquiry.userName || '사용자')}
+                            👤 작성자 ID: #${inquiry.userId}
                         </div>
                         <div class="card-info-row">
                             🆔 문의번호: #${inquiry.id}
@@ -516,10 +502,10 @@
             `;
         }).join('');
 
-        renderPagination(totalPages);
+        renderPagination();
     }
 
-    function renderPagination(totalPages) {
+    function renderPagination() {
         const paginationContainer = document.getElementById('pagination');
 
         if (totalPages <= 1) {
@@ -528,28 +514,20 @@
         }
 
         let paginationHTML = `
-            <button class="page-btn" onclick="goToPage(${currentPage - 1})" ${currentPage === 0 ? 'disabled' : ''}>◀</button>
+            <button class="page-btn" onclick="loadInquiries(${currentPage - 1})" ${currentPage === 0 ? 'disabled' : ''}>◀</button>
         `;
 
         for (let i = 0; i < totalPages; i++) {
             paginationHTML += `
-                <button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i + 1}</button>
+                <button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="loadInquiries(${i})">${i + 1}</button>
             `;
         }
 
         paginationHTML += `
-            <button class="page-btn" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages - 1 ? 'disabled' : ''}>▶</button>
+            <button class="page-btn" onclick="loadInquiries(${currentPage + 1})" ${currentPage === totalPages - 1 ? 'disabled' : ''}>▶</button>
         `;
 
         paginationContainer.innerHTML = paginationHTML;
-    }
-
-    function goToPage(page) {
-        const totalPages = Math.ceil(filteredInquiries.length / itemsPerPage);
-        if (page >= 0 && page < totalPages) {
-            currentPage = page;
-            renderInquiries();
-        }
     }
 
     function viewInquiryDetail(inquiryId) {

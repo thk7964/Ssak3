@@ -40,7 +40,7 @@ public class SecurityConfig {
 
     private static final String[] GET_METHOD_PUBLIC_URLS = {
             "/ssak3/products/**",
-            "/ssak3/coupons",
+            "/ssak3/user-coupons",
             "/ssak3/categories",
             "/ssak3/time-deals/**"
     };

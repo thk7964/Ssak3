@@ -1,32 +1,31 @@
-package com.example.ssak3.domain.coupon.model.response;
+package com.example.ssak3.domain.usercoupon.model.response;
 
 import com.example.ssak3.domain.coupon.entity.Coupon;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Getter
 @RequiredArgsConstructor
-public class CouponListGetResponse {
+// Jackson 역직렬화를 위한 기본 생성자
+@NoArgsConstructor(access = AccessLevel.PRIVATE, force = true)
+public class CouponListForUserGetResponse {
 
     private final Long id;
     private final String name;
     private final Integer discountValue;
-    private final Integer totalQuantity;
-    private final Integer issuedQuantity;
-    private final LocalDateTime issueStartDate;
     private final LocalDateTime issueEndDate;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
-    public static CouponListGetResponse from(Coupon coupon) {
-        return new CouponListGetResponse(
+    public static CouponListForUserGetResponse from(Coupon coupon) {
+        return new CouponListForUserGetResponse(
                 coupon.getId(),
                 coupon.getName(),
                 coupon.getDiscountValue(),
-                coupon.getTotalQuantity(),
-                coupon.getIssuedQuantity(),
-                coupon.getIssueStartDate(),
                 coupon.getIssueEndDate(),
                 coupon.getCreatedAt(),
                 coupon.getUpdatedAt()

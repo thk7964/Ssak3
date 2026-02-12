@@ -112,7 +112,7 @@ public class CartProductService {
 
 
         }
-        return CartProductListGetResponse.from(cartProduct, timeDeal);
+        return CartProductListGetResponse.from(cartProduct, timeDeal, null);
 
     }
 
@@ -157,7 +157,7 @@ public class CartProductService {
 
         cartProduct.changeQuantity(newQuantity);
 
-        return CartProductListGetResponse.from(cartProduct, timeDeal);
+        return CartProductListGetResponse.from(cartProduct, timeDeal, null);
     }
 
 

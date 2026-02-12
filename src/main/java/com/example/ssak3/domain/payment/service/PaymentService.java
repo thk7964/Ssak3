@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -67,11 +68,15 @@ public class PaymentService {
                     request.getAmount()
             );
 
-            List<Long> productIds = order.getOrderProducts().stream()
-                    .map(op -> op.getProduct().getId())
+            List<Long> cartProductIds = order.getOrderProducts().stream()
+                    .map(op -> op.getCartProductId())
+                    .filter(Objects::nonNull)
                     .toList();
 
-            cartProductRepository.deletePaidProductsFromCart(order.getUser().getId(), productIds);
+            if (!cartProductIds.isEmpty()) {
+                cartProductRepository.deletePaidProductsFromCart(order.getUser().getId(), cartProductIds);
+            }
+
             payment.approve();
             order.updateStatus(OrderStatus.DONE);
 

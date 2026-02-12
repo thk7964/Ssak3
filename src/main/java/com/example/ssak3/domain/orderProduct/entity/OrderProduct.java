@@ -1,5 +1,6 @@
 package com.example.ssak3.domain.orderProduct.entity;
 
+import com.example.ssak3.domain.cartproduct.entity.CartProduct;
 import com.example.ssak3.domain.order.entity.Order;
 import com.example.ssak3.domain.product.entity.Product;
 import jakarta.persistence.*;
@@ -31,10 +32,14 @@ public class OrderProduct {
     @Column(nullable = false)
     private Integer quantity;
 
-    public OrderProduct(Order order, Product product, Integer unitPrice, Integer quantity) {
+    @Column(name = "cart_product_id")
+    private Long cartProductId;
+
+    public OrderProduct(Order order, Product product, Integer unitPrice, Integer quantity, Long cartProductId) {
         this.order = order;
         this.product = product;
         this.unitPrice = unitPrice;
         this.quantity = quantity;
+        this.cartProductId = cartProductId;
     }
 }

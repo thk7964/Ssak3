@@ -66,6 +66,7 @@ public enum ErrorCode {
     IMAGE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 저장 실패했습니다."),
     INVALID_FILE(HttpStatus.BAD_REQUEST, "유효하지 않은 파일입니다."),
     INVALID_URL(HttpStatus.BAD_REQUEST, "유효하지 않은 url입니다."),
+    TIME_DEAL_PRODUCT_MISMATCH(HttpStatus.BAD_REQUEST, "해당 상품의 타임딜이 아닙니다."),
 
     // Token 에러
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),

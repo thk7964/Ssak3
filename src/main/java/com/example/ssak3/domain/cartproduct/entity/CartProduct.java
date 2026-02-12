@@ -3,6 +3,7 @@ package com.example.ssak3.domain.cartproduct.entity;
 import com.example.ssak3.common.entity.BaseEntity;
 import com.example.ssak3.domain.cart.entity.Cart;
 import com.example.ssak3.domain.product.entity.Product;
+import com.example.ssak3.domain.timedeal.entity.TimeDeal;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,13 +28,18 @@ public class CartProduct extends BaseEntity {
     @Column(nullable = false)
     private Integer quantity;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "timedeal_id")
+    private TimeDeal timeDeal;
+
     public void changeQuantity(int quantity) {
         this.quantity = quantity;
     }
 
-    public CartProduct(Cart cart, Product product, Integer quantity) {
+    public CartProduct(Cart cart, Product product, TimeDeal timeDeal, Integer quantity) {
         this.cart = cart;
         this.product = product;
+        this.timeDeal = timeDeal;
         this.quantity = quantity;
     }
 

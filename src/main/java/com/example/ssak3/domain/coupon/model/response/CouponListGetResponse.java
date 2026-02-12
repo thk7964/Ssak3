@@ -1,8 +1,7 @@
 package com.example.ssak3.domain.coupon.model.response;
 
 import com.example.ssak3.domain.coupon.entity.Coupon;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 

@@ -5,6 +5,7 @@ import com.example.ssak3.common.enums.TimeDealStatus;
 import com.example.ssak3.domain.product.entity.Product;
 import com.example.ssak3.domain.product.model.response.ProductGetPopularResponse;
 import com.example.ssak3.domain.product.repository.ProductRepository;
+import com.example.ssak3.domain.s3.service.S3Uploader;
 import com.example.ssak3.domain.timedeal.entity.TimeDeal;
 import com.example.ssak3.domain.timedeal.repository.TimeDealRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ public class ProductRankingService {
     private static final String PRODUCT_VIEW_CHECK_PREFIX = "product:view:check:ip:";
     private final ProductRepository productRepository;
     private final TimeDealRepository timeDealRepository;
+    private final S3Uploader s3Uploader;
 
     /**
      * 조회수 증가 메소드
@@ -68,27 +70,6 @@ public class ProductRankingService {
      */
     public List<ProductGetPopularResponse> getPopularProductTop10() {
 
-        LocalDate now = LocalDate.now();
-
-        List<String> otherKeys = new ArrayList<>();
-
-        // 현재 시점으로부터 일주일치 키 리스트 생성 (오늘은 제외)
-        for (int i = 0; i < 6; i++) {
-            otherKeys.add(PRODUCT_DAILY_RANKING_PREFIX + now.minusDays(i + 1));
-        }
-
-        // 일주일치 결과 집계
-        redisTemplate.opsForZSet().unionAndStore(
-                PRODUCT_DAILY_RANKING_PREFIX + now,
-                    otherKeys,
-                    PRODUCT_WEEKLY_RANKING_KEY);
-
-        // 오늘로부터 10일 뒤 자정 시점 구하기
-        LocalDateTime expirationTime = now.plusDays(10).atStartOfDay();
-
-        // TTL 설정: 덮어씌워질 때마다 만료 시간을 10일 뒤로 갱신
-        redisTemplate.expireAt(PRODUCT_WEEKLY_RANKING_KEY, expirationTime.atZone(ZoneId.systemDefault()).toInstant());
-
         // 랭킹으로 조회
         Set<ZSetOperations.TypedTuple<String>> result = redisTemplate.opsForZSet().reverseRangeWithScores(PRODUCT_WEEKLY_RANKING_KEY, 0, 9);
 
@@ -97,7 +78,7 @@ public class ProductRankingService {
         }
 
         // DB에서 TOP 10 상품 id 리스트 가져오기: Redis가 정렬해준 순서 보장함
-        List<Long> productIdList = result.stream().map(tuple -> Long.parseLong(tuple.getValue())).toList();
+        List<Long> productIdList = result.stream().map(id -> Long.parseLong(id.getValue())).toList();
 
         // DB에서 Product 가져오기: in 연산은 Redis가 정렬해준 순서를 보장해주지 않음
         List<Product> productList = productRepository.findAllByIdInAndStatusAndIsDeletedFalse(productIdList, ProductStatus.FOR_SALE);
@@ -115,10 +96,46 @@ public class ProductRankingService {
         return productIdList.stream()
                 .map(id -> {
                     Product product = productMap.get(id);
-                    return product != null ? ProductGetPopularResponse.from(product, timeDealMap.get(id)) : null;
+
+                    if (product == null) {
+                        return null;
+                    }
+
+                    TimeDeal timeDeal = timeDealMap.get(id);
+
+                    String productImageUrl = null;
+                    String timeDealImageUrl = null;
+
+                    if (timeDeal != null) {
+                        timeDealImageUrl = s3Uploader.createPresignedGetUrl(timeDeal.getImage(), 5);
+                    } else {
+                        productImageUrl = s3Uploader.createPresignedGetUrl(product.getImage(), 5);
+                    }
+
+                    return ProductGetPopularResponse.from(product, timeDeal, productImageUrl, timeDealImageUrl);
                 })
                 .filter(Objects::nonNull) // null인 애들은 걸러냄
                 .toList();
+    }
+
+    /**
+     * 주간 인기 집계
+     */
+    public void updateWeeklyRanking() {
+        LocalDate now = LocalDate.now();
+
+        List<String> otherKeys = new ArrayList<>();
+
+        // 현재 시점으로부터 일주일치 키 리스트 생성 (오늘은 제외)
+        for (int i = 0; i < 6; i++) {
+            otherKeys.add(PRODUCT_DAILY_RANKING_PREFIX + now.minusDays(i + 1));
+        }
+
+        // 일주일치 결과 집계
+        redisTemplate.opsForZSet().unionAndStore(
+                PRODUCT_DAILY_RANKING_PREFIX + now,
+                otherKeys,
+                PRODUCT_WEEKLY_RANKING_KEY);
     }
 
 }

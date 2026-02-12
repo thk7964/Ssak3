@@ -38,31 +38,51 @@ public class TimeDeal extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private TimeDealStatus status;
 
+    @Column
+    private String image;
+
+    @Column(name = "detail_image")
+    private String detailImage;
+
     @Column(nullable = false, name = "is_deleted")
     private boolean isDeleted;
 
-    public TimeDeal(Product product, Integer dealPrice, LocalDateTime startAt, LocalDateTime endAt) {
+    public TimeDeal(Product product, Integer dealPrice, LocalDateTime startAt, LocalDateTime endAt, String image, String detailImage) {
         this.product = product;
         this.dealPrice = dealPrice;
         this.startAt = startAt;
         this.endAt = endAt;
         this.isDeleted = false;
         this.status = TimeDealStatus.READY;
+        this.image = image;
+        this.detailImage = detailImage;
     }
 
-
     public void setStatus(TimeDealStatus newStatus) {
-        if (this.status != newStatus) {
-            this.status = newStatus;
-            if (newStatus == TimeDealStatus.READY || newStatus == TimeDealStatus.CLOSED) productOpen();
-            if (newStatus == TimeDealStatus.OPEN) productClosed();
 
+        if (this.status == newStatus) return;
+
+        this.status = newStatus;
+
+        if (newStatus == TimeDealStatus.OPEN) {
+            closeNormalProduct();
+        }else {
+            openNormalProduct();
         }
+
     }
 
     public void softDelete() {
         this.isDeleted = true;
-        this.status=TimeDealStatus.DELETED;
+        this.status = TimeDealStatus.DELETED;
+
+        if (this.image!=null) {
+            this.image=this.image;
+        }
+        if (this.detailImage!=null) {
+            this.detailImage=this.detailImage;
+        }
+
     }
 
     public void update(TimeDealUpdateRequest request) {
@@ -77,20 +97,27 @@ public class TimeDeal extends BaseEntity {
         if (request.getEndAt() != null) {
             this.endAt = request.getEndAt();
         }
+        if (request.getImage() != null) {
+            this.image = request.getImage();
+        }
+        if (request.getDetailImage() != null) {
+            this.detailImage = request.getDetailImage();
+        }
     }
 
     public boolean isDeletable() {
         return status == TimeDealStatus.READY || status == TimeDealStatus.CLOSED;
     }
 
-    private void productOpen() {
+    private void openNormalProduct() {
         if (isDeleted) return;
-        product.stopSaleForTimeDeal();
+
+        product.restoreStatusAfterTimeDeal();
     }
 
-    private void productClosed() {
+    private void closeNormalProduct() {
         if (isDeleted) return;
-        product.restoreStatusAfterTimeDeal();
+        product.stopSaleForTimeDeal();
     }
 
 }

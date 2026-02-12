@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
@@ -25,6 +27,10 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
         ErrorCode errorCode = (ErrorCode) request.getAttribute("exception");
 
         String message = (errorCode == null) ? "인증이 필요합니다." : errorCode.getMessage();
+
+        if (errorCode != null) {
+            log.warn("STATUS_CODE = {} | MESSAGE = {}", errorCode.getStatus().value(), errorCode.getMessage());
+        }
 
         ApiResponse errorResponse = ApiResponse.error(message);
 

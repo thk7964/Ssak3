@@ -23,6 +23,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 24px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
             position: sticky;
             top: 0;
@@ -38,6 +39,63 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
             letter-spacing: -0.5px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .search-wrapper {
+            display: flex;
+            gap: 8px;
+            background: #f8f9fa;
+            padding: 8px 16px;
+            border-radius: 24px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .search-wrapper:focus-within {
+            background: white;
+            border-color: #74b9ff;
+            box-shadow: 0 0 0 4px rgba(116, 185, 255, 0.1);
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            outline: none;
+            color: #495057;
+        }
+
+        .search-input::placeholder {
+            color: #adb5bd;
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .search-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
         }
 
         .header-icons {
@@ -61,6 +119,72 @@
         .icon-btn:hover {
             background: #e9ecef;
             transform: translateY(-2px);
+        }
+
+        .auth-btn {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
+            white-space: nowrap;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(116, 185, 255, 0.45);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logout-btn {
+            background: #f8f9fa;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: #495057;
+            transition: all 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background: #e9ecef;
+        }
+
+        /* 전체 상품 버튼 스타일 추가 */
+        .all-products-btn {
+            background: white;
+            border: 2px solid #74b9ff;
+            color: #74b9ff;
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .all-products-btn:hover {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            border-color: transparent;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(116, 185, 255, 0.35);
         }
 
         .banner {
@@ -277,17 +401,46 @@
             }
             header {
                 padding: 16px 20px;
+                flex-wrap: wrap;
+            }
+            .search-container {
+                order: 3;
+                width: 100%;
+                max-width: 100%;
+                margin-top: 12px;
             }
         }
     </style>
 </head>
 <body>
 <header>
-    <div class="logo">🌊 싹쓰리</div>
+    <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
+
+    <!-- 검색창 -->
+    <div class="search-container">
+        <div class="search-wrapper">
+            <input
+                    type="text"
+                    class="search-input"
+                    id="searchInput"
+                    placeholder="상품을 검색해보세요 🔍"
+                    onkeypress="handleSearchEnter(event)"
+            >
+            <button class="search-btn" onclick="handleSearch()">🔍</button>
+        </div>
+    </div>
+
     <div class="header-icons">
-        <button class="icon-btn">🔍</button>
         <button class="icon-btn">🛒</button>
-        <button class="icon-btn my-page-btn" id="myPageBtn" title="마이페이지">👤</button>
+
+        <!-- 로그인 안 된 경우 -->
+        <button class="auth-btn" id="loginBtn" style="display: none;">로그인 / 회원가입</button>
+
+        <!-- 로그인 된 경우 -->
+        <div class="user-info" id="userInfo" style="display: none;">
+            <button class="icon-btn" id="myPageBtn" title="마이페이지">👤</button>
+            <button class="logout-btn" id="logoutBtn">로그아웃</button>
+        </div>
     </div>
 </header>
 
@@ -297,7 +450,8 @@
 </div>
 
 <nav>
-    <a href="#timedeal">⭐ 타임딜</a>
+    <a href="time-deals.html">⭐ 타임딜</a>
+    <a href="product-search.html">📦 전체 상품</a>
     <a href="#best">🏍️ 올포원</a>
     <a href="#sale">🎉 2용준</a>
     <a href="#all">🌊 싹쓰리</a>
@@ -308,129 +462,11 @@
     <a href="#event">♾️ LIMITLESS</a>
 </nav>
 
+
 <div class="products-section">
-    <h2 class="section-title">인기 조회순 TOP 10 상품</h2>
+    <h2 class="section-title">인기 조회수 TOP 10 상품</h2>
 
-    <div class="products-grid">
-        <div class="product-card">
-            <div class="product-image">🏍️</div>
-            <div class="product-info">
-                <div class="product-name">올포원 스티커팩</div>
-                <div class="product-desc">귀여운 오토바이 캐릭터</div>
-                <div class="product-footer">
-                    <div class="product-price">8,900원</div>
-                    <button class="add-btn">담기</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="product-card">
-            <div class="product-image">✨</div>
-            <div class="product-info">
-                <div class="product-name">LIMITLESS 담요</div>
-                <div class="product-desc">프리미엄 한정판</div>
-                <div class="product-footer">
-                    <div class="product-price">24,900원</div>
-                    <button class="add-btn">담기</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="product-card">
-            <div class="product-image">⚔️</div>
-            <div class="product-info">
-                <div class="product-name">2용준 방패 배지</div>
-                <div class="product-desc">게임 캐릭터 에디션</div>
-                <div class="product-footer">
-                    <div class="product-price">6,900원</div>
-                    <button class="add-btn">담기</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="product-card">
-            <div class="product-image">🎮</div>
-            <div class="product-info">
-                <div class="product-name">싹쓰리 잠옷</div>
-                <div class="product-desc">시원한 색상 컬렉션</div>
-                <div class="product-footer">
-                    <div class="product-price">23,900원</div>
-                    <button class="add-btn">담기</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="product-card">
-            <div class="product-image">🎵</div>
-            <div class="product-info">
-                <div class="product-name">슬개생 앨범</div>
-                <div class="product-desc">OST 음원 앨범</div>
-                <div class="product-footer">
-                    <div class="product-price">15,900원</div>
-                    <button class="add-btn">담기</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="product-card">
-            <div class="product-image">⚡</div>
-            <div class="product-info">
-                <div class="product-name">펜타곤 에너지 드링크 세트</div>
-                <div class="product-desc">강렬한 스페셜</div>
-                <div class="product-footer">
-                    <div class="product-price">18,900원</div>
-                    <button class="add-btn">담기</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="product-card">
-            <div class="product-image">🌈</div>
-            <div class="product-info">
-                <div class="product-name">여걸식스 텀블러</div>
-                <div class="product-desc">여러 색상 믹스</div>
-                <div class="product-footer">
-                    <div class="product-price">27,900원</div>
-                    <button class="add-btn">담기</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="product-card">
-            <div class="product-image">💎</div>
-            <div class="product-info">
-                <div class="product-name">럭키펀처 헤드셋</div>
-                <div class="product-desc">프리미엄 골드 라인</div>
-                <div class="product-footer">
-                    <div class="product-price">122,900원</div>
-                    <button class="add-btn">담기</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="product-card">
-            <div class="product-image">🎨</div>
-            <div class="product-info">
-                <div class="product-name">아트 포스터 세트</div>
-                <div class="product-desc">고급 인쇄 3장</div>
-                <div class="product-footer">
-                    <div class="product-price">19,900원</div>
-                    <button class="add-btn">담기</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="product-card">
-            <div class="product-image">🧸</div>
-            <div class="product-info">
-                <div class="product-name">귀여운 미니 피규어</div>
-                <div class="product-desc">부드러운 터치</div>
-                <div class="product-footer">
-                    <div class="product-price">9,900원</div>
-                    <button class="add-btn">담기</button>
-                </div>
-            </div>
-        </div>
+    <div class="products-grid" id="popularProducts">
     </div>
 </div>
 
@@ -441,52 +477,160 @@
 </footer>
 
 <script>
-    const addBtns = document.querySelectorAll('.add-btn');
-    addBtns.forEach(btn => {
-        btn.addEventListener('click', function(e) {
+    async function loadPopularProducts() {
+        try {
+            const response = await fetch('http://localhost:8080/ssak3/products/popular');
+            const result = await response.json();
+
+            if (!result.success) {
+                console.error(result.message);
+                return;
+            }
+
+            const products = result.data;
+
+            const container = document.getElementById('popularProducts');
+            container.innerHTML = '';
+
+            products.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                <div class="product-image">🛍️</div>
+                <div class="product-info">
+                    <div class="product-name">${product.name}</div>
+                    <div class="product-desc">카테고리 ${product.categoryId}</div>
+                    <div class="product-footer">
+                        <div class="product-price">
+                            ${product.dealPrice ?? product.price}원
+                        </div>
+                        <button class="add-btn">담기</button>
+                    </div>
+                </div>
+            `;
+
+                card.addEventListener('click', () => {
+                    window.location.href = `product-detail.html?id=${product.id}`;
+                });
+
+                container.appendChild(card);
+            });
+
+        } catch (error) {
+            console.error('인기 상품 로딩 실패:', error);
+        }
+    }
+
+    loadPopularProducts();
+
+    // [공통] 검색 처리 함수
+    function handleSearch() {
+        const keyword = document.getElementById('searchInput').value.trim();
+        if (keyword) {
+            window.location.href = `search.html?keyword=${encodeURIComponent(keyword)}`;
+        } else {
+            alert('검색어를 입력해주세요!');
+        }
+    }
+
+    function handleSearchEnter(event) {
+        if (event.key === 'Enter') handleSearch();
+    }
+
+    // [핵심] 로그인 상태 확인 로직
+    async function checkLoginStatus() {
+        const loginBtn = document.getElementById('loginBtn');
+        const userInfo = document.getElementById('userInfo');
+        const token = localStorage.getItem('accessToken');
+
+        try {
+            let response;
+            // 1. 일반 로그인(JWT) 우선 확인
+            if (token) {
+                response = await fetch('http://localhost:8080/ssak3/users/me', {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+            }
+
+            // 2. 토큰이 없거나 만료된 경우 카카오(쿠키) 확인
+            if (!token || response.status === 401) {
+                response = await fetch('http://localhost:8080/ssak3/users/me', {
+                    method: 'GET',
+                    credentials: 'include' // 쿠키 포함
+                });
+            }
+
+            if (response.ok) {
+                loginBtn.style.display = 'none';
+                userInfo.style.display = 'flex';
+            } else {
+                throw new Error('Not Authenticated');
+            }
+        } catch (error) {
+            localStorage.removeItem('accessToken');
+            loginBtn.style.display = 'block';
+            userInfo.style.display = 'none';
+        }
+    }
+
+    // [핵심] 로그아웃 로직 (네트워크 오류 방어)
+    document.getElementById('logoutBtn').addEventListener('click', async function() {
+        if (!confirm('로그아웃 하시겠습니까?')) return;
+
+        const token = localStorage.getItem('accessToken');
+
+        try {
+            // 서버에 로그아웃 알림 (에러가 나더라도 클라이언트는 지워야 하므로 await 처리)
+            const logoutRequest = {
+                method: 'POST',
+                credentials: 'include'
+            };
+            if (token) logoutRequest.headers = { 'Authorization': `Bearer ${token}` };
+
+            const response = await fetch('http://localhost:8080/ssak3/auth/logout', logoutRequest);
+
+            // 서버 응답과 상관없이 클라이언트 데이터는 무조건 삭제 (유저 경험 우선)
+            localStorage.removeItem('accessToken');
+
+            if (!response.ok) {
+                console.warn('서버 세션은 만료되지 않았을 수 있음:', response.status);
+            }
+
+            alert('로그아웃 되었습니다.');
+            // 캐시 방지를 위해 주소 뒤에 파라미터를 붙여 리다이렉트
+            // window.location.replace('home.html?logout=' + Date.now());
+            window.location.href = 'home.html';
+
+        } catch (e) {
+            console.error('로그아웃 통신 에러:', e);
+            // 네트워크 끊겨도 로컬 정보는 지워서 로그아웃된 것처럼 보이게 처리
+            localStorage.removeItem('accessToken');
+            alert('로그아웃 되었습니다.');
+            window.location.replace('home.html');
+        }
+    });
+
+    // 버튼 이벤트 바인딩
+    document.getElementById('loginBtn').addEventListener('click', () => location.href = 'login.html');
+    document.getElementById('myPageBtn').addEventListener('click', () => location.href = 'mypage.html');
+
+    // 초기 실행
+    checkLoginStatus();
+
+    // 상품 카드 관련 (기존 유지)
+    document.querySelectorAll('.add-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
             e.stopPropagation();
             alert('장바구니에 추가되었습니다!');
         });
     });
 
-    const productCards = document.querySelectorAll('.product-card');
-    productCards.forEach((card, index) => {
-        card.addEventListener('click', function() {
-            // 상품 ID는 인덱스 + 1로 가정 (실제로는 서버에서 받아온 ID를 사용해야 함)
-            const productId = index + 1;
-            window.location.href = `product-detail.html?id=${productId}`;
-        });
-    });
-
-    // 마이페이지 버튼 클릭 이벤트
-    document.getElementById('myPageBtn').addEventListener('click', async function () {
-        const token = localStorage.getItem('accessToken');
-
-        const headers = {};
-        if (token) {
-            headers.Authorization = 'Bearer ' + token;
-        }
-
-        try {
-            const response = await fetch('http://localhost:8080/ssak3/users/me', {
-                method: 'GET',
-                headers: headers,
-                credentials: 'include' // 쿠키 자동 전송
-            });
-
-            if (!response.ok) {
-                alert('로그인이 필요한 서비스입니다.');
-                window.location.href = 'login.html';
-                return;
-            }
-
-            window.location.href = 'mypage.html';
-        } catch (e) {
-            alert('로그인이 필요한 서비스입니다.');
-            window.location.href = 'login.html';
-        }
-    });
-
+    // document.querySelectorAll('.product-card').forEach((card, index) => {
+    //     card.addEventListener('click', () => {
+    //         window.location.href = `product-detail.html?id=${index + 1}`;
+    //     });
+    // });
 </script>
 </body>
 </html>

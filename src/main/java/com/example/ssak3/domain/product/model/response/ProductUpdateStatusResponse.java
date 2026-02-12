@@ -15,7 +15,6 @@ public class ProductUpdateStatusResponse {
     private final Long categoryId;
     private final String name;
     private final ProductStatus status;
-
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 

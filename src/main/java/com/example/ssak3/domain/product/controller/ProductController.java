@@ -4,7 +4,6 @@ import com.example.ssak3.common.model.ApiResponse;
 import com.example.ssak3.domain.product.model.request.ProductCreateRequest;
 import com.example.ssak3.domain.product.model.request.ProductUpdateRequest;
 import com.example.ssak3.domain.product.model.request.ProductUpdateStatusRequest;
-import com.example.ssak3.domain.product.service.ProductRankingService;
 import com.example.ssak3.domain.product.service.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +15,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Slf4j
 @RequestMapping("/ssak3")
@@ -24,7 +26,6 @@ import org.springframework.web.bind.annotation.*;
 public class ProductController {
 
     private final ProductService productService;
-    private final ProductRankingService productRankingService;
 
     /**
      * 상품생성 API
@@ -32,8 +33,7 @@ public class ProductController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/admin/products")
     public ResponseEntity<ApiResponse> createProductApi(
-            @RequestBody ProductCreateRequest request
-    ) {
+            @RequestBody ProductCreateRequest request) {
         log.info("controller 상품생성 상품명: {}", request.getName());
         ApiResponse response = ApiResponse.success("상품을 생성하셨습니다.", productService.createProduct(request));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -48,8 +48,8 @@ public class ProductController {
 
         String ip = request.getRemoteAddr();
 
-       ApiResponse response = ApiResponse.success("상품을 조회했습니다.", productService.getProduct(productId, ip));
-       return ResponseEntity.status(HttpStatus.OK).body(response);
+        ApiResponse response = ApiResponse.success("상품을 조회했습니다.", productService.getProduct(productId, ip));
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     /**
@@ -72,7 +72,7 @@ public class ProductController {
             @RequestParam(name = "categoryId", required = false) Long categoryId,
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         log.info("controller 상품목록조회 검색: {}", categoryId);
-        ApiResponse response = ApiResponse.success("상품목록을 조회했습니다.",  productService.getProductList(categoryId, pageable));
+        ApiResponse response = ApiResponse.success("상품목록을 조회했습니다.", productService.getProductList(categoryId, pageable));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
@@ -86,7 +86,7 @@ public class ProductController {
             @RequestParam(name = "categoryId", required = false) Long categoryId,
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         log.info("controller 상품목록조회 검색 - admin 카테고리Id: {}", categoryId);
-        ApiResponse response = ApiResponse.success("상품목록을 조회했습니다.",  productService.getProductListAdmin(categoryId, pageable));
+        ApiResponse response = ApiResponse.success("상품목록을 조회했습니다.", productService.getProductListAdmin(categoryId, pageable));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
@@ -112,17 +112,6 @@ public class ProductController {
             @PathVariable Long productId) {
         log.info("controller 상품삭제 id: {}", productId);
         ApiResponse response = ApiResponse.success("상품을 삭제하였습니다", productService.deleteProduct(productId));
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
-    /**
-     * 조회 수 TOP 10
-     */
-    @GetMapping("/products/popular")
-    public ResponseEntity<ApiResponse> getPopularProductApi() {
-
-        ApiResponse response = ApiResponse.success("조회 수 인기 TOP 10 상품 검색에 성공했습니다.", productRankingService.getPopularProductTop10());
-
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

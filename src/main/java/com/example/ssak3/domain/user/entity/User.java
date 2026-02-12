@@ -85,4 +85,8 @@ public class User extends BaseEntity {
     public void softDelete() {
         this.isDeleted = true;
     }
+
+    public void updatePhone() {
+        this.phone = null;
+    }
 }

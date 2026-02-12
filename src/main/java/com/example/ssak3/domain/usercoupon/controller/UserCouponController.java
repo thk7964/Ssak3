@@ -16,7 +16,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 
-
 @RestController
 @RequestMapping("/ssak3/user-coupons")
 @RequiredArgsConstructor
@@ -25,7 +24,18 @@ public class UserCouponController {
     private final UserCouponService userCouponService;
 
     /**
-     * 쿠폰 추가
+     * 쿠폰 목록 조회 API (사용자용)
+     */
+    @GetMapping
+    public ResponseEntity<ApiResponse> getCouponListForUserApi(@PageableDefault(size = 10, sort = "issueEndDate", direction = Sort.Direction.ASC) Pageable pageable) {
+
+        ApiResponse response = ApiResponse.success("쿠폰 목록 조회 완료", userCouponService.getCouponListForUser(pageable));
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    /**
+     * 쿠폰 추가 API
      */
     @PostMapping
     public ResponseEntity<ApiResponse> issueCouponApi(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody UserCouponIssueRequest request) {
@@ -36,9 +46,9 @@ public class UserCouponController {
     }
 
     /**
-     * 내 쿠폰 목록 조회
+     * 내 쿠폰 목록 조회 API
      */
-    @GetMapping
+    @GetMapping("/me")
     public ResponseEntity<ApiResponse> getMyCouponListApi(
             @AuthenticationPrincipal AuthUser authUser,
             @PageableDefault(size = 10, sort = "coupon.discountValue", direction = Sort.Direction.DESC) Pageable pageable,
@@ -50,18 +60,7 @@ public class UserCouponController {
     }
 
     /**
-     * 쿠폰 사용 처리
-     */
-    @PatchMapping("/{userCouponId}")
-    public ResponseEntity<ApiResponse> useCouponApi(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long userCouponId) {
-
-        ApiResponse response = ApiResponse.success("내 쿠폰 사용 완료", userCouponService.useCoupon(authUser.getId(), userCouponId));
-
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
-    /**
-     * 내 쿠폰 삭제
+     * 내 쿠폰 삭제 API
      */
     @DeleteMapping("/{userCouponId}")
     public ResponseEntity<ApiResponse> deleteUserCouponApi(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long userCouponId) {

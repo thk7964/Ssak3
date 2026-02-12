@@ -15,7 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/ssak3/coupons")
+@RequestMapping("/ssak3/admin/coupons")
 @RequiredArgsConstructor
 public class CouponController {
 
@@ -37,6 +37,7 @@ public class CouponController {
      * 쿠폰 목록 조회
      */
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse> getCouponListApi(@PageableDefault(size = 10, sort = "issueEndDate", direction = Sort.Direction.ASC) Pageable pageable) {
 
         ApiResponse response = ApiResponse.success("쿠폰 목록 조회 완료", couponService.getCouponList(pageable));

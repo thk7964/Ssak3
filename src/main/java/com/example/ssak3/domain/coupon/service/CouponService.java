@@ -11,6 +11,7 @@ import com.example.ssak3.domain.coupon.model.response.CouponDeleteResponse;
 import com.example.ssak3.domain.coupon.model.response.CouponListGetResponse;
 import com.example.ssak3.domain.coupon.model.response.CouponUpdateResponse;
 import com.example.ssak3.domain.coupon.repository.CouponRepository;
+import com.example.ssak3.domain.usercoupon.service.UserCouponCacheService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,12 +25,18 @@ import java.time.LocalDateTime;
 public class CouponService {
 
     private final CouponRepository couponRepository;
+    private final UserCouponCacheService userCouponCacheService;
 
     /**
      * 쿠폰 생성 로직
      */
     @Transactional
     public CouponCreateResponse createCoupon(CouponCreateRequest request) {
+
+        // 시작일이 현재 시간보다 이전인 경우 예외
+        if (request.getIssueStartDate().isBefore(LocalDateTime.now())) {
+            throw new CustomException(ErrorCode.COUPON_INVALID_START_TIME);
+        }
 
         // 종료일이 시작일보다 빠른 경우 예외
         if (request.getIssueEndDate().isBefore(request.getIssueStartDate())) {
@@ -72,7 +79,20 @@ public class CouponService {
         Coupon coupon = couponRepository.findById(couponId)
                 .orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
 
+        // 종료일이 현재 시간보다 이전으로 수정되는 것 방지
+        if (request.getIssueEndDate().isBefore(LocalDateTime.now())) {
+            throw new CustomException(ErrorCode.COUPON_INVALID_END_TIME);
+        }
+
+        // 종료일이 시작일보다 빠른 경우 예외
+        if (request.getIssueEndDate().isBefore(coupon.getIssueStartDate())) {
+            throw new CustomException(ErrorCode.COUPON_INVALID_TIME_RANGE);
+        }
+
         coupon.update(request);
+
+        // 쿠폰 정보가 변경되었으므로 사용자용 목록 캐시를 비움
+        userCouponCacheService.clearUserCouponListCache();
 
         return CouponUpdateResponse.from(coupon);
     }
@@ -89,7 +109,11 @@ public class CouponService {
         if (coupon.isDeleted()) {
             throw new CustomException(ErrorCode.COUPON_ALREADY_DELETED);
         }
+
         coupon.delete();
+
+        // 쿠폰이 삭제되었으므로 캐시된 목록에서 사라지도록 처리
+        userCouponCacheService.clearUserCouponListCache();
 
         return CouponDeleteResponse.from(coupon);
     }

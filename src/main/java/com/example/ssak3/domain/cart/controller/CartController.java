@@ -1,4 +1,4 @@
-package com.example.ssak3.domain.cart.Controller;
+package com.example.ssak3.domain.cart.controller;
 
 import com.example.ssak3.common.model.ApiResponse;
 import com.example.ssak3.common.model.AuthUser;

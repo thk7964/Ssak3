@@ -10,12 +10,10 @@ import com.example.ssak3.domain.coupon.repository.CouponRepository;
 import com.example.ssak3.domain.user.entity.User;
 import com.example.ssak3.domain.user.repository.UserRepository;
 import com.example.ssak3.domain.usercoupon.entity.UserCoupon;
-import com.example.ssak3.domain.usercoupon.model.response.UserCouponDeleteResponse;
-import com.example.ssak3.domain.usercoupon.model.response.UserCouponIssueResponse;
-import com.example.ssak3.domain.usercoupon.model.response.UserCouponListGetResponse;
-import com.example.ssak3.domain.usercoupon.model.response.UserCouponUseResponse;
+import com.example.ssak3.domain.usercoupon.model.response.*;
 import com.example.ssak3.domain.usercoupon.repository.UserCouponRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,14 +24,46 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserCouponService {
 
     private final UserCouponRepository userCouponRepository;
     private final UserRepository userRepository;
     private final CouponRepository couponRepository;
+    private final UserCouponCacheService userCouponCacheService;
 
     /**
-     * 쿠폰 추가 로직
+     * 쿠폰 목록 조회 로직 (사용자용)
+     */
+    @Transactional(readOnly = true)
+    public PageResponse<CouponListForUserGetResponse> getCouponListForUser(Pageable pageable) {
+
+        int pageNumber = pageable.getPageNumber();
+
+        // 1. 캐시에서 먼저 조회
+        PageResponse<CouponListForUserGetResponse> cachedResponse = userCouponCacheService.getUserCouponListCache(pageNumber);
+        if (cachedResponse != null) {
+            log.info("Cache HIT");
+            return cachedResponse;
+        }
+
+        // 2. 캐시 없으면 DB 조회
+        log.info("Cache MISS");
+        Page<CouponListForUserGetResponse> couponPage = couponRepository
+                .findAllAvailableCoupons(LocalDateTime.now(), pageable)
+                .map(CouponListForUserGetResponse::from);
+
+        PageResponse<CouponListForUserGetResponse> response = PageResponse.from(couponPage);
+
+        // 3. 캐시에 저장
+        userCouponCacheService.saveUserCouponListCache(pageNumber, response);
+
+        return response;
+    }
+
+
+    /**
+     * 쿠폰 발급 로직
      */
     @Transactional
     public UserCouponIssueResponse issueCoupon(Long userId, Long couponId) {
@@ -41,7 +71,7 @@ public class UserCouponService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        Coupon coupon = couponRepository.findById(couponId)
+        Coupon coupon = couponRepository.findByIdWithLock(couponId)
                 .orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
 
         // 재발급을 막아야 하는 상태 리스트
@@ -100,39 +130,6 @@ public class UserCouponService {
                 .map(UserCouponListGetResponse::from);
 
         return PageResponse.from(userCouponPage);
-    }
-
-    /**
-     * 쿠폰 사용 처리 로직
-     */
-    @Transactional
-    public UserCouponUseResponse useCoupon(Long userId, Long userCouponId) {
-
-        UserCoupon userCoupon = userCouponRepository.findById(userCouponId)
-                .orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
-
-        // 본인 소유 확인
-        if (!userCoupon.getUser().getId().equals(userId)) {
-            throw new CustomException(ErrorCode.FORBIDDEN_COUPON_ACCESS);
-        }
-
-        // 상태 확인
-        if (userCoupon.getStatus() != UserCouponStatus.AVAILABLE) {
-            throw new CustomException(ErrorCode.COUPON_NOT_AVAILABLE);
-        }
-
-        // 만료일 확인
-        if (userCoupon.getExpiredAt().isBefore(LocalDateTime.now())) {
-            throw new CustomException(ErrorCode.COUPON_EXPIRED);
-        }
-
-        // 최소 주문 금액 확인
-        // Order 기능 병합 이후 개발 예정
-
-
-        userCoupon.use();
-
-        return UserCouponUseResponse.from(userCoupon);
     }
 
     /**

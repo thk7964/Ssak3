@@ -14,16 +14,18 @@ public class ProductListGetResponse {
     private final String name;
     private final Integer price;
     private final Double averageScore;
+    private final String imageUrl;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
-    public static ProductListGetResponse from(Product product) {
+    public static ProductListGetResponse from(Product product, String imageUrl) {
         return new ProductListGetResponse(
                 product.getId(),
                 product.getCategory().getId(),
                 product.getName(),
                 product.getPrice(),
                 product.getAverageScore(),
+                imageUrl,
                 product.getCreatedAt(),
                 product.getUpdatedAt()
         );

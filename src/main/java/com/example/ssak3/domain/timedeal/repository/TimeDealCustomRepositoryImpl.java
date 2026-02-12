@@ -39,7 +39,6 @@ public class TimeDealCustomRepositoryImpl implements TimeDealCustomRepository {
                         .offset(pageable.getOffset())
                         .limit(pageable.getPageSize())
                         .fetch();
-
         List<TimeDealListGetResponse> list = timeDeals.stream()
                 .map(TimeDealListGetResponse::from)
                 .sorted((a,b)->{
@@ -55,7 +54,6 @@ public class TimeDealCustomRepositoryImpl implements TimeDealCustomRepository {
                     return 0;
                 })
                 .toList();
-
         Long count = queryFactory
                 .select(timeDeal.count())
                 .from(timeDeal)
@@ -64,7 +62,6 @@ public class TimeDealCustomRepositoryImpl implements TimeDealCustomRepository {
                         timeDeal.isDeleted.isFalse()
                 )
                 .fetchOne();
-
         return new PageImpl<>(list, pageable, count == null ? 0 : count);
     }
 

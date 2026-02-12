@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>상품 상세 - 싹쓰리</title>
     <style>
-        /* ════════════════════════════════════════════
-           기존 CSS (원본 그대로 - 한 줄도 수정 없음)
-           ════════════════════════════════════════════ */
         * {
             margin: 0;
             padding: 0;
@@ -847,10 +844,7 @@
 </footer>
 
 <script>
-    /* ═══════════════════════════════════════════════════════
-       기존 코드 (원본 그대로)
-       ═══════════════════════════════════════════════════════ */
-
+    // URL에서 상품 ID 가져오기
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('id');
 
@@ -859,12 +853,14 @@
         6:'⚡',  7:'🌈', 8:'💎', 9:'🎨', 10:'🧸'
     };
 
+    // 상품 상태 한글 변환
     const statusText = {
         'AVAILABLE'   : '판매중',
         'SOLDOUT'     : '품절',
         'DISCONTINUED': '단종'
     };
 
+    // 상품 정보 로드
     async function loadProductDetail() {
         if (!productId) { showError('상품을 찾을 수 없습니다.'); return; }
         try {
@@ -879,6 +875,7 @@
         }
     }
 
+    // 상품 정보 표시
     function displayProduct(product) {
         const container   = document.getElementById('productContainer');
         const isAvailable = product.status === 'AVAILABLE';
@@ -924,6 +921,7 @@
         initReviews();
     }
 
+    // 에러 표시
     function showError(message) {
         document.getElementById('productContainer').innerHTML = `
         <div class="error">

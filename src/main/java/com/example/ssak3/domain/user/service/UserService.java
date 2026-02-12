@@ -86,6 +86,8 @@ public class UserService {
 
         user.softDelete();
 
+        user.updatePhone();
+
         return UserDeleteResponse.from(user);
     }
 

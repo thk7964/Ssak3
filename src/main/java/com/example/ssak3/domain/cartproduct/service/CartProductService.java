@@ -2,9 +2,9 @@ package com.example.ssak3.domain.cartproduct.service;
 
 import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.enums.ProductStatus;
+import com.example.ssak3.common.enums.TimeDealStatus;
 import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.domain.cart.entity.Cart;
-import com.example.ssak3.domain.cart.repository.CartRepository;
 import com.example.ssak3.domain.cart.service.CartService;
 import com.example.ssak3.domain.cartproduct.entity.CartProduct;
 import com.example.ssak3.domain.cartproduct.model.request.CartProductAddRequest;
@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -32,7 +31,6 @@ public class CartProductService {
     private final ProductRepository productRepository;
 
     private final CartService cartService;
-    private final CartRepository cartRepository;
     private final TimeDealRepository timeDealRepository;
 
     /**
@@ -48,19 +46,33 @@ public class CartProductService {
         // 카트 조회(없으면 생성)
         Cart cart = cartService.getOrCreateCart(userId);
 
-        TimeDeal openTimeDeal = timeDealRepository.findOpenTimeDeal(product.getId(), LocalDateTime.now())
-                .orElse(null);
+        Long timeDealId = request.getTimeDealId();
+        boolean isTimeDeal = timeDealId != null;
 
-        // 타임딜 여부
-        boolean isTimeDeal = (openTimeDeal != null);
-        // 일반 판매 중 여부
-        boolean normalSale = product.getStatus().equals(ProductStatus.FOR_SALE);
+        TimeDeal timeDeal = null;
 
-        if(!isTimeDeal && !normalSale){
-            throw new CustomException(ErrorCode.PRODUCT_NOT_FOR_SALE);
+        if (isTimeDeal) {
+            timeDeal = timeDealRepository.findByIdAndIsDeletedFalse(timeDealId)
+                    .orElseThrow(() -> new CustomException(ErrorCode.TIME_DEAL_NOT_FOUND));
+
+            if (!timeDeal.getStatus().equals(TimeDealStatus.OPEN)) {
+                throw new CustomException(ErrorCode.TIME_DEAL_INVALID_STATUS);
+            }
+
+            if (!timeDeal.getProduct().getId().equals(product.getId())) {
+                throw new CustomException(ErrorCode.TIME_DEAL_PRODUCT_MISMATCH);
+            }
+
+        } else {
+            if (!product.getStatus().equals(ProductStatus.FOR_SALE)) {
+                throw new CustomException(ErrorCode.PRODUCT_NOT_FOR_SALE);
+            }
         }
-        // 카트에 같은 상품이 담겨있는지 조히
-        Optional<CartProduct> cartProductOptional = cartProductRepository.findByCartIdAndProductId(cart.getId(), request.getProductId());
+
+        // 카트에 같은 상품이 담겨있는지 조회
+        Optional<CartProduct> cartProductOptional = isTimeDeal
+                ? cartProductRepository.findByCartIdAndProductIdAndTimeDealId(cart.getId(), product.getId(), timeDealId)
+                : cartProductRepository.findByCartIdAndProductIdAndTimeDealIsNull(cart.getId(), product.getId());
 
         CartProduct cartProduct;
 
@@ -92,13 +104,13 @@ public class CartProductService {
                 throw new CustomException(ErrorCode.PRODUCT_INSUFFICIENT);
             }
 
-            cartProduct = new CartProduct(cart, product, request.getQuantity());
+            cartProduct = new CartProduct(cart, product, timeDeal, request.getQuantity());
 
             cartProductRepository.save(cartProduct);
 
 
         }
-        return CartProductListGetResponse.from(cartProduct, openTimeDeal);
+        return CartProductListGetResponse.from(cartProduct, timeDeal, null);
 
     }
 
@@ -107,9 +119,12 @@ public class CartProductService {
      * 장바구니 상품 수량 변경
      */
     @Transactional
-    public CartProductListGetResponse updateCartProductQuantity (Long userId, CartProductQuantityUpdateRequest request) {
+    public CartProductListGetResponse updateCartProductQuantity(Long userId, CartProductQuantityUpdateRequest request) {
 
         int newQuantity = request.getQuantity();
+        if (newQuantity <= 0) {
+            throw new CustomException(ErrorCode.INVALID_QUANTITY);
+        }
 
         Cart cart = cartService.getOrCreateCart(userId);
 
@@ -118,24 +133,29 @@ public class CartProductService {
 
         Product product = cartProduct.getProduct();
 
-        TimeDeal openTimeDeal = timeDealRepository.findOpenTimeDeal(product.getId(), LocalDateTime.now())
-                .orElse(null);
+        TimeDeal cartTimeDeal = cartProduct.getTimeDeal();
+        TimeDeal timeDeal = null;
 
-        boolean isTimeDeal = (openTimeDeal != null);
-        boolean normalSale = product.getStatus().equals(ProductStatus.FOR_SALE);
+        if (cartTimeDeal != null) {
+            timeDeal = timeDealRepository.findByIdAndIsDeletedFalse(cartTimeDeal.getId()).orElse(null);
 
-        if (!isTimeDeal && !normalSale){
-            throw new CustomException(ErrorCode.PRODUCT_NOT_FOR_SALE);
+            if (timeDeal == null || timeDeal.getStatus() != TimeDealStatus.OPEN) {
+                throw new CustomException(ErrorCode.TIME_DEAL_INVALID_STATUS);
+            }
+
+        } else {
+            if (product.getStatus() != ProductStatus.FOR_SALE) {
+                throw new CustomException(ErrorCode.PRODUCT_NOT_FOR_SALE);
+            }
         }
 
-        // 재고가 있는 만큼만 담을 수 있도록 함
         if (newQuantity > product.getQuantity()) {
             throw new CustomException(ErrorCode.PRODUCT_INSUFFICIENT);
         }
 
         cartProduct.changeQuantity(newQuantity);
 
-        return CartProductListGetResponse.from(cartProduct, openTimeDeal);
+        return CartProductListGetResponse.from(cartProduct, timeDeal, null);
     }
 
 

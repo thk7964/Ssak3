@@ -122,15 +122,15 @@ public class Product extends BaseEntity {
         }
     }
 
-    public void restoreStatusAfterTimeDeal() {
-        if (status != ProductStatus.STOP_SALE) {
-            status = ProductStatus.STOP_SALE;
+    public void stopSaleForTimeDeal() {
+        if (status!= ProductStatus.STOP_SALE){
+            status= ProductStatus.STOP_SALE;
         }
     }
 
-    public void stopSaleForTimeDeal() {
-        if (status != ProductStatus.FOR_SALE) {
-            status = ProductStatus.FOR_SALE;
+    public void restoreStatusAfterTimeDeal() {
+        if (status!= ProductStatus.FOR_SALE){
+            status=ProductStatus.FOR_SALE;
         }
     }
 

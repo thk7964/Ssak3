@@ -12,11 +12,11 @@ public class ShedLock {
     private String name;
 
     @Column(nullable = false)
-    private LocalDateTime lockUntil;
+    private LocalDateTime lockUntil;        // 락 만료시간
 
     @Column(nullable = false)
-    private LocalDateTime lockedAt;
+    private LocalDateTime lockedAt;         // 락 획득 시간
 
     @Column(nullable = false)
-    private String lockedBy;
+    private String lockedBy;                // 락 식별자
 }

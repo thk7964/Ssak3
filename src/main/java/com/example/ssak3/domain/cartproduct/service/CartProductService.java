@@ -5,7 +5,6 @@ import com.example.ssak3.common.enums.ProductStatus;
 import com.example.ssak3.common.enums.TimeDealStatus;
 import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.domain.cart.entity.Cart;
-import com.example.ssak3.domain.cart.repository.CartRepository;
 import com.example.ssak3.domain.cart.service.CartService;
 import com.example.ssak3.domain.cartproduct.entity.CartProduct;
 import com.example.ssak3.domain.cartproduct.model.request.CartProductAddRequest;
@@ -22,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service

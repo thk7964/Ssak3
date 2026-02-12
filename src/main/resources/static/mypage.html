@@ -31,6 +31,36 @@
             min-height: 50px; display: flex; align-items: center;
         }
         .edit-input { width: 100%; padding: 12px; border: 2px solid #74b9ff; border-radius: 10px; outline: none; }
+
+        /* 추가된 기능 버튼 그리드 스타일 */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+        }
+        .feature-btn {
+            padding: 16px;
+            background: white;
+            color: #374151;
+            border: 2px solid #f3f4f6;
+            border-radius: 16px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .feature-btn:hover {
+            border-color: #74b9ff;
+            background: #f8fdff;
+            transform: translateY(-2px);
+        }
+        .feature-icon { font-size: 24px; }
+
         .btn-group { margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .base-btn {
             padding: 14px; background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
@@ -47,9 +77,6 @@
         }
         .modal-content { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 350px; text-align: center; }
         .modal-content input { width: 100%; padding: 12px; margin: 15px 0; border: 2px solid #e5e7eb; border-radius: 10px; }
-
-        .error-message { color: #ef4444; font-size: 12px; margin-top: 4px; display: none; }
-        .error-message.show { display: block; }
     </style>
 </head>
 <body>
@@ -77,9 +104,28 @@
         <label class="info-label">연락처</label>
         <div id="userPhone" class="info-value-box">-</div>
     </div>
-    <div class="info-group">
+    <div class="info-group" style="margin-bottom: 25px;">
         <label class="info-label">주소</label>
         <div id="userAddress" class="info-value-box">-</div>
+    </div>
+
+    <div class="feature-grid">
+        <button class="feature-btn" onclick="location.href='inquiry-chat.html'">
+            <span class="feature-icon">💬</span>
+            <span>1:1 문의 채팅</span>
+        </button>
+        <button class="feature-btn" onclick="alert('준비중입니다.')">
+            <span class="feature-icon">🎟️</span>
+            <span>내 쿠폰</span>
+        </button>
+        <button class="feature-btn" onclick="location.href='user-inquiry-list.html'">
+            <span class="feature-icon">📋</span>
+            <span>1:1 문의 게시판</span>
+        </button>
+        <button class="feature-btn" onclick="alert('준비중입니다.')">
+            <span class="feature-icon">📦</span>
+            <span>주문내역</span>
+        </button>
     </div>
 
     <div id="viewBtnGroup" class="btn-group">
@@ -136,6 +182,13 @@
             });
             const result = await res.json();
             currentUser = result.data;
+
+            // 추가: ADMIN이면 관리자 페이지로 리다이렉트
+            if (currentUser && currentUser.role === 'ADMIN') {
+                window.location.href = 'admin-mypage.html';
+                return;
+            }
+
             if (currentUser) {
                 const setText = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val || '미설정'; };
                 setText('userName', currentUser.name);
@@ -145,7 +198,11 @@
                 setText('userPhone', currentUser.phone);
                 setText('userAddress', currentUser.address);
             }
-        } catch (e) { console.error(e); }
+        } catch (e) {
+            console.error(e);
+            alert('로그인이 필요합니다.');
+            location.href = 'login.html';
+        }
     }
 
     // 수정 버튼 로직
@@ -169,7 +226,6 @@
         document.getElementById('deleteConfirmText').value = '';
     }
 
-    // 비밀번호 검증 (일반 유저 전용)
     async function verifyPassword() {
         const password = document.getElementById('currentPassword').value;
         const token = localStorage.getItem('accessToken');
@@ -194,6 +250,7 @@
 
     function enableEditMode() {
         document.getElementById('viewBtnGroup').style.display = 'none';
+        document.querySelector('.feature-grid').style.display = 'none'; // 수정 시 기능 버튼 숨김
         document.getElementById('editBtnGroup').style.display = 'grid';
         const fields = ['userName', 'userNickname', 'userBirth', 'userPhone', 'userAddress'];
         fields.forEach(id => {
@@ -215,26 +272,19 @@
 
         const token = localStorage.getItem('accessToken');
         const headers = { 'Content-Type': 'application/json' };
-
-        // ✅ 토큰이 실제로 존재할 때만 Bearer 헤더 추가 (문자열 'null' 방지)
-        if (token && token !== 'null') {
-            headers['Authorization'] = `Bearer ${token}`;
-        }
+        if (token && token !== 'null') headers['Authorization'] = `Bearer ${token}`;
 
         try {
             const res = await fetch('http://localhost:8080/ssak3/users/me', {
                 method: 'PATCH',
                 headers: headers,
-                credentials: 'include', // ✅ 쿠키 기반 인증(카카오)을 위해 필수
+                credentials: 'include',
                 body: JSON.stringify(data)
             });
 
             if (res.ok) {
                 alert('정보가 수정되었습니다.');
                 location.reload();
-            } else if (res.status === 401) {
-                alert('인증이 만료되었습니다. 다시 로그인해주세요.');
-                // 필요 시 로그아웃 처리 후 로그인 페이지 이동
             } else {
                 const errData = await res.json();
                 alert('수정 실패: ' + (errData.message || '알 수 없는 오류'));
@@ -247,24 +297,29 @@
 
     async function handleLogout() {
         const token = localStorage.getItem('accessToken');
-        try { await fetch('http://localhost:8080/ssak3/auth/logout', { method: 'POST', headers: { 'Authorization': 'Bearer ' + token }, credentials: 'include' }); }
-        finally { localStorage.clear(); location.href = 'home.html'; }
+        try {
+            await fetch('http://localhost:8080/ssak3/auth/logout', {
+                method: 'POST',
+                headers: token ? { 'Authorization': 'Bearer ' + token } : {},
+                credentials: 'include'
+            });
+        } finally {
+            localStorage.clear();
+            alert('로그아웃 되었습니다.');
+            location.href = 'home.html';
+        }
     }
 
     async function deleteUser() {
         const token = localStorage.getItem('accessToken');
         const headers = {};
-
-        // 💡 토큰이 '진짜' 있을 때만 Bearer 헤더를 만듭니다.
-        if (token && token !== 'null' && token !== 'undefined') {
-            headers['Authorization'] = `Bearer ${token}`;
-        }
+        if (token && token !== 'null') headers['Authorization'] = `Bearer ${token}`;
 
         try {
             const res = await fetch('http://localhost:8080/ssak3/users/me', {
                 method: 'DELETE',
                 headers: headers,
-                credentials: 'include' // ✅ 카카오 세션 쿠키 전송을 위해 필수
+                credentials: 'include'
             });
 
             if (res.ok) {
@@ -273,7 +328,7 @@
                 location.href = 'home.html';
             } else {
                 const errData = await res.json();
-                alert('탈퇴 실패: ' + (errData.message || '인증 오류(401)'));
+                alert('탈퇴 실패: ' + (errData.message || '인증 오류'));
             }
         } catch (e) {
             console.error("Delete Error:", e);

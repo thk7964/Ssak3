@@ -469,17 +469,9 @@
     <div class="banner-subtitle">나만의 귀여운 굿즈를 만나보세요</div>
 </div>
 
-<nav>
+<nav id="categoryNav">
     <a href="#timedeal">⭐ 타임딜</a>
     <a href="product-search.html">📦 전체 상품</a>
-    <a href="#best">🏍️ 올포원</a>
-    <a href="#sale">🎉 2용준</a>
-    <a href="#all">🌊 싹쓰리</a>
-    <a href="#event">👨‍👩‍👧‍👦 슬개생</a>
-    <a href="#event">🛠️ 펜타곤</a>
-    <a href="#event">👩🏻‍🦰 여걸식스</a>
-    <a href="#event">👊🏻 럭키펀치</a>
-    <a href="#event">♾️ LIMITLESS</a>
 </nav>
 
 
@@ -497,6 +489,32 @@
 </footer>
 
 <script>
+    async function loadCategories() {
+        try {
+            const res = await fetch('http://localhost:8080/ssak3/categories');
+            const result = await res.json();
+            if (!result.success) return;
+
+            const categories = result.data.content || result.data;
+            const nav = document.getElementById('categoryNav');
+
+            categories.forEach(cat => {
+                const a = document.createElement('a');
+                a.textContent = cat.name;
+
+                // 1. 클릭 시 categoryId 파라미터를 붙여서 이동
+                a.href = `category-product.html?categoryId=${cat.id}`;
+
+                nav.appendChild(a);
+            });
+        } catch (e) {
+            console.error('카테고리 로딩 실패:', e);
+        }
+    }
+
+    // 초기 실행 시 카테고리 로드 추가
+    loadCategories();
+
     async function loadPopularProducts() {
         try {
             const response = await fetch('http://localhost:8080/ssak3/products/popular');

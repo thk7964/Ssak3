@@ -33,10 +33,7 @@ public class SecurityConfig {
             "/ssak3/payments/**",
             "/payments/confirm",
             "/error",
-            "/home.html",
-            "/product-detail.html",
-            "/fail.html",
-            "/success.html",
+            "/*.html",
             "/style.css",
             "/favicon.ico"
     };

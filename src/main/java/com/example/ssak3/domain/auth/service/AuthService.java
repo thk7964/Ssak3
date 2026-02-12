@@ -14,6 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -40,6 +42,10 @@ public class AuthService {
 
         if (userRepository.existsByPhone(request.getPhone())) {
             throw new CustomException(ErrorCode.PHONE_ALREADY_EXISTS);
+        }
+
+        if (request.getBirth().isAfter(LocalDate.now())) {
+            throw new CustomException(ErrorCode.INVALID_BIRTH);
         }
 
         User user = new User(

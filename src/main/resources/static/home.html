@@ -552,10 +552,13 @@
     // [공통] 검색 처리 함수
     function handleSearch() {
         const keyword = document.getElementById('searchInput').value.trim();
+
         if (keyword) {
-            window.location.href = `search.html?keyword=${encodeURIComponent(keyword)}`;
+            // 백엔드 API 명세에 맞춰 'keyword' 파라미터 사용
+            window.location.href = `product-search.html?keyword=${encodeURIComponent(keyword)}&page=0`;
         } else {
-            alert('검색어를 입력해주세요!');
+            // 검색어 없이 이동할 경우 전체 상품을 보여주기 위해 그대로 이동
+            window.location.href = `product-search.html`;
         }
     }
 

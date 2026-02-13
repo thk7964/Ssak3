@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>상품 상세 - 싹쓰리</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
@@ -76,7 +80,9 @@
             gap: 8px;
         }
 
-        .back-btn:hover { background: #e9ecef; }
+        .back-btn:hover {
+            background: #e9ecef;
+        }
 
         .product-detail-container {
             max-width: 1200px;
@@ -94,17 +100,12 @@
         .product-image-section {
             background: white;
             border-radius: 20px;
-            padding: 0;
+            padding: 40px;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 500px;
-
-            width: 100%;
-            max-width: 500px;
-            overflow: hidden;
-            background: #f8f9fa;
         }
 
         .product-image {
@@ -113,8 +114,12 @@
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
         }
 
         .product-info-section {
@@ -347,14 +352,29 @@
                 gap: 30px;
             }
 
-            .product-image { font-size: 120px; }
-            .product-name { font-size: 28px; }
-            .product-price { font-size: 26px; }
+            .product-image {
+                font-size: 120px;
+            }
 
-            .action-buttons { flex-direction: column; }
+            .product-name {
+                font-size: 28px;
+            }
 
-            .back-btn { margin: 20px; }
-            header { padding: 16px 20px; }
+            .product-price {
+                font-size: 26px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .back-btn {
+                margin: 20px;
+            }
+
+            header {
+                padding: 16px 20px;
+            }
         }
 
         .main-img {
@@ -449,7 +469,10 @@
             flex-wrap: wrap;
         }
 
-        .review-avg-score { text-align: center; min-width: 68px; }
+        .review-avg-score {
+            text-align: center;
+            min-width: 68px;
+        }
 
         .review-avg-number {
             font-size: 44px;
@@ -467,12 +490,30 @@
             margin-top: 4px;
         }
 
-        .review-avg-stars { font-size: 22px; letter-spacing: 2px; }
+        .review-avg-stars {
+            font-size: 22px;
+            letter-spacing: 2px;
+        }
 
-        .star-on { color: #f59e0b; font-size: 16px; }
-        .star-off { color: #e5e7eb; font-size: 16px; }
-        .star-on--lg { color: #f59e0b; font-size: 22px; }
-        .star-off--lg { color: #e5e7eb; font-size: 22px; }
+        .star-on {
+            color: #f59e0b;
+            font-size: 16px;
+        }
+
+        .star-off {
+            color: #e5e7eb;
+            font-size: 16px;
+        }
+
+        .star-on--lg {
+            color: #f59e0b;
+            font-size: 22px;
+        }
+
+        .star-off--lg {
+            color: #e5e7eb;
+            font-size: 22px;
+        }
 
         .review-write-btn {
             background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
@@ -508,7 +549,9 @@
             white-space: nowrap;
         }
 
-        .review-login-btn:hover { background: #e9ecef; }
+        .review-login-btn:hover {
+            background: #e9ecef;
+        }
 
         .review-form-wrap {
             background: white;
@@ -520,7 +563,9 @@
             display: none;
         }
 
-        .review-form-wrap.open { display: block; }
+        .review-form-wrap.open {
+            display: block;
+        }
 
         .review-form-heading {
             font-size: 16px;
@@ -558,10 +603,18 @@
             user-select: none;
         }
 
-        .star-picker span.lit { color: #f59e0b; }
-        .star-picker span:hover { transform: scale(1.2); }
+        .star-picker span.lit {
+            color: #f59e0b;
+        }
 
-        .star-hint { font-size: 13px; color: #adb5bd; }
+        .star-picker span:hover {
+            transform: scale(1.2);
+        }
+
+        .star-hint {
+            font-size: 13px;
+            color: #adb5bd;
+        }
 
         .review-textarea {
             width: 100%;
@@ -578,8 +631,13 @@
             box-sizing: border-box;
         }
 
-        .review-textarea:focus { border-color: #74b9ff; }
-        .review-textarea::placeholder { color: #adb5bd; }
+        .review-textarea:focus {
+            border-color: #74b9ff;
+        }
+
+        .review-textarea::placeholder {
+            color: #adb5bd;
+        }
 
         .review-form-error {
             background: #fee2e2;
@@ -591,7 +649,10 @@
             margin-bottom: 12px;
             display: none;
         }
-        .review-form-error.show { display: block; }
+
+        .review-form-error.show {
+            display: block;
+        }
 
         .review-form-footer {
             display: flex;
@@ -612,7 +673,10 @@
             font-family: inherit;
             transition: border-color 0.15s;
         }
-        .btn-cancel:hover { border-color: #adb5bd; }
+
+        .btn-cancel:hover {
+            border-color: #adb5bd;
+        }
 
         .btn-submit {
             padding: 10px 24px;
@@ -627,10 +691,23 @@
             box-shadow: 0 4px 12px rgba(116, 185, 255, 0.3);
             transition: all 0.2s;
         }
-        .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(116, 185, 255, 0.4); }
-        .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-        .review-list { display: flex; flex-direction: column; gap: 14px; }
+        .btn-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(116, 185, 255, 0.4);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .review-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
 
         .review-card {
             background: white;
@@ -641,7 +718,9 @@
             transition: box-shadow 0.2s;
         }
 
-        .review-card:hover { box-shadow: 0 4px 16px rgba(0, 0, 0, 0.09); }
+        .review-card:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.09);
+        }
 
         .review-card-top {
             display: flex;
@@ -651,7 +730,11 @@
             gap: 12px;
         }
 
-        .review-meta { display: flex; flex-direction: column; gap: 4px; }
+        .review-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
 
         .review-author {
             font-size: 14px;
@@ -659,11 +742,21 @@
             color: #212529;
         }
 
-        .review-score { font-size: 15px; letter-spacing: 1px; }
+        .review-score {
+            font-size: 15px;
+            letter-spacing: 1px;
+        }
 
-        .review-date { font-size: 12px; color: #adb5bd; }
+        .review-date {
+            font-size: 12px;
+            color: #adb5bd;
+        }
 
-        .review-actions { display: flex; gap: 6px; flex-shrink: 0; }
+        .review-actions {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
 
         .btn-edit-review, .btn-delete-review {
             border: none;
@@ -678,8 +771,14 @@
             color: #495057;
         }
 
-        .btn-edit-review:hover { background: #e9ecef; }
-        .btn-delete-review:hover { background: #fee2e2; color: #991b1b; }
+        .btn-edit-review:hover {
+            background: #e9ecef;
+        }
+
+        .btn-delete-review:hover {
+            background: #fee2e2;
+            color: #991b1b;
+        }
 
         .review-body {
             font-size: 14px;
@@ -692,7 +791,10 @@
             margin-top: 14px;
             display: none;
         }
-        .review-edit-form.open { display: block; }
+
+        .review-edit-form.open {
+            display: block;
+        }
 
         .review-empty {
             text-align: center;
@@ -703,8 +805,15 @@
             color: #adb5bd;
         }
 
-        .review-empty-icon { font-size: 38px; margin-bottom: 12px; }
-        .review-empty-text { font-size: 15px; font-weight: 500; }
+        .review-empty-icon {
+            font-size: 38px;
+            margin-bottom: 12px;
+        }
+
+        .review-empty-text {
+            font-size: 15px;
+            font-weight: 500;
+        }
 
         .review-pagination {
             display: flex;
@@ -716,7 +825,8 @@
         }
 
         .page-btn {
-            width: 36px; height: 36px;
+            width: 36px;
+            height: 36px;
             border-radius: 10px;
             border: 1.5px solid #e5e7eb;
             background: white;
@@ -728,7 +838,10 @@
             font-family: inherit;
         }
 
-        .page-btn:hover { border-color: #74b9ff; color: #74b9ff; }
+        .page-btn:hover {
+            border-color: #74b9ff;
+            color: #74b9ff;
+        }
 
         .page-btn.active {
             background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
@@ -737,10 +850,14 @@
             box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
         }
 
-        .page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+        .page-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
 
         .page-arrow {
-            width: 36px; height: 36px;
+            width: 36px;
+            height: 36px;
             border-radius: 10px;
             border: 1.5px solid #e5e7eb;
             background: white;
@@ -751,8 +868,15 @@
             color: #495057;
         }
 
-        .page-arrow:hover { border-color: #74b9ff; color: #74b9ff; }
-        .page-arrow:disabled { opacity: 0.35; cursor: not-allowed; }
+        .page-arrow:hover {
+            border-color: #74b9ff;
+            color: #74b9ff;
+        }
+
+        .page-arrow:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
 
         .review-loading {
             text-align: center;
@@ -762,12 +886,29 @@
         }
 
         @media (max-width: 768px) {
-            .review-section  { padding: 0 16px; }
-            .review-summary  { padding: 20px; }
-            .review-section { padding: 0 16px; }
-            .review-summary { padding: 20px; }
-            .review-form-wrap { padding: 20px; }
-            .review-card     { padding: 16px 18px; }
+            .review-section {
+                padding: 0 16px;
+            }
+
+            .review-summary {
+                padding: 20px;
+            }
+
+            .review-section {
+                padding: 0 16px;
+            }
+
+            .review-summary {
+                padding: 20px;
+            }
+
+            .review-form-wrap {
+                padding: 20px;
+            }
+
+            .review-card {
+                padding: 16px 18px;
+            }
         }
 
         /* 기존 .product-image 스타일 수정 및 추가 */
@@ -813,7 +954,10 @@
             align-items: center;
             justify-content: center;
             height: 400px;
-            .review-card { padding: 16px 18px; }
+
+            .review-card {
+                padding: 16px 18px;
+            }
         }
     </style>
 </head>
@@ -826,7 +970,8 @@
         <button class="icon-btn"
                 id="cartIconBtn"
                 title="장바구니"
-                onclick="location.href='cart.html'">🛒</button>
+                onclick="location.href='cart.html'">🛒
+        </button>
         <button class="icon-btn">👤</button>
     </div>
 </header>
@@ -899,14 +1044,14 @@
     const productId = urlParams.get('id');
 
     const productEmojis = {
-        1:'🏍️', 2:'✨', 3:'⚔️', 4:'🎮', 5:'🎵',
-        6:'⚡',  7:'🌈', 8:'💎', 9:'🎨', 10:'🧸'
+        1: '🏍️', 2: '✨', 3: '⚔️', 4: '🎮', 5: '🎵',
+        6: '⚡', 7: '🌈', 8: '💎', 9: '🎨', 10: '🧸'
     };
 
     // 상품 상태 한글 변환
     const statusText = {
-        'FOR_SALE'   : '판매중',
-        'SOLDOUT'     : '품절',
+        'FOR_SALE': '판매중',
+        'SOLDOUT': '품절',
         'DISCONTINUED': '단종'
     };
 
@@ -920,11 +1065,14 @@
 
     // 상품 정보 로드
     async function loadProductDetail() {
-        if (!productId) { showError('상품을 찾을 수 없습니다.'); return; }
+        if (!productId) {
+            showError('상품을 찾을 수 없습니다.');
+            return;
+        }
         try {
             const response = await fetch(`http://localhost:8080/ssak3/products/${productId}`);
             if (!response.ok) throw new Error('상품을 불러올 수 없습니다.');
-            const result  = await response.json();
+            const result = await response.json();
             const product = result.data;
             displayProduct(product);
         } catch (error) {
@@ -1036,7 +1184,7 @@
         const token = getToken();
         const url = 'http://localhost:8080/ssak3/carts';
 
-        const payload = { productId: product.id, quantity };
+        const payload = {productId: product.id, quantity};
 
         try {
             // JWT로 요청 (로그인 체크 했으니 기본은 JWT로)
@@ -1092,11 +1240,13 @@
         try {
             const payload = JSON.parse(atob(token.split('.')[1]));
             return String(payload.userId != null ? payload.userId : (payload.sub || ''));
-        } catch (e) { return null; }
+        } catch (e) {
+            return null;
+        }
     }
 
     function authHeaders() {
-        const h = { 'Content-Type': 'application/json' };
+        const h = {'Content-Type': 'application/json'};
         const t = getToken();
         if (t) h['Authorization'] = 'Bearer ' + t;
         return h;
@@ -1118,7 +1268,7 @@
                 method: 'POST',
                 headers: authHeaders(),
                 credentials: 'include',
-                body: JSON.stringify({ productId: Number(productId), content, score })
+                body: JSON.stringify({productId: Number(productId), content, score})
             });
             if (!r.ok) throw new Error(`HTTP ${r.status}`);
             return (await r.json()).data;
@@ -1128,7 +1278,7 @@
                 method: 'PATCH',
                 headers: authHeaders(),
                 credentials: 'include',
-                body: JSON.stringify({ productId: Number(productId), content, score })
+                body: JSON.stringify({productId: Number(productId), content, score})
             });
             if (!r.ok) throw new Error(`HTTP ${r.status}`);
             return (await r.json()).data;
@@ -1163,7 +1313,7 @@
 
     function fmtDate(dt) {
         if (!dt) return '';
-        return new Date(dt).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' });
+        return new Date(dt).toLocaleDateString('ko-KR', {year: 'numeric', month: '2-digit', day: '2-digit'});
     }
 
     function esc(s) {
@@ -1174,7 +1324,10 @@
 
     function updateSummary() {
         const el = document.getElementById('reviewSummary');
-        if (!reviews.length) { el.style.display = 'none'; return; }
+        if (!reviews.length) {
+            el.style.display = 'none';
+            return;
+        }
         const avg = reviews.reduce((s, r) => s + (r.score || 0), 0) / reviews.length;
         document.getElementById('avgNumber').textContent = avg.toFixed(1);
         document.getElementById('avgStars').innerHTML = starsHtml(Math.round(avg), true);
@@ -1196,7 +1349,7 @@
             return;
         }
 
-        listEl.innerHTML = reviews.map(function(r) {
+        listEl.innerHTML = reviews.map(function (r) {
             var isOwner = isLoggedIn() && String(getMyId()) === String(r.userId);
             var actionsHtml = isOwner
                 ? '<div class="review-actions">' +
@@ -1239,7 +1392,7 @@
                 '</div>';
         }).join('');
 
-        reviews.forEach(function(r) {
+        reviews.forEach(function (r) {
             if (!isLoggedIn() || String(getMyId()) !== String(r.userId)) return;
             editScores[r.id] = r.score || 0;
             bindEditPicker(r.id, r.score || 0);
@@ -1258,7 +1411,9 @@
         prev.className = 'page-arrow';
         prev.textContent = '‹';
         prev.disabled = curPage === 0;
-        prev.addEventListener('click', function() { loadPage(curPage - 1); });
+        prev.addEventListener('click', function () {
+            loadPage(curPage - 1);
+        });
         el.appendChild(prev);
 
         const start = Math.max(0, curPage - 2);
@@ -1268,7 +1423,11 @@
             const btn = document.createElement('button');
             btn.className = 'page-btn' + (i === curPage ? ' active' : '');
             btn.textContent = i + 1;
-            (function(_i) { btn.addEventListener('click', function() { loadPage(_i); }); })(i);
+            (function (_i) {
+                btn.addEventListener('click', function () {
+                    loadPage(_i);
+                });
+            })(i);
             el.appendChild(btn);
         }
 
@@ -1276,7 +1435,9 @@
         next.className = 'page-arrow';
         next.textContent = '›';
         next.disabled = curPage === totalPages - 1;
-        next.addEventListener('click', function() { loadPage(curPage + 1); });
+        next.addEventListener('click', function () {
+            loadPage(curPage + 1);
+        });
         el.appendChild(next);
     }
 
@@ -1305,17 +1466,26 @@
         const stars = picker.querySelectorAll('span');
 
         function paint(v) {
-            stars.forEach(function(s) { s.className = parseInt(s.dataset.v, 10) <= v ? 'lit' : ''; });
+            stars.forEach(function (s) {
+                s.className = parseInt(s.dataset.v, 10) <= v ? 'lit' : '';
+            });
             hint.textContent = v > 0 ? v + '점 · ' + SCORE_LABELS[v] : '선택 안 됨';
         }
 
         paint(init);
 
-        stars.forEach(function(s) {
+        stars.forEach(function (s) {
             const v = parseInt(s.dataset.v, 10);
-            s.addEventListener('mouseenter', function() { paint(v); });
-            s.addEventListener('mouseleave', function() { paint(editScores[rid]); });
-            s.addEventListener('click', function() { editScores[rid] = v; paint(v); });
+            s.addEventListener('mouseenter', function () {
+                paint(v);
+            });
+            s.addEventListener('mouseleave', function () {
+                paint(editScores[rid]);
+            });
+            s.addEventListener('click', function () {
+                editScores[rid] = v;
+                paint(v);
+            });
         });
     }
 
@@ -1339,11 +1509,13 @@
 
         if (content.length < 10) {
             errEl.textContent = '후기 내용은 10자 이상 입력해주세요.';
-            errEl.classList.add('show'); return;
+            errEl.classList.add('show');
+            return;
         }
         if (score === 0) {
             errEl.textContent = '별점을 선택해주세요.';
-            errEl.classList.add('show'); return;
+            errEl.classList.add('show');
+            return;
         }
 
         btn.disabled = true;
@@ -1351,8 +1523,13 @@
 
         try {
             await reviewApi.update(rid, content, score);
-            const idx = reviews.findIndex(function(r) { return r.id === rid; });
-            if (idx !== -1) { reviews[idx].content = content; reviews[idx].score = score; }
+            const idx = reviews.findIndex(function (r) {
+                return r.id === rid;
+            });
+            if (idx !== -1) {
+                reviews[idx].content = content;
+                reviews[idx].score = score;
+            }
             renderList();
         } catch (e) {
             errEl.textContent = '수정에 실패했습니다. 다시 시도해주세요.';
@@ -1366,7 +1543,9 @@
         if (!confirm('후기를 삭제하시겠습니까?')) return;
         try {
             await reviewApi.delete(rid);
-            reviews = reviews.filter(function(r) { return r.id !== rid; });
+            reviews = reviews.filter(function (r) {
+                return r.id !== rid;
+            });
             renderList();
         } catch (e) {
             alert('삭제에 실패했습니다. 다시 시도해주세요.');
@@ -1379,15 +1558,24 @@
         const stars = picker.querySelectorAll('span');
 
         function paint(v) {
-            stars.forEach(function(s) { s.className = parseInt(s.dataset.v, 10) <= v ? 'lit' : ''; });
+            stars.forEach(function (s) {
+                s.className = parseInt(s.dataset.v, 10) <= v ? 'lit' : '';
+            });
             hint.textContent = v > 0 ? v + '점 · ' + SCORE_LABELS[v] : '선택 안 됨';
         }
 
-        stars.forEach(function(s) {
+        stars.forEach(function (s) {
             const v = parseInt(s.dataset.v, 10);
-            s.addEventListener('mouseenter', function() { paint(v); });
-            s.addEventListener('mouseleave', function() { paint(writeScore); });
-            s.addEventListener('click', function() { writeScore = v; paint(v); });
+            s.addEventListener('mouseenter', function () {
+                paint(v);
+            });
+            s.addEventListener('mouseleave', function () {
+                paint(writeScore);
+            });
+            s.addEventListener('click', function () {
+                writeScore = v;
+                paint(v);
+            });
         });
     }
 
@@ -1395,7 +1583,9 @@
         writeScore = 0;
         document.getElementById('writeContent').value = '';
         document.getElementById('writeHint').textContent = '선택 안 됨';
-        document.getElementById('writePicker').querySelectorAll('span').forEach(function(s) { s.className = ''; });
+        document.getElementById('writePicker').querySelectorAll('span').forEach(function (s) {
+            s.className = '';
+        });
         document.getElementById('writeError').classList.remove('show');
         document.getElementById('reviewFormWrap').classList.add('open');
         document.getElementById('writeContent').focus();
@@ -1414,11 +1604,13 @@
 
         if (content.length < 10) {
             errEl.textContent = '후기 내용은 10자 이상 입력해주세요.';
-            errEl.classList.add('show'); return;
+            errEl.classList.add('show');
+            return;
         }
         if (writeScore === 0) {
             errEl.textContent = '별점을 선택해주세요.';
-            errEl.classList.add('show'); return;
+            errEl.classList.add('show');
+            return;
         }
 
         btn.disabled = true;
@@ -1443,7 +1635,7 @@
 
         if (isLoggedIn()) {
             el.innerHTML = '<button class="review-write-btn" id="writeToggleBtn">✏️ 후기 작성</button>';
-            document.getElementById('writeToggleBtn').addEventListener('click', function() {
+            document.getElementById('writeToggleBtn').addEventListener('click', function () {
                 const wrap = document.getElementById('reviewFormWrap');
                 wrap.classList.contains('open') ? closeWrite() : openWrite();
             });

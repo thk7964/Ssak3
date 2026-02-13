@@ -14,6 +14,7 @@ import static com.example.ssak3.domain.timedeal.utils.TimeDealUtils.formatRemain
 public class TimeDealListGetResponse {
     private final Long id;
     private final String productName;
+    private final Integer originalPrice;
     private final Integer dealPrice;
     private final TimeDealStatus status;
     private final LocalDateTime startAt;
@@ -34,6 +35,7 @@ public class TimeDealListGetResponse {
         return new TimeDealListGetResponse(
                 timeDeal.getId(),
                 timeDeal.getProduct().getName(),
+                timeDeal.getProduct().getPrice(),
                 timeDeal.getDealPrice(),
                 status,
                 timeDeal.getStartAt(),

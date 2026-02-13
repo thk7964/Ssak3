@@ -114,8 +114,12 @@
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
         }
 
         .product-info-section {
@@ -379,7 +383,12 @@
     <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
     <div class="header-icons">
         <button class="icon-btn">🔍</button>
-        <button class="icon-btn">🛒</button>
+        <button class="icon-btn"
+                id="cartIconBtn"
+                title="장바구니"
+                onclick="location.href='cart.html'">
+            🛒
+        </button>
         <button class="icon-btn">👤</button>
     </div>
 </header>
@@ -429,6 +438,7 @@
     }
 
     function displayProduct(product) {
+        window.__currentProduct = product; // addToCart에서 사용
         const container = document.getElementById('productContainer');
         const isAvailable = product.status === 'AVAILABLE';
         const emoji = productEmojis[product.id] || '📦';
@@ -489,10 +499,74 @@
         if (qty > 1) el.textContent = qty - 1;
     }
 
-    function addToCart() {
-        const quantity = document.getElementById('quantityValue').textContent;
-        alert(`장바구니에 ${quantity}개가 추가되었습니다!`);
+    async function addToCart() {
+        const product = window.__currentProduct;
+        if (!product?.id) {
+            alert('상품 정보를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
+            return;
+        }
+
+        const quantity = parseInt(document.getElementById('quantityValue')?.textContent || '1', 10);
+
+        // 로그인 토큰(JWT) 우선, 없으면 쿠키(카카오 로그인)로 시도
+        const token = localStorage.getItem('accessToken');
+        const url = 'http://localhost:8080/ssak3/carts';
+
+        const payload = {
+            productId: product.id,
+            quantity: quantity
+            // timeDealId: null (일반 상품이면 생략)
+        };
+
+        try {
+            let res;
+
+            // 1) JWT로 시도
+            if (token) {
+                res = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+            }
+
+            // 2) 토큰 없거나 401이면 쿠키로 재시도
+            if (!token || res.status === 401) {
+                res = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    credentials: 'include',
+                    body: JSON.stringify(payload)
+                });
+            }
+
+            const result = await res.json().catch(() => null);
+
+            if (!res.ok) {
+                // 로그인 필요 or 기타 에러 메시지 처리
+                const msg = result?.message || '장바구니 담기에 실패했습니다.';
+                alert(msg);
+
+                // 인증 실패면 로그인 페이지로 보내고 싶으면 아래 주석 해제
+                if (res.status === 401) {
+                    // location.href = 'login.html';
+                }
+                return;
+            }
+
+            alert('장바구니에 담았습니다!');
+            // 담고 나서 장바구니로 이동하고 싶으면 아래 주석 해제
+            // location.href = 'cart.html';
+
+        } catch (e) {
+            console.error('addToCart error:', e);
+            alert('네트워크 오류로 장바구니 담기에 실패했습니다.');
+        }
     }
+
 
     function buyNow() {
         const quantity = document.getElementById('quantityValue').textContent;

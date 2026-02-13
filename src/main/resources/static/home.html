@@ -410,6 +410,26 @@
                 margin-top: 12px;
             }
         }
+
+        .rank-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            color: white;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 6px 10px;
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(255, 154, 158, 0.35);
+            z-index: 10;
+        }
+
+        .rank-1 {
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            box-shadow: 0 6px 16px rgba(253, 160, 133, 0.5);
+        }
+
     </style>
 </head>
 <body>
@@ -431,7 +451,7 @@
     </div>
 
     <div class="header-icons">
-        <button class="icon-btn">🛒</button>
+        <button class="icon-btn" onclick="location.href='cart.html'">🛒</button>
 
         <!-- 로그인 안 된 경우 -->
         <button class="auth-btn" id="loginBtn" style="display: none;">로그인 / 회원가입</button>
@@ -449,17 +469,9 @@
     <div class="banner-subtitle">나만의 귀여운 굿즈를 만나보세요</div>
 </div>
 
-<nav>
+<nav id="categoryNav">
     <a href="time-deals.html">⭐ 타임딜</a>
     <a href="product-search.html">📦 전체 상품</a>
-    <a href="#best">🏍️ 올포원</a>
-    <a href="#sale">🎉 2용준</a>
-    <a href="#all">🌊 싹쓰리</a>
-    <a href="#event">👨‍👩‍👧‍👦 슬개생</a>
-    <a href="#event">🛠️ 펜타곤</a>
-    <a href="#event">👩🏻‍🦰 여걸식스</a>
-    <a href="#event">👊🏻 럭키펀치</a>
-    <a href="#event">♾️ LIMITLESS</a>
 </nav>
 
 
@@ -477,6 +489,32 @@
 </footer>
 
 <script>
+    async function loadCategories() {
+        try {
+            const res = await fetch('http://localhost:8080/ssak3/categories');
+            const result = await res.json();
+            if (!result.success) return;
+
+            const categories = result.data.content || result.data;
+            const nav = document.getElementById('categoryNav');
+
+            categories.forEach(cat => {
+                const a = document.createElement('a');
+                a.textContent = cat.name;
+
+                // 1. 클릭 시 categoryId 파라미터를 붙여서 이동
+                a.href = `category-product.html?categoryId=${cat.id}`;
+
+                nav.appendChild(a);
+            });
+        } catch (e) {
+            console.error('카테고리 로딩 실패:', e);
+        }
+    }
+
+    // 초기 실행 시 카테고리 로드 추가
+    loadCategories();
+
     async function loadPopularProducts() {
         try {
             const response = await fetch('http://localhost:8080/ssak3/products/popular');
@@ -492,22 +530,28 @@
             const container = document.getElementById('popularProducts');
             container.innerHTML = '';
 
-            products.forEach(product => {
+            products.forEach((product, index) => {
                 const card = document.createElement('div');
                 card.className = 'product-card';
                 card.innerHTML = `
-                <div class="product-image">🛍️</div>
-                <div class="product-info">
-                    <div class="product-name">${product.name}</div>
-                    <div class="product-desc">카테고리 ${product.categoryId}</div>
-                    <div class="product-footer">
-                        <div class="product-price">
-                            ${product.dealPrice ?? product.price}원
-                        </div>
-                        <button class="add-btn">담기</button>
-                    </div>
+            <div class="product-image">
+                <div class="rank-badge ${index === 0 ? 'rank-1' : ''}">
+                    ${index + 1}등
                 </div>
-            `;
+                🛍️
+            </div>
+            <div class="product-info">
+                <div class="product-name">${product.name}</div>
+                <div class="product-desc">카테고리 ${product.categoryId}</div>
+                <div class="product-footer">
+                    <div class="product-price">
+                        ${product.dealPrice ?? product.price}원
+                    </div>
+                    <button class="add-btn">담기</button>
+                </div>
+            </div>
+        `;
+
 
                 card.addEventListener('click', () => {
                     window.location.href = `product-detail.html?id=${product.id}`;
@@ -526,10 +570,13 @@
     // [공통] 검색 처리 함수
     function handleSearch() {
         const keyword = document.getElementById('searchInput').value.trim();
+
         if (keyword) {
-            window.location.href = `search.html?keyword=${encodeURIComponent(keyword)}`;
+            // 백엔드 API 명세에 맞춰 'keyword' 파라미터 사용
+            window.location.href = `product-search.html?keyword=${encodeURIComponent(keyword)}&page=0`;
         } else {
-            alert('검색어를 입력해주세요!');
+            // 검색어 없이 이동할 경우 전체 상품을 보여주기 위해 그대로 이동
+            window.location.href = `product-search.html`;
         }
     }
 

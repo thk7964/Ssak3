@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>주문 상세 - 싹쓰리</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+            background: #fafafa;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #ffffff;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+            cursor: pointer;
+        }
+
+        .header-icons { display: flex; gap: 12px; align-items: center; }
+        .icon-btn {
+            background: #f8f9fa; border: none;
+            width: 42px; height: 42px; border-radius: 50%;
+            cursor: pointer; font-size: 18px; transition: all 0.2s ease; color: #495057;
+        }
+        .icon-btn:hover { background: #e9ecef; transform: translateY(-2px); }
+
+        .auth-btn {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white; border: none; padding: 10px 20px; border-radius: 12px;
+            cursor: pointer; font-size: 14px; font-weight: 700;
+            transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
+            white-space: nowrap;
+        }
+        .auth-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(116, 185, 255, 0.45); }
+
+        .user-info { display: flex; align-items: center; gap: 12px; }
+        .logout-btn {
+            background: #f8f9fa; border: none; padding: 8px 16px; border-radius: 10px;
+            cursor: pointer; font-size: 13px; font-weight: 700; color: #495057;
+            transition: all 0.2s ease;
+        }
+        .logout-btn:hover { background: #e9ecef; }
+
+        .back-btn {
+            background: #f8f9fa;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 800;
+            color: #495057;
+            transition: all 0.2s ease;
+            margin: 18px 20px 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .back-btn:hover { background: #e9ecef; }
+
+        .page {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 20px 20px 60px;
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: 900;
+            color: #212529;
+            letter-spacing: -0.5px;
+            text-align: center;
+            margin: 10px 0 18px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            border: 1px solid #f0f0f0;
+            overflow: hidden;
+        }
+
+        .card-head {
+            padding: 18px 20px;
+            border-bottom: 1px solid #f3f4f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title { font-size: 16px; font-weight: 900; color: #212529; }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 900;
+            border: 1px solid #eef2f7;
+            background: #f8f9fa;
+            color: #374151;
+            white-space: nowrap;
+        }
+        .badge.pending { background: #fff7ed; border-color: #fed7aa; color: #9a3412; }
+        .badge.done { background: #d1fae5; border-color: #a7f3d0; color: #065f46; }
+        .badge.canceled { background: #fee2e2; border-color: #fecaca; color: #991b1b; }
+        .badge.failed { background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; }
+
+        .body { padding: 18px 20px; }
+
+        .kv {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px dashed #eef2f7;
+            font-weight: 800;
+            color: #374151;
+            font-size: 14px;
+        }
+        .kv:last-child { border-bottom: none; }
+        .kv .k { color: #6b7280; font-weight: 800; }
+        .kv .v { color: #212529; font-weight: 900; text-align: right; }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .table th, .table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #f3f4f6;
+            text-align: left;
+            vertical-align: middle;
+        }
+        .table th { color: #6b7280; font-weight: 900; font-size: 12px; }
+        .table td { color: #212529; font-weight: 800; }
+
+        .prod-name {
+            font-weight: 900;
+            color: #212529;
+            cursor: pointer;
+            text-decoration: underline;
+            text-decoration-color: rgba(116,185,255,0.5);
+            text-underline-offset: 3px;
+        }
+
+        .price {
+            font-weight: 900;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            margin-top: 12px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 14px;
+            padding: 12px 14px;
+            font-weight: 900;
+            cursor: pointer;
+            transition: all .15s ease;
+            font-size: 14px;
+            user-select: none;
+        }
+
+        .btn.primary {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.25);
+        }
+        .btn.primary:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(116, 185, 255, 0.35); }
+
+        .btn.danger {
+            background: #ffeded;
+            color: #ff6b6b;
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.15);
+        }
+        .btn.danger:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(255, 107, 107, 0.22); }
+
+        .btn:disabled { opacity: .55; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+
+        .empty {
+            padding: 60px 20px;
+            text-align: center;
+            color: #6b7280;
+        }
+        .empty .emoji { font-size: 50px; margin-bottom: 10px; }
+        .empty .msg { font-size: 16px; font-weight: 800; color: #374151; }
+        .empty .submsg { margin-top: 8px; font-size: 13px; }
+
+        @media (max-width: 980px) {
+            .grid { grid-template-columns: 1fr; }
+            header { padding: 16px 20px; }
+            .actions { justify-content: flex-start; }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
+    <div class="header-icons">
+        <button class="icon-btn"
+                id="cartIconBtn"
+                title="장바구니"
+                onclick="location.href='cart.html'">
+            🛒
+        </button>
+
+        <button class="auth-btn" id="loginBtn" style="display:none;">로그인 / 회원가입</button>
+
+        <div class="user-info" id="userInfo" style="display:none;">
+            <button class="icon-btn" id="myPageBtn" title="마이페이지">👤</button>
+            <button class="logout-btn" id="logoutBtn">로그아웃</button>
+        </div>
+    </div>
+</header>
+
+<button class="back-btn" onclick="location.href='my-orders.html'">← 주문목록</button>
+
+<div class="page">
+    <h1 class="title">주문 상세</h1>
+
+    <div id="root">
+        <div class="card">
+            <div class="empty">
+                <div class="emoji">📦</div>
+                <div class="msg">주문 정보를 불러오는 중...</div>
+                <div class="submsg">잠시만 기다려주세요</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_BASE = 'http://localhost:8080/ssak3';
+
+    // 배송비 정책(프로젝트에서 쓰던 값)
+    const FREE_SHIPPING_THRESHOLD = 30000;
+    const SHIPPING_FEE = 3000;
+
+    function applyHeaderAuthUI() {
+        const token = localStorage.getItem('accessToken');
+        const loginBtn = document.getElementById('loginBtn');
+        const userInfo = document.getElementById('userInfo');
+
+        if (token) {
+            loginBtn.style.display = 'none';
+            userInfo.style.display = 'flex';
+        } else {
+            loginBtn.style.display = 'inline-block';
+            userInfo.style.display = 'none';
+        }
+    }
+
+    function initHeaderActions() {
+        document.getElementById('cartIconBtn').onclick = () => location.href = 'cart.html';
+        document.getElementById('myPageBtn').onclick = () => location.href = 'mypage.html';
+        document.getElementById('loginBtn').onclick = () => location.href = 'login.html';
+        document.getElementById('logoutBtn').onclick = () => {
+            localStorage.removeItem('accessToken');
+            applyHeaderAuthUI();
+            alert('로그아웃 되었습니다.');
+            location.href = 'home.html';
+        };
+    }
+
+    async function apiFetch(path, options = {}) {
+        const url = API_BASE + path;
+        const token = localStorage.getItem('accessToken');
+
+        if (token) {
+            const res1 = await fetch(url, {
+                ...options,
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(options.headers || {}),
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            if (res1.status !== 401) return res1;
+        }
+
+        return fetch(url, {
+            ...options,
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(options.headers || {})
+            }
+        });
+    }
+
+    async function readErrorMessage(res) {
+        try {
+            const ct = res.headers.get('content-type') || '';
+            if (ct.includes('application/json')) {
+                const j = await res.json();
+                return j?.message || j?.error?.message || j?.data?.message || JSON.stringify(j);
+            }
+            const t = await res.text();
+            return t || `요청 실패 (${res.status})`;
+        } catch {
+            return `요청 실패 (${res.status})`;
+        }
+    }
+
+    function formatWon(n) {
+        const num = Number(n || 0);
+        return num.toLocaleString('ko-KR') + '원';
+    }
+
+    function formatDateTime(v) {
+        if (!v) return '-';
+        try {
+            const d = new Date(v);
+            if (!Number.isNaN(d.getTime())) return d.toLocaleString('ko-KR');
+            return String(v).replace('T', ' ');
+        } catch {
+            return String(v);
+        }
+    }
+
+    function statusMeta(status) {
+        const s = String(status || '');
+        if (s === 'PAYMENT_PENDING') return { text: '결제 대기', cls: 'pending' };
+        if (s === 'DONE') return { text: '결제 완료', cls: 'done' };
+        if (s === 'CANCELED') return { text: '취소', cls: 'canceled' };
+        if (s === 'PAYMENT_FAILED') return { text: '결제 실패', cls: 'failed' };
+        return { text: s || '상태 없음', cls: '' };
+    }
+
+    function getOrderIdFromQuery() {
+        const qs = new URLSearchParams(location.search);
+        const v = qs.get('orderId');
+        const id = Number(v);
+        return Number.isFinite(id) ? id : null;
+    }
+
+    function renderNotFound(msg) {
+        document.getElementById('root').innerHTML = `
+      <div class="card">
+        <div class="empty">
+          <div class="emoji">🧾</div>
+          <div class="msg">${msg || '주문을 찾을 수 없습니다.'}</div>
+          <div class="submsg">주문목록으로 돌아가 다시 선택해주세요</div>
+        </div>
+      </div>
+    `;
+    }
+
+    async function retryPayment(orderId, retryBtn, cancelPendingBtn) {
+        if (retryBtn) retryBtn.disabled = true;
+        if (cancelPendingBtn) cancelPendingBtn.disabled = true;
+
+        try {
+            const res = await apiFetch(`/orders/${orderId}/retry-payment`, { method: 'POST' });
+            if (!res.ok) throw new Error(await readErrorMessage(res));
+            const json = await res.json();
+            const url = json?.data?.url;
+            if (!url) throw new Error('결제 URL이 없습니다.');
+            location.href = url;
+        } catch (e) {
+            console.error(e);
+            alert('재결제 요청에 실패했습니다.\n' + (e?.message || ''));
+            if (retryBtn) retryBtn.disabled = false;
+            if (cancelPendingBtn) cancelPendingBtn.disabled = false;
+        }
+    }
+
+    async function cancelPending(orderId, retryBtn, cancelPendingBtn) {
+        if (!confirm('결제 대기 주문을 취소할까요?')) return;
+
+        if (retryBtn) retryBtn.disabled = true;
+        if (cancelPendingBtn) cancelPendingBtn.disabled = true;
+
+        try {
+            const res = await apiFetch(`/orders/${orderId}/cancel-pending`, { method: 'PATCH' });
+            if (!res.ok) throw new Error(await readErrorMessage(res));
+            await loadOrder(orderId);
+        } catch (e) {
+            console.error(e);
+            alert('주문 취소에 실패했습니다.\n' + (e?.message || ''));
+            if (retryBtn) retryBtn.disabled = false;
+            if (cancelPendingBtn) cancelPendingBtn.disabled = false;
+        }
+    }
+
+    async function cancelDone(orderId, cancelDoneBtn) {
+        const reason = prompt('주문 취소 사유를 입력해주세요. (필수)');
+        if (reason === null) return;
+        const trimmed = String(reason).trim();
+        if (!trimmed) {
+            alert('취소 사유는 필수입니다.');
+            return;
+        }
+        if (!confirm('결제 완료 주문을 취소할까요?')) return;
+
+        if (cancelDoneBtn) cancelDoneBtn.disabled = true;
+
+        try {
+            const res = await apiFetch(`/orders/cancel`, {
+                method: 'PATCH',
+                body: JSON.stringify({
+                    orderId: Number(orderId),
+                    cancelReason: trimmed
+                })
+            });
+            if (!res.ok) throw new Error(await readErrorMessage(res));
+            await loadOrder(orderId);
+        } catch (e) {
+            console.error(e);
+            alert('주문 취소에 실패했습니다.\n' + (e?.message || ''));
+            if (cancelDoneBtn) cancelDoneBtn.disabled = false;
+        }
+    }
+
+    function renderOrder(order) {
+        const st = statusMeta(order.orderStatus);
+        const status = String(order.orderStatus);
+
+        const ops = Array.isArray(order.orderProductList) ? order.orderProductList : [];
+
+        // ✅ 금액 계산(추정)
+        const subtotal = ops.reduce((sum, op) => sum + Number(op.linePrice || 0), 0);
+        const deliveryFee = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+        let discount = (subtotal + deliveryFee) - Number(order.totalPrice || 0);
+        if (!Number.isFinite(discount) || discount < 0) discount = 0;
+
+        const rows = ops.map(op => `
+      <tr>
+        <td>
+          <span class="prod-name" onclick="location.href='product-detail.html?id=${encodeURIComponent(op.productId)}'">
+            ${op.productName || '상품'}
+          </span>
+        </td>
+        <td class="price">${formatWon(op.unitPrice)}</td>
+        <td>${op.quantity}</td>
+        <td>${formatWon(op.linePrice)}</td>
+      </tr>
+    `).join('');
+
+        // ✅ 액션 버튼(상태별)
+        const actionsHtml =
+            (status === 'PAYMENT_PENDING')
+                ? `
+          <div class="actions">
+            <button class="btn primary" id="retryBtn">재결제</button>
+            <button class="btn danger" id="cancelPendingBtn">주문 취소</button>
+          </div>
+        `
+                : (status === 'DONE')
+                    ? `
+            <div class="actions">
+              <button class="btn danger" id="cancelDoneBtn">주문 취소</button>
+            </div>
+          `
+                    : '';
+
+        document.getElementById('root').innerHTML = `
+      <div class="grid">
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">상품 정보</div>
+            <span class="badge ${st.cls}">${st.text}</span>
+          </div>
+          <div class="body">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>상품</th>
+                  <th>단가</th>
+                  <th>수량</th>
+                  <th>합계</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rows || `<tr><td colspan="4" class="muted">상품 정보가 없습니다.</td></tr>`}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">주문 요약</div>
+            <span class="muted">#${order.orderId}</span>
+          </div>
+          <div class="body">
+            <div class="kv"><span class="k">주문번호</span><span class="v">${order.orderNo || '-'}</span></div>
+            <div class="kv"><span class="k">주문일</span><span class="v">${formatDateTime(order.createdAt)}</span></div>
+            <div class="kv"><span class="k">배송지</span><span class="v">${order.address || '-'}</span></div>
+
+            <div style="height:12px;"></div>
+
+            <div class="kv"><span class="k">상품금액</span><span class="v">${formatWon(subtotal)}</span></div>
+            <div class="kv"><span class="k">배송비</span><span class="v">${formatWon(deliveryFee)}</span></div>
+            <div class="kv"><span class="k">할인금액</span><span class="v">${discount > 0 ? '-' + formatWon(discount) : formatWon(0)}</span></div>
+            <div class="kv"><span class="k">총 결제금액</span><span class="v price">${formatWon(order.totalPrice)}</span></div>
+
+            ${actionsHtml}
+          </div>
+        </div>
+      </div>
+    `;
+
+        // 핸들러 연결
+        if (status === 'PAYMENT_PENDING') {
+            const retryBtn = document.getElementById('retryBtn');
+            const cancelPendingBtn = document.getElementById('cancelPendingBtn');
+
+            retryBtn.addEventListener('click', async () => {
+                await retryPayment(order.orderId, retryBtn, cancelPendingBtn);
+            });
+
+            cancelPendingBtn.addEventListener('click', async () => {
+                await cancelPending(order.orderId, retryBtn, cancelPendingBtn);
+            });
+        }
+
+        if (status === 'DONE') {
+            const cancelDoneBtn = document.getElementById('cancelDoneBtn');
+            cancelDoneBtn.addEventListener('click', async () => {
+                await cancelDone(order.orderId, cancelDoneBtn);
+            });
+        }
+    }
+
+    async function loadOrder(orderId) {
+        try {
+            const res = await apiFetch(`/orders/${orderId}`, { method: 'GET' });
+            if (!res.ok) {
+                if (res.status === 401 || res.status === 403) {
+                    alert('로그인이 필요합니다.');
+                    location.href = 'login.html';
+                    return;
+                }
+                throw new Error(await readErrorMessage(res));
+            }
+            const json = await res.json();
+            if (!json.data) {
+                renderNotFound('주문 데이터를 받지 못했습니다.');
+                return;
+            }
+            renderOrder(json.data);
+        } catch (e) {
+            console.error(e);
+            renderNotFound('주문을 불러오지 못했습니다.');
+        }
+    }
+
+    (async function init() {
+        applyHeaderAuthUI();
+        initHeaderActions();
+
+        const orderId = getOrderIdFromQuery();
+        if (!orderId) {
+            renderNotFound('orderId가 없습니다.');
+            return;
+        }
+        await loadOrder(orderId);
+    })();
+</script>
+</body>
+</html>

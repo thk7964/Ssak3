@@ -110,12 +110,6 @@
             align-items: center;
         }
 
-        /* =========================
-           [수정됨] 이미지가 네모칸 안에 꽉 차게 (cart-order의 product-thumb 방식 적용)
-           - overflow: hidden
-           - img width/height 100%
-           - object-fit: cover
-        ========================= */
         .product-image {
             width: 120px;
             height: 120px;
@@ -124,20 +118,18 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden; /* ✅ 핵심 */
+            overflow: hidden;
             flex-shrink: 0;
             font-size: 80px; /* fallback 이모지용 */
         }
 
-        /* [수정됨] 이미지 크기/비율 제어 */
         .product-image img {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* ✅ 핵심 */
+            object-fit: cover;
             display: block;
         }
 
-        /* [추가] 이미지 실패 시 fallback 이모지 */
         .product-image .emoji-fallback {
             line-height: 1;
         }
@@ -439,10 +431,10 @@
 </footer>
 
 <script>
-    const API_BASE = 'http://localhost:8080'; // [추가] loadUserCoupons에서 사용하던 값 누락되어 있어서 추가
-    let userCoupons = [];                      // [추가] userCoupons 전역 누락되어 있어서 추가
+    const API_BASE = 'http://localhost:8080';
+    let userCoupons = [];
 
-    function buildAuthHeaders() {              // [추가] loadUserCoupons에서 사용하던 함수 누락되어 있어서 추가
+    function buildAuthHeaders() {
         const token = localStorage.getItem('accessToken');
         const headers = {'Content-Type': 'application/json'};
         if (token) headers.Authorization = 'Bearer ' + token;
@@ -512,9 +504,6 @@
                     detailImageUrl: td.detailImageUrl
                 };
 
-                /* =========================
-                   [수정됨] 타임딜/일반 상품 모두에서 공통으로 쓸 대표 이미지 키(viewImageUrl) 설정
-                ========================= */
                 productData.viewImageUrl = td.imageUrl || td.detailImageUrl || null;
 
             } else {
@@ -525,17 +514,12 @@
 
                 productData = result.data;
 
-                /* =========================
-                   [수정됨] 일반 상품도 대표 이미지 키(viewImageUrl)로 통일
-                   - 백엔드 필드명이 imageUrl / image / detailImageUrl 등 섞여 있어도 대응
-                ========================= */
                 productData.viewImageUrl = productData.imageUrl || productData.image || productData.detailImageUrl || null;
             }
 
             console.log('[Step2] loadUserCoupons start');
             await loadUserCoupons();
 
-            // [수정됨] renderOrderPage 2번 호출되던 부분 정리 (한 번만 호출)
             renderOrderPage();
 
         } catch (error) {
@@ -546,7 +530,7 @@
     }
 
     function renderOrderPage() {
-        const imgUrl = productData?.viewImageUrl || null;          // [수정됨] 대표 이미지 키로만 렌더
+        const imgUrl = productData?.viewImageUrl || null;
         const fallbackEmoji = productEmojis[productData?.id] || '📦';
         const container = document.getElementById('mainContainer');
 
@@ -566,12 +550,6 @@
 
         }
 
-        /* =========================
-           [수정됨] cart-order.html의 thumb 방식으로 동일하게:
-           - img가 있으면 <img>
-           - onerror면 fallback 이모지로 교체
-           - CSS에서 overflow/cover로 네모칸 안에 딱 맞게
-        ========================= */
         const thumbInner = imgUrl
             ? `<img src="${imgUrl}" alt="${productData.name}"
                    onerror="this.remove(); this.parentElement.innerHTML='<span class=\\'emoji-fallback\\'>${fallbackEmoji}</span>';">`
@@ -729,7 +707,6 @@
                         throw new Error('Unauthorized');
                     }
 
-                    // ✅ 에러 바디 파싱 (파싱 실패해도 안전)
                     let err = null;
                     try {
                         err = await response.json();
@@ -748,7 +725,6 @@
                         err?.error?.code ||
                         '';
 
-                    // ✅ [추가] 결제 대기 주문 존재 에러 처리
                     if (
                         response.status === 400 &&
                         (serverCode === 'ORDER_PAYMENT_PENDING_EXISTS' ||

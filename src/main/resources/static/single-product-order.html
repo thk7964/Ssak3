@@ -721,17 +721,48 @@
             credentials: 'include',
             body: JSON.stringify(orderData)
         })
-            .then(response => {
+            .then(async (response) => {
                 if (!response.ok) {
                     if (response.status === 401) {
                         alert('로그인이 필요한 서비스입니다.');
                         window.location.href = 'login.html';
                         throw new Error('Unauthorized');
                     }
-                    return response.json().then(err => {
-                        throw new Error(err.message || '주문 생성 실패');
-                    });
+
+                    // ✅ 에러 바디 파싱 (파싱 실패해도 안전)
+                    let err = null;
+                    try {
+                        err = await response.json();
+                    } catch (_) {
+                    }
+
+                    const serverMsg =
+                        err?.message ||
+                        err?.error?.message ||
+                        err?.data?.message ||
+                        '';
+
+                    const serverCode =
+                        err?.errorCode ||
+                        err?.code ||
+                        err?.error?.code ||
+                        '';
+
+                    // ✅ [추가] 결제 대기 주문 존재 에러 처리
+                    if (
+                        response.status === 400 &&
+                        (serverCode === 'ORDER_PAYMENT_PENDING_EXISTS' ||
+                            serverMsg.includes('결제 대기 중인 주문이 있습니다'))
+                    ) {
+                        alert('이미 결제 대기 중인 주문이 있습니다. 해당 주문을 먼저 처리해주세요.');
+                        window.location.href = 'my-orders.html';
+                        throw new Error('Redirected'); // 흐름 종료용 (catch에서 일반 알림 안 띄우게 처리할 수도 있음)
+                    }
+
+                    throw new Error(serverMsg || '주문 생성 실패');
                 }
+
+                // 정상일 때만 json 파싱
                 return response.json();
             })
             .then(responseData => {
@@ -745,10 +776,12 @@
             })
             .catch(error => {
                 console.error('주문 실패:', error);
-                if (error.message !== 'Unauthorized') {
-                    alert('주문 처리 중 오류가 발생했습니다: ' + error.message);
-                }
+
+                if (error.message === 'Unauthorized' || error.message === 'Redirected') return;
+
+                alert('주문 처리 중 오류가 발생했습니다: ' + error.message);
             });
+
     }
 
     async function loadUserCoupons() {

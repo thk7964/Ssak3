@@ -617,10 +617,10 @@
 
     function getSelectedCouponMeta() {
         const couponSelect = document.getElementById('couponSelect');
-        if (!couponSelect) return { userCouponId: null, discount: 0 };
+        if (!couponSelect) return {userCouponId: null, discount: 0};
 
         const opt = couponSelect.options[couponSelect.selectedIndex];
-        if (!opt || !opt.value) return { userCouponId: null, discount: 0 };
+        if (!opt || !opt.value) return {userCouponId: null, discount: 0};
 
         const discount = Number(opt.dataset.discount || 0);
 
@@ -632,7 +632,7 @@
 
     function updateSummary() {
         const subtotal = calcSubtotal();
-        const { userCouponId, discount } = getSelectedCouponMeta();
+        const {userCouponId, discount} = getSelectedCouponMeta();
 
         const shipping = calcShipping(subtotal);
         const total = subtotal - (userCouponId ? discount : 0) + shipping;
@@ -801,20 +801,50 @@
                 body: JSON.stringify(orderData)
             });
 
+// ✅ submitOrder() 안, fetch 이후 if (!res.ok) 블록을 아래처럼 수정
+
             if (!res.ok) {
                 if (res.status === 401) {
                     alert('로그인이 필요한 서비스입니다.');
                     location.href = 'login.html';
                     return;
                 }
-                let msg = '주문 생성 실패';
+
+                // ✅ 여기에서 에러 바디 파싱
+                let errBody = null;
                 try {
-                    const err = await res.json();
-                    msg = err.message || msg;
+                    errBody = await res.json();
                 } catch (_) {
                 }
-                throw new Error(msg);
+
+                // 서버 응답 형태가 달라도 최대한 잡아내기
+                const serverMsg =
+                    errBody?.message ||
+                    errBody?.error?.message ||
+                    errBody?.data?.message ||
+                    '';
+
+                const serverCode =
+                    errBody?.errorCode ||
+                    errBody?.code ||
+                    errBody?.error?.code ||
+                    '';
+
+                // ✅ [핵심] 결제대기 주문 존재 에러 처리
+                if (
+                    res.status === 400 &&
+                    (serverCode === 'ORDER_PAYMENT_PENDING_EXISTS' ||
+                        serverMsg.includes('결제 대기 중인 주문이 있습니다'))
+                ) {
+                    alert('이미 결제 대기 중인 주문이 있습니다. 해당 주문을 먼저 처리해주세요.');
+                    location.href = 'my-orders.html';
+                    return; // 🔥 반드시 return
+                }
+
+                // 그 외 일반 에러 처리
+                throw new Error(serverMsg || '주문 생성 실패');
             }
+
 
             const json = await res.json();
 

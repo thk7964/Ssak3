@@ -5,10 +5,11 @@ import com.example.ssak3.common.enums.TimeDealStatus;
 import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.common.model.PageResponse;
 import com.example.ssak3.domain.timedeal.entity.TimeDeal;
-import com.example.ssak3.domain.timedeal.model.response.TimeDealListGetResponse;
 import com.example.ssak3.domain.timedeal.model.response.TimeDealGetResponse;
+import com.example.ssak3.domain.timedeal.model.response.TimeDealListGetResponse;
 import com.example.ssak3.domain.timedeal.repository.TimeDealRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -35,28 +36,36 @@ public class TimeDealService {
     /**
      * 타임딜 상태별 목록 조회
      */
-    @Transactional(readOnly = true)
-    public PageResponse<TimeDealListGetResponse> getTimeDealStatusList(String status,Pageable pageable) {
-        TimeDealStatus timeDealStatus= parseStatus(status);
+    @Cacheable(
+            // 어노테이션 - 자동 캐시처리이기 때문에 명시적으로 사용하는 캐시 지정
+            cacheManager = "redisCacheManager",
+            value = "timeDealsOpen",
+            key = "#pageable.pageNumber + ':' + #pageable.pageSize",
+            condition = "#status != null && #status.equalsIgnoreCase('OPEN') && #pageable.pageNumber <= 1"
+    )
 
-        Page<TimeDealListGetResponse> responsePage = timeDealRepository.findTimeDeals(timeDealStatus,pageable);
+    @Transactional(readOnly = true)
+    public PageResponse<TimeDealListGetResponse> getTimeDealStatusList(String status, Pageable pageable) {
+        TimeDealStatus timeDealStatus = parseStatus(status);
+
+        Page<TimeDealListGetResponse> responsePage = timeDealRepository.findTimeDeals(timeDealStatus, pageable);
 
         return PageResponse.from(responsePage);
     }
 
     private TimeDealStatus parseStatus(String status) {
-        if (status == null){
+        if (status == null) {
             return null;
         }
         try {
-            TimeDealStatus parsed =TimeDealStatus.valueOf(status.toUpperCase());
+            TimeDealStatus parsed = TimeDealStatus.valueOf(status.toUpperCase());
 
-            if (parsed == TimeDealStatus.DELETED){
+            if (parsed == TimeDealStatus.DELETED) {
                 throw new CustomException(ErrorCode.TIME_DEAL_DELETED_STATUS_NOT_ALLOWED);
             }
 
             return parsed;
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             throw new CustomException(ErrorCode.TIME_DEAL_INVALID_STATUS);
         }
     }

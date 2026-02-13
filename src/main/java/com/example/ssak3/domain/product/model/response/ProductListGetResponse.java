@@ -13,6 +13,7 @@ public class ProductListGetResponse {
     private final Long categoryId;
     private final String name;
     private final Integer price;
+    private final Double averageScore;
     private final String imageUrl;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
@@ -23,6 +24,7 @@ public class ProductListGetResponse {
                 product.getCategory().getId(),
                 product.getName(),
                 product.getPrice(),
+                product.getAverageScore(),
                 imageUrl,
                 product.getCreatedAt(),
                 product.getUpdatedAt()

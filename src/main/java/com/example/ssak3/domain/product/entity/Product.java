@@ -42,6 +42,9 @@ public class Product extends BaseEntity {
     private Integer quantity;
 
     @Column
+    private Double averageScore;
+
+    @Column
     private String image;
 
     @Column(name = "detail_image")
@@ -122,15 +125,15 @@ public class Product extends BaseEntity {
         }
     }
 
-    public void restoreStatusAfterTimeDeal() {
-        if (status != ProductStatus.STOP_SALE) {
-            status = ProductStatus.STOP_SALE;
+    public void stopSaleForTimeDeal() {
+        if (status!= ProductStatus.STOP_SALE){
+            status= ProductStatus.STOP_SALE;
         }
     }
 
-    public void stopSaleForTimeDeal() {
-        if (status != ProductStatus.FOR_SALE) {
-            status = ProductStatus.FOR_SALE;
+    public void restoreStatusAfterTimeDeal() {
+        if (status!= ProductStatus.FOR_SALE){
+            status=ProductStatus.FOR_SALE;
         }
     }
 
@@ -138,4 +141,19 @@ public class Product extends BaseEntity {
         this.status = status;
     }
 
+    public void updateAverageScore(Double score) {
+
+        this.averageScore = score;
+
+
+
+//        Double i = (this.averageScore == null ? 0.0 : averageScore) + score;
+//        Double averageScore = i / reviewCounts;
+//
+//        Double roundedAvgScore = BigDecimal.valueOf(averageScore)
+//
+//                .setScale(1, RoundingMode.HALF_UP)
+//
+//                .doubleValue();
+    }
 }

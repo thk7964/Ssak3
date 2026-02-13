@@ -16,6 +16,7 @@ import com.example.ssak3.domain.timedeal.model.response.TimeDealListGetResponse;
 import com.example.ssak3.domain.timedeal.model.response.TimeDealUpdateResponse;
 import com.example.ssak3.domain.timedeal.repository.TimeDealRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -94,6 +95,7 @@ public class TimeDealAdminService {
     /**
      * 타임딜 수정
      */
+    @CacheEvict(value = "timeDealsOpen", allEntries = true)
     @Transactional
     public TimeDealUpdateResponse updateTimeDeal(Long timeDealId, TimeDealUpdateRequest request) {
 

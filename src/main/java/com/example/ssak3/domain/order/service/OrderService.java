@@ -22,6 +22,7 @@ import com.example.ssak3.domain.payment.entity.Payment;
 import com.example.ssak3.domain.payment.repository.PaymentRepository;
 import com.example.ssak3.domain.product.entity.Product;
 import com.example.ssak3.domain.product.repository.ProductRepository;
+import com.example.ssak3.domain.product.service.InventoryService;
 import com.example.ssak3.domain.timedeal.entity.TimeDeal;
 import com.example.ssak3.domain.timedeal.repository.TimeDealRepository;
 import com.example.ssak3.domain.user.entity.User;
@@ -60,6 +61,8 @@ public class OrderService {
     @Value("${app.frontend.base-url}")
     private String frontendBaseUrl;
 
+    private final InventoryService inventoryService;
+
     /**
      * 상품 페이지에서 단일 상품 구매
      */
@@ -79,15 +82,21 @@ public class OrderService {
         int unitPrice = validatePurchasableReturnUnitPrice(product, quantity);
 
         long subtotal = unitPrice * quantity;
+        long deliveryFee = 0;
 
-        Order order = new Order(user, request.getAddress(), null, subtotal);
+        // 3만원 미만 구매 시 배송비 3000원
+        if (subtotal < 30000) {
+            deliveryFee = 3000;
+        }
+
+        Order order = new Order(user, request.getAddress(), null, subtotal + deliveryFee);
         Order savedOrder = orderRepository.save(order);
 
         OrderProduct orderProduct = new OrderProduct(savedOrder, product, unitPrice, quantity, null);
         orderProductRepository.save(orderProduct);
 
         // 재고 차감
-        product.decreaseQuantity(quantity);
+        inventoryService.decreaseProductStock(product, quantity);
 
         long discount = 0L;
         UserCoupon userCoupon = null;
@@ -116,7 +125,7 @@ public class OrderService {
 
         String url = frontendBaseUrl + "/checkout.html?orderId=" + savedOrder.getId() + "&orderName=" + orderName;
 
-        return OrderCreateResponse.from(savedOrder, subtotal, discount, url);
+        return OrderCreateResponse.from(savedOrder, subtotal, discount, url, deliveryFee);
     }
 
     /**
@@ -161,10 +170,15 @@ public class OrderService {
             int unitPrice = validatePurchasableReturnUnitPrice(product, quantity);
             unitPriceMap.put(cartProduct.getId(), unitPrice);
 
-            subtotal += (long)unitPrice * quantity;
+            subtotal += (long) unitPrice * quantity;
         }
 
-        Order order = new Order(user, request.getAddress(), null, subtotal);
+        long deliveryFee = 0;
+        if (subtotal < 30000) {
+            deliveryFee = 3000;
+        }
+
+        Order order = new Order(user, request.getAddress(), null, subtotal + deliveryFee);
         Order savedOrder = orderRepository.save(order);
 
         List<OrderProduct> orderProductList = new ArrayList<>();
@@ -181,7 +195,7 @@ public class OrderService {
             orderProductList.add(orderProduct);
 
             // 재고 차감
-            product.decreaseQuantity(quantity);
+            inventoryService.decreaseProductStock(product, quantity);
 
         }
 
@@ -222,7 +236,7 @@ public class OrderService {
         savedOrder.updateStatus(OrderStatus.PAYMENT_PENDING);
         String url = frontendBaseUrl + "/checkout.html?orderId=" + savedOrder.getId() + "&orderName=" + orderName;
 
-        return OrderCreateResponse.from(savedOrder, subtotal, discount, url);
+        return OrderCreateResponse.from(savedOrder, subtotal, discount, url, deliveryFee);
 
     }
 
@@ -377,13 +391,20 @@ public class OrderService {
                 .mapToLong(op -> (long) op.getUnitPrice() * op.getQuantity())
                 .sum();
 
+        long deliveryFee = 0;
+
+        if (subtotal < 30000) {
+            deliveryFee = 3000;
+        }
+
         long total = order.getTotalPrice();
-        long discount = subtotal - total;
+
+        long discount = subtotal - (total - deliveryFee);
         if (discount < 0) discount = 0;
 
         String url = frontendBaseUrl + "/checkout.html?orderId=" + order.getId() + "&orderName=" + orderName;
 
-        return OrderCreateResponse.from(order, subtotal, discount, url);
+        return OrderCreateResponse.from(order, subtotal, discount, url, deliveryFee);
     }
 
 }

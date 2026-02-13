@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 
 @Getter
 @RequiredArgsConstructor
-// Jackson 역직렬화를 위한 기본 생성자
 @NoArgsConstructor(access = AccessLevel.PRIVATE, force = true)
 public class CouponListForUserGetResponse {
 

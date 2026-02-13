@@ -368,21 +368,17 @@
                 flex-direction: column;
                 text-align: center;
             }
-
             .product-image {
                 width: 100px;
                 height: 100px;
                 font-size: 60px;
             }
-
             header {
                 padding: 16px 20px;
             }
-
             .back-btn {
                 margin: 20px;
             }
-
             .page-title {
                 font-size: 24px;
             }
@@ -394,12 +390,7 @@
     <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
     <div class="header-icons">
         <button class="icon-btn">🔍</button>
-        <button class="icon-btn"
-                id="cartIconBtn"
-                title="장바구니"
-                onclick="location.href='cart.html'">
-            🛒
-        </button>
+        <button class="icon-btn">🛒</button>
         <button class="icon-btn">👤</button>
     </div>
 </header>
@@ -420,7 +411,6 @@
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('productId');
     const initialQuantity = parseInt(urlParams.get('quantity')) || 1;
-    const timeDealId = urlParams.get('timeDealId');
 
     let quantity = initialQuantity;
     let productData = null;
@@ -445,67 +435,49 @@
         }
 
         try {
-            if (timeDealId) {
-                const url = `http://localhost:8080/ssak3/time-deals/${timeDealId}`;
-                console.log('[TimeDeal] request url =', url);
+            const response = await fetch(`http://localhost:8080/ssak3/products/${productId}`);
+            if (!response.ok) throw new Error('상품 정보를 불러올 수 없습니다.');
+            const result = await response.json();
+            productData = result.data;
 
-                const response = await fetch(url);
-                console.log('[TimeDeal] status =', response.status);
-
-                const rawText = await response.text();
-                console.log('[TimeDeal] raw body =', rawText);
-
-                let result;
-                try {
-                    result = JSON.parse(rawText);
-                } catch (e) {
-                    throw new Error('타임딜 응답이 JSON이 아닙니다. (대개 404/500 HTML 에러 페이지)');
-                }
-
-                if (!response.ok) {
-                    throw new Error(result?.message || `타임딜 HTTP 오류 (${response.status})`);
-                }
-                if (!result.success) {
-                    throw new Error(result.message || '타임딜 정보를 불러올 수 없습니다.');
-                }
-
-                const td = result.data;
-
-                productData = {
-                    id: Number(td.productId),
-                    name: td.productName,
-                    price: Number(td.dealPrice),
-                    information: td.productInformation,
-                    imageUrl: td.imageUrl,
-                    detailImageUrl: td.detailImageUrl
-                };
-            } else {
-                const response = await fetch(`http://localhost:8080/ssak3/products/${productId}`);
-                if (!response.ok) throw new Error('상품 정보를 불러올 수 없습니다.');
-                const result = await response.json();
-                if (!result.success) throw new Error(result.message || '상품 정보를 불러올 수 없습니다.');
-
-                productData = result.data;
-                console.log('[Step1] product fetch OK, productData=', productData);
-            }
-
-            console.log('[Step2] loadUserCoupons start');
+            // 사용자 쿠폰 목록 불러오기
             await loadUserCoupons();
-            renderOrderPage();
 
-            console.log('[Step3] renderOrderPage start');
-            try {
-                renderOrderPage();
-                console.log('[Step3] renderOrderPage OK');
-            } catch (e) {
-                console.error('[Step3] renderOrderPage FAIL:', e);
-                throw e;
+            renderOrderPage();
+        } catch (error) {
+            console.error('상품 로드 오류:', error);
+            alert('상품 정보를 불러오는데 실패했습니다.');
+            history.back();
+        }
+    }
+
+    let userCoupons = [];
+
+    async function loadUserCoupons() {
+        try {
+            const token = localStorage.getItem('accessToken');
+            const headers = {};
+
+            if (token) {
+                headers.Authorization = 'Bearer ' + token;
             }
 
+            const response = await fetch('http://localhost:8080/ssak3/user-coupons', {
+                method: 'GET',
+                headers: headers,
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                userCoupons = result.data || [];
+            } else {
+                console.log('쿠폰 정보를 불러올 수 없습니다.');
+                userCoupons = [];
+            }
         } catch (error) {
-            console.error('상품/타임딜 로드 오류:', error);
-            alert('로드 실패: ' + (error?.message || error));
-            history.back();
+            console.error('쿠폰 로드 오류:', error);
+            userCoupons = [];
         }
     }
 
@@ -706,26 +678,6 @@
                     alert('주문 처리 중 오류가 발생했습니다: ' + error.message);
                 }
             });
-    }
-
-    async function loadUserCoupons() {
-        try {
-            const res = await fetch(API_BASE + '/ssak3/user-coupons?status=AVAILABLE', {
-                method: 'GET',
-                headers: buildAuthHeaders(),
-                credentials: 'include'
-            });
-
-            if (res.ok) {
-                const json = await res.json();
-                userCoupons = json.data || [];
-            } else {
-                userCoupons = [];
-            }
-        } catch (e) {
-            console.error('쿠폰 로드 실패:', e);
-            userCoupons = [];
-        }
     }
 
     loadProductInfo();

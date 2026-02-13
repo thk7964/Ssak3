@@ -114,12 +114,8 @@
         }
 
         @keyframes float {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-20px);
-            }
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
         }
 
         .product-info-section {
@@ -376,19 +372,407 @@
                 padding: 16px 20px;
             }
         }
+
+        /* ════════════════════════════════════════════
+           ★ 리뷰 섹션 추가 스타일 (기존 CSS 미수정)
+           ════════════════════════════════════════════ */
+
+        .review-section {
+            max-width: 1200px;
+            margin: 0 auto 80px;
+            padding: 0 20px;
+        }
+
+        .review-divider {
+            height: 1px;
+            background: #e5e7eb;
+            margin: 0 20px 40px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .review-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .review-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #212529;
+            letter-spacing: -0.4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .review-count {
+            font-size: 13px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #74b9ff15 0%, #a29bfe15 100%);
+            color: #74b9ff;
+            padding: 4px 12px;
+            border-radius: 99px;
+        }
+
+        .review-summary {
+            background: white;
+            border-radius: 20px;
+            padding: 24px 28px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 24px;
+            border: 1px solid #f0f0f0;
+            flex-wrap: wrap;
+        }
+
+        .review-avg-score {
+            text-align: center;
+            min-width: 68px;
+        }
+
+        .review-avg-number {
+            font-size: 44px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+
+        .review-avg-label {
+            font-size: 12px;
+            color: #adb5bd;
+            margin-top: 4px;
+        }
+
+        .review-avg-stars {
+            font-size: 22px;
+            letter-spacing: 2px;
+        }
+
+        /* ★ 수정: font-size를 CSS 클래스에 직접 명시 (인라인 style 제거) */
+        .star-on       { color: #f59e0b; font-size: 16px; }  /* 리뷰 카드 별점 */
+        .star-off      { color: #e5e7eb; font-size: 16px; }
+        .star-on--lg   { color: #f59e0b; font-size: 22px; }  /* 평균 요약 별점 */
+        .star-off--lg  { color: #e5e7eb; font-size: 22px; }
+
+        .review-write-btn {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            border: none;
+            padding: 11px 22px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
+            white-space: nowrap;
+            font-family: inherit;
+        }
+
+        .review-write-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(116, 185, 255, 0.45);
+        }
+
+        .review-login-btn {
+            font-size: 13px;
+            color: #adb5bd;
+            padding: 10px 16px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+            transition: background 0.15s;
+            white-space: nowrap;
+        }
+
+        .review-login-btn:hover { background: #e9ecef; }
+
+        .review-form-wrap {
+            background: white;
+            border-radius: 20px;
+            padding: 28px 32px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            margin-bottom: 24px;
+            border: 2px solid #74b9ff;
+            display: none;
+        }
+
+        .review-form-wrap.open { display: block; }
+
+        .review-form-heading {
+            font-size: 16px;
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: 20px;
+        }
+
+        .star-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .star-row-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            min-width: 36px;
+        }
+
+        .star-picker {
+            display: flex;
+            gap: 2px;
+        }
+
+        .star-picker span {
+            font-size: 28px;
+            cursor: pointer;
+            transition: transform 0.1s;
+            color: #e5e7eb;
+            line-height: 1;
+            user-select: none;
+        }
+
+        .star-picker span.lit  { color: #f59e0b; }
+        .star-picker span:hover { transform: scale(1.2); }
+
+        .star-hint {
+            font-size: 13px;
+            color: #adb5bd;
+        }
+
+        .review-textarea {
+            width: 100%;
+            min-height: 110px;
+            padding: 14px 16px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: inherit;
+            color: #374151;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.15s;
+            box-sizing: border-box;
+        }
+
+        .review-textarea:focus { border-color: #74b9ff; }
+        .review-textarea::placeholder { color: #adb5bd; }
+
+        .review-form-error {
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 13px;
+            color: #991b1b;
+            margin-bottom: 12px;
+            display: none;
+        }
+        .review-form-error.show { display: block; }
+
+        .review-form-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .btn-cancel {
+            padding: 10px 20px;
+            border: 1.5px solid #e5e7eb;
+            background: white;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #495057;
+            cursor: pointer;
+            font-family: inherit;
+            transition: border-color 0.15s;
+        }
+        .btn-cancel:hover { border-color: #adb5bd; }
+
+        .btn-submit {
+            padding: 10px 24px;
+            border: none;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            font-family: inherit;
+            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.3);
+            transition: all 0.2s;
+        }
+        .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(116, 185, 255, 0.4); }
+        .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        .review-list { display: flex; flex-direction: column; gap: 14px; }
+
+        .review-card {
+            background: white;
+            border-radius: 16px;
+            padding: 22px 26px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid #f0f0f0;
+            transition: box-shadow 0.2s;
+        }
+
+        .review-card:hover { box-shadow: 0 4px 16px rgba(0, 0, 0, 0.09); }
+
+        .review-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            gap: 12px;
+        }
+
+        .review-meta { display: flex; flex-direction: column; gap: 4px; }
+
+        .review-author {
+            font-size: 14px;
+            font-weight: 700;
+            color: #212529;
+        }
+
+        .review-score { font-size: 15px; letter-spacing: 1px; }
+
+        .review-date {
+            font-size: 12px;
+            color: #adb5bd;
+        }
+
+        .review-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+        .btn-edit-review, .btn-delete-review {
+            border: none;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.15s;
+            color: #495057;
+        }
+
+        .btn-edit-review:hover   { background: #e9ecef; }
+        .btn-delete-review:hover { background: #fee2e2; color: #991b1b; }
+
+        .review-body {
+            font-size: 14px;
+            color: #6b7280;
+            line-height: 1.75;
+            white-space: pre-wrap;
+        }
+
+        .review-edit-form {
+            margin-top: 14px;
+            display: none;
+        }
+        .review-edit-form.open { display: block; }
+
+        .review-empty {
+            text-align: center;
+            padding: 48px 20px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            color: #adb5bd;
+        }
+
+        .review-empty-icon { font-size: 38px; margin-bottom: 12px; }
+        .review-empty-text { font-size: 15px; font-weight: 500; }
+
+        .review-pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            margin-top: 28px;
+            flex-wrap: wrap;
+        }
+
+        .page-btn {
+            width: 36px; height: 36px;
+            border-radius: 10px;
+            border: 1.5px solid #e5e7eb;
+            background: white;
+            color: #495057;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.18s;
+            font-family: inherit;
+        }
+
+        .page-btn:hover { border-color: #74b9ff; color: #74b9ff; }
+
+        .page-btn.active {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            border-color: transparent;
+            color: white;
+            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
+        }
+
+        .page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+        .page-arrow {
+            width: 36px; height: 36px;
+            border-radius: 10px;
+            border: 1.5px solid #e5e7eb;
+            background: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.18s;
+            font-family: inherit;
+            color: #495057;
+        }
+
+        .page-arrow:hover  { border-color: #74b9ff; color: #74b9ff; }
+        .page-arrow:disabled { opacity: 0.35; cursor: not-allowed; }
+
+        .review-loading {
+            text-align: center;
+            padding: 40px;
+            color: #adb5bd;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .review-section  { padding: 0 16px; }
+            .review-summary  { padding: 20px; }
+            .review-form-wrap { padding: 20px; }
+            .review-card     { padding: 16px 18px; }
+        }
     </style>
 </head>
 <body>
+
 <header>
     <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
     <div class="header-icons">
         <button class="icon-btn">🔍</button>
-        <button class="icon-btn"
-                id="cartIconBtn"
-                title="장바구니"
-                onclick="location.href='cart.html'">
-            🛒
-        </button>
+        <button class="icon-btn">🛒</button>
         <button class="icon-btn">👤</button>
     </div>
 </header>
@@ -396,8 +780,62 @@
 <button class="back-btn" onclick="history.back()">← 뒤로가기</button>
 
 <div class="product-detail-container" id="productContainer">
-    <div class="loading" id="loading">상품 정보를 불러오는 중...</div>
+    <div class="loading">상품 정보를 불러오는 중...</div>
 </div>
+
+<div class="review-divider"></div>
+
+<section class="review-section" id="reviewSection" style="display:none;">
+
+    <div class="review-header">
+        <div class="review-title">
+            후기
+            <span class="review-count" id="reviewCount">0개</span>
+        </div>
+        <div id="reviewHeaderBtn"></div>
+    </div>
+
+    <div class="review-summary" id="reviewSummary" style="display:none;">
+        <div class="review-avg-score">
+            <div class="review-avg-number" id="avgNumber">0.0</div>
+            <div class="review-avg-label">/ 5.0</div>
+        </div>
+        <div class="review-avg-stars" id="avgStars"></div>
+    </div>
+
+    <div class="review-form-wrap" id="reviewFormWrap">
+        <div class="review-form-heading">✏️ 후기 작성</div>
+        <div class="review-form-error" id="writeError"></div>
+
+        <div class="star-row">
+            <span class="star-row-label">별점</span>
+            <div class="star-picker" id="writePicker">
+                <span data-v="1">★</span>
+                <span data-v="2">★</span>
+                <span data-v="3">★</span>
+                <span data-v="4">★</span>
+                <span data-v="5">★</span>
+            </div>
+            <span class="star-hint" id="writeHint">선택 안 됨</span>
+        </div>
+
+        <textarea
+                class="review-textarea"
+                id="writeContent"
+                placeholder="상품에 대한 솔직한 후기를 남겨주세요 (10자 이상)"
+                maxlength="500"
+        ></textarea>
+
+        <div class="review-form-footer">
+            <button class="btn-cancel" id="writeCancelBtn">취소</button>
+            <button class="btn-submit" id="writeSubmitBtn">등록</button>
+        </div>
+    </div>
+
+    <div class="review-list"       id="reviewList"></div>
+    <div class="review-pagination" id="reviewPagination"></div>
+
+</section>
 
 <footer>
     <p>© 2025 싹쓰리 - 모두를 위한 귀여운 굿즈</p>
@@ -406,86 +844,90 @@
 </footer>
 
 <script>
+    // URL에서 상품 ID 가져오기
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('id');
 
     const productEmojis = {
-        1: '🏍️', 2: '✨', 3: '⚔️', 4: '🎮', 5: '🎵',
-        6: '⚡', 7: '🌈', 8: '💎', 9: '🎨', 10: '🧸'
+        1:'🏍️', 2:'✨', 3:'⚔️', 4:'🎮', 5:'🎵',
+        6:'⚡',  7:'🌈', 8:'💎', 9:'🎨', 10:'🧸'
     };
 
+    // 상품 상태 한글 변환
     const statusText = {
-        'AVAILABLE': '판매중',
-        'SOLDOUT': '품절',
+        'AVAILABLE'   : '판매중',
+        'SOLDOUT'     : '품절',
         'DISCONTINUED': '단종'
     };
 
+    // 상품 정보 로드
     async function loadProductDetail() {
-        if (!productId) {
-            showError('상품을 찾을 수 없습니다.');
-            return;
-        }
-
+        if (!productId) { showError('상품을 찾을 수 없습니다.'); return; }
         try {
             const response = await fetch(`http://localhost:8080/ssak3/products/${productId}`);
             if (!response.ok) throw new Error('상품을 불러올 수 없습니다.');
-            const result = await response.json();
-            displayProduct(result.data);
+            const result  = await response.json();
+            const product = result.data;
+            displayProduct(product);
         } catch (error) {
             console.error('상품 로드 오류:', error);
             showError('상품 정보를 불러오는데 실패했습니다.');
         }
     }
 
+    // 상품 정보 표시
     function displayProduct(product) {
-        window.__currentProduct = product; // addToCart에서 사용
-        const container = document.getElementById('productContainer');
+        const container   = document.getElementById('productContainer');
         const isAvailable = product.status === 'AVAILABLE';
-        const emoji = productEmojis[product.id] || '📦';
+        const emoji       = productEmojis[product.id] || '📦';
 
         container.innerHTML = `
-            <div class="product-main">
-                <div class="product-image-section">
-                    <div class="product-image">${emoji}</div>
+        <div class="product-main">
+            <div class="product-image-section">
+                <div class="product-image">${emoji}</div>
+            </div>
+            <div class="product-info-section">
+                <span class="product-category">카테고리 ${product.categoryId}</span>
+                <h1 class="product-name">${product.name}</h1>
+                <div class="product-price">${product.price.toLocaleString()}원</div>
+                <span class="product-status ${isAvailable ? 'available' : 'soldout'}">
+                    ${isAvailable ? '✓' : '✕'} ${statusText[product.status] || product.status}
+                </span>
+                <div class="divider"></div>
+                ${product.information ? `
+                    <div class="product-description">
+                        <div class="description-title">상품 정보</div>
+                        <div class="description-text">${product.information}</div>
+                    </div>` : ''}
+                <div class="quantity-selector">
+                    <span class="quantity-label">수량</span>
+                    <div class="quantity-controls">
+                        <button class="quantity-btn" onclick="decreaseQuantity()" ${!isAvailable ? 'disabled' : ''}>-</button>
+                        <span class="quantity-value" id="quantityValue">1</span>
+                        <button class="quantity-btn" onclick="increaseQuantity()" ${!isAvailable ? 'disabled' : ''}>+</button>
+                    </div>
                 </div>
-                <div class="product-info-section">
-                    <span class="product-category">카테고리 ${product.categoryId}</span>
-                    <h1 class="product-name">${product.name}</h1>
-                    <div class="product-price">${product.price.toLocaleString()}원</div>
-                    <span class="product-status ${isAvailable ? 'available' : 'soldout'}">
-                        ${isAvailable ? '✓' : '✕'} ${statusText[product.status] || product.status}
-                    </span>
-                    <div class="divider"></div>
-                    ${product.information ? `
-                        <div class="product-description">
-                            <div class="description-title">상품 정보</div>
-                            <div class="description-text">${product.information}</div>
-                        </div>
-                    ` : ''}
-                    <div class="quantity-selector">
-                        <span class="quantity-label">수량</span>
-                        <div class="quantity-controls">
-                            <button class="quantity-btn" onclick="decreaseQuantity()" ${!isAvailable ? 'disabled' : ''}>-</button>
-                            <span class="quantity-value" id="quantityValue">1</span>
-                            <button class="quantity-btn" onclick="increaseQuantity()" ${!isAvailable ? 'disabled' : ''}>+</button>
-                        </div>
-                    </div>
-                    <div class="action-buttons">
-                        <button class="cart-btn" onclick="addToCart()">🛒 장바구니</button>
-                        <button class="buy-btn" onclick="buyNow()" >바로 구매</button>
-                    </div>
+                <div class="action-buttons">
+                    <button class="cart-btn" onclick="addToCart()" ${!isAvailable ? 'disabled' : ''}>
+                        🛒 장바구니
+                    </button>
+                    <button class="buy-btn" onclick="buyNow()" ${!isAvailable ? 'disabled' : ''}>
+                        바로 구매
+                    </button>
                 </div>
             </div>
-        `;
+        </div>`;
+
+        initReviews();
     }
 
+    // 에러 표시
     function showError(message) {
         document.getElementById('productContainer').innerHTML = `
-            <div class="error">
-                <div class="error-title">😢 오류가 발생했습니다</div>
-                <div class="error-message">${message}</div>
-            </div>
-        `;
+        <div class="error">
+            <div class="error-title">😢 오류가 발생했습니다</div>
+            <div class="error-message">${message}</div>
+        </div>`;
     }
 
     function increaseQuantity() {
@@ -495,85 +937,435 @@
 
     function decreaseQuantity() {
         const el = document.getElementById('quantityValue');
-        const qty = parseInt(el.textContent);
-        if (qty > 1) el.textContent = qty - 1;
+        const q  = parseInt(el.textContent);
+        if (q > 1) el.textContent = q - 1;
     }
 
-    async function addToCart() {
-        const product = window.__currentProduct;
-        if (!product?.id) {
-            alert('상품 정보를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
-            return;
-        }
-
-        const quantity = parseInt(document.getElementById('quantityValue')?.textContent || '1', 10);
-
-        // 로그인 토큰(JWT) 우선, 없으면 쿠키(카카오 로그인)로 시도
-        const token = localStorage.getItem('accessToken');
-        const url = 'http://localhost:8080/ssak3/carts';
-
-        const payload = {
-            productId: product.id,
-            quantity: quantity
-            // timeDealId: null (일반 상품이면 생략)
-        };
-
-        try {
-            let res;
-
-            // 1) JWT로 시도
-            if (token) {
-                res = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify(payload)
-                });
-            }
-
-            // 2) 토큰 없거나 401이면 쿠키로 재시도
-            if (!token || res.status === 401) {
-                res = await fetch(url, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    credentials: 'include',
-                    body: JSON.stringify(payload)
-                });
-            }
-
-            const result = await res.json().catch(() => null);
-
-            if (!res.ok) {
-                // 로그인 필요 or 기타 에러 메시지 처리
-                const msg = result?.message || '장바구니 담기에 실패했습니다.';
-                alert(msg);
-
-                // 인증 실패면 로그인 페이지로 보내고 싶으면 아래 주석 해제
-                if (res.status === 401) {
-                    // location.href = 'login.html';
-                }
-                return;
-            }
-
-            alert('장바구니에 담았습니다!');
-            // 담고 나서 장바구니로 이동하고 싶으면 아래 주석 해제
-            // location.href = 'cart.html';
-
-        } catch (e) {
-            console.error('addToCart error:', e);
-            alert('네트워크 오류로 장바구니 담기에 실패했습니다.');
-        }
+    function addToCart() {
+        const quantity = document.getElementById('quantityValue').textContent;
+        alert(`장바구니에 ${quantity}개가 추가되었습니다!`);
     }
-
 
     function buyNow() {
         const quantity = document.getElementById('quantityValue').textContent;
-        window.location.href = `single-product-order.html?productId=${productId}&quantity=${quantity}`;
+        alert(`${quantity}개 구매하기`);
     }
 
     loadProductDetail();
+
+
+    /* ═══════════════════════════════════════════════════════
+       ★ 리뷰 섹션 (추가)
+       ═══════════════════════════════════════════════════════ */
+
+    const getToken   = () => localStorage.getItem('accessToken');
+    function getMyId() {
+        const stored = localStorage.getItem('userId');
+        if (stored) return stored;   // ① localStorage 우선
+
+        const token = getToken();
+        if (!token) return null;
+
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            // ② JWT payload.userId 클레임, 없으면 payload.sub 사용
+            return String(payload.userId != null ? payload.userId : (payload.sub || ''));
+        } catch (e) { return null; }
+    }
+    const isLoggedIn = () => !!getToken();
+
+    function authHeaders() {
+        const h = { 'Content-Type': 'application/json' };
+        const t = getToken();
+        if (t) h['Authorization'] = 'Bearer ' + t;
+        return h;
+    }
+
+    const reviewApi = {
+        getList: async (page = 0) => {
+            const params = new URLSearchParams({
+                productId: productId,
+                page     : page,
+                size     : 5,
+                sort     : 'id,desc'
+            });
+            const r = await fetch(
+                `http://localhost:8080/ssak3/reviews?${params}`,
+                { headers: authHeaders(), credentials: 'include' }
+            );
+            if (!r.ok) throw new Error(`HTTP ${r.status}`);
+            return (await r.json()).data;
+        },
+        create: async (content, score) => {
+            const r = await fetch('http://localhost:8080/ssak3/reviews', {
+                method : 'POST',
+                headers: authHeaders(),
+                credentials: 'include',
+                body   : JSON.stringify({ productId: Number(productId), content, score })
+            });
+            if (!r.ok) throw new Error(`HTTP ${r.status}`);
+            return (await r.json()).data;
+        },
+        update: async (reviewId, content, score) => {
+            const r = await fetch(`http://localhost:8080/ssak3/reviews/${reviewId}`, {
+                method : 'PATCH',
+                headers: authHeaders(),
+                credentials: 'include',
+                body   : JSON.stringify({ productId: Number(productId), content, score })
+            });
+            if (!r.ok) throw new Error(`HTTP ${r.status}`);
+            return (await r.json()).data;
+        },
+        delete: async (reviewId) => {
+            const r = await fetch(`http://localhost:8080/ssak3/reviews/${reviewId}`, {
+                method : 'DELETE',
+                headers: authHeaders(),
+                credentials: 'include'
+            });
+            if (!r.ok) throw new Error(`HTTP ${r.status}`);
+            return (await r.json()).data;
+        }
+    };
+
+    let reviews    = [];
+    let curPage    = 0;
+    let totalPages = 1;
+    let writeScore = 0;
+    let editScores = {};
+
+    const SCORE_LABELS = ['', '별로예요', '그저 그래요', '보통이에요', '좋아요', '최고예요'];
+
+    /* ─────────────────────────────────────────────────────
+       ★ 수정된 starsHtml
+       - 기존: style="font-size:${size}px"  → IDE/브라우저 에러
+       - 수정: lg 파라미터로 CSS 클래스 전환 (인라인 style 완전 제거)
+             starsHtml(score)       → .star-on / .star-off     (16px, 리뷰 카드용)
+             starsHtml(score, true) → .star-on--lg / .star-off--lg (22px, 평균 요약용)
+       ───────────────────────────────────────────────────── */
+    function starsHtml(score, lg) {
+        const n   = Math.round(score || 0);
+        const on  = lg ? 'star-on--lg'  : 'star-on';
+        const off = lg ? 'star-off--lg' : 'star-off';
+        let h = '';
+        for (let i = 1; i <= 5; i++)
+            h += '<span class="' + (i <= n ? on : off) + '">★</span>';
+        return h;
+    }
+
+    function fmtDate(dt) {
+        if (!dt) return '';
+        return new Date(dt).toLocaleDateString('ko-KR',
+            { year: 'numeric', month: '2-digit', day: '2-digit' });
+    }
+
+    function esc(s) {
+        return String(s || '')
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function updateSummary() {
+        const el = document.getElementById('reviewSummary');
+        if (!reviews.length) { el.style.display = 'none'; return; }
+        const avg = reviews.reduce((s, r) => s + (r.score || 0), 0) / reviews.length;
+        document.getElementById('avgNumber').textContent = avg.toFixed(1);
+        // ★ 수정: starsHtml(avg, 22) → starsHtml(avg, true)
+        document.getElementById('avgStars').innerHTML    = starsHtml(Math.round(avg), true);
+        el.style.display = 'flex';
+    }
+
+    function renderList() {
+        document.getElementById('reviewCount').textContent = reviews.length + '개';
+
+        const listEl = document.getElementById('reviewList');
+
+        if (!reviews.length) {
+            listEl.innerHTML =
+                '<div class="review-empty">' +
+                '<div class="review-empty-icon">💬</div>' +
+                '<div class="review-empty-text">아직 작성된 후기가 없어요. 첫 번째 후기를 남겨보세요!</div>' +
+                '</div>';
+            updateSummary();
+            renderPagination();
+            return;
+        }
+
+        listEl.innerHTML = reviews.map(function(r) {
+            var isOwner = isLoggedIn() && String(getMyId()) === String(r.userId);
+            var actionsHtml = isOwner
+                ? '<div class="review-actions">' +
+                '<button class="btn-edit-review"   onclick="openEdit(' + r.id + ')">수정</button>' +
+                '<button class="btn-delete-review" onclick="doDelete(' + r.id + ')">삭제</button>' +
+                '</div>'
+                : '';
+            var editFormHtml = isOwner
+                ? '<div class="review-edit-form" id="ef_' + r.id + '">' +
+                '<div class="star-row" style="margin-bottom:12px;">' +
+                '<span class="star-row-label">별점</span>' +
+                '<div class="star-picker" id="ep_' + r.id + '">' +
+                '<span data-v="1">★</span><span data-v="2">★</span>' +
+                '<span data-v="3">★</span><span data-v="4">★</span>' +
+                '<span data-v="5">★</span>' +
+                '</div>' +
+                '<span class="star-hint" id="eh_' + r.id + '"></span>' +
+                '</div>' +
+                '<textarea class="review-textarea" id="et_' + r.id + '" maxlength="500">' + esc(r.content) + '</textarea>' +
+                '<div class="review-form-error" id="ee_' + r.id + '"></div>' +
+                '<div class="review-form-footer">' +
+                '<button class="btn-cancel" onclick="closeEdit(' + r.id + ')">취소</button>' +
+                '<button class="btn-submit" id="es_' + r.id + '" onclick="doUpdate(' + r.id + ')">수정 완료</button>' +
+                '</div>' +
+                '</div>'
+                : '';
+
+            return '<div class="review-card" id="rc_' + r.id + '">' +
+                '<div class="review-card-top">' +
+                '<div class="review-meta">' +
+                '<span class="review-author">👤 ' + esc(r.nickname || '익명') + '</span>' +
+                '<span class="review-score">' + starsHtml(r.score) + '</span>' +
+                '<span class="review-date">' + fmtDate(r.createdAt) + '</span>' +
+                '</div>' +
+                actionsHtml +
+                '</div>' +
+                '<div class="review-body" id="rb_' + r.id + '">' + esc(r.content) + '</div>' +
+                editFormHtml +
+                '</div>';
+        }).join('');
+
+        reviews.forEach(function(r) {
+            if (!isLoggedIn() || String(getMyId()) !== String(r.userId)) return;
+            editScores[r.id] = r.score || 0;
+            bindEditPicker(r.id, r.score || 0);
+        });
+
+        updateSummary();
+        renderPagination();
+    }
+
+    function renderPagination() {
+        const el = document.getElementById('reviewPagination');
+        el.innerHTML = '';
+        if (totalPages <= 1) return;
+
+        const prev = document.createElement('button');
+        prev.className   = 'page-arrow';
+        prev.textContent = '‹';
+        prev.disabled    = curPage === 0;
+        prev.addEventListener('click', function() { loadPage(curPage - 1); });
+        el.appendChild(prev);
+
+        const start = Math.max(0, curPage - 2);
+        const end   = Math.min(totalPages - 1, start + 4);
+
+        for (let i = start; i <= end; i++) {
+            const btn = document.createElement('button');
+            btn.className   = 'page-btn' + (i === curPage ? ' active' : '');
+            btn.textContent = i + 1;
+            (function(_i) {
+                btn.addEventListener('click', function() { loadPage(_i); });
+            })(i);
+            el.appendChild(btn);
+        }
+
+        const next = document.createElement('button');
+        next.className   = 'page-arrow';
+        next.textContent = '›';
+        next.disabled    = curPage === totalPages - 1;
+        next.addEventListener('click', function() { loadPage(curPage + 1); });
+        el.appendChild(next);
+    }
+
+    async function loadPage(page) {
+        curPage = page;
+        document.getElementById('reviewList').innerHTML =
+            '<div class="review-loading">후기를 불러오는 중...</div>';
+
+        try {
+            const data = await reviewApi.getList(page);
+            reviews    = data.content    != null ? data.content    : [];
+            totalPages = data.totalPages != null ? data.totalPages : 1;
+        } catch (e) {
+            console.warn('[리뷰 API 오류]:', e.message);
+            reviews    = [];
+            totalPages = 1;
+        }
+
+        renderList();
+    }
+
+    function bindEditPicker(rid, init) {
+        const picker = document.getElementById('ep_' + rid);
+        const hint   = document.getElementById('eh_' + rid);
+        if (!picker) return;
+
+        const stars = picker.querySelectorAll('span');
+
+        function paint(v) {
+            stars.forEach(function(s) { s.className = parseInt(s.dataset.v) <= v ? 'lit' : ''; });
+            hint.textContent = v > 0 ? v + '점 · ' + SCORE_LABELS[v] : '선택 안 됨';
+        }
+
+        paint(init);
+        stars.forEach(function(s) {
+            const v = parseInt(s.dataset.v);
+            s.addEventListener('mouseenter', function() { paint(v); });
+            s.addEventListener('mouseleave', function() { paint(editScores[rid]); });
+            s.addEventListener('click',      function() { editScores[rid] = v; paint(v); });
+        });
+    }
+
+    function openEdit(rid) {
+        document.getElementById('rb_' + rid).style.display = 'none';
+        document.getElementById('ef_' + rid).classList.add('open');
+    }
+
+    function closeEdit(rid) {
+        document.getElementById('ef_' + rid).classList.remove('open');
+        document.getElementById('rb_' + rid).style.display = '';
+    }
+
+    async function doUpdate(rid) {
+        const content = document.getElementById('et_' + rid).value.trim();
+        const score   = editScores[rid] || 0;
+        const errEl   = document.getElementById('ee_' + rid);
+        const btn     = document.getElementById('es_' + rid);
+
+        errEl.classList.remove('show');
+
+        if (content.length < 10) {
+            errEl.textContent = '후기 내용은 10자 이상 입력해주세요.';
+            errEl.classList.add('show'); return;
+        }
+        if (score === 0) {
+            errEl.textContent = '별점을 선택해주세요.';
+            errEl.classList.add('show'); return;
+        }
+
+        btn.disabled    = true;
+        btn.textContent = '수정 중...';
+
+        try {
+            await reviewApi.update(rid, content, score);
+            const idx = reviews.findIndex(function(r) { return r.id === rid; });
+            if (idx !== -1) { reviews[idx].content = content; reviews[idx].score = score; }
+            renderList();
+        } catch (e) {
+            errEl.textContent = '수정에 실패했습니다. 다시 시도해주세요.';
+            errEl.classList.add('show');
+            btn.disabled    = false;
+            btn.textContent = '수정 완료';
+        }
+    }
+
+    async function doDelete(rid) {
+        if (!confirm('후기를 삭제하시겠습니까?')) return;
+        try {
+            await reviewApi.delete(rid);
+            reviews = reviews.filter(function(r) { return r.id !== rid; });
+            renderList();
+        } catch (e) {
+            alert('삭제에 실패했습니다. 다시 시도해주세요.');
+        }
+    }
+
+    function initWritePicker() {
+        const picker = document.getElementById('writePicker');
+        const hint   = document.getElementById('writeHint');
+        const stars  = picker.querySelectorAll('span');
+
+        function paint(v) {
+            stars.forEach(function(s) { s.className = parseInt(s.dataset.v) <= v ? 'lit' : ''; });
+            hint.textContent = v > 0 ? v + '점 · ' + SCORE_LABELS[v] : '선택 안 됨';
+        }
+
+        stars.forEach(function(s) {
+            const v = parseInt(s.dataset.v);
+            s.addEventListener('mouseenter', function() { paint(v); });
+            s.addEventListener('mouseleave', function() { paint(writeScore); });
+            s.addEventListener('click',      function() { writeScore = v; paint(v); });
+        });
+    }
+
+    function openWrite() {
+        writeScore = 0;
+        document.getElementById('writeContent').value = '';
+        document.getElementById('writeHint').textContent = '선택 안 됨';
+        document.getElementById('writePicker').querySelectorAll('span')
+            .forEach(function(s) { s.className = ''; });
+        document.getElementById('writeError').classList.remove('show');
+        document.getElementById('reviewFormWrap').classList.add('open');
+        document.getElementById('writeContent').focus();
+    }
+
+    function closeWrite() {
+        document.getElementById('reviewFormWrap').classList.remove('open');
+    }
+
+    async function doCreate() {
+        const content = document.getElementById('writeContent').value.trim();
+        const errEl   = document.getElementById('writeError');
+        const btn     = document.getElementById('writeSubmitBtn');
+
+        errEl.classList.remove('show');
+
+        if (content.length < 10) {
+            errEl.textContent = '후기 내용은 10자 이상 입력해주세요.';
+            errEl.classList.add('show'); return;
+        }
+        if (writeScore === 0) {
+            errEl.textContent = '별점을 선택해주세요.';
+            errEl.classList.add('show'); return;
+        }
+
+        btn.disabled    = true;
+        btn.textContent = '등록 중...';
+
+        try {
+            const created = await reviewApi.create(content, writeScore);
+            reviews.unshift(created);
+            renderList();
+            closeWrite();
+        } catch (e) {
+            errEl.textContent = '등록에 실패했습니다. 다시 시도해주세요.';
+            errEl.classList.add('show');
+        } finally {
+            btn.disabled    = false;
+            btn.textContent = '등록';
+        }
+    }
+
+    function renderHeaderBtn() {
+        const el = document.getElementById('reviewHeaderBtn');
+
+        if (isLoggedIn()) {
+            el.innerHTML = '<button class="review-write-btn" id="writeToggleBtn">✏️ 후기 작성</button>';
+            document.getElementById('writeToggleBtn').addEventListener('click', function() {
+                const wrap = document.getElementById('reviewFormWrap');
+                wrap.classList.contains('open') ? closeWrite() : openWrite();
+            });
+        } else {
+            el.innerHTML =
+                '<button class="review-login-btn" onclick="location.href=\'login.html\'">' +
+                '🔒 로그인 후 후기를 작성할 수 있어요 →' +
+                '</button>';
+        }
+    }
+
+    async function initReviews() {
+        if (!productId) return;
+
+        document.getElementById('reviewSection').style.display = 'block';
+
+        renderHeaderBtn();
+        initWritePicker();
+
+        document.getElementById('writeCancelBtn')
+            .addEventListener('click', closeWrite);
+        document.getElementById('writeSubmitBtn')
+            .addEventListener('click', doCreate);
+
+        await loadPage(0);
+    }
 </script>
 </body>
 </html>

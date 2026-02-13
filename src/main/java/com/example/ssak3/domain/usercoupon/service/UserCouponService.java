@@ -10,7 +10,10 @@ import com.example.ssak3.domain.coupon.repository.CouponRepository;
 import com.example.ssak3.domain.user.entity.User;
 import com.example.ssak3.domain.user.repository.UserRepository;
 import com.example.ssak3.domain.usercoupon.entity.UserCoupon;
-import com.example.ssak3.domain.usercoupon.model.response.*;
+import com.example.ssak3.domain.usercoupon.model.response.CouponListForUserGetResponse;
+import com.example.ssak3.domain.usercoupon.model.response.UserCouponDeleteResponse;
+import com.example.ssak3.domain.usercoupon.model.response.UserCouponIssueResponse;
+import com.example.ssak3.domain.usercoupon.model.response.UserCouponListGetResponse;
 import com.example.ssak3.domain.usercoupon.repository.UserCouponRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,9 +42,10 @@ public class UserCouponService {
     public PageResponse<CouponListForUserGetResponse> getCouponListForUser(Pageable pageable) {
 
         int pageNumber = pageable.getPageNumber();
+        int pageSize = pageable.getPageSize();
 
         // 1. 캐시에서 먼저 조회
-        PageResponse<CouponListForUserGetResponse> cachedResponse = userCouponCacheService.getUserCouponListCache(pageNumber);
+        PageResponse<CouponListForUserGetResponse> cachedResponse = userCouponCacheService.getUserCouponListCache(pageNumber, pageSize);
         if (cachedResponse != null) {
             log.info("Cache HIT");
             return cachedResponse;
@@ -56,7 +60,7 @@ public class UserCouponService {
         PageResponse<CouponListForUserGetResponse> response = PageResponse.from(couponPage);
 
         // 3. 캐시에 저장
-        userCouponCacheService.saveUserCouponListCache(pageNumber, response);
+        userCouponCacheService.saveUserCouponListCache(pageNumber, pageSize, response);
 
         return response;
     }

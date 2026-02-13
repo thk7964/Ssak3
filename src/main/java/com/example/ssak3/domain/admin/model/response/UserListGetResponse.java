@@ -1,5 +1,6 @@
 package com.example.ssak3.domain.admin.model.response;
 
+import com.example.ssak3.common.enums.UserRole;
 import com.example.ssak3.domain.user.entity.User;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ public class UserListGetResponse {
     private final Long id;
     private final String name;
     private final String nickname;
+    private final UserRole role;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
@@ -21,6 +23,7 @@ public class UserListGetResponse {
                 user.getId(),
                 user.getName(),
                 user.getNickname(),
+                user.getRole(),
                 user.getCreatedAt(),
                 user.getUpdatedAt()
         );

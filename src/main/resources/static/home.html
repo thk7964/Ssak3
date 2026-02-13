@@ -162,31 +162,6 @@
             background: #e9ecef;
         }
 
-        /* 전체 상품 버튼 스타일 추가 */
-        .all-products-btn {
-            background: white;
-            border: 2px solid #74b9ff;
-            color: #74b9ff;
-            padding: 10px 20px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .all-products-btn:hover {
-            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
-            color: white;
-            border-color: transparent;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(116, 185, 255, 0.35);
-        }
-
         .banner {
             background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
             padding: 60px 20px;
@@ -281,22 +256,6 @@
             grid-template-columns: repeat(5, 1fr);
             gap: 24px;
             margin-bottom: 50px;
-        }
-
-        .product-card {
-            background: white;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-            border: 1px solid #f0f0f0;
-        }
-
-        .product-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
-            border-color: #e9ecef;
         }
 
         .product-image {
@@ -430,6 +389,34 @@
             box-shadow: 0 6px 16px rgba(253, 160, 133, 0.5);
         }
 
+        /* 기존 .product-image 스타일 수정 */
+        .product-image {
+            width: 100%;
+            height: 220px;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 실제 이미지 스타일 추가 */
+        .product-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* 카드에 꽉 차게 */
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover .product-img {
+            transform: scale(1.05); /* 호버 시 살짝 확대 효과 */
+        }
+
+        /* 이미지가 없을 때 보여줄 이모지용 */
+        .emoji-fallback {
+            font-size: 60px;
+        }
     </style>
 </head>
 <body>
@@ -526,32 +513,36 @@
             }
 
             const products = result.data;
-
             const container = document.getElementById('popularProducts');
             container.innerHTML = '';
 
             products.forEach((product, index) => {
                 const card = document.createElement('div');
                 card.className = 'product-card';
-                card.innerHTML = `
-            <div class="product-image">
-                <div class="rank-badge ${index === 0 ? 'rank-1' : ''}">
-                    ${index + 1}등
-                </div>
-                🛍️
-            </div>
-            <div class="product-info">
-                <div class="product-name">${product.name}</div>
-                <div class="product-desc">카테고리 ${product.categoryId}</div>
-                <div class="product-footer">
-                    <div class="product-price">
-                        ${product.dealPrice ?? product.price}원
-                    </div>
-                    <button class="add-btn">담기</button>
-                </div>
-            </div>
-        `;
 
+                // 🔥 이미지 유무에 따른 HTML 처리
+                const imageHtml = product.imageUrl
+                    ? `<img src="${product.imageUrl}" class="product-img" alt="${product.name}">`
+                    : `<div class="emoji-fallback">🛍️</div>`;
+
+                card.innerHTML = `
+                <div class="product-image">
+                    <div class="rank-badge ${index === 0 ? 'rank-1' : ''}">
+                        ${index + 1}등
+                    </div>
+                    ${imageHtml}
+                </div>
+                <div class="product-info">
+                    <div class="product-name">${product.name}</div>
+                    <div class="product-desc">카테고리 ${product.categoryId}</div>
+                    <div class="product-footer">
+                        <div class="product-price">
+                            ${(product.dealPrice ?? product.price).toLocaleString()}원
+                        </div>
+                        <button class="add-btn">담기</button>
+                    </div>
+                </div>
+            `;
 
                 card.addEventListener('click', () => {
                     window.location.href = `product-detail.html?id=${product.id}`;

@@ -1,5 +1,7 @@
 package com.example.ssak3.common.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
 
@@ -14,7 +16,8 @@ public class PageResponse<T> {
     private final int size;
     private final int page;
 
-    private PageResponse(List<T> content, long totalPages, long totalElements, int size, int page) {
+    @JsonCreator
+    private PageResponse(@JsonProperty("content") List<T> content, @JsonProperty("totalPages") long totalPages, @JsonProperty("totalElements") long totalElements, @JsonProperty("size") int size, @JsonProperty("page") int page) {
         this.content = content;
         this.totalPages = totalPages;
         this.totalElements = totalElements;

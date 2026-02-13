@@ -5,6 +5,7 @@ import com.example.ssak3.common.enums.TimeDealStatus;
 import com.example.ssak3.domain.product.entity.Product;
 import com.example.ssak3.domain.product.model.response.ProductGetPopularResponse;
 import com.example.ssak3.domain.product.repository.ProductRepository;
+import com.example.ssak3.domain.s3.service.S3Uploader;
 import com.example.ssak3.domain.timedeal.entity.TimeDeal;
 import com.example.ssak3.domain.timedeal.repository.TimeDealRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ public class ProductRankingService {
     private static final String PRODUCT_VIEW_CHECK_PREFIX = "product:view:check:ip:";
     private final ProductRepository productRepository;
     private final TimeDealRepository timeDealRepository;
+    private final S3Uploader s3Uploader;
 
     /**
      * 조회수 증가 메소드
@@ -94,7 +96,23 @@ public class ProductRankingService {
         return productIdList.stream()
                 .map(id -> {
                     Product product = productMap.get(id);
-                    return product != null ? ProductGetPopularResponse.from(product, timeDealMap.get(id)) : null;
+
+                    if (product == null) {
+                        return null;
+                    }
+
+                    TimeDeal timeDeal = timeDealMap.get(id);
+
+                    String productImageUrl = null;
+                    String timeDealImageUrl = null;
+
+                    if (timeDeal != null) {
+                        timeDealImageUrl = s3Uploader.createPresignedGetUrl(timeDeal.getImage(), 5);
+                    } else {
+                        productImageUrl = s3Uploader.createPresignedGetUrl(product.getImage(), 5);
+                    }
+
+                    return ProductGetPopularResponse.from(product, timeDeal, productImageUrl, timeDealImageUrl);
                 })
                 .filter(Objects::nonNull) // null인 애들은 걸러냄
                 .toList();

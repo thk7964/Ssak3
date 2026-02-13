@@ -17,6 +17,7 @@ public class ProductListGetResponse {
     private final Integer price;
     private final Integer quantity;
     private final ProductStatus status;
+    private final Double averageScore;
     private final String imageUrl;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
@@ -30,6 +31,7 @@ public class ProductListGetResponse {
                 product.getPrice(),
                 product.getQuantity(),
                 product.getStatus(),
+                product.getAverageScore(),
                 imageUrl,
                 product.getCreatedAt(),
                 product.getUpdatedAt()

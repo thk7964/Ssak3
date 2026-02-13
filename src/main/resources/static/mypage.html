@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>싹쓰리 - 마이페이지</title>
+    <title>마이 페이지</title>
     <style>
         /* 기존 스타일 유지 */
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -12,6 +12,7 @@
             min-height: 100vh;
             display: flex; justify-content: center; align-items: center; padding: 40px 20px;
         }
+
         .profile-container {
             background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
             border-radius: 24px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
@@ -171,52 +172,64 @@
     let currentUser = null;
     let currentAction = null;
 
+    // 페이지 로드 시 단 한 번만 실행
     document.addEventListener('DOMContentLoaded', fetchUserData);
 
     async function fetchUserData() {
         const token = localStorage.getItem('accessToken');
-        const headers = token ? { 'Authorization': 'Bearer ' + token } : {};
+        const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+
         try {
             const res = await fetch('http://localhost:8080/ssak3/users/me', {
-                method: 'GET', headers: headers, credentials: 'include'
+                method: 'GET',
+                headers: headers,
+                credentials: 'include'
             });
+
+            if (!res.ok) throw new Error('Unauthorized');
+
             const result = await res.json();
             currentUser = result.data;
 
-            // 💡 수정된 부분: ADMIN 또는 SUPER_ADMIN 권한 체크
-            if (currentUser && (currentUser.role === 'ADMIN' || currentUser.role === 'SUPER_ADMIN')) {
-                console.log(`관리자 접속 확인: ${currentUser.role}`);
+            // 1. 권한 체크 및 리다이렉트
+            if (currentUser.role === 'ADMIN' || currentUser.role === 'SUPER_ADMIN') {
                 window.location.href = 'admin-mypage.html';
-                return; // 리다이렉트 후 아래 코드 실행 방지
+                return;
             }
 
-            if (currentUser) {
-                const setText = (id, val) => {
-                    const el = document.getElementById(id);
-                    if (el) el.innerText = val || '미설정';
-                };
-                setText('userName', currentUser.name);
-                setText('userNickname', currentUser.nickname);
-                setText('userEmail', currentUser.email);
-                setText('userBirth', currentUser.birth);
-                setText('userPhone', currentUser.phone);
-                setText('userAddress', currentUser.address);
-            }
+            // 2. UI 데이터 업데이트
+            updateUI(currentUser);
+
         } catch (e) {
-            console.error(e);
-            alert('로그인이 필요합니다.');
+            console.error("데이터 로드 실패:", e);
+            alert('로그인이 필요하거나 세션이 만료되었습니다.');
             location.href = 'login.html';
         }
     }
 
-    // 수정 버튼 로직
+    // 데이터를 화면에 그려주는 전용 함수 (관심사 분리)
+    function updateUI(user) {
+        const setText = (id, val) => {
+            const el = document.getElementById(id);
+            if (el) el.innerText = val || '미설정';
+        };
+
+        setText('userName', user.name);
+        setText('userNickname', user.nickname); // 닉네임이 안 보이던 문제 해결
+        setText('userEmail', user.email);
+        setText('userBirth', user.birth);
+        setText('userPhone', user.phone);
+        setText('userAddress', user.address);
+    }
+
+    // --- 아래는 기존의 버튼 핸들러들 (유지하되 중복된 DOMContentLoaded는 삭제) ---
+
     document.getElementById('editBtn').onclick = () => {
         currentAction = 'edit';
         if (currentUser.provider === 'KAKAO') enableEditMode();
         else openModal('passwordModal');
     };
 
-    // 탈퇴 버튼 로직
     document.getElementById('deleteBtn').onclick = () => {
         currentAction = 'delete';
         if (currentUser.provider === 'KAKAO') openModal('kakaoDeleteModal');
@@ -233,18 +246,20 @@
     async function verifyPassword() {
         const password = document.getElementById('currentPassword').value;
         const token = localStorage.getItem('accessToken');
-        const response = await fetch('http://localhost:8080/ssak3/users/me/password-verification', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-            credentials: 'include',
-            body: JSON.stringify({ password })
-        });
-        const result = await response.json();
-        if (result.data && result.data.isPasswordMatch) {
-            closeModal();
-            if (currentAction === 'edit') enableEditMode();
-            else deleteUser();
-        } else { alert('비밀번호가 일치하지 않습니다.'); }
+        try {
+            const response = await fetch('http://localhost:8080/ssak3/users/me/password-verification', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                credentials: 'include',
+                body: JSON.stringify({ password })
+            });
+            const result = await response.json();
+            if (result.data && result.data.isPasswordMatch) {
+                closeModal();
+                if (currentAction === 'edit') enableEditMode();
+                else deleteUser();
+            } else { alert('비밀번호가 일치하지 않습니다.'); }
+        } catch (e) { alert('인증 중 오류가 발생했습니다.'); }
     }
 
     function verifyKakaoDelete() {
@@ -254,17 +269,26 @@
 
     function enableEditMode() {
         document.getElementById('viewBtnGroup').style.display = 'none';
-        document.querySelector('.feature-grid').style.display = 'none'; // 수정 시 기능 버튼 숨김
-        document.getElementById('editBtnGroup').style.display = 'grid';
-        const fields = ['userName', 'userNickname', 'userBirth', 'userPhone', 'userAddress'];
-        fields.forEach(id => {
-            const el = document.getElementById(id);
-            const val = el.innerText === '미설정' ? '' : el.innerText;
-            const type = id === 'userBirth' ? 'date' : (id === 'userPhone' ? 'tel' : 'text');
-            el.innerHTML = `<input type="${type}" id="input_${id}" class="edit-input" value="${val}">`;
+        document.querySelector('.feature-grid').style.display = 'none';
+        document.getElementById('editBtnGroup').style.display = 'flex';
+
+        const fields = [
+            {id: 'userName', val: currentUser.name},
+            {id: 'userNickname', val: currentUser.nickname},
+            {id: 'userBirth', val: currentUser.birth, type: 'date'},
+            {id: 'userPhone', val: currentUser.phone, type: 'tel'},
+            {id: 'userAddress', val: currentUser.address}
+        ];
+
+        fields.forEach(f => {
+            const el = document.getElementById(f.id);
+            const val = f.val || '';
+            const type = f.type || 'text';
+            el.innerHTML = `<input type="${type}" id="input_${f.id}" class="edit-input" value="${val}">`;
         });
     }
 
+    // 1. 정보 수정 함수 리팩토링
     async function validateAndUpdate() {
         const data = {
             name: document.getElementById('input_userName').value.trim(),
@@ -276,26 +300,83 @@
 
         const token = localStorage.getItem('accessToken');
         const headers = { 'Content-Type': 'application/json' };
-        if (token && token !== 'null') headers['Authorization'] = `Bearer ${token}`;
+
+        // 로컬 스토리지 토큰이 유효할 때만 헤더 추가 (일반 로그인 대응)
+        if (token && token !== 'null') {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        // 1. let으로 선언하여 재할당 가능하게 함
+        let res;
 
         try {
-            const res = await fetch('http://localhost:8080/ssak3/users/me', {
+            res = await fetch('http://localhost:8080/ssak3/users/me', {
                 method: 'PATCH',
                 headers: headers,
                 credentials: 'include',
                 body: JSON.stringify(data)
             });
 
+            // 2. 응답이 성공(200 OK 등)일 때
             if (res.ok) {
-                alert('정보가 수정되었습니다.');
+                alert('정보가 성공적으로 수정되었습니다.');
                 location.reload();
-            } else {
+            }
+            // 3. 응답이 실패했을 때 (400, 401, 409, 500 등)
+            else {
+                // 에러 데이터를 한 번만 파싱
                 const errData = await res.json();
-                alert('수정 실패: ' + (errData.message || '알 수 없는 오류'));
+
+                if (res.status === 401) {
+                    alert('인증이 만료되었습니다. 다시 로그인해주세요.');
+                    location.href = 'login.html';
+                }
+                // 4. 백엔드 에러 코드에 따른 메시지 분기 (중복 체크 실패 등)
+                else if (errData.errorCode === 'NICKNAME_ALREADY_EXISTS' || (errData.message && errData.message.includes('NICKNAME'))) {
+                    alert('이미 탈퇴한 유저의 닉네임이거나 사용할 수 없는 닉네임입니다.');
+                }
+                else if (errData.errorCode === 'EMAIL_ALREADY_EXISTS' || (errData.message && errData.message.includes('EMAIL'))) {
+                    alert('이미 탈퇴한 유저의 이메일이거나 사용할 수 없는 이메일입니다.');
+                }
+                else {
+                    alert('수정 실패: ' + (errData.message || '오류 발생'));
+                }
             }
         } catch (e) {
-            console.error("Update Error:", e);
-            alert('서버와 통신 중 오류가 발생했습니다.');
+            // 5. 서버 연결 자체가 안 되거나 네트워크 문제일 때만 일로 옵니다.
+            console.error("Network Error:", e);
+            alert('서버와 통신할 수 없습니다. 네트워크를 확인해주세요.');
+        }
+    }
+
+    // 2. 회원 탈퇴 함수 리팩토링
+    async function deleteUser() {
+        if (!confirm('정말로 탈퇴하시겠습니까? 모든 정보가 삭제됩니다.')) return;
+
+        const token = localStorage.getItem('accessToken');
+        const headers = {};
+        if (token && token !== 'null') {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        try {
+            const res = await fetch('http://localhost:8080/ssak3/users/me', {
+                method: 'DELETE',
+                headers: headers,
+                credentials: 'include' // 카카오 쿠키 전달 필수
+            });
+
+            if (res.ok) {
+                alert('회원 탈퇴가 완료되었습니다. 이용해 주셔서 감사합니다.');
+                localStorage.clear(); // 토큰 삭제
+                location.href = 'home.html';
+            } else {
+                const errData = await res.json();
+                alert('탈퇴 처리 중 오류가 발생했습니다: ' + (errData.message || '권한 없음'));
+            }
+        } catch (e) {
+            console.error("Delete Error:", e);
+            alert('서버 통신 중 오류가 발생했습니다.');
         }
     }
 
@@ -311,31 +392,6 @@
             localStorage.clear();
             alert('로그아웃 되었습니다.');
             location.href = 'home.html';
-        }
-    }
-
-    async function deleteUser() {
-        const token = localStorage.getItem('accessToken');
-        const headers = {};
-        if (token && token !== 'null') headers['Authorization'] = `Bearer ${token}`;
-
-        try {
-            const res = await fetch('http://localhost:8080/ssak3/users/me', {
-                method: 'DELETE',
-                headers: headers,
-                credentials: 'include'
-            });
-
-            if (res.ok) {
-                alert('탈퇴되었습니다.');
-                localStorage.clear();
-                location.href = 'home.html';
-            } else {
-                const errData = await res.json();
-                alert('탈퇴 실패: ' + (errData.message || '인증 오류'));
-            }
-        } catch (e) {
-            console.error("Delete Error:", e);
         }
     }
 </script>

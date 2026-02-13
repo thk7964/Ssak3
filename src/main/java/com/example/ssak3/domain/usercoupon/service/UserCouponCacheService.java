@@ -18,16 +18,16 @@ public class UserCouponCacheService {
     /**
      * 사용자용 쿠폰 목록 캐시 저장
      */
-    public void saveUserCouponListCache(int pageNumber, PageResponse<CouponListForUserGetResponse> data) {
-        String key = USER_COUPON_LIST_CACHE_PREFIX + pageNumber;
+    public void saveUserCouponListCache(int pageNumber, int pageSize, PageResponse<CouponListForUserGetResponse> data) {
+        String key = USER_COUPON_LIST_CACHE_PREFIX + pageNumber + ":size:" + pageSize;
         redisTemplate.opsForValue().set(key, data, 10, TimeUnit.MINUTES);   // TTL : 10분
     }
 
     /**
      * 사용자용 쿠폰 목록 캐시 조회
      */
-    public PageResponse<CouponListForUserGetResponse> getUserCouponListCache(int pageNumber) {
-        String key = USER_COUPON_LIST_CACHE_PREFIX + pageNumber;
+    public PageResponse<CouponListForUserGetResponse> getUserCouponListCache(int pageNumber, int pageSize) {
+        String key = USER_COUPON_LIST_CACHE_PREFIX + pageNumber + ":size:" + pageSize;
         return redisTemplate.opsForValue().get(key);
     }
 

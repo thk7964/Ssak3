@@ -2,184 +2,342 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>마이 페이지</title>
+    <title>싹쓰리 - 마이페이지</title>
     <style>
+        /* 기존 스타일 유지 */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #e0f7ff 0%, #f0faff 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            display: flex; justify-content: center; align-items: center; padding: 40px 20px;
         }
-
         .profile-container {
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
+            border-radius: 24px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            width: 100%; max-width: 550px; padding: 40px;
+        }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 {
+            font-size: 28px; font-weight: 700;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .info-group { margin-bottom: 18px; position: relative; }
+        .info-label { display: block; color: #6b7280; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+        .info-value-box {
+            width: 100%; padding: 14px 16px; border: 2px solid #f3f4f6;
+            border-radius: 12px; font-size: 15px; background: white; color: #374151;
+            min-height: 50px; display: flex; align-items: center;
+        }
+        .edit-input { width: 100%; padding: 12px; border: 2px solid #74b9ff; border-radius: 10px; outline: none; }
+
+        /* 추가된 기능 버튼 그리드 스타일 */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+        }
+        .feature-btn {
+            padding: 16px;
             background: white;
-            width: 100%;
-            max-width: 500px;
-            border-radius: 30px;
-            padding: 40px;
-            box-shadow: 0 15px 35px rgba(77, 184, 232, 0.2);
-            text-align: center;
-        }
-
-        .profile-header h2 {
-            color: #4db8e8;
-            margin-bottom: 30px;
-            font-size: 28px;
-        }
-
-        .profile-image {
-            width: 100px;
-            height: 100px;
-            background: #e0f7ff;
-            border-radius: 50%;
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 50px;
-        }
-
-        .info-group {
-            text-align: left;
-            margin-bottom: 15px;
-            background: #f8fdff;
-            padding: 15px;
-            border-radius: 15px;
-            border: 1px solid #e0f7ff;
-        }
-
-        .info-label {
-            font-size: 12px;
-            color: #888;
-            margin-bottom: 5px;
-        }
-
-        .info-value {
-            font-size: 16px;
-            color: #333;
-            font-weight: 600;
-        }
-
-        .btn-group {
-            margin-top: 30px;
-            display: flex;
-            gap: 10px;
-        }
-
-        .base-btn {
-            flex: 1;
-            padding: 12px;
-            border-radius: 15px;
-            border: none;
+            color: #374151;
+            border: 2px solid #f3f4f6;
+            border-radius: 16px;
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
         }
+        .feature-btn:hover {
+            border-color: #74b9ff;
+            background: #f8fdff;
+            transform: translateY(-2px);
+        }
+        .feature-icon { font-size: 24px; }
 
-        .back-btn { background: #e0f7ff; color: #4db8e8; }
-        .logout-btn { background: #ffeded; color: #ff6b6b; }
+        .btn-group { margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .base-btn {
+            padding: 14px; background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 600;
+            cursor: pointer; text-align: center;
+        }
+        .base-btn.secondary { background: #e5e7eb; color: #6b7280; }
+        .base-btn.danger { background: #fca5a5; color: #b91c1c; }
+
+        /* 모달 스타일 */
+        .modal {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+            justify-content: center; align-items: center; z-index: 1000;
+        }
+        .modal-content { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 350px; text-align: center; }
+        .modal-content input { width: 100%; padding: 12px; margin: 15px 0; border: 2px solid #e5e7eb; border-radius: 10px; }
     </style>
 </head>
 <body>
 
 <div class="profile-container">
-    <div class="profile-header">
-        <div class="profile-image">🌊</div>
-        <h2 id="userNickname">안녕하세요!</h2>
-    </div>
+    <div class="header"><h1>내 프로필</h1></div>
 
     <div class="info-group">
-        <div class="info-label">이름</div>
-        <div id="userName" class="info-value">-</div>
+        <label class="info-label">이름</label>
+        <div id="userName" class="info-value-box">-</div>
     </div>
-
     <div class="info-group">
-        <div class="info-label">이메일</div>
-        <div id="userEmail" class="info-value">-</div>
+        <label class="info-label">닉네임</label>
+        <div id="userNickname" class="info-value-box">-</div>
     </div>
-
     <div class="info-group">
-        <div class="info-label">생년월일</div>
-        <div id="userBirth" class="info-value">-</div>
+        <label class="info-label">이메일 (변경 불가)</label>
+        <div id="userEmail" class="info-value-box" style="background: #f9fafb;">-</div>
     </div>
-
     <div class="info-group">
-        <div class="info-label">연락처</div>
-        <div id="userPhone" class="info-value">-</div>
+        <label class="info-label">생년월일</label>
+        <div id="userBirth" class="info-value-box">-</div>
     </div>
-
     <div class="info-group">
-        <div class="info-label">주소</div>
-        <div id="userAddress" class="info-value">-</div>
+        <label class="info-label">연락처</label>
+        <div id="userPhone" class="info-value-box">-</div>
+    </div>
+    <div class="info-group" style="margin-bottom: 25px;">
+        <label class="info-label">주소</label>
+        <div id="userAddress" class="info-value-box">-</div>
     </div>
 
-    <div class="btn-group">
-        <button class="base-btn back-btn" onclick="location.href='home.html'">홈으로</button>
-        <button class="base-btn logout-btn" id="logoutBtn" onclick="handleLogout()">로그아웃</button>
+    <div class="feature-grid">
+        <button class="feature-btn" onclick="location.href='inquiry-chat.html'">
+            <span class="feature-icon">💬</span>
+            <span>1:1 문의 채팅</span>
+        </button>
+        <button class="feature-btn" onclick="location.href='my-coupons.html'">
+            <span class="feature-icon">🎟️</span>
+            <span>내 쿠폰</span>
+        </button>
+        <button class="feature-btn" onclick="location.href='user-inquiry-list.html'">
+            <span class="feature-icon">📋</span>
+            <span>1:1 문의 게시판</span>
+        </button>
+        <button class="feature-btn" onclick="alert('준비중입니다.')">
+            <span class="feature-icon">📦</span>
+            <span>주문내역</span>
+        </button>
+    </div>
+
+    <div id="viewBtnGroup" class="btn-group">
+        <button class="base-btn secondary" onclick="location.href='home.html'">홈으로</button>
+        <button class="base-btn secondary" onclick="handleLogout()">로그아웃</button>
+        <button class="base-btn" id="editBtn">내 정보 수정</button>
+        <button class="base-btn danger" id="deleteBtn">회원 탈퇴</button>
+    </div>
+
+    <div id="editBtnGroup" class="btn-group" style="display: none;">
+        <button class="base-btn secondary" onclick="location.reload()">수정 취소</button>
+        <button class="base-btn" onclick="validateAndUpdate()">수정 확인</button>
+    </div>
+</div>
+
+<div id="passwordModal" class="modal">
+    <div class="modal-content">
+        <h3>🔐 본인 확인</h3>
+        <p style="font-size: 14px; color: #6b7280; margin-top: 5px;">비밀번호를 입력해주세요.</p>
+        <input type="password" id="currentPassword" placeholder="비밀번호 입력">
+        <div style="display: flex; gap: 10px;">
+            <button class="base-btn secondary" style="flex:1" onclick="closeModal()">취소</button>
+            <button class="base-btn" style="flex:1" onclick="verifyPassword()">확인</button>
+        </div>
+    </div>
+</div>
+
+<div id="kakaoDeleteModal" class="modal">
+    <div class="modal-content">
+        <h3>🚨 탈퇴 확인</h3>
+        <p style="font-size: 14px; color: #ef4444; margin-top: 5px; font-weight: bold;">
+            탈퇴를 위해 아래에 "Delete"를 입력하세요.
+        </p>
+        <input type="text" id="deleteConfirmText" placeholder="Delete 입력">
+        <div style="display: flex; gap: 10px;">
+            <button class="base-btn secondary" style="flex:1" onclick="closeModal()">취소</button>
+            <button class="base-btn danger" style="flex:1" onclick="verifyKakaoDelete()">탈퇴하기</button>
+        </div>
     </div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    let currentUser = null;
+    let currentAction = null;
+
+    document.addEventListener('DOMContentLoaded', fetchUserData);
+
+    async function fetchUserData() {
         const token = localStorage.getItem('accessToken');
-
-        const headers = {};
-        if (token) {
-            headers.Authorization = 'Bearer ' + token;
-        }
-
-        fetch('http://localhost:8080/ssak3/users/me', {
-            method: 'GET',
-            headers: headers,
-            credentials: 'include'
-        })
-            .then(res => {
-                if (!res.ok) {
-                    throw new Error('unauthorized');
-                }
-                return res.json();
-            })
-            .then(result => {
-                const user = result.data;
-
-                document.getElementById('userNickname').innerText = `${user.name}님, 안녕하세요!`;
-                document.getElementById('userName').innerText = user.name ?? '미설정';
-                document.getElementById('userEmail').innerText = user.email;
-                document.getElementById('userBirth').innerText = user.birth ?? '미설정';
-                document.getElementById('userPhone').innerText = user.phone ?? '미설정';
-                document.getElementById('userAddress').innerText = user.address ?? '미설정';
-            })
-            .catch(() => {
-                alert('로그인이 필요합니다.');
-                location.href = 'login.html';
+        const headers = token ? { 'Authorization': 'Bearer ' + token } : {};
+        try {
+            const res = await fetch('http://localhost:8080/ssak3/users/me', {
+                method: 'GET', headers: headers, credentials: 'include'
             });
-    });
+            const result = await res.json();
+            currentUser = result.data;
 
-    async function handleLogout() {
-        // 1. 일반 로그인 청소: 로컬스토리지 비우기
-        localStorage.removeItem('accessToken');
+            // 💡 수정된 부분: ADMIN 또는 SUPER_ADMIN 권한 체크
+            if (currentUser && (currentUser.role === 'ADMIN' || currentUser.role === 'SUPER_ADMIN')) {
+                console.log(`관리자 접속 확인: ${currentUser.role}`);
+                window.location.href = 'admin-mypage.html';
+                return; // 리다이렉트 후 아래 코드 실행 방지
+            }
+
+            if (currentUser) {
+                const setText = (id, val) => {
+                    const el = document.getElementById(id);
+                    if (el) el.innerText = val || '미설정';
+                };
+                setText('userName', currentUser.name);
+                setText('userNickname', currentUser.nickname);
+                setText('userEmail', currentUser.email);
+                setText('userBirth', currentUser.birth);
+                setText('userPhone', currentUser.phone);
+                setText('userAddress', currentUser.address);
+            }
+        } catch (e) {
+            console.error(e);
+            alert('로그인이 필요합니다.');
+            location.href = 'login.html';
+        }
+    }
+
+    // 수정 버튼 로직
+    document.getElementById('editBtn').onclick = () => {
+        currentAction = 'edit';
+        if (currentUser.provider === 'KAKAO') enableEditMode();
+        else openModal('passwordModal');
+    };
+
+    // 탈퇴 버튼 로직
+    document.getElementById('deleteBtn').onclick = () => {
+        currentAction = 'delete';
+        if (currentUser.provider === 'KAKAO') openModal('kakaoDeleteModal');
+        else openModal('passwordModal');
+    };
+
+    function openModal(modalId) { document.getElementById(modalId).style.display = 'flex'; }
+    function closeModal() {
+        document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+        document.getElementById('currentPassword').value = '';
+        document.getElementById('deleteConfirmText').value = '';
+    }
+
+    async function verifyPassword() {
+        const password = document.getElementById('currentPassword').value;
+        const token = localStorage.getItem('accessToken');
+        const response = await fetch('http://localhost:8080/ssak3/users/me/password-verification', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            credentials: 'include',
+            body: JSON.stringify({ password })
+        });
+        const result = await response.json();
+        if (result.data && result.data.isPasswordMatch) {
+            closeModal();
+            if (currentAction === 'edit') enableEditMode();
+            else deleteUser();
+        } else { alert('비밀번호가 일치하지 않습니다.'); }
+    }
+
+    function verifyKakaoDelete() {
+        if (document.getElementById('deleteConfirmText').value === 'Delete') deleteUser();
+        else alert('문구가 일치하지 않습니다.');
+    }
+
+    function enableEditMode() {
+        document.getElementById('viewBtnGroup').style.display = 'none';
+        document.querySelector('.feature-grid').style.display = 'none'; // 수정 시 기능 버튼 숨김
+        document.getElementById('editBtnGroup').style.display = 'grid';
+        const fields = ['userName', 'userNickname', 'userBirth', 'userPhone', 'userAddress'];
+        fields.forEach(id => {
+            const el = document.getElementById(id);
+            const val = el.innerText === '미설정' ? '' : el.innerText;
+            const type = id === 'userBirth' ? 'date' : (id === 'userPhone' ? 'tel' : 'text');
+            el.innerHTML = `<input type="${type}" id="input_${id}" class="edit-input" value="${val}">`;
+        });
+    }
+
+    async function validateAndUpdate() {
+        const data = {
+            name: document.getElementById('input_userName').value.trim(),
+            nickname: document.getElementById('input_userNickname').value.trim(),
+            birth: document.getElementById('input_userBirth').value,
+            phone: document.getElementById('input_userPhone').value.trim(),
+            address: document.getElementById('input_userAddress').value.trim()
+        };
+
+        const token = localStorage.getItem('accessToken');
+        const headers = { 'Content-Type': 'application/json' };
+        if (token && token !== 'null') headers['Authorization'] = `Bearer ${token}`;
 
         try {
-            // 2. 카카오 로그인 청소: 백엔드에 알려서 쿠키 날리기
-            // (일반 로그인 유저가 호출해도 상관없음, 서버에서 쿠키 없으면 그냥 넘어가면 됨)
-            const response = await fetch('http://localhost:8080/ssak3/auth/logout', {
-                method: 'POST',
-                credentials: 'include' // 쿠키를 지우려면 쿠키를 들고 가야 함
+            const res = await fetch('http://localhost:8080/ssak3/users/me', {
+                method: 'PATCH',
+                headers: headers,
+                credentials: 'include',
+                body: JSON.stringify(data)
             });
 
-            if (response.ok) {
-                alert('로그아웃 되었습니다.');
-                window.location.href = 'home.html';
+            if (res.ok) {
+                alert('정보가 수정되었습니다.');
+                location.reload();
+            } else {
+                const errData = await res.json();
+                alert('수정 실패: ' + (errData.message || '알 수 없는 오류'));
             }
-        } catch (error) {
-            console.error('Logout error:', error);
+        } catch (e) {
+            console.error("Update Error:", e);
+            alert('서버와 통신 중 오류가 발생했습니다.');
+        }
+    }
 
-            window.location.href = 'home.html'; // 에러가 나더라도 로컬은 비워졌으니 메인으로 보냄
+    async function handleLogout() {
+        const token = localStorage.getItem('accessToken');
+        try {
+            await fetch('http://localhost:8080/ssak3/auth/logout', {
+                method: 'POST',
+                headers: token ? { 'Authorization': 'Bearer ' + token } : {},
+                credentials: 'include'
+            });
+        } finally {
+            localStorage.clear();
+            alert('로그아웃 되었습니다.');
+            location.href = 'home.html';
+        }
+    }
+
+    async function deleteUser() {
+        const token = localStorage.getItem('accessToken');
+        const headers = {};
+        if (token && token !== 'null') headers['Authorization'] = `Bearer ${token}`;
+
+        try {
+            const res = await fetch('http://localhost:8080/ssak3/users/me', {
+                method: 'DELETE',
+                headers: headers,
+                credentials: 'include'
+            });
+
+            if (res.ok) {
+                alert('탈퇴되었습니다.');
+                localStorage.clear();
+                location.href = 'home.html';
+            } else {
+                const errData = await res.json();
+                alert('탈퇴 실패: ' + (errData.message || '인증 오류'));
+            }
+        } catch (e) {
+            console.error("Delete Error:", e);
         }
     }
 </script>
-
 </body>
 </html>

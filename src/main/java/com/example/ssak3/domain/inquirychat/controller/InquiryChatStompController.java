@@ -56,6 +56,6 @@ public class InquiryChatStompController {
 
         ChatMessageResponse response = ChatMessageResponse.from(request, message);
 
-        chatRedisTemplate.convertAndSend(chatTopic.getTopic(), response);  //
+        chatRedisTemplate.convertAndSend(chatTopic.getTopic(), response);  // "chat"으로 메시지 발행
     }
 }

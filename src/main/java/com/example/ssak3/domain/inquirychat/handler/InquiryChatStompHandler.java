@@ -58,6 +58,7 @@ public class InquiryChatStompHandler implements ChannelInterceptor {
                 throw new CustomException(ErrorCode.STOMP_MESSAGE_ACCESS_FAILED);
             }
         }
+
         // 인가 (구독중인 방이 있는 경우 권한 체크)
         else if (StompCommand.SUBSCRIBE.equals(command)) {
 
@@ -100,7 +101,7 @@ public class InquiryChatStompHandler implements ChannelInterceptor {
                 }
 
                 if(!isAuthorized) {
-                    log.warn("{}(Role:{})가 {}번 채팅방에 접근 시도!!", userId, role, roomId);
+                    log.warn("{}(Role:{})가 {}번 채팅방에 접근 시도", userId, role, roomId);
                     throw new CustomException(ErrorCode.CHAT_ROOM_ACCESS_DENIED);
                 }
                 log.info("{}(Role:{})가 {}번 채팅방에 연결 성공!!", userId, role, roomId);

@@ -15,7 +15,7 @@ public class RedisSubscriber {
     private final ObjectMapper objectMapper;
     private final SimpMessageSendingOperations messagingTemplate;
 
-    // Redis에서 메시지가 발행되면 이 메서드가 자동으로 실행
+    // Redis에서 메시지가 발행되면 명시적으로 호출하지 않아도 Redis Pub/Sub에 의해 자동으로 호출
     public void onMessage(String savedMessage) {
         try {
             // Redis에서 넘어온 JSON 문자열 DTO로 변환

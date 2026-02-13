@@ -4,7 +4,6 @@ import com.example.ssak3.common.enums.ChatMessageType;
 import com.example.ssak3.common.enums.UserRole;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
 @NoArgsConstructor

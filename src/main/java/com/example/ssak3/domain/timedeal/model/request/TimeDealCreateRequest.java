@@ -21,13 +21,13 @@ public class TimeDealCreateRequest {
     private Integer dealPrice;
 
     @NotNull(message = "startAt은 필수 입력 값이고 yyyy-MM-dd'T'HH 형식으로 입력해야 합니다.")
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH")
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH")
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime startAt;
 
     @NotNull(message = "endAt은 필수 입력 값이고 yyyy-MM-dd'T'HH 형식으로 입력해야 합니다.")
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH")
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH")
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime endAt;
 
     private String image;

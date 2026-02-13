@@ -28,7 +28,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
       com.example.ssak3.common.enums.ProductStatus.FOR_SALE,
       com.example.ssak3.common.enums.ProductStatus.SOLD_OUT)
 """)
-        // 반환타입을 Page로 수정
     Page<Product> findProductListByCategoryId(
             @Param("categoryId") Long categoryId,
             Pageable pageable

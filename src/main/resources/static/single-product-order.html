@@ -504,7 +504,7 @@
 
         container.innerHTML = `
             <h1 class="page-title">상품 주문</h1>
-            
+
             <div class="product-summary">
                 <div class="product-image">${emoji}</div>
                 <div class="product-details">
@@ -512,10 +512,10 @@
                     <div class="product-price">${formatPrice(productData.price)}</div>
                 </div>
             </div>
-            
+
             <div class="form-section">
                 <div class="section-title">📦 주문 정보</div>
-                
+
                 <div class="form-group">
                     <label class="form-label">수량</label>
                     <div class="quantity-control">
@@ -524,20 +524,20 @@
                         <button class="quantity-btn" onclick="updateQuantity(1)">+</button>
                     </div>
                 </div>
-                
+
                 <div class="form-group">
                     <label class="form-label">배송지 주소</label>
                     <input type="text" class="input-field" id="addressInput" placeholder="배송받으실 주소를 입력해주세요" onblur="validateAddress()">
                     <div class="error-message" id="addressError">주소를 입력해주세요</div>
                 </div>
-                
+
                 <div class="form-group">
                     <label class="form-label">쿠폰 선택 (선택사항)</label>
                     <select class="coupon-select" id="couponSelect" onchange="updateSummary()">
                         ${couponOptions}
                     </select>
                 </div>
-                
+
                 <div class="summary-box">
                     <div class="summary-row">
                         <span class="summary-label">상품 금액</span>
@@ -556,7 +556,7 @@
                         <span class="summary-value" id="total">${formatPrice(initialTotal)}</span>
                     </div>
                 </div>
-                
+
                 <button class="order-btn" onclick="submitOrder()">주문하기</button>
             </div>
         `;

@@ -57,6 +57,7 @@ public class ProductSearchCustomRepositoryImpl implements ProductSearchCustomRep
                         product.information,
                         product.price,
                         timeDeal.dealPrice,
+                        product.image,
                         product.createdAt,
                         product.updatedAt
                 ))

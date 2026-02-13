@@ -44,10 +44,10 @@ public class Product extends BaseEntity {
     @Column
     private Double averageScore;
 
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String image;
 
-    @Column(name = "detail_image")
+    @Column(columnDefinition = "TEXT", name = "detail_image")
     private String detailImage;
 
     @Column(nullable = false, name = "is_deleted")

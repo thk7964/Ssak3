@@ -19,6 +19,7 @@ public enum ErrorCode {
     ALREADY_REVIEWED(HttpStatus.BAD_REQUEST, "이미 후기를 작성한 유저입니다."),
     UNAUTHORIZED_USER(HttpStatus.UNAUTHORIZED, "인증되지 않은 사용자입니다."),
     FORBIDDEN_USER(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
+    INVALID_BIRTH(HttpStatus.BAD_REQUEST, "생일은 현재 시점보다 과거여야 합니다."),
 
     // Product 에러
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다."),

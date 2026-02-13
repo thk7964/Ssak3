@@ -38,6 +38,7 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                                 user.id,
                                 user.name,
                                 user.nickname,
+                                user.role,
                                 user.createdAt,
                                 user.updatedAt))
                         .from(user)

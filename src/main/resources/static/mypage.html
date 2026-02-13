@@ -183,14 +183,18 @@
             const result = await res.json();
             currentUser = result.data;
 
-            // 추가: ADMIN이면 관리자 페이지로 리다이렉트
-            if (currentUser && currentUser.role === 'ADMIN') {
+            // 💡 수정된 부분: ADMIN 또는 SUPER_ADMIN 권한 체크
+            if (currentUser && (currentUser.role === 'ADMIN' || currentUser.role === 'SUPER_ADMIN')) {
+                console.log(`관리자 접속 확인: ${currentUser.role}`);
                 window.location.href = 'admin-mypage.html';
-                return;
+                return; // 리다이렉트 후 아래 코드 실행 방지
             }
 
             if (currentUser) {
-                const setText = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val || '미설정'; };
+                const setText = (id, val) => {
+                    const el = document.getElementById(id);
+                    if (el) el.innerText = val || '미설정';
+                };
                 setText('userName', currentUser.name);
                 setText('userNickname', currentUser.nickname);
                 setText('userEmail', currentUser.email);

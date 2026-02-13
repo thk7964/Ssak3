@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>타임딜 상세 - 싹쓰리</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+            background: #fafafa;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #ffffff;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .search-wrapper {
+            display: flex;
+            gap: 8px;
+            background: #f8f9fa;
+            padding: 8px 16px;
+            border-radius: 24px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .search-wrapper:focus-within {
+            background: white;
+            border-color: #74b9ff;
+            box-shadow: 0 0 0 4px rgba(116, 185, 255, 0.1);
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            outline: none;
+            color: #495057;
+        }
+
+        .search-input::placeholder {
+            color: #adb5bd;
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .search-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            background: #f8f9fa;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s ease;
+            color: #495057;
+        }
+
+        .icon-btn:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+
+        .auth-btn {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
+            white-space: nowrap;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(116, 185, 255, 0.45);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logout-btn {
+            background: #f8f9fa;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: #495057;
+            transition: all 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background: #e9ecef;
+        }
+
+        .back-btn {
+            background: #f8f9fa;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #495057;
+            transition: all 0.2s ease;
+            margin: 20px 40px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn:hover {
+            background: #e9ecef;
+        }
+
+        .product-detail-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .product-main {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 60px;
+        }
+
+        .product-image-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 500px;
+        }
+
+        .product-image {
+            font-size: 200px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .product-info-section {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .product-category {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff6b6b15 0%, #ee5a6f15 100%);
+            color: #ff6b6b;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            width: fit-content;
+        }
+
+        .product-name {
+            font-size: 36px;
+            font-weight: 700;
+            color: #212529;
+            line-height: 1.3;
+            letter-spacing: -0.5px;
+        }
+
+        .product-price {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 12px 0;
+        }
+
+        .product-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            width: fit-content;
+        }
+
+        .product-status.READY {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .product-status.OPEN {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .product-status.CLOSED {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .time-info-box {
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe4e6 100%);
+            padding: 20px;
+            border-radius: 16px;
+            border-left: 4px solid #ff6b6b;
+        }
+
+        .time-info-label {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .time-info-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #212529;
+        }
+
+        .remaining-time {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ff6b6b;
+            margin-top: 12px;
+        }
+
+        .divider {
+            height: 1px;
+            background: #e5e7eb;
+            margin: 20px 0;
+        }
+
+        .product-description {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .description-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 16px;
+        }
+
+        .description-text {
+            font-size: 15px;
+            color: #6b7280;
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 20px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .quantity-label {
+            font-size: 15px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .quantity-btn {
+            width: 36px;
+            height: 36px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 600;
+            color: #495057;
+            transition: all 0.2s ease;
+        }
+
+        .quantity-btn:hover {
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+        }
+
+        .quantity-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #212529;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .cart-btn, .buy-btn {
+            flex: 1;
+            padding: 18px;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .cart-btn {
+            background: white;
+            border: 2px solid #ff6b6b;
+            color: #ff6b6b;
+        }
+
+        .cart-btn:hover {
+            background: #ff6b6b;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .buy-btn {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 16px rgba(255, 107, 107, 0.3);
+        }
+
+        .buy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 107, 107, 0.4);
+        }
+
+        .cart-btn:disabled, .buy-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .cart-btn:disabled:hover, .buy-btn:disabled:hover {
+            transform: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 100px 20px;
+            font-size: 18px;
+            color: #6b7280;
+        }
+
+        .error-state {
+            text-align: center;
+            padding: 100px 20px;
+        }
+
+        .error-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .error-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: 10px;
+        }
+
+        .error-message {
+            font-size: 16px;
+            color: #6b7280;
+        }
+
+        footer {
+            background: #212529;
+            color: #adb5bd;
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+        }
+
+        footer p {
+            margin: 10px 0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        footer p:first-child {
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .product-main {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .product-image {
+                font-size: 120px;
+            }
+
+            .product-name {
+                font-size: 28px;
+            }
+
+            .product-price {
+                font-size: 26px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .back-btn {
+                margin: 20px;
+            }
+
+            header {
+                padding: 16px 20px;
+                flex-wrap: wrap;
+            }
+
+            .search-container {
+                order: 3;
+                width: 100%;
+                max-width: 100%;
+                margin-top: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
+    <div class="search-container">
+        <div class="search-wrapper">
+            <input type="text" class="search-input" id="searchInput" placeholder="상품을 검색해보세요 🔍"
+                   onkeypress="handleSearchEnter(event)">
+            <button class="search-btn" onclick="handleSearch()">🔍</button>
+        </div>
+    </div>
+    <div class="header-icons">
+        <button class="icon-btn"
+                id="cartIconBtn"
+                title="장바구니"
+                onclick="location.href='cart.html'">
+            🛒
+        </button>
+        <button class="auth-btn" id="loginBtn" style="display: none;">로그인 / 회원가입</button>
+        <div class="user-info" id="userInfo" style="display: none;">
+            <button class="icon-btn" id="myPageBtn" title="마이페이지">👤</button>
+            <button class="logout-btn" id="logoutBtn">로그아웃</button>
+        </div>
+    </div>
+</header>
+
+<button class="back-btn" onclick="history.back()">← 뒤로가기</button>
+
+<div class="product-detail-container" id="productContainer">
+    <div class="loading" id="loading">타임딜 정보를 불러오는 중...</div>
+</div>
+
+<footer>
+    <p>© 2025 싹쓰리 - 모두를 위한 귀여운 굿즈</p>
+    <p>고객센터: 010-1234-5678 | support@ssak3.com</p>
+    <p>개인정보처리방침 | 이용약관 | 배송정책</p>
+</footer>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const timeDealId = urlParams.get('id');
+
+    const productEmojis = {1: '🏍️', 2: '✨', 3: '⚔️', 4: '🎮', 5: '🎵', 6: '⚡', 7: '🌈', 8: '💎', 9: '🎨', 10: '🧸'};
+    const statusText = {'READY': '오픈 예정', 'OPEN': '진행중', 'CLOSED': '종료'};
+
+    let quantity = 1;
+    let timeDealData = null;
+    let countdownInterval = null;
+
+    //.
+    const API_BASE = 'http://localhost:8080/ssak3';
+
+    function buildAuthHeaders(withJson = false) {
+        const token = localStorage.getItem('accessToken');
+        const headers = {};
+        if (withJson) headers['Content-Type'] = 'application/json';
+        if (token) headers.Authorization = 'Bearer ' + token;
+        return headers;
+    }
+
+    function formatPrice(price) {
+        return price.toLocaleString('ko-KR') + '원';
+    }
+
+    function formatDateTime(dateTimeStr) {
+        const date = new Date(dateTimeStr);
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        const h = String(date.getHours()).padStart(2, '0');
+        const min = String(date.getMinutes()).padStart(2, '0');
+        return `${y}년 ${m}월 ${d}일 ${h}:${min}`;
+    }
+
+    function getTimeDealStatus(startAt, endAt) {
+        const now = new Date();
+        const start = new Date(startAt);
+        const end = new Date(endAt);
+        if (now < start) return 'READY';
+        if (now < end) return 'OPEN';
+        return 'CLOSED';
+    }
+
+    function calculateRemainingTime(startAt, endAt) {
+        const now = new Date();
+        const start = new Date(startAt);
+        const end = new Date(endAt);
+
+        let target, prefix;
+        if (now < start) {
+            target = start;
+            prefix = '시작까지';
+        } else if (now < end) {
+            target = end;
+            prefix = '종료까지';
+        } else return '종료됨';
+
+        const diff = target - now;
+        if (diff <= 0) return '종료됨';
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        let timeStr = '';
+        if (days > 0) timeStr = `${days}일 ${hours}시간 ${minutes}분 ${seconds}초`;
+        else if (hours > 0) timeStr = `${hours}시간 ${minutes}분 ${seconds}초`;
+        else if (minutes > 0) timeStr = `${minutes}분 ${seconds}초`;
+        else timeStr = `${seconds}초`;
+
+        return `${prefix} ${timeStr}`;
+    }
+
+    function updateRemainingTime() {
+        if (!timeDealData) return;
+        const el = document.getElementById('remainingTime');
+        if (el) {
+            const text = calculateRemainingTime(timeDealData.startAt, timeDealData.endAt);
+            el.textContent = `⏱️ ${text}`;
+            if (text === '종료됨' && countdownInterval) clearInterval(countdownInterval);
+        }
+    }
+
+    function displayTimeDeal(timeDeal) {
+        if (countdownInterval) clearInterval(countdownInterval);
+
+        timeDealData = timeDeal;
+        const container = document.getElementById('productContainer');
+        const emoji = productEmojis[timeDeal.id % 10 + 1] || '🎁';
+        const isOpen = timeDeal.status === 'OPEN';
+
+        container.innerHTML = `
+        <div class="product-main">
+            <div class="product-image-section">
+                <div class="product-image">${emoji}</div>
+            </div>
+            <div class="product-info-section">
+                <span class="product-category">⏰ 타임딜 특가</span>
+                <h1 class="product-name">${timeDeal.productName}</h1>
+                <div class="product-price">${formatPrice(timeDeal.dealPrice)}</div>
+                <span class="product-status ${timeDeal.status}">
+                    ${timeDeal.status === 'OPEN' ? '✓' : timeDeal.status === 'READY' ? '⏰' : '✕'} ${statusText[timeDeal.status]}
+                </span>
+
+                <div class="divider"></div>
+
+                <div class="time-info-box">
+                    <div class="time-info-label">시작 시간</div>
+                    <div class="time-info-value">${formatDateTime(timeDeal.startAt)}</div>
+                    <div class="time-info-label" style="margin-top:12px;">종료 시간</div>
+                    <div class="time-info-value">${formatDateTime(timeDeal.endAt)}</div>
+                    <div class="remaining-time" id="remainingTime">⏱️ 계산 중...</div>
+                </div>
+
+                <div class="quantity-selector">
+                    <span class="quantity-label">수량</span>
+                    <div class="quantity-controls">
+                        <button class="quantity-btn" onclick="decreaseQuantity()">-</button>
+                        <span class="quantity-value" id="quantityValue">${quantity}</span>
+                        <button class="quantity-btn" onclick="increaseQuantity()">+</button>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="cart-btn" onclick="addToCart(${timeDeal.productId})" ${!isOpen ? 'disabled' : ''} id="cartBtn">🛒 장바구니</button>
+                    <button class="buy-btn" onclick="buyNow(${timeDeal.productId})" ${!isOpen ? 'disabled' : ''} id="buyBtn">💳 바로구매</button>
+                </div>
+            </div>
+        </div>
+
+        ${timeDeal.productInformation ? `
+            <div class="product-description" style="margin-top:60px;">
+                <h3 class="description-title">상품 상세 설명</h3>
+                <p class="description-text">${timeDeal.productInformation}</p>
+            </div>
+        ` : ''}
+    `;
+
+        updateRemainingTime();
+        countdownInterval = setInterval(updateRemainingTime, 1000);
+    }
+
+    function increaseQuantity() {
+        quantity++;
+        document.getElementById('quantityValue').textContent = quantity;
+    }
+
+    function decreaseQuantity() {
+        if (quantity > 1) {
+            quantity--;
+            document.getElementById('quantityValue').textContent = quantity;
+        }
+    }
+
+    //.
+    async function addToCart() {
+        // timeDealData(상세 조회 결과), timeDealId(쿼리 파라미터 id), quantity(선택 수량)
+        if (!timeDealData) return;
+
+        const payload = {
+            productId: Number(timeDealData.productId),
+            quantity: Number(quantity),
+            timeDealId: Number(timeDealId)
+        };
+
+        try {
+            const res = await fetch(`${API_BASE}/carts`, {
+                method: 'POST',
+                headers: buildAuthHeaders(true),
+                credentials: 'include',
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                if (res.status === 401) {
+                    alert('로그인이 필요한 서비스입니다.');
+                    window.location.href = 'login.html';
+                    return;
+                }
+                let msg = '장바구니 담기에 실패했습니다.';
+                try {
+                    const err = await res.json();
+                    msg = err?.message || msg;
+                } catch (_) {}
+                throw new Error(msg);
+            }
+
+            const result = await res.json();
+            if (!result.success) throw new Error(result.message || '장바구니 담기에 실패했습니다.');
+
+            alert('장바구니에 담았습니다!');
+            // 필요하면 이동:
+            // window.location.href = 'cart.html';
+        } catch (e) {
+            console.error(e);
+            alert(e.message || '장바구니 담기 중 오류가 발생했습니다.');
+        }
+    }
+
+    //.
+    function buyNow() {
+        if (!timeDealData) return;
+
+        const productId = Number(timeDealData.productId);
+        const qty = Number(quantity);
+
+        // 단건구매 페이지로 이동 (타임딜에서 왔다는 표시로 timeDealId도 같이 넘김)
+        window.location.href =
+            `single-product-order.html?productId=${productId}&quantity=${qty}&timeDealId=${encodeURIComponent(timeDealId)}`;
+    }
+
+
+    function showError(msg) {
+        document.getElementById('productContainer').innerHTML = `
+        <div class="error-state">
+            <div class="error-icon">😢</div>
+            <div class="error-title">오류가 발생했습니다</div>
+            <div class="error-message">${msg}</div>
+        </div>
+    `;
+    }
+
+    function handleSearch() {
+        const keyword = document.getElementById('searchInput').value.trim();
+        if (keyword) window.location.href = `search.html?keyword=${encodeURIComponent(keyword)}`;
+        else alert('검색어를 입력해주세요!');
+    }
+
+    function handleSearchEnter(e) {
+        if (e.key === 'Enter') handleSearch();
+    }
+
+    // 로그인 상태 확인
+    async function checkLoginStatus() {
+        const loginBtn = document.getElementById('loginBtn');
+        const userInfo = document.getElementById('userInfo');
+        const token = localStorage.getItem('accessToken');
+        try {
+            let response;
+            if (token) {
+                response = await fetch('http://localhost:8080/ssak3/users/me', {headers: {'Authorization': `Bearer ${token}`}});
+            }
+            if (!token || response.status === 401) {
+                response = await fetch('http://localhost:8080/ssak3/users/me', {credentials: 'include'});
+            }
+            if (response.ok) {
+                loginBtn.style.display = 'none';
+                userInfo.style.display = 'flex';
+            } else throw new Error('Not Authenticated');
+        } catch (e) {
+            localStorage.removeItem('accessToken');
+            loginBtn.style.display = 'block';
+            userInfo.style.display = 'none';
+        }
+    }
+
+    // 로그아웃
+    document.getElementById('logoutBtn').addEventListener('click', async function () {
+        if (!confirm('로그아웃 하시겠습니까?')) return;
+        const token = localStorage.getItem('accessToken');
+        try {
+            const req = {method: 'POST', credentials: 'include'};
+            if (token) req.headers = {'Authorization': `Bearer ${token}`};
+            await fetch('http://localhost:8080/ssak3/auth/logout', req);
+            localStorage.removeItem('accessToken');
+            alert('로그아웃 되었습니다.');
+            window.location.href = 'home.html';
+        } catch (e) {
+            console.error(e);
+            localStorage.removeItem('accessToken');
+            alert('로그아웃 되었습니다.');
+            window.location.replace('home.html');
+        }
+    });
+
+    document.getElementById('loginBtn').addEventListener('click', () => location.href = 'login.html');
+    document.getElementById('myPageBtn').addEventListener('click', () => location.href = 'mypage.html');
+
+    // 타임딜 상세 호출
+    async function loadTimeDealDetail() {
+        if (!timeDealId) {
+            showError('타임딜을 찾을 수 없습니다.');
+            return;
+        }
+        try {
+            const res = await fetch(`http://localhost:8080/ssak3/time-deals/${timeDealId}`);
+            if (!res.ok) throw new Error('타임딜 정보를 불러올 수 없습니다.');
+            const result = await res.json();
+            if (!result.success) throw new Error(result.message || '타임딜 정보를 불러올 수 없습니다.');
+            displayTimeDeal(result.data);
+        } catch (e) {
+            console.error(e);
+            showError('타임딜 정보를 불러오는데 실패했습니다.');
+        }
+    }
+
+    // 초기 실행
+    checkLoginStatus();
+    loadTimeDealDetail();
+</script>
+</body>
+</html>

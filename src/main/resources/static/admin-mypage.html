@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>관리자 페이지</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .admin-container {
+            background: white;
+            width: 100%;
+            max-width: 600px;
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+            text-align: center;
+        }
+
+        .admin-header h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .admin-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+
+        .profile-image {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+        }
+
+        .info-group {
+            text-align: left;
+            margin-bottom: 15px;
+            background: #f8f9ff;
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid #e8ebff;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 16px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        /* 관리 기능 버튼 그리드 */
+        .admin-feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 30px 0;
+        }
+
+        .admin-feature-btn {
+            padding: 24px 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .admin-feature-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .admin-feature-btn:active {
+            transform: translateY(-2px);
+        }
+
+        .admin-feature-btn.secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+
+        .admin-feature-btn.secondary:hover {
+            background: #f8f9ff;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.25);
+        }
+
+        .feature-icon {
+            font-size: 32px;
+        }
+
+        .btn-group {
+            margin-top: 30px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .base-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 15px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+
+        .back-btn {
+            background: #e8ebff;
+            color: #667eea;
+        }
+
+        .back-btn:hover {
+            background: #dde1ff;
+        }
+
+        .logout-btn {
+            background: #ffeded;
+            color: #ff6b6b;
+        }
+
+        .logout-btn:hover {
+            background: #ffd6d6;
+        }
+
+        @media (max-width: 600px) {
+            .admin-feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="admin-container">
+    <div class="admin-header">
+        <div class="profile-image">👨‍💼</div>
+        <h2 id="adminName">관리자님, 안녕하세요!</h2>
+        <span class="admin-badge">🔐 ADMIN</span>
+    </div>
+
+    <div class="info-group">
+        <div class="info-label">이름</div>
+        <div id="userName" class="info-value">-</div>
+    </div>
+
+    <div class="info-group">
+        <div class="info-label">이메일</div>
+        <div id="userEmail" class="info-value">-</div>
+    </div>
+
+    <div class="info-group">
+        <div class="info-label">계정 ID</div>
+        <div id="userId" class="info-value">-</div>
+    </div>
+
+    <!-- 관리 기능 버튼 그리드 -->
+    <div class="admin-feature-grid">
+        <button class="admin-feature-btn" onclick="location.href='admin-inquiry-list.html'">
+            <span class="feature-icon">💬</span>
+            <span>문의 채팅 관리</span>
+        </button>
+        <button class="admin-feature-btn secondary" onclick="location.href='admin-product.html'">
+            <span class="feature-icon">📦</span>
+            <span>상품 관리</span>
+        </button>
+        <button class="admin-feature-btn secondary" onclick="alert('준비중입니다.')">
+            <span class="feature-icon">👥</span>
+            <span>회원 관리</span>
+        </button>
+        <button class="admin-feature-btn secondary" onclick="alert('준비중입니다.')">
+            <span class="feature-icon">📊</span>
+            <span>통계 관리</span>
+        </button>
+        <button class="admin-feature-btn secondary" onclick="alert('준비중입니다.')">
+            <span class="feature-icon">🎟️</span>
+            <span>쿠폰 관리</span>
+        </button>
+        <button class="admin-feature-btn secondary" onclick="alert('준비중입니다.')">
+            <span class="feature-icon">⚙️</span>
+            <span>시스템 설정</span>
+        </button>
+    </div>
+
+    <div class="btn-group">
+        <button class="base-btn back-btn" onclick="location.href='home.html'">홈으로</button>
+        <button class="base-btn logout-btn" onclick="handleLogout()">로그아웃</button>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const token = localStorage.getItem('accessToken');
+
+        const headers = {};
+        if (token) {
+            headers.Authorization = 'Bearer ' + token;
+        }
+
+        fetch('http://localhost:8080/ssak3/users/me', {
+            method: 'GET',
+            headers: headers,
+            credentials: 'include'
+        })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error('unauthorized');
+                }
+                return res.json();
+            })
+            .then(result => {
+                const user = result.data;
+
+                // USER이면 일반 사용자 페이지로 리다이렉트
+                if (user.role === 'USER') {
+                    location.href = 'mypage.html';
+                    return;
+                }
+
+                // ADMIN이 아니면 접근 거부
+                if (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN') {
+                    alert('관리자만 접근할 수 있습니다.');
+                    location.href = 'home.html';
+                    return;
+                }
+
+                document.getElementById('adminName').innerText = `${user.name}님, 안녕하세요!`;
+                document.getElementById('userName').innerText = user.name ?? '미설정';
+                document.getElementById('userEmail').innerText = user.email;
+                document.getElementById('userId').innerText = `#${user.id}`;
+            })
+            .catch(() => {
+                alert('로그인이 필요합니다.');
+                location.href = 'login.html';
+            });
+    });
+
+    async function handleLogout() {
+        localStorage.removeItem('accessToken');
+
+        try {
+            const response = await fetch('http://localhost:8080/ssak3/auth/logout', {
+                method: 'POST',
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                alert('로그아웃 되었습니다.');
+                window.location.href = 'home.html';
+            }
+        } catch (error) {
+            console.error('Logout error:', error);
+            window.location.href = 'home.html';
+        }
+    }
+</script>
+
+</body>
+</html>

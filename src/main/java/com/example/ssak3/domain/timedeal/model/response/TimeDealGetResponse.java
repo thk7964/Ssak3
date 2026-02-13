@@ -26,7 +26,7 @@ public class TimeDealGetResponse {
     private final LocalDateTime updatedAt;
     private final String remainingTime;
 
-    public static TimeDealGetResponse from(TimeDeal timeDeal) {
+    public static TimeDealGetResponse from(TimeDeal timeDeal, String imageUrl, String detailImageUrl) {
         LocalDateTime now = LocalDateTime.now();
         TimeDealStatus status = timeDeal.getStatus();
         String remainingTime = null;
@@ -44,8 +44,8 @@ public class TimeDealGetResponse {
                 status,
                 timeDeal.getStartAt(),
                 timeDeal.getEndAt(),
-                timeDeal.getImage(),
-                timeDeal.getDetailImage(),
+                imageUrl,
+                detailImageUrl,
                 timeDeal.getCreatedAt(),
                 timeDeal.getUpdatedAt(),
                 remainingTime

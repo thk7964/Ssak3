@@ -20,6 +20,16 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Optional<Product> findByIdAndIsDeletedFalse(Long id);
 
     @Query("""
+            SELECT p
+            FROM Product p
+            WHERE p.isDeleted = false
+            AND p.status IN (
+                  com.example.ssak3.common.enums.ProductStatus.FOR_SALE,
+                  com.example.ssak3.common.enums.ProductStatus.SOLD_OUT)
+            """)
+    Optional<Product> findByIdAndIsDeletedFalseAndStatusIn(Long id);
+
+    @Query("""
     SELECT p
     FROM Product p
     WHERE p.isDeleted = false

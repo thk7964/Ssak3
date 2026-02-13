@@ -11,7 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/ssak3")
+@RequestMapping("/ssak3/admin/categories")
 @RequiredArgsConstructor
 public class CategoryAdminController {
 
@@ -21,7 +21,7 @@ public class CategoryAdminController {
      * 카테고리 생성 API
      */
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/admin/categories")
+    @PostMapping
     public ResponseEntity<ApiResponse> createCategoryApi(@RequestBody CategoryCreateRequest request) {
         ApiResponse response = ApiResponse.success("카테고리를 생성하였습니다.",  categoryAdminService.createCategory(request));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -31,7 +31,7 @@ public class CategoryAdminController {
      * 카테고리 수정 API
      */
     @PreAuthorize("hasRole('ADMIN')")
-    @PatchMapping("/admin/categories/{categoryId}")
+    @PatchMapping("/{categoryId}")
     public ResponseEntity<ApiResponse> updateCategoryApi(
             @PathVariable Long categoryId,
             @RequestBody CategoryUpdateRequest request) {
@@ -43,7 +43,7 @@ public class CategoryAdminController {
      * 카테고리 삭제 API
      */
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/admin/categories/{categoryId}")
+    @DeleteMapping("/{categoryId}")
     public ResponseEntity<ApiResponse> deleteCategoryApi(
             @PathVariable Long categoryId) {
         ApiResponse response = ApiResponse.success("카테고리를 삭제하였습니다.", categoryAdminService.deleteCategory(categoryId));

@@ -7,22 +7,22 @@ import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
-public class CategoryGetResponse {
+public class CategoryListGetResponse {
 
     private Long id;
     private String name;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public CategoryGetResponse(Long id, String name, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public CategoryListGetResponse(Long id, String name, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.name = name;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
 
-    public static CategoryGetResponse from(Category category) {
-       return new CategoryGetResponse(
+    public static CategoryListGetResponse from(Category category) {
+       return new CategoryListGetResponse(
                category.getId(),
                category.getName(),
                category.getCreatedAt(),

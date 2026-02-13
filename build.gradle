@@ -38,9 +38,6 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-    // 스프링에서 캐시 사용할 것임
-    implementation 'org.springframework.boot:spring-boot-starter-cache'
-
     // JWT 의존성
     implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.3'

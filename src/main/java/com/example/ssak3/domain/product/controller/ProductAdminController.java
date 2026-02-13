@@ -16,7 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
-@RequestMapping("/ssak3")
+@RequestMapping("/ssak3/admin/products")
 @RestController
 @RequiredArgsConstructor
 public class ProductAdminController {
@@ -27,7 +27,7 @@ public class ProductAdminController {
      * 상품생성 API
      */
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/admin/products")
+    @PostMapping
     public ResponseEntity<ApiResponse> createProductApi(
             @RequestBody ProductCreateRequest request) {
         log.info("controller 상품생성 상품명: {}", request.getName());
@@ -39,7 +39,7 @@ public class ProductAdminController {
      * 상품 상세조회(관리자) API
      */
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/admin/products/{productId}")
+    @GetMapping("/{productId}")
     public ResponseEntity<ApiResponse> getProductAdminApi(@PathVariable Long productId) {
         log.info("controller 상품상세조회 - admin id: {}", productId);
         ApiResponse response = ApiResponse.success("상품을 조회했습니다.", productAdminService.getProductAdmin(productId));
@@ -50,7 +50,7 @@ public class ProductAdminController {
      * 상품 목록조회(관리자) API
      */
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/admin/products")
+    @GetMapping
     public ResponseEntity<ApiResponse> getProductListAdminApi(
             // 카테고리 아이디값을 활용해서 해당 아이디 보유한 상품만 조회하는 기능
             @RequestParam(name = "categoryId", required = false) Long categoryId,
@@ -64,7 +64,7 @@ public class ProductAdminController {
      * 상품수정 API
      */
     @PreAuthorize("hasRole('ADMIN')")
-    @PatchMapping("/admin/products/{productId}")
+    @PatchMapping("/{productId}")
     public ResponseEntity<ApiResponse> updateProductApi(
             @PathVariable Long productId,
             @RequestBody ProductUpdateRequest request) {
@@ -77,7 +77,7 @@ public class ProductAdminController {
      * 상품삭제 API
      */
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/admin/products/{productId}")
+    @DeleteMapping("/{productId}")
     public ResponseEntity<ApiResponse> deleteProductApi(
             @PathVariable Long productId) {
         log.info("controller 상품삭제 id: {}", productId);
@@ -89,7 +89,7 @@ public class ProductAdminController {
      * 상품 상태변경 API
      */
     @PreAuthorize("hasRole('ADMIN')")
-    @PatchMapping("/admin/products/status")
+    @PatchMapping("/status")
     public ResponseEntity<ApiResponse> updateProductStatusApi(@RequestBody ProductUpdateStatusRequest request) {
         ApiResponse response = ApiResponse.success("상품의 상태가 변경되었습니다.", productAdminService.updateProductStatus(request));
         return ResponseEntity.status(HttpStatus.OK).body(response);

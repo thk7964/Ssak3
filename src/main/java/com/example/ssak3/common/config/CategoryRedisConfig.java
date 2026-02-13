@@ -1,6 +1,6 @@
 package com.example.ssak3.common.config;
 
-import com.example.ssak3.domain.category.model.response.CategoryGetResponse;
+import com.example.ssak3.domain.category.model.response.CategoryListGetResponse;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -36,10 +36,10 @@ public class CategoryRedisConfig {
 
         // 1. Jackson의 ObjectMapper에게 "이건 List인데 안에 CategoryGetResponse가 들어있어" 라고 말해줌
         JavaType categoryListType = objectMapper.getTypeFactory()
-                .constructCollectionType(List.class, CategoryGetResponse.class);
+                .constructCollectionType(List.class, CategoryListGetResponse.class);
 
         // 2. 그 정보를 시리얼라이저에 넘겨줌
-        Jackson2JsonRedisSerializer<List<CategoryGetResponse>> serializer =
+        Jackson2JsonRedisSerializer<List<CategoryListGetResponse>> serializer =
                 new Jackson2JsonRedisSerializer<>(objectMapper, categoryListType);
 
         // 3. Redis 캐시 설정 구성

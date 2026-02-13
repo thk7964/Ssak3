@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/ssak3")
+@RequestMapping("/ssak3/categories")
 @RequiredArgsConstructor
 public class CategoryUserController {
 
@@ -17,7 +17,7 @@ public class CategoryUserController {
     /**
      * 카테고리 목록조회 API
      */
-    @GetMapping("/categories")
+    @GetMapping
     public ResponseEntity<ApiResponse> getCategoryListApi() {
         ApiResponse response = ApiResponse.success("카테고리목록을 조회했습니다.", categoryUserService.getCategoryList());
         return ResponseEntity.status(HttpStatus.OK).body(response);

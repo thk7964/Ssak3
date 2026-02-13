@@ -451,7 +451,7 @@
     </div>
 
     <div class="header-icons">
-        <button class="icon-btn" onclick="location.href='cart.html'">🛒</button>
+        <button class="icon-btn">🛒</button>
 
         <!-- 로그인 안 된 경우 -->
         <button class="auth-btn" id="loginBtn" style="display: none;">로그인 / 회원가입</button>
@@ -470,7 +470,7 @@
 </div>
 
 <nav id="categoryNav">
-    <a href="time-deals.html">⭐ 타임딜</a>
+    <a href="#timedeal">⭐ 타임딜</a>
     <a href="product-search.html">📦 전체 상품</a>
 </nav>
 
@@ -551,6 +551,7 @@
                 </div>
             </div>
         `;
+
 
                 card.addEventListener('click', () => {
                     window.location.href = `product-detail.html?id=${product.id}`;

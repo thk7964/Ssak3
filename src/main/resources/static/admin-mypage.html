@@ -56,10 +56,10 @@
         .info-group {
             text-align: left;
             margin-bottom: 15px;
-            background: #f8fdff;
+            background: #f8f9ff;
             padding: 15px;
             border-radius: 15px;
-            border: 1px solid #e0f7ff;
+            border: 1px solid #e8ebff;
         }
 
         .info-label {
@@ -195,10 +195,6 @@
             <span class="feature-icon">💬</span>
             <span>문의 채팅 관리</span>
         </button>
-        <button class="admin-feature-btn" onclick="location.href='admin-inquiry-list.html'">
-            <span class="feature-icon">📋</span>
-            <span>문의 게시판 관리</span>
-        </button>
         <button class="admin-feature-btn secondary" onclick="alert('준비중입니다.')">
             <span class="feature-icon">📦</span>
             <span>상품 관리</span>
@@ -215,9 +211,9 @@
             <span class="feature-icon">🎟️</span>
             <span>쿠폰 관리</span>
         </button>
-        <button class="admin-feature-btn secondary" onclick="alert('준비중입니다.')">
-            <span class="feature-icon">⚙️</span>
-            <span>시스템 설정</span>
+        <button class="admin-feature-btn" onclick="location.href='admin-inquiry-list.html'">
+            <span class="feature-icon">📋</span>
+            <span>문의 게시판</span>
         </button>
     </div>
 
@@ -257,7 +253,7 @@
                 }
 
                 // ADMIN이 아니면 접근 거부
-                if (user.role !== 'ADMIN') {
+                if (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN') {
                     alert('관리자만 접근할 수 있습니다.');
                     location.href = 'home.html';
                     return;

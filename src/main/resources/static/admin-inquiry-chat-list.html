@@ -23,6 +23,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 24px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
             position: sticky;
             top: 0;
@@ -41,53 +42,75 @@
             cursor: pointer;
         }
 
+        .header-title {
+            flex: 1;
+            font-size: 20px;
+            font-weight: 600;
+            color: #212529;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .header-icons {
             display: flex;
             gap: 12px;
-            align-items: center;
         }
 
-        .icon-btn {
-            background: #f8f9fa;
-            border: none;
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
+        .btn-common {
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
             cursor: pointer;
-            font-size: 18px;
-            transition: all 0.2s ease;
+            border: none;
+            transition: 0.2s;
+        }
+
+        .home-btn {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .home-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .logout-btn {
+            background: #f8f9fa;
             color: #495057;
         }
 
-        .icon-btn:hover {
+        .logout-btn:hover {
             background: #e9ecef;
-            transform: translateY(-2px);
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 40px 20px;
         }
 
-        .page-title {
+        .page-header {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            padding: 40px;
+            border-radius: 24px;
+            margin-bottom: 40px;
+            color: white;
+            box-shadow: 0 10px 40px rgba(116, 185, 255, 0.25);
+        }
+
+        .page-header h1 {
             font-size: 32px;
             font-weight: 800;
-            color: #212529;
-            margin-bottom: 12px;
-            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            margin-bottom: 8px;
         }
 
-        .page-subtitle {
+        .page-header p {
             font-size: 15px;
-            color: #868e96;
-            margin-bottom: 30px;
+            opacity: 0.9;
         }
 
-        /* 상태 필터 */
         .status-filters {
             display: flex;
             gap: 12px;
@@ -96,7 +119,7 @@
         }
 
         .filter-btn {
-            padding: 10px 20px;
+            padding: 12px 24px;
             border: 2px solid #e9ecef;
             background: white;
             border-radius: 12px;
@@ -105,6 +128,7 @@
             font-weight: 600;
             color: #495057;
             transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
 
         .filter-btn:hover {
@@ -113,70 +137,54 @@
         }
 
         .filter-btn.active {
-            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            background: #74b9ff;
             color: white;
-            border-color: transparent;
-        }
-
-        /* 채팅방 카드 */
-        .chat-rooms-grid {
-            display: grid;
-            gap: 20px;
-        }
-
-        .chat-room-card {
-            background: white;
-            border-radius: 20px;
-            padding: 24px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-            transition: all 0.3s ease;
-            cursor: pointer;
-            border: 2px solid transparent;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .chat-room-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
             border-color: #74b9ff;
         }
 
-        .chat-room-card.waiting {
-            border-left: 4px solid #ffc107;
+        .table-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
         }
 
-        .chat-room-card.ongoing {
-            border-left: 4px solid #28a745;
+        table {
+            width: 100%;
+            border-collapse: collapse;
         }
 
-        .chat-room-card.completed {
-            opacity: 0.7;
-            border-left: 4px solid #6c757d;
+        th {
+            background: #f8f9fa;
+            padding: 16px 24px;
+            text-align: left;
+            font-size: 13px;
+            color: #495057;
+            border-bottom: 1px solid #e9ecef;
+            font-weight: 600;
         }
 
-        .room-info {
-            flex: 1;
+        td {
+            padding: 16px 24px;
+            font-size: 14px;
+            color: #495057;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
         }
 
-        .room-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 12px;
+        tbody tr {
+            cursor: pointer;
+            transition: background 0.2s;
         }
 
-        .room-id {
-            font-size: 18px;
-            font-weight: 700;
-            color: #212529;
+        tbody tr:hover {
+            background: #f8f9fa;
         }
 
         .status-badge {
             display: inline-block;
             padding: 4px 12px;
-            border-radius: 12px;
+            border-radius: 8px;
             font-size: 12px;
             font-weight: 600;
         }
@@ -187,8 +195,8 @@
         }
 
         .status-badge.ongoing {
-            background: #d4edda;
-            color: #155724;
+            background: #e3f2fd;
+            color: #1976d2;
         }
 
         .status-badge.completed {
@@ -196,43 +204,23 @@
             color: #383d41;
         }
 
-        .room-details {
-            display: flex;
-            gap: 20px;
-            font-size: 14px;
-            color: #868e96;
-        }
-
-        .room-detail-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .room-actions {
-            display: flex;
-            gap: 12px;
-        }
-
         .action-btn {
-            padding: 10px 20px;
+            padding: 8px 16px;
             border: none;
-            border-radius: 12px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             transition: all 0.2s ease;
         }
 
         .accept-btn {
-            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            background-color: #3498db;
             color: white;
-            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
         }
 
         .accept-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(116, 185, 255, 0.45);
+            background-color: #2980b9;
         }
 
         .enter-btn {
@@ -245,52 +233,50 @@
             background: #e9ecef;
         }
 
-        /* 빈 상태 */
-        .empty-state {
+        .empty-row td {
             text-align: center;
-            padding: 60px 20px;
+            padding: 40px;
+            color: #adb5bd;
         }
 
-        .empty-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-            opacity: 0.3;
-        }
-
-        .empty-text {
-            font-size: 18px;
-            color: #868e96;
-        }
-
-        /* 페이지네이션 */
         .pagination {
             display: flex;
             justify-content: center;
-            gap: 8px;
-            margin-top: 40px;
+            align-items: center;
+            padding: 24px;
+            gap: 6px;
+            flex-wrap: wrap;
         }
 
         .page-btn {
-            padding: 10px 16px;
-            border: 2px solid #e9ecef;
-            background: white;
+            min-width: 36px;
+            height: 36px;
+            padding: 0 10px;
             border-radius: 8px;
+            border: 1px solid #e9ecef;
             cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
+            background: #fff;
             color: #495057;
-            transition: all 0.2s ease;
+            font-size: 13px;
+            font-weight: 500;
+            transition: 0.15s;
         }
 
         .page-btn:hover {
+            background: #f0f7ff;
             border-color: #74b9ff;
-            color: #74b9ff;
         }
 
         .page-btn.active {
-            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            background: #74b9ff;
             color: white;
-            border-color: transparent;
+            border-color: #74b9ff;
+            font-weight: 700;
+        }
+
+        .page-btn.nav {
+            font-weight: 700;
+            color: #74b9ff;
         }
 
         .page-btn:disabled {
@@ -298,7 +284,6 @@
             cursor: not-allowed;
         }
 
-        /* 로딩 */
         .loading {
             text-align: center;
             padding: 40px;
@@ -315,10 +300,11 @@
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
-        /* 반응형 */
         @media (max-width: 768px) {
             header {
                 padding: 16px 20px;
@@ -328,18 +314,8 @@
                 padding: 24px 16px;
             }
 
-            .chat-room-card {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .room-actions {
-                width: 100%;
-                margin-top: 16px;
-            }
-
-            .action-btn {
-                flex: 1;
+            .table-container {
+                overflow-x: auto;
             }
         }
     </style>
@@ -347,16 +323,19 @@
 <body>
 <header>
     <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
+    <div class="header-title">📞 문의 채팅 관리 시스템</div>
     <div class="header-icons">
-        <button class="icon-btn" onclick="location.href='home.html'">🏠</button>
+        <button class="btn-common home-btn" onclick="location.href='home.html'">홈으로</button>
+        <button class="btn-common logout-btn" id="logoutBtn">로그아웃</button>
     </div>
 </header>
 
 <div class="container">
-    <h1 class="page-title">📞 문의 채팅 관리</h1>
-    <p class="page-subtitle">고객 문의를 확인하고 상담을 진행하세요</p>
+    <div class="page-header">
+        <h1>문의 채팅 관리</h1>
+        <p id="totalCountDisplay">고객 문의를 확인하고 상담을 진행하세요</p>
+    </div>
 
-    <!-- 상태 필터 -->
     <div class="status-filters">
         <button class="filter-btn active" data-status="ALL" onclick="filterByStatus('ALL')">
             전체
@@ -372,16 +351,29 @@
         </button>
     </div>
 
-    <!-- 채팅방 목록 -->
-    <div id="chatRoomsContainer" class="chat-rooms-grid">
-        <div class="loading">
-            <div class="loading-spinner"></div>
-        </div>
-    </div>
-
-    <!-- 페이지네이션 -->
-    <div id="paginationContainer" class="pagination" style="display: none;">
-        <!-- 페이지네이션 버튼이 동적으로 추가됩니다 -->
+    <div class="table-container">
+        <table>
+            <thead>
+            <tr>
+                <th>문의번호</th>
+                <th>사용자</th>
+                <th>상태</th>
+                <th>담당자</th>
+                <th>생성일시</th>
+                <th>관리</th>
+            </tr>
+            </thead>
+            <tbody id="chatRoomsTableBody">
+            <tr class="empty-row">
+                <td colspan="6">
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div id="pagination" class="pagination"></div>
     </div>
 </div>
 
@@ -390,14 +382,13 @@
     let currentPage = 0;
     let totalPages = 0;
     let currentFilter = 'ALL';
+    const PAGE_GROUP_SIZE = 10;
 
-    // 페이지 로드 시 초기화
     window.addEventListener('DOMContentLoaded', async () => {
         try {
             currentUser = await getCurrentUser();
             if (!currentUser) return;
 
-            // 관리자 권한 체크
             if (currentUser.role !== 'ADMIN') {
                 alert('관리자만 접근할 수 있습니다.');
                 window.location.href = 'index.html';
@@ -411,7 +402,6 @@
         }
     });
 
-    // 현재 로그인 사용자 정보 가져오기
     async function getCurrentUser() {
         const token = localStorage.getItem('accessToken');
 
@@ -423,7 +413,7 @@
 
         try {
             const response = await fetch('http://localhost:8080/ssak3/users/me', {
-                headers: { 'Authorization': `Bearer ${token}` },
+                headers: {'Authorization': `Bearer ${token}`},
                 credentials: 'include'
             });
 
@@ -442,7 +432,6 @@
         }
     }
 
-    // 채팅방 목록 불러오기
     async function loadChatRooms(page = 0) {
         try {
             const response = await fetch(
@@ -464,40 +453,39 @@
             totalPages = data.totalPages;
 
             displayChatRooms(data.content);
-            displayPagination();
+            displayPagination(data);
+
+            document.getElementById('totalCountDisplay').innerText =
+                `전체 문의 ${data.totalElements ?? 0}개 | 실시간 관리 중`;
 
         } catch (error) {
             console.error('채팅방 목록 불러오기 실패:', error);
-            document.getElementById('chatRoomsContainer').innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">⚠️</div>
-                        <div class="empty-text">채팅방 목록을 불러오는데 실패했습니다.</div>
-                    </div>
-                `;
+            document.getElementById('chatRoomsTableBody').innerHTML = `
+                <tr class="empty-row">
+                    <td colspan="6">채팅방 목록을 불러오는데 실패했습니다.</td>
+                </tr>
+            `;
         }
     }
 
-    // 채팅방 목록 화면에 표시
     function displayChatRooms(rooms) {
-        const container = document.getElementById('chatRoomsContainer');
+        const tbody = document.getElementById('chatRoomsTableBody');
 
-        // 필터 적용
         let filteredRooms = rooms;
         if (currentFilter !== 'ALL') {
             filteredRooms = rooms.filter(room => room.status === currentFilter);
         }
 
         if (filteredRooms.length === 0) {
-            container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">💬</div>
-                        <div class="empty-text">표시할 채팅방이 없습니다.</div>
-                    </div>
-                `;
+            tbody.innerHTML = `
+                <tr class="empty-row">
+                    <td colspan="6">표시할 채팅방이 없습니다.</td>
+                </tr>
+            `;
             return;
         }
 
-        container.innerHTML = filteredRooms.map(room => {
+        tbody.innerHTML = filteredRooms.map(room => {
             const statusText = {
                 'WAITING': '대기중',
                 'ONGOING': '진행중',
@@ -508,119 +496,90 @@
             const createdAt = new Date(room.createdAt).toLocaleString('ko-KR');
 
             let actionButtons = '';
-            let clickHandler = '';
 
             if (room.status === 'WAITING') {
                 actionButtons = `
-                        <button class="action-btn accept-btn" onclick="acceptChat(event, ${room.id})">
-                            수락하기
-                        </button>
-                    `;
-                clickHandler = `onclick="enterChat(${room.id})"`;
+                    <button class="action-btn accept-btn" onclick="acceptChat(event, ${room.id})">
+                        수락하기
+                    </button>
+                `;
             } else if (room.status === 'ONGOING' && room.adminId === currentUser.userId) {
                 actionButtons = `
-                        <button class="action-btn enter-btn" onclick="enterChat(${room.id})">
-                            입장하기
-                        </button>
-                    `;
-                clickHandler = `onclick="enterChat(${room.id})"`;
+                    <button class="action-btn enter-btn" onclick="enterChat(${room.id})">
+                        입장하기
+                    </button>
+                `;
             } else if (room.status === 'COMPLETED') {
-                // COMPLETED 상태면 클릭 불가
-                clickHandler = `style="cursor: not-allowed;" onclick="alert('종료된 채팅방입니다.')"`;
+                actionButtons = `
+                    <button class="action-btn enter-btn" onclick="enterChat(${room.id})">
+                        내역 보기
+                    </button>
+                `;
             }
 
             return `
-                    <div class="chat-room-card ${statusClass}" ${clickHandler}>>
-                        <div class="room-info">
-                            <div class="room-header">
-                                <span class="room-id">문의 #${room.id}</span>
-                                <span class="status-badge ${statusClass}">${statusText}</span>
-                            </div>
-                            <div class="room-details">
-                                <div class="room-detail-item">
-                                    <span>👤</span>
-                                    <span>${room.userName || '사용자'}</span>
-                                </div>
-                                <div class="room-detail-item">
-                                    <span>🕐</span>
-                                    <span>${createdAt}</span>
-                                </div>
-                                ${room.adminId ? `
-                                    <div class="room-detail-item">
-                                        <span>👨‍💼</span>
-                                        <span>담당: 관리자 #${room.adminId}</span>
-                                    </div>
-                                ` : ''}
-                            </div>
-                        </div>
-                        <div class="room-actions" onclick="event.stopPropagation()">
-                            ${actionButtons}
-                        </div>
-                    </div>
-                `;
+                <tr onclick="enterChat(${room.id})">
+                    <td>#${room.id}</td>
+                    <td>${room.userName || '사용자'}</td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td>${room.adminId ? `관리자 #${room.adminId}` : '-'}</td>
+                    <td>${createdAt}</td>
+                    <td onclick="event.stopPropagation()">${actionButtons}</td>
+                </tr>
+            `;
         }).join('');
     }
 
-    // 페이지네이션 표시
-    function displayPagination() {
-        const container = document.getElementById('paginationContainer');
+    function displayPagination(data) {
+        const container = document.getElementById('pagination');
+        if (!container) return;
+
+        const totalPages = data.totalPages ?? 0;
+        const current = data.number ?? 0;
+        const groupStart = Math.floor(current / PAGE_GROUP_SIZE) * PAGE_GROUP_SIZE;
+        const groupEnd = Math.min(groupStart + PAGE_GROUP_SIZE, totalPages);
 
         if (totalPages <= 1) {
-            container.style.display = 'none';
+            container.innerHTML = '';
             return;
         }
 
-        container.style.display = 'flex';
-
         let html = '';
 
-        // 이전 버튼
-        html += `
-                <button class="page-btn" onclick="changePage(${currentPage - 1})" ${currentPage === 0 ? 'disabled' : ''}>
-                    ←
-                </button>
-            `;
-
-        // 페이지 번호들
-        for (let i = 0; i < totalPages; i++) {
-            html += `
-                    <button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">
-                        ${i + 1}
-                    </button>
-                `;
+        if (groupStart > 0) {
+            html += `<button class="page-btn nav" onclick="changePage(${groupStart - 1})">이전</button>`;
         }
 
-        // 다음 버튼
-        html += `
-                <button class="page-btn" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages - 1 ? 'disabled' : ''}>
-                    →
-                </button>
-            `;
+        for (let i = groupStart; i < groupEnd; i++) {
+            const activeClass = (i === current) ? 'active' : '';
+            html += `<button class="page-btn ${activeClass}" onclick="changePage(${i})">${i + 1}</button>`;
+        }
+
+        if (groupEnd < totalPages) {
+            html += `<button class="page-btn nav" onclick="changePage(${groupEnd})">다음</button>`;
+        }
 
         container.innerHTML = html;
     }
 
-    // 페이지 변경
     function changePage(page) {
         if (page < 0 || page >= totalPages) return;
         loadChatRooms(page);
     }
 
-    // 상태 필터
     function filterByStatus(status) {
         currentFilter = status;
 
-        // 필터 버튼 활성화 상태 변경
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.classList.remove('active');
         });
-        event.target.classList.add('active');
 
-        // 현재 페이지 데이터 다시 표시
-        loadChatRooms(currentPage);
+        const activeBtn = document.querySelector(`.filter-btn[data-status="${status}"]`);
+        if (activeBtn) activeBtn.classList.add('active');
+
+        loadChatRooms(0);
     }
 
-    // 채팅 수락
     async function acceptChat(event, roomId) {
         event.stopPropagation();
 
@@ -641,8 +600,6 @@
             if (!response.ok) throw new Error('채팅 수락 실패');
 
             alert('문의를 수락했습니다.');
-
-            // 채팅방으로 이동
             window.location.href = `admin-inquiry-chat.html?roomId=${roomId}`;
 
         } catch (error) {
@@ -652,10 +609,14 @@
         }
     }
 
-    // 채팅방 입장
     function enterChat(roomId) {
         window.location.href = `admin-inquiry-chat.html?roomId=${roomId}`;
     }
+
+    document.getElementById('logoutBtn')?.addEventListener('click', () => {
+        localStorage.removeItem('accessToken');
+        location.href = 'login.html';
+    });
 </script>
 </body>
 </html>

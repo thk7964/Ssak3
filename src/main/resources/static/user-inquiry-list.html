@@ -23,6 +23,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 24px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
             position: sticky;
             top: 0;
@@ -41,112 +42,146 @@
             cursor: pointer;
         }
 
+        .header-title {
+            flex: 1;
+            font-size: 20px;
+            font-weight: 600;
+            color: #212529;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .header-icons {
             display: flex;
             gap: 12px;
-            align-items: center;
         }
 
-        .icon-btn {
-            background: #f8f9fa;
-            border: none;
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
+        .btn-common {
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
             cursor: pointer;
-            font-size: 18px;
-            transition: all 0.2s ease;
+            border: none;
+            transition: 0.2s;
+        }
+
+        .home-btn {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .home-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .mypage-btn {
+            background: #f8f9fa;
             color: #495057;
         }
 
-        .icon-btn:hover {
+        .mypage-btn:hover {
             background: #e9ecef;
-            transform: translateY(-2px);
         }
 
         .container {
-            max-width: 1000px;
-            margin: 40px auto;
-            padding: 0 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
         }
 
         .page-header {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            padding: 40px;
+            border-radius: 24px;
+            margin-bottom: 40px;
+            color: white;
+            box-shadow: 0 10px 40px rgba(116, 185, 255, 0.25);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
         }
 
-        .page-title {
+        .page-header h1 {
             font-size: 32px;
-            font-weight: 700;
-            color: #212529;
-            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            font-size: 15px;
+            opacity: 0.9;
         }
 
         .create-btn {
-            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
-            color: white;
+            background: white;
+            color: #74b9ff;
             border: none;
             padding: 12px 24px;
             border-radius: 12px;
             cursor: pointer;
             font-size: 15px;
-            font-weight: 600;
+            font-weight: 700;
             transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .create-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(116, 185, 255, 0.45);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
         }
 
-        .inquiry-list {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .inquiry-card {
+        .table-container {
             background: white;
-            border-radius: 20px;
-            padding: 24px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f8f9fa;
+            padding: 16px 24px;
+            text-align: left;
+            font-size: 13px;
+            color: #495057;
+            border-bottom: 1px solid #e9ecef;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 16px 24px;
+            font-size: 14px;
+            color: #495057;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
+        }
+
+        tbody tr {
             cursor: pointer;
-            border: 1px solid #f0f0f0;
+            transition: background 0.2s;
         }
 
-        .inquiry-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
-            border-color: #e9ecef;
+        tbody tr:hover {
+            background: #f8f9fa;
         }
 
-        .inquiry-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .inquiry-title {
-            font-size: 18px;
+        .inquiry-title-cell {
             font-weight: 600;
             color: #212529;
-            flex: 1;
         }
 
         .status-badge {
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 13px;
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 12px;
             font-weight: 600;
-            margin-left: 12px;
         }
 
         .status-pending {
@@ -155,74 +190,74 @@
         }
 
         .status-answered {
-            background: #d4edda;
-            color: #155724;
+            background: #e3f2fd;
+            color: #1976d2;
         }
 
-        .inquiry-meta {
-            display: flex;
-            gap: 16px;
-            font-size: 13px;
-            color: #868e96;
-        }
-
-        .inquiry-meta span {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .empty-state {
+        .empty-row td {
             text-align: center;
             padding: 80px 20px;
-            color: #868e96;
+            color: #adb5bd;
         }
 
-        .empty-state-icon {
+        .empty-icon {
             font-size: 64px;
             margin-bottom: 16px;
         }
 
-        .empty-state-text {
+        .empty-text {
             font-size: 18px;
             margin-bottom: 24px;
+            color: #868e96;
         }
 
         .pagination {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 8px;
-            margin-top: 40px;
+            padding: 24px;
+            gap: 6px;
+            flex-wrap: wrap;
         }
 
         .page-btn {
-            background: white;
-            border: 1px solid #e9ecef;
-            width: 36px;
+            min-width: 36px;
             height: 36px;
+            padding: 0 10px;
             border-radius: 8px;
+            border: 1px solid #e9ecef;
             cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
+            background: #fff;
             color: #495057;
-            transition: all 0.2s ease;
+            font-size: 13px;
+            font-weight: 500;
+            transition: 0.15s;
         }
 
         .page-btn:hover:not(:disabled) {
-            background: #f8f9fa;
-            border-color: #dee2e6;
+            background: #f0f7ff;
+            border-color: #74b9ff;
         }
 
         .page-btn.active {
-            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            background: #74b9ff;
             color: white;
-            border-color: transparent;
+            border-color: #74b9ff;
+            font-weight: 700;
+        }
+
+        .page-btn.nav {
+            font-weight: 700;
+            color: #74b9ff;
         }
 
         .page-btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+        }
+
+        .back-section {
+            margin-bottom: 24px;
         }
 
         .back-btn {
@@ -235,7 +270,6 @@
             font-size: 14px;
             font-weight: 600;
             transition: all 0.2s ease;
-            margin-bottom: 20px;
         }
 
         .back-btn:hover {
@@ -243,20 +277,22 @@
         }
 
         @media (max-width: 768px) {
+            header {
+                padding: 16px 20px;
+            }
+
+            .container {
+                padding: 24px 16px;
+            }
+
             .page-header {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 16px;
             }
 
-            .inquiry-card {
-                padding: 20px;
-            }
-
-            .inquiry-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 8px;
+            .table-container {
+                overflow-x: auto;
             }
         }
     </style>
@@ -265,32 +301,50 @@
 
 <header>
     <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
+    <div class="header-title">💬 1:1 문의 관리</div>
     <div class="header-icons">
-        <button class="icon-btn" onclick="location.href='home.html'">🏠</button>
-        <button class="icon-btn" onclick="location.href='mypage.html'">👤</button>
+        <button class="btn-common home-btn" onclick="location.href='home.html'">홈으로</button>
+        <button class="btn-common mypage-btn" onclick="location.href='mypage.html'">마이페이지</button>
     </div>
 </header>
 
 <div class="container">
-    <button class="back-btn" onclick="location.href='mypage.html'">← 마이페이지로 돌아가기</button>
+    <div class="back-section">
+        <button class="back-btn" onclick="location.href='mypage.html'">← 마이페이지로 돌아가기</button>
+    </div>
 
     <div class="page-header">
-        <h1 class="page-title">💬 1:1 문의 게시판</h1>
+        <div>
+            <h1>1:1 문의 게시판</h1>
+            <p id="totalCountDisplay">나의 문의 내역을 확인하세요</p>
+        </div>
         <button class="create-btn" onclick="location.href='user-inquiry-create.html'">✏️ 새 문의 작성</button>
     </div>
 
-    <div class="inquiry-list" id="inquiryList">
-        <!-- 문의 목록이 여기에 동적으로 추가됩니다 -->
-    </div>
-
-    <div class="pagination" id="pagination">
-        <!-- 페이지네이션이 여기에 동적으로 추가됩니다 -->
+    <div class="table-container">
+        <table>
+            <thead>
+            <tr>
+                <th>문의번호</th>
+                <th>제목</th>
+                <th>상태</th>
+                <th>작성일시</th>
+            </tr>
+            </thead>
+            <tbody id="inquiryTableBody">
+            <tr class="empty-row">
+                <td colspan="4">로딩 중...</td>
+            </tr>
+            </tbody>
+        </table>
+        <div id="pagination" class="pagination"></div>
     </div>
 </div>
 
 <script>
     let currentPage = 0;
     let totalPages = 0;
+    const PAGE_GROUP_SIZE = 10;
 
     document.addEventListener('DOMContentLoaded', () => {
         loadInquiries(currentPage);
@@ -325,71 +379,83 @@
             totalPages = data.totalPages;
 
             renderInquiries(data.content);
-            renderPagination();
+            renderPagination(data);
+
+            document.getElementById('totalCountDisplay').innerText =
+                `전체 문의 ${data.totalElements ?? 0}개 | 나의 문의 내역`;
 
         } catch (error) {
             console.error('Error loading inquiries:', error);
-            alert('문의 목록을 불러오는데 실패했습니다.');
+            document.getElementById('inquiryTableBody').innerHTML = `
+                <tr class="empty-row">
+                    <td colspan="4">문의 목록을 불러오는데 실패했습니다.</td>
+                </tr>
+            `;
         }
     }
 
     function renderInquiries(inquiries) {
-        const listContainer = document.getElementById('inquiryList');
+        const tbody = document.getElementById('inquiryTableBody');
 
         if (!inquiries || inquiries.length === 0) {
-            listContainer.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-state-icon">📭</div>
-                    <div class="empty-state-text">아직 작성한 문의가 없습니다.</div>
-                    <button class="create-btn" onclick="location.href='user-inquiry-create.html'">첫 문의 작성하기</button>
-                </div>
+            tbody.innerHTML = `
+                <tr class="empty-row">
+                    <td colspan="4">
+                        <div class="empty-icon">📭</div>
+                        <div class="empty-text">아직 작성한 문의가 없습니다.</div>
+                        <button class="create-btn" onclick="location.href='user-inquiry-create.html'">첫 문의 작성하기</button>
+                    </td>
+                </tr>
             `;
             return;
         }
 
-        listContainer.innerHTML = inquiries.map(inquiry => {
+        tbody.innerHTML = inquiries.map(inquiry => {
             const statusClass = inquiry.status === 'PENDING' ? 'status-pending' : 'status-answered';
-            const statusText = inquiry.status === 'PENDING' ? '🟠 대기중' : '🟢 답변완료';
+            const statusText = inquiry.status === 'PENDING' ? '대기중' : '답변완료';
             const createdDate = formatDate(inquiry.createdAt);
 
             return `
-                <div class="inquiry-card" onclick="location.href='user-inquiry-detail.html?id=${inquiry.id}'">
-                    <div class="inquiry-header">
-                        <div class="inquiry-title">${escapeHtml(inquiry.title)}</div>
-                        <span class="status-badge ${statusClass}">${statusText}</span>
-                    </div>
-                    <div class="inquiry-meta">
-                        <span>📅 ${createdDate}</span>
-                        <span>🆔 #${inquiry.id}</span>
-                    </div>
-                </div>
+                <tr onclick="location.href='user-inquiry-detail.html?id=${inquiry.id}'">
+                    <td>#${inquiry.id}</td>
+                    <td class="inquiry-title-cell">${escapeHtml(inquiry.title)}</td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td>${createdDate}</td>
+                </tr>
             `;
         }).join('');
     }
 
-    function renderPagination() {
-        const paginationContainer = document.getElementById('pagination');
+    function renderPagination(data) {
+        const container = document.getElementById('pagination');
+        if (!container) return;
+
+        const totalPages = data.totalPages ?? 0;
+        const current = data.number ?? 0;
+        const groupStart = Math.floor(current / PAGE_GROUP_SIZE) * PAGE_GROUP_SIZE;
+        const groupEnd = Math.min(groupStart + PAGE_GROUP_SIZE, totalPages);
 
         if (totalPages <= 1) {
-            paginationContainer.innerHTML = '';
+            container.innerHTML = '';
             return;
         }
 
-        let paginationHTML = `
-            <button class="page-btn" onclick="loadInquiries(${currentPage - 1})" ${currentPage === 0 ? 'disabled' : ''}>◀</button>
-        `;
+        let html = '';
 
-        for (let i = 0; i < totalPages; i++) {
-            paginationHTML += `
-                <button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="loadInquiries(${i})">${i + 1}</button>
-            `;
+        if (groupStart > 0) {
+            html += `<button class="page-btn nav" onclick="loadInquiries(${groupStart - 1})">이전</button>`;
         }
 
-        paginationHTML += `
-            <button class="page-btn" onclick="loadInquiries(${currentPage + 1})" ${currentPage === totalPages - 1 ? 'disabled' : ''}>▶</button>
-        `;
+        for (let i = groupStart; i < groupEnd; i++) {
+            const activeClass = (i === current) ? 'active' : '';
+            html += `<button class="page-btn ${activeClass}" onclick="loadInquiries(${i})">${i + 1}</button>`;
+        }
 
-        paginationContainer.innerHTML = paginationHTML;
+        if (groupEnd < totalPages) {
+            html += `<button class="page-btn nav" onclick="loadInquiries(${groupEnd})">다음</button>`;
+        }
+
+        container.innerHTML = html;
     }
 
     function formatDate(dateString) {

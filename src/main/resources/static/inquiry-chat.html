@@ -38,6 +38,7 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 10px rgba(116, 185, 255, 0.3);
+            z-index: 10;
         }
 
         .header-left {
@@ -115,6 +116,42 @@
             50% { opacity: 0.5; }
         }
 
+        /* 고정 안내 섹션 */
+        .guide-section {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #495057;
+            display: none; /* 연결 후 표시 */
+        }
+
+        .guide-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .guide-list {
+            list-style: none;
+            padding-left: 20px;
+        }
+
+        .guide-list li {
+            position: relative;
+            margin-bottom: 2px;
+        }
+
+        .guide-list li::before {
+            content: "•";
+            position: absolute;
+            left: -15px;
+            color: #74b9ff;
+            font-weight: bold;
+        }
+
         /* 메시지 영역 */
         .messages-container {
             flex: 1;
@@ -136,7 +173,7 @@
             border-radius: 3px;
         }
 
-        /* 메시지 */
+        /* 메시지 스타일 */
         .message {
             margin-bottom: 16px;
             display: flex;
@@ -146,19 +183,11 @@
         }
 
         @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .message.mine {
-            flex-direction: row-reverse;
-        }
+        .message.mine { flex-direction: row-reverse; }
 
         .message-bubble {
             max-width: 70%;
@@ -166,6 +195,7 @@
             border-radius: 18px;
             word-wrap: break-word;
             line-height: 1.5;
+            font-size: 14px;
         }
 
         .message.mine .message-bubble {
@@ -194,16 +224,9 @@
             margin-bottom: 4px;
         }
 
-        /* 공지 메시지 */
         .notice-message {
             text-align: center;
             margin: 20px 0;
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
         }
 
         .notice-text {
@@ -233,7 +256,6 @@
             font-size: 15px;
             outline: none;
             transition: all 0.2s ease;
-            font-family: inherit;
         }
 
         .message-input:focus {
@@ -254,60 +276,30 @@
             align-items: center;
             justify-content: center;
             transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
         }
 
-        .send-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(116, 185, 255, 0.45);
-        }
+        .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .send-btn:active {
-            transform: translateY(0);
-        }
-
-        .send-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* 로딩 */
         .loading-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.95);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: white;
+            display: flex; align-items: center; justify-content: center;
             z-index: 1000;
         }
 
         .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid #e9ecef;
-            border-top-color: #74b9ff;
+            width: 40px; height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #74b9ff;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* 모바일 반응형 */
         @media (max-width: 768px) {
-            .chat-container {
-                max-width: 100%;
-            }
-
-            .message-bubble {
-                max-width: 80%;
-            }
+            .message-bubble { max-width: 85%; }
         }
     </style>
 </head>
@@ -317,7 +309,6 @@
 </div>
 
 <div class="chat-container">
-    <!-- 헤더 -->
     <div class="chat-header">
         <div class="header-left">
             <button class="back-btn" onclick="goBack()">←</button>
@@ -326,26 +317,29 @@
         <button class="close-btn" onclick="closeChat()">종료하기</button>
     </div>
 
-    <!-- 상태 바 -->
     <div id="statusBar" class="status-bar">
         <span class="status-icon">⏱️</span>
         <span id="statusText">관리자 대기중...</span>
     </div>
 
-    <!-- 메시지 영역 -->
-    <div id="messagesContainer" class="messages-container">
-        <!-- 메시지가 동적으로 추가됩니다 -->
+    <div id="guideSection" class="guide-section">
+        <div class="guide-title">
+            <span style="font-size: 16px;">📢</span>
+            <strong style="color: #212529;">싹쓰리 고객센터 안내</strong>
+        </div>
+        <ul class="guide-list">
+            <li>원활한 상담을 위해 <strong>상담원 배정 후 10분간 응답이 없으실 경우</strong> 상담이 자동 종료됩니다.</li>
+            <li>보안 정책에 따라 <strong>상담 종료 시 대화 내용은 저장되지 않고 파기</strong>됩니다.</li>
+            <li>원활한 상담을 위해 <strong>주문번호와 문의 내용</strong>을 미리 남겨주시면 더욱 빠른 안내가 가능합니다.</li>
+            <li>상담원 또한 누군가의 소중한 가족입니다. 따뜻한 마음으로 <strong>존중과 배려</strong>를 부탁드립니다.</li>
+        </ul>
     </div>
 
-    <!-- 입력 영역 -->
+    <div id="messagesContainer" class="messages-container">
+    </div>
+
     <div class="input-container">
-        <input
-                type="text"
-                id="messageInput"
-                class="message-input"
-                placeholder="메시지를 입력하세요..."
-                disabled
-        >
+        <input type="text" id="messageInput" class="message-input" placeholder="메시지를 입력하세요..." disabled>
         <button id="sendBtn" class="send-btn" disabled>📤</button>
     </div>
 </div>
@@ -356,37 +350,26 @@
     let roomId = null;
     let isConnected = false;
 
-    // 페이지 로드 시 초기화
     window.addEventListener('DOMContentLoaded', async () => {
         try {
-            // 사용자 정보 가져오기
             currentUser = await getCurrentUser();
             if (!currentUser) return;
 
-            // roomId 가져오기 (URL 파라미터 또는 새로 생성)
             const urlParams = new URLSearchParams(window.location.search);
             roomId = urlParams.get('roomId');
 
             if (!roomId) {
-                // 새 채팅방 생성 또는 기존 활성 채팅방 가져오기
                 const roomData = await createOrGetChatRoom();
                 roomId = roomData.id;
             }
 
-            // 채팅 기록 불러오기
             await loadChatHistory();
-
-            // WebSocket 연결
             connectWebSocket();
 
-            // 입력창 활성화
             document.getElementById('messageInput').disabled = false;
             document.getElementById('sendBtn').disabled = false;
-
-            // 로딩 숨기기
             document.getElementById('loadingOverlay').style.display = 'none';
 
-            // Enter 키로 전송
             document.getElementById('messageInput').addEventListener('keypress', (e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
@@ -394,20 +377,17 @@
                 }
             });
 
-            // 전송 버튼 클릭
             document.getElementById('sendBtn').addEventListener('click', sendMessage);
 
         } catch (error) {
             console.error('초기화 실패:', error);
             alert('채팅방을 불러오는데 실패했습니다.');
-            window.location.href = 'index.html';
+            window.location.href = 'mypage.html';
         }
     });
 
-    // 현재 로그인 사용자 정보 가져오기
     async function getCurrentUser() {
         const token = localStorage.getItem('accessToken');
-
         if (!token) {
             alert('로그인이 필요한 서비스입니다.');
             window.location.href = 'login.html';
@@ -419,23 +399,15 @@
                 headers: { 'Authorization': `Bearer ${token}` },
                 credentials: 'include'
             });
-
             if (!response.ok) throw new Error('인증 실패');
-
             const result = await response.json();
-            return {
-                userId: result.data.id,
-                role: result.data.role,
-                token: token
-            };
+            return { userId: result.data.id, role: result.data.role, token: token };
         } catch (e) {
-            alert('로그인이 필요한 서비스입니다.');
             window.location.href = 'login.html';
             return null;
         }
     }
 
-    // 채팅방 생성 또는 기존 활성 채팅방 가져오기
     async function createOrGetChatRoom() {
         const response = await fetch('http://localhost:8080/ssak3/chat/rooms', {
             method: 'POST',
@@ -445,80 +417,51 @@
             },
             credentials: 'include'
         });
-
-        if (!response.ok) throw new Error('채팅방 생성 실패');
-
         const result = await response.json();
         return result.data;
     }
 
-    // 채팅 기록 불러오기
     async function loadChatHistory() {
         const response = await fetch(`http://localhost:8080/ssak3/chat/rooms/${roomId}/messages`, {
-            headers: {
-                'Authorization': `Bearer ${currentUser.token}`
-            },
+            headers: { 'Authorization': `Bearer ${currentUser.token}` },
             credentials: 'include'
         });
-
-        if (!response.ok) throw new Error('채팅 기록 불러오기 실패');
-
         const result = await response.json();
         const messages = result.data;
 
-        const container = document.getElementById('messagesContainer');
-        messages.forEach(msg => {
-            displayMessage(msg);
-        });
+        let hasAdminMessage = messages.some(msg => msg.senderRole === 'ADMIN');
+        if (hasAdminMessage) updateStatus('ONGOING');
 
+        messages.forEach(msg => displayMessage(msg));
         scrollToBottom();
     }
 
-    // WebSocket 연결
     function connectWebSocket() {
         stompClient = new StompJs.Client({
             brokerURL: 'ws://localhost:8080/ssak3/stomp/chat',
-            connectHeaders: {
-                'Authorization': `Bearer ${currentUser.token}`
-            }
+            connectHeaders: { 'Authorization': `Bearer ${currentUser.token}` }
         });
 
         stompClient.onConnect = function(frame) {
-            console.log('WebSocket 연결 성공');
             isConnected = true;
+            // 연결 성공 시 안내 섹션 노출
+            document.getElementById('guideSection').style.display = 'block';
 
-            // 채팅방 구독
             stompClient.subscribe(`/sub/chat/room/${roomId}`, (message) => {
                 const receivedMsg = JSON.parse(message.body);
                 displayMessage(receivedMsg);
                 scrollToBottom();
             });
 
-            // 입장 알림 전송
             sendNotice('ENTER');
-        };
-
-        stompClient.onStompError = function(frame) {
-            console.error('STOMP 에러:', frame.headers['message']);
-            if (frame.body) {
-                console.error('상세:', frame.body);
-            }
-            alert('실시간 채팅 연결에 실패했습니다.');
-        };
-
-        stompClient.onWebSocketError = function(error) {
-            console.error('WebSocket 연결 실패:', error);
-            alert('실시간 채팅 연결에 실패했습니다.');
         };
 
         stompClient.activate();
     }
 
-    // 메시지 전송
     function sendMessage() {
         const input = document.getElementById('messageInput');
         const content = input.value.trim();
-
         if (!content || !isConnected) return;
 
         stompClient.publish({
@@ -531,14 +474,11 @@
                 content: content
             })
         });
-
         input.value = '';
     }
 
-    // 공지 전송 (입장/퇴장)
     function sendNotice(type) {
         if (!isConnected) return;
-
         stompClient.publish({
             destination: '/pub/chat/notice',
             body: JSON.stringify({
@@ -551,142 +491,85 @@
         });
     }
 
-    // 메시지 화면에 표시
     function displayMessage(msg) {
         const container = document.getElementById('messagesContainer');
 
-        // 공지 메시지 (입장/퇴장)
         if (msg.type === 'ENTER' || msg.type === 'QUIT') {
             const noticeDiv = document.createElement('div');
             noticeDiv.className = 'notice-message';
             noticeDiv.innerHTML = `<span class="notice-text">${msg.content}</span>`;
             container.appendChild(noticeDiv);
 
-            // 상태 업데이트
-            if (msg.type === 'ENTER' && msg.senderRole === 'ADMIN') {
-                updateStatus('ONGOING');
-            }
-
-            // 관리자가 종료한 경우 처리
+            if (msg.type === 'ENTER' && msg.senderRole === 'ADMIN') updateStatus('ONGOING');
             if (msg.type === 'QUIT' && msg.senderRole === 'ADMIN') {
-                // 입력창 비활성화
                 document.getElementById('messageInput').disabled = true;
                 document.getElementById('sendBtn').disabled = true;
-
-                // 안내 메시지 추가
-                setTimeout(() => {
-                    const endNotice = document.createElement('div');
-                    endNotice.className = 'notice-message';
-                    endNotice.innerHTML = `<span class="notice-text" style="background: #ffeded; color: #ff6b6b;">⚠️ 상담이 종료되었습니다. 새로운 문의는 마이페이지에서 시작해주세요.</span>`;
-                    container.appendChild(endNotice);
-                    scrollToBottom();
-                }, 500);
             }
-
             return;
         }
 
-        // 일반 메시지
         const messageDiv = document.createElement('div');
         const isMine = msg.senderId === currentUser.userId;
         messageDiv.className = `message ${isMine ? 'mine' : 'other'}`;
 
         const time = new Date(msg.createdAt).toLocaleTimeString('ko-KR', {
-            hour: '2-digit',
-            minute: '2-digit'
+            hour: '2-digit', minute: '2-digit'
         });
 
         let messageHTML = '';
-
-        if (!isMine) {
-            messageHTML += `<div class="sender-name">${msg.senderRole === 'ADMIN' ? '관리자' : '사용자'}</div>`;
-        }
-
+        if (!isMine) messageHTML += `<div class="sender-name">${msg.senderRole === 'ADMIN' ? '관리자' : '사용자'}</div>`;
         messageHTML += `
-                <div class="message-bubble">${escapeHtml(msg.content)}</div>
-                <span class="message-time">${time}</span>
-            `;
+            <div class="message-bubble">${escapeHtml(msg.content)}</div>
+            <span class="message-time">${time}</span>
+        `;
 
         messageDiv.innerHTML = messageHTML;
         container.appendChild(messageDiv);
     }
 
-    // 상태 업데이트
     function updateStatus(status) {
         const statusBar = document.getElementById('statusBar');
         const statusText = document.getElementById('statusText');
-
         if (status === 'ONGOING') {
             statusBar.className = 'status-bar ongoing';
             statusText.innerHTML = '<span class="status-icon">✅</span> 상담 진행중';
         }
     }
 
-    // 자동 스크롤
     function scrollToBottom() {
         const container = document.getElementById('messagesContainer');
         container.scrollTop = container.scrollHeight;
     }
 
-    // HTML 이스케이프
     function escapeHtml(text) {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
     }
 
-    // 뒤로가기 (종료하지 않고 나가기)
     function goBack() {
-        if (confirm('채팅을 종료하지 않고 나가시겠습니까?\n나중에 다시 이어서 채팅할 수 있습니다.')) {
-            if (isConnected && stompClient) {
-                stompClient.deactivate();
-            }
+        if (confirm('채팅을 종료하지 않고 나가시겠습니까?')) {
+            if (isConnected && stompClient) stompClient.deactivate();
             window.location.href = 'mypage.html';
         }
     }
 
-    // 채팅 종료
     async function closeChat() {
-        if (!confirm('문의를 종료하시겠습니까?\n종료 후에는 다시 채팅할 수 없습니다.')) {
-            return;
-        }
-
+        if (!confirm('문의를 종료하시겠습니까?')) return;
         try {
-            // 퇴장 알림 전송
             sendNotice('QUIT');
-
-            // 채팅방 상태 COMPLETED로 변경
-            const response = await fetch(`http://localhost:8080/ssak3/chat/rooms/${roomId}`, {
+            await fetch(`http://localhost:8080/ssak3/chat/rooms/${roomId}`, {
                 method: 'PATCH',
-                headers: {
-                    'Authorization': `Bearer ${currentUser.token}`
-                },
+                headers: { 'Authorization': `Bearer ${currentUser.token}` },
                 credentials: 'include'
             });
-
-            if (!response.ok) throw new Error('채팅 종료 실패');
-
-            // WebSocket 연결 종료
-            if (isConnected && stompClient) {
-                stompClient.deactivate();
-            }
-
+            if (isConnected && stompClient) stompClient.deactivate();
             alert('문의가 종료되었습니다.');
             window.location.href = 'mypage.html';
-
         } catch (error) {
-            console.error('채팅 종료 실패:', error);
             alert('채팅 종료에 실패했습니다.');
         }
     }
-
-    // 페이지 이탈 경고
-    window.addEventListener('beforeunload', (e) => {
-        if (isConnected) {
-            e.preventDefault();
-            e.returnValue = '채팅이 진행 중입니다. 정말 나가시겠습니까?';
-        }
-    });
 </script>
 </body>
 </html>

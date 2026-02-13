@@ -1,5 +1,6 @@
 package com.example.ssak3.domain.user.model.response;
 
+import com.example.ssak3.common.enums.OAuthProvider;
 import com.example.ssak3.common.enums.UserRole;
 import com.example.ssak3.domain.user.entity.User;
 import lombok.Getter;
@@ -20,6 +21,7 @@ public class MyProfileGetResponse {
     private final String phone;
     private final String address;
     private final UserRole role;
+    private final OAuthProvider provider;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
@@ -33,6 +35,7 @@ public class MyProfileGetResponse {
                 user.getPhone(),
                 user.getAddress(),
                 user.getRole(),
+                user.getProvider(),
                 user.getCreatedAt(),
                 user.getUpdatedAt()
         );

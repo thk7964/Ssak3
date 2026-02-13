@@ -16,6 +16,8 @@ public class CouponListForUserGetResponse {
     private final Long id;
     private final String name;
     private final Integer discountValue;
+    private final Integer minOrderPrice;
+    private final Integer validDays;
     private final LocalDateTime issueEndDate;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
@@ -25,6 +27,8 @@ public class CouponListForUserGetResponse {
                 coupon.getId(),
                 coupon.getName(),
                 coupon.getDiscountValue(),
+                coupon.getMinOrderPrice(),
+                coupon.getValidDays(),
                 coupon.getIssueEndDate(),
                 coupon.getCreatedAt(),
                 coupon.getUpdatedAt()

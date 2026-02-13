@@ -2,22 +2,24 @@ package com.example.ssak3.domain.category.service;
 
 import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.exception.CustomException;
-import com.example.ssak3.common.model.PageResponse;
 import com.example.ssak3.domain.category.entity.Category;
 import com.example.ssak3.domain.category.model.request.CategoryCreateRequest;
 import com.example.ssak3.domain.category.model.request.CategoryUpdateRequest;
-import com.example.ssak3.domain.category.model.response.*;
+import com.example.ssak3.domain.category.model.response.CategoryCreateResponse;
+import com.example.ssak3.domain.category.model.response.CategoryDeleteResponse;
+import com.example.ssak3.domain.category.model.response.CategoryUpdateResponse;
 import com.example.ssak3.domain.category.repository.CategoryRepository;
 import com.example.ssak3.domain.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-public class CategoryService {
+public class CategoryAdminService {
 
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
@@ -34,34 +36,23 @@ public class CategoryService {
     }
 
     /**
-     * 카테고리 목록조회 비즈니스 로직
-     */
-    @Transactional(readOnly = true)
-    public PageResponse<CategoryListGetResponse> getCategoryList(Pageable pageable) {
-        Page<CategoryListGetResponse> categoryPage = categoryRepository.findCategoryPage(pageable)
-                .map(CategoryListGetResponse::from);
-        return PageResponse.from(categoryPage);
-    }
-
-    /**
      * 카테고리 수정 비즈니스 로직
      */
+    @CacheEvict(value = "categoryRedisCache", allEntries = true)
     @Transactional
     public CategoryUpdateResponse updateCategory(Long categoryId, CategoryUpdateRequest request) {
-
         Category findCategory = categoryRepository.findByIdAndIsDeletedFalse(categoryId)
                 .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
         findCategory.update(request);
-
-       return CategoryUpdateResponse.from(findCategory);
+        return CategoryUpdateResponse.from(findCategory);
     }
 
     /**
      * 카테고리 삭제 비즈니스 로직
      */
+    @CacheEvict(value = "categoryRedisCache", allEntries = true)
     @Transactional
     public CategoryDeleteResponse deleteCategory(Long categoryId) {
-
         // 카테고리 존재여부 확인
         Category findCategory = categoryRepository.findByIdAndIsDeletedFalse(categoryId)
                 .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
@@ -71,7 +62,6 @@ public class CategoryService {
             throw new CustomException(ErrorCode.CATEGORY_HAS_PRODUCTS);
         }
         findCategory.softDelete();
-
         return CategoryDeleteResponse.from(findCategory);
     }
 }

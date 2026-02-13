@@ -535,7 +535,12 @@
         </div>
     </div>
     <div class="header-icons">
-        <button class="icon-btn">🛒</button>
+        <button class="icon-btn"
+                id="cartIconBtn"
+                title="장바구니"
+                onclick="location.href='cart.html'">
+            🛒
+        </button>
         <button class="auth-btn" id="loginBtn" style="display: none;">로그인 / 회원가입</button>
         <div class="user-info" id="userInfo" style="display: none;">
             <button class="icon-btn" id="myPageBtn" title="마이페이지">👤</button>
@@ -557,7 +562,6 @@
 </footer>
 
 <script>
-    const API_BASE = 'http://localhost:8080';
     const urlParams = new URLSearchParams(window.location.search);
     const timeDealId = urlParams.get('id');
 
@@ -567,6 +571,17 @@
     let quantity = 1;
     let timeDealData = null;
     let countdownInterval = null;
+
+    //.
+    const API_BASE = 'http://localhost:8080/ssak3';
+
+    function buildAuthHeaders(withJson = false) {
+        const token = localStorage.getItem('accessToken');
+        const headers = {};
+        if (withJson) headers['Content-Type'] = 'application/json';
+        if (token) headers.Authorization = 'Bearer ' + token;
+        return headers;
+    }
 
     function formatPrice(price) {
         return price.toLocaleString('ko-KR') + '원';

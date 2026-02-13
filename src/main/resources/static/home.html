@@ -162,31 +162,6 @@
             background: #e9ecef;
         }
 
-        /* 전체 상품 버튼 스타일 추가 */
-        .all-products-btn {
-            background: white;
-            border: 2px solid #74b9ff;
-            color: #74b9ff;
-            padding: 10px 20px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .all-products-btn:hover {
-            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
-            color: white;
-            border-color: transparent;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(116, 185, 255, 0.35);
-        }
-
         .banner {
             background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
             padding: 60px 20px;
@@ -281,22 +256,6 @@
             grid-template-columns: repeat(5, 1fr);
             gap: 24px;
             margin-bottom: 50px;
-        }
-
-        .product-card {
-            background: white;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-            border: 1px solid #f0f0f0;
-        }
-
-        .product-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
-            border-color: #e9ecef;
         }
 
         .product-image {
@@ -410,6 +369,54 @@
                 margin-top: 12px;
             }
         }
+
+        .rank-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            color: white;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 6px 10px;
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(255, 154, 158, 0.35);
+            z-index: 10;
+        }
+
+        .rank-1 {
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            box-shadow: 0 6px 16px rgba(253, 160, 133, 0.5);
+        }
+
+        /* 기존 .product-image 스타일 수정 */
+        .product-image {
+            width: 100%;
+            height: 220px;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 실제 이미지 스타일 추가 */
+        .product-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* 카드에 꽉 차게 */
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover .product-img {
+            transform: scale(1.05); /* 호버 시 살짝 확대 효과 */
+        }
+
+        /* 이미지가 없을 때 보여줄 이모지용 */
+        .emoji-fallback {
+            font-size: 60px;
+        }
     </style>
 </head>
 <body>
@@ -449,17 +456,9 @@
     <div class="banner-subtitle">나만의 귀여운 굿즈를 만나보세요</div>
 </div>
 
-<nav>
-    <a href="time-deals.html">⭐ 타임딜</a>
+<nav id="categoryNav">
+    <a href="#timedeal">⭐ 타임딜</a>
     <a href="product-search.html">📦 전체 상품</a>
-    <a href="#best">🏍️ 올포원</a>
-    <a href="#sale">🎉 2용준</a>
-    <a href="#all">🌊 싹쓰리</a>
-    <a href="#event">👨‍👩‍👧‍👦 슬개생</a>
-    <a href="#event">🛠️ 펜타곤</a>
-    <a href="#event">👩🏻‍🦰 여걸식스</a>
-    <a href="#event">👊🏻 럭키펀치</a>
-    <a href="#event">♾️ LIMITLESS</a>
 </nav>
 
 
@@ -477,6 +476,32 @@
 </footer>
 
 <script>
+    async function loadCategories() {
+        try {
+            const res = await fetch('http://localhost:8080/ssak3/categories');
+            const result = await res.json();
+            if (!result.success) return;
+
+            const categories = result.data.content || result.data;
+            const nav = document.getElementById('categoryNav');
+
+            categories.forEach(cat => {
+                const a = document.createElement('a');
+                a.textContent = cat.name;
+
+                // 1. 클릭 시 categoryId 파라미터를 붙여서 이동
+                a.href = `category-product.html?categoryId=${cat.id}`;
+
+                nav.appendChild(a);
+            });
+        } catch (e) {
+            console.error('카테고리 로딩 실패:', e);
+        }
+    }
+
+    // 초기 실행 시 카테고리 로드 추가
+    loadCategories();
+
     async function loadPopularProducts() {
         try {
             const response = await fetch('http://localhost:8080/ssak3/products/popular');
@@ -488,21 +513,31 @@
             }
 
             const products = result.data;
-
             const container = document.getElementById('popularProducts');
             container.innerHTML = '';
 
-            products.forEach(product => {
+            products.forEach((product, index) => {
                 const card = document.createElement('div');
                 card.className = 'product-card';
+
+                // 🔥 이미지 유무에 따른 HTML 처리
+                const imageHtml = product.imageUrl
+                    ? `<img src="${product.imageUrl}" class="product-img" alt="${product.name}">`
+                    : `<div class="emoji-fallback">🛍️</div>`;
+
                 card.innerHTML = `
-                <div class="product-image">🛍️</div>
+                <div class="product-image">
+                    <div class="rank-badge ${index === 0 ? 'rank-1' : ''}">
+                        ${index + 1}등
+                    </div>
+                    ${imageHtml}
+                </div>
                 <div class="product-info">
                     <div class="product-name">${product.name}</div>
                     <div class="product-desc">카테고리 ${product.categoryId}</div>
                     <div class="product-footer">
                         <div class="product-price">
-                            ${product.dealPrice ?? product.price}원
+                            ${(product.dealPrice ?? product.price).toLocaleString()}원
                         </div>
                         <button class="add-btn">담기</button>
                     </div>
@@ -526,10 +561,13 @@
     // [공통] 검색 처리 함수
     function handleSearch() {
         const keyword = document.getElementById('searchInput').value.trim();
+
         if (keyword) {
-            window.location.href = `search.html?keyword=${encodeURIComponent(keyword)}`;
+            // 백엔드 API 명세에 맞춰 'keyword' 파라미터 사용
+            window.location.href = `product-search.html?keyword=${encodeURIComponent(keyword)}&page=0`;
         } else {
-            alert('검색어를 입력해주세요!');
+            // 검색어 없이 이동할 경우 전체 상품을 보여주기 위해 그대로 이동
+            window.location.href = `product-search.html`;
         }
     }
 

@@ -71,6 +71,12 @@ dependencies {
     implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
 
     // WebClient 의존성
+    // ShedLock 의존성
+    implementation 'net.javacrumbs.shedlock:shedlock-spring:5.14.0'
+    implementation 'net.javacrumbs.shedlock:shedlock-provider-jdbc-template:5.14.0'
+
+
+    //WebClient 의존성
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
     // s3 의존성

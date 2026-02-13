@@ -32,7 +32,7 @@ public class ProductUserService {
     @Transactional
     public ProductGetResponse getProduct(Long productId, String ip) {
 
-        Product foundProduct = productRepository.findByIdAndIsDeletedFalseAndStatusIn(productId)
+        Product foundProduct = productRepository.findByIdAndIsDeletedFalse(productId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
         if (foundProduct.getStatus().equals(ProductStatus.STOP_SALE)) {

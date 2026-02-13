@@ -685,11 +685,14 @@
         <!-- 이미지 -->
         <div class="form-group">
             <label>대표 이미지 URL <span style="font-weight:400; color:#adb5bd">(선택)</span></label>
-            <input type="text" id="createImageUrl" placeholder="https://...">
+            <input type="file" id="createImageFile" accept="image/*">
+            <input type="hidden" id="createImageUrl">
+            <div class="hint">이미지를 선택하면 자동 업로드됩니다.</div>
         </div>
         <div class="form-group">
             <label>상세 이미지 URL <span style="font-weight:400; color:#adb5bd">(선택)</span></label>
-            <input type="text" id="createDetailImageUrl" placeholder="https://...">
+            <input type="file" id="createDetailImageFile" accept="image/*">
+            <input type="hidden" id="createDetailImageUrl">
         </div>
 
         <div class="modal-footer">
@@ -742,11 +745,13 @@
         <!-- 이미지 -->
         <div class="form-group">
             <label>대표 이미지 URL <span style="font-weight:400; color:#adb5bd">(선택)</span></label>
-            <input type="text" id="editImageUrl" placeholder="https://... (비워두면 기존 값 유지)">
+            <input type="file" id="editImageFile" accept="image/*">
+            <input type="hidden" id="editImageUrl">
         </div>
         <div class="form-group">
             <label>상세 이미지 URL <span style="font-weight:400; color:#adb5bd">(선택)</span></label>
-            <input type="text" id="editDetailImageUrl" placeholder="https://... (비워두면 기존 값 유지)">
+            <input type="file" id="editDetailImageFile" accept="image/*">
+            <input type="hidden" id="editDetailImageUrl">
         </div>
 
         <div class="modal-footer">
@@ -776,6 +781,32 @@
 
     // 전체 타임딜 목록 (클라이언트 필터링용 캐시)
     let allTimeDealData = [];
+
+
+    async function issuePresignedPut({ dirName, file }) {
+        const url = `${BASE_URL}/admin/images/presigned?dirName=${dirName}&fileName=${encodeURIComponent(file.name)}`;
+
+        const res = await fetch(url, getRequestOptions('POST'));
+        const result = await res.json();
+
+        if (!result?.data) throw new Error("Presigned URL 발급 실패");
+
+        return result.data;
+        // { uploadUrl, imageUrl }
+    }
+
+    async function putToS3(uploadUrl, file) {
+        const res = await fetch(uploadUrl, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': file.type
+            },
+            body: file
+        });
+
+        if (!res.ok) throw new Error("S3 업로드 실패");
+    }
+
 
     // ─────────────────────────────────────────
     // 공통 fetch 옵션
@@ -1321,7 +1352,7 @@
         const timeOptions = {
             enableTime: true,
             noCalendar: false,
-            dateFormat: "Y-m-d H",
+            dateFormat: "Y-m-d\\TH",
             time_24hr: true,
             minuteIncrement: 60 // 분 단위는 선택 못하게
         };
@@ -1333,6 +1364,104 @@
         // 수정 모달
         flatpickr("#editStartAt", timeOptions);
         flatpickr("#editEndAt", timeOptions);
+
+// 등록 - 대표 이미지
+        document.getElementById('createImageFile')
+            ?.addEventListener('change', async function () {
+
+                const file = this.files[0];
+                if (!file) return;
+
+                try {
+                    alert("대표 이미지 업로드 중...");
+
+                    const presigned = await issuePresignedPut({
+                        dirName: "timedeals",
+                        file
+                    });
+
+                    await putToS3(presigned.uploadUrl, file);
+
+                    document.getElementById('createImageUrl').value = presigned.imageUrl;
+
+                    alert("업로드 완료 ✅");
+                } catch (e) {
+                    console.error(e);
+                    alert("업로드 실패 ❌");
+                }
+            });
+
+        // 등록 - 상세 이미지
+        document.getElementById('createDetailImageFile')
+            ?.addEventListener('change', async function () {
+
+                const file = this.files[0];
+                if (!file) return;
+
+                try {
+                    const presigned = await issuePresignedPut({
+                        dirName: "timedeals/detail",
+                        file
+                    });
+
+                    await putToS3(presigned.uploadUrl, file);
+
+                    document.getElementById('createDetailImageUrl').value = presigned.imageUrl;
+
+                    alert("상세 이미지 업로드 완료 ✅");
+                } catch (e) {
+                    console.error(e);
+                    alert("업로드 실패 ❌");
+                }
+            });
+
+        // 수정 - 대표 이미지
+        document.getElementById('editImageFile')
+            ?.addEventListener('change', async function () {
+
+                const file = this.files[0];
+                if (!file) return;
+
+                try {
+                    const presigned = await issuePresignedPut({
+                        dirName: "timedeals",
+                        file
+                    });
+
+                    await putToS3(presigned.uploadUrl, file);
+
+                    document.getElementById('editImageUrl').value = presigned.imageUrl;
+
+                    alert("업로드 완료 ✅");
+                } catch (e) {
+                    console.error(e);
+                    alert("업로드 실패 ❌");
+                }
+            });
+
+        // 수정 - 상세 이미지
+        document.getElementById('editDetailImageFile')
+            ?.addEventListener('change', async function () {
+
+                const file = this.files[0];
+                if (!file) return;
+
+                try {
+                    const presigned = await issuePresignedPut({
+                        dirName: "timedeals/detail",
+                        file
+                    });
+
+                    await putToS3(presigned.uploadUrl, file);
+
+                    document.getElementById('editDetailImageUrl').value = presigned.imageUrl;
+
+                    alert("상세 이미지 업로드 완료 ✅");
+                } catch (e) {
+                    console.error(e);
+                    alert("업로드 실패 ❌");
+                }
+            });
     });
 </script>
 </body>

@@ -17,6 +17,10 @@
             min-height: 100vh;
         }
 
+        body.modal-open {
+            overflow: hidden;
+        }
+
         header {
             background: #ffffff;
             padding: 20px 40px;
@@ -221,7 +225,7 @@
             color: #495057;
         }
 
-        tr:hover {
+        tbody tr:hover {
             background: #f8f9fa;
         }
 
@@ -242,6 +246,11 @@
             font-weight: 600;
         }
 
+        .badge-info {
+            background: #dbe4ff;
+            color: #3b5bdb;
+        }
+
         .badge-success {
             background: #d3f9d8;
             color: #2f9e44;
@@ -255,6 +264,17 @@
         .badge-danger {
             background: #ffe3e3;
             color: #c92a2a;
+        }
+
+        /* Overlay */
+        #payment-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            pointer-events: auto;
+            cursor: not-allowed; /* 배경을 클릭해도 소용없다는 시각적 힌트 */
         }
 
         /* Modal Styles */
@@ -542,6 +562,10 @@
     </style>
 </head>
 <body>
+
+<!-- 배경 오버레이 (모달 열릴 때 활성화) -->
+<div id="payment-overlay"></div>
+
 <header>
     <div style="display: flex; align-items: center;">
         <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
@@ -754,7 +778,9 @@
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
-        return `${year}/${month}/${day}`;
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${year}/${month}/${day} ${hours}:${minutes}`;
     }
 
     // 날짜를 datetime-local 형식으로 변환
@@ -860,13 +886,17 @@
 
         tbody.innerHTML = coupons.map(coupon => {
             const now = new Date();
+            const startDate = new Date(coupon.issueStartDate);
             const endDate = new Date(coupon.issueEndDate);
             const isSoldOut = coupon.issuedQuantity >= coupon.totalQuantity;
             const isExpired = endDate < now;
+            const isNotStarted = startDate > now;
 
             let statusBadge;
             if (isExpired) {
                 statusBadge = '<span class="badge badge-danger">종료</span>';
+            } else if (isNotStarted) {
+                statusBadge = '<span class="badge badge-info">오픈전</span>';
             } else if (isSoldOut) {
                 statusBadge = '<span class="badge badge-warning">품절</span>';
             } else {
@@ -895,7 +925,9 @@
 
     // 쿠폰 생성 모달 열기
     function openCreateModal() {
+        document.getElementById('payment-overlay').style.display = 'block';
         document.getElementById('createModal').classList.add('active');
+        document.body.classList.add('modal-open');
         // 현재 시간을 기본값으로 설정
         const now = new Date();
         const tomorrow = new Date(now);
@@ -907,9 +939,12 @@
 
     // 쿠폰 생성 모달 닫기
     function closeCreateModal() {
+        document.getElementById('payment-overlay').style.display = 'none';
         document.getElementById('createModal').classList.remove('active');
+        document.body.classList.remove('modal-open');
         document.getElementById('createForm').reset();
     }
+    document.getElementById('payment-overlay').onclick = null
 
     // 쿠폰 수정 모달 열기
     async function openEditModal(couponId) {
@@ -931,6 +966,7 @@
             // validDays는 응답에 없을 수 있으므로 기본값 설정
             document.getElementById('editValidDays').value = 30;
 
+            document.getElementById('payment-overlay').style.display = 'block';
             document.getElementById('editModal').classList.add('active');
         } catch (error) {
             console.error('쿠폰 정보 조회 오류:', error);
@@ -940,6 +976,7 @@
 
     // 쿠폰 수정 모달 닫기
     function closeEditModal() {
+        document.getElementById('payment-overlay').style.display = 'none';
         document.getElementById('editModal').classList.remove('active');
         document.getElementById('editForm').reset();
     }
@@ -952,8 +989,8 @@
             name: document.getElementById('createName').value,
             discountValue: parseInt(document.getElementById('createDiscountValue').value),
             totalQuantity: parseInt(document.getElementById('createTotalQuantity').value),
-            issueStartDate: new Date(document.getElementById('createIssueStartDate').value).toISOString(),
-            issueEndDate: new Date(document.getElementById('createIssueEndDate').value).toISOString(),
+            issueStartDate: document.getElementById('createIssueStartDate').value,
+            issueEndDate: document.getElementById('createIssueEndDate').value,
             minOrderPrice: parseInt(document.getElementById('createMinOrderPrice').value),
             validDays: parseInt(document.getElementById('createValidDays').value)
         };
@@ -1109,18 +1146,23 @@
     document.getElementById('loginBtn').addEventListener('click', () => location.href = 'login.html');
     document.getElementById('myPageBtn').addEventListener('click', () => location.href = 'mypage.html');
 
-    // 모달 외부 클릭 시 닫기
-    document.getElementById('createModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeCreateModal();
-        }
-    });
-
-    document.getElementById('editModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeEditModal();
-        }
-    });
+    // // 모달 외부 클릭 시 닫기
+    // document.getElementById('payment-overlay').addEventListener('click', function() {
+    //     closeCreateModal();
+    //     closeEditModal();
+    // });
+    //
+    // document.getElementById('createModal').addEventListener('click', function(e) {
+    //     if (e.target === this) {
+    //         closeCreateModal();
+    //     }
+    // });
+    //
+    // document.getElementById('editModal').addEventListener('click', function(e) {
+    //     if (e.target === this) {
+    //         closeEditModal();
+    //     }
+    // });
 
     // 초기 실행
     checkLoginStatus();

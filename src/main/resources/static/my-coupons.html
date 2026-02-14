@@ -23,6 +23,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 24px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
             position: sticky;
             top: 0;
@@ -39,6 +40,7 @@
             background-clip: text;
             letter-spacing: -0.5px;
             cursor: pointer;
+            flex-shrink: 0;
         }
 
         .header-icons {
@@ -62,6 +64,102 @@
         .icon-btn:hover {
             background: #e9ecef;
             transform: translateY(-2px);
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .search-wrapper {
+            display: flex;
+            gap: 8px;
+            background: #f8f9fa;
+            padding: 8px 16px;
+            border-radius: 24px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .search-wrapper:focus-within {
+            background: white;
+            border-color: #74b9ff;
+            box-shadow: 0 0 0 4px rgba(116, 185, 255, 0.1);
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            outline: none;
+            color: #495057;
+        }
+
+        .search-input::placeholder {
+            color: #adb5bd;
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .search-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
+        }
+
+        .auth-btn {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
+            white-space: nowrap;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(116, 185, 255, 0.45);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logout-btn {
+            background: #f8f9fa;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: #495057;
+            transition: all 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background: #e9ecef;
         }
 
         .banner {
@@ -489,11 +587,33 @@
 </head>
 <body>
 <header>
-    <div class="logo" onclick="location.href='index.html'">🌊 싹쓰리</div>
+    <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
+
+    <!-- 검색창 -->
+    <div class="search-container">
+        <div class="search-wrapper">
+            <input
+                    type="text"
+                    class="search-input"
+                    id="searchInput"
+                    placeholder="상품을 검색해보세요 🔍"
+                    onkeypress="if(event.key==='Enter') location.href='home.html?q='+encodeURIComponent(this.value)"
+            >
+            <button class="search-btn" onclick="location.href='home.html?q='+encodeURIComponent(document.getElementById('searchInput').value)">🔍</button>
+        </div>
+    </div>
+
     <div class="header-icons">
-        <button class="icon-btn">🔍</button>
-        <button class="icon-btn">🛒</button>
-        <button class="icon-btn" onclick="location.href='mypage.html'" title="마이페이지">👤</button>
+        <button class="icon-btn" onclick="location.href='cart.html'">🛒</button>
+
+        <!-- 로그인 안 된 경우 -->
+        <button class="auth-btn" id="loginBtn" style="display: none;">로그인 / 회원가입</button>
+
+        <!-- 로그인 된 경우 -->
+        <div class="user-info" id="userInfo" style="display: none;">
+            <button class="icon-btn" id="myPageBtn" title="마이페이지">👤</button>
+            <button class="logout-btn" id="logoutBtn">로그아웃</button>
+        </div>
     </div>
 </header>
 
@@ -815,7 +935,60 @@
 
     // ── 초기 실행 ─────────────────────────────────────────
 
+    // ── 로그인 상태 확인 ─────────────────────────────────────
+    async function checkLoginStatus() {
+        const loginBtn = document.getElementById('loginBtn');
+        const userInfo = document.getElementById('userInfo');
+        const token = localStorage.getItem('accessToken');
+        try {
+            let response;
+            if (token) {
+                response = await fetch('http://localhost:8080/ssak3/users/me', {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+            }
+            if (!token || response.status === 401) {
+                response = await fetch('http://localhost:8080/ssak3/users/me', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+            }
+            if (response.ok) {
+                loginBtn.style.display = 'none';
+                userInfo.style.display = 'flex';
+            } else {
+                throw new Error('Not Authenticated');
+            }
+        } catch (e) {
+            localStorage.removeItem('accessToken');
+            loginBtn.style.display = 'block';
+            userInfo.style.display = 'none';
+        }
+    }
+
+    document.getElementById('logoutBtn').addEventListener('click', async function() {
+        if (!confirm('로그아웃 하시겠습니까?')) return;
+        const token = localStorage.getItem('accessToken');
+        try {
+            const req = { method: 'POST', credentials: 'include' };
+            if (token) req.headers = { 'Authorization': `Bearer ${token}` };
+            await fetch('http://localhost:8080/ssak3/auth/logout', req);
+            localStorage.removeItem('accessToken');
+            alert('로그아웃 되었습니다.');
+            window.location.href = 'home.html';
+        } catch (e) {
+            localStorage.removeItem('accessToken');
+            alert('로그아웃 되었습니다.');
+            window.location.href = 'home.html';
+        }
+    });
+
+    document.getElementById('loginBtn').addEventListener('click', () => location.href = 'login.html');
+    document.getElementById('myPageBtn').addEventListener('click', () => location.href = 'mypage.html');
+
     window.addEventListener('DOMContentLoaded', () => {
+        checkLoginStatus();
         loadMyCoupons(0);
         loadTabCounts();
     });

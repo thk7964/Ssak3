@@ -21,6 +21,28 @@ public class TimeDealListGetResponse {
     private final String imageUrl;
     private final String remainingTime;
 
+    public static TimeDealListGetResponse from(TimeDeal timeDeal, String imageUrl) {
+
+        LocalDateTime now = LocalDateTime.now();
+        TimeDealStatus status = timeDeal.getStatus();
+        String remainingTime = null;
+
+        if (status == TimeDealStatus.READY || status == TimeDealStatus.OPEN) {
+            remainingTime = formatRemainingTime(now, timeDeal.getStartAt(), timeDeal.getEndAt());
+        }
+
+        return new TimeDealListGetResponse(
+                timeDeal.getId(),
+                timeDeal.getProduct().getName(),
+                timeDeal.getDealPrice(),
+                status,
+                timeDeal.getStartAt(),
+                timeDeal.getEndAt(),
+                imageUrl,
+                remainingTime
+        );
+    }
+
     public static TimeDealListGetResponse from(TimeDeal timeDeal) {
 
         LocalDateTime now = LocalDateTime.now();

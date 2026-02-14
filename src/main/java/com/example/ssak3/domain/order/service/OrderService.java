@@ -69,8 +69,13 @@ public class OrderService {
     @Transactional
     public OrderCreateResponse createOrderFromProduct(Long userId, OrderCreateFromProductRequest request) {
 
-        User user = userRepository.findByIdAndIsDeletedFalse(userId)
+        User user = userRepository.findByIdWithLock(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        // 결제 대기 중인 주문이 있을 시 새 주문 생성 불가(정책)
+        if (orderRepository.existsByUserIdAndStatus(userId, OrderStatus.PAYMENT_PENDING)) {
+            throw new CustomException(ErrorCode.ORDER_PAYMENT_PENDING_EXISTS);
+        }
 
         // 비관락
         Product product = productRepository.findByIdForLock(request.getProductId())
@@ -134,8 +139,13 @@ public class OrderService {
     @Transactional
     public OrderCreateResponse createOrderFromCart(Long userId, OrderCreateFromCartRequest request) {
 
-        User user = userRepository.findByIdAndIsDeletedFalse(userId)
+        User user = userRepository.findByIdWithLock(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        // 결제 대기 중인 주문이 있을 시 새 주문 생성 불가(정책)
+        if (orderRepository.existsByUserIdAndStatus(userId, OrderStatus.PAYMENT_PENDING)) {
+            throw new CustomException(ErrorCode.ORDER_PAYMENT_PENDING_EXISTS);
+        }
 
         Long cartId = request.getCartId();
 
@@ -157,17 +167,21 @@ public class OrderService {
         }
 
         long subtotal = 0L;
+
+        Map<Long, Product> lockedProductMap = new HashMap<>();
         Map<Long, Integer> unitPriceMap = new HashMap<>();
 
         for (CartProduct cartProduct : cartProductList) {
             // 비관락
-            Product product = productRepository.findByIdForLock(cartProduct.getProduct().getId())
+            Product lockedProduct = productRepository.findByIdForLock(cartProduct.getProduct().getId())
                     .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
             int quantity = cartProduct.getQuantity();
 
             // 구매 가능 여부 확인 후 단위 가격 저장
-            int unitPrice = validatePurchasableReturnUnitPrice(product, quantity);
+            int unitPrice = validatePurchasableReturnUnitPrice(lockedProduct, quantity);
+
+            lockedProductMap.put(cartProduct.getId(), lockedProduct);
             unitPriceMap.put(cartProduct.getId(), unitPrice);
 
             subtotal += (long) unitPrice * quantity;
@@ -183,19 +197,17 @@ public class OrderService {
 
         List<OrderProduct> orderProductList = new ArrayList<>();
 
-        for (int i = 0; i < cartProductList.size(); i++) {
-            CartProduct cartProduct = cartProductList.get(i);
-            Product product = cartProduct.getProduct();
+        for (CartProduct cartProduct : cartProductList) {
+            Product lockedProduct = lockedProductMap.get(cartProduct.getId());
 
             int quantity = cartProduct.getQuantity();
             Integer unitPrice = unitPriceMap.get(cartProduct.getId());
-            Long cartProductId = cartProduct.getId();
 
-            OrderProduct orderProduct = new OrderProduct(savedOrder, product, unitPrice, quantity, cartProductId);
+            OrderProduct orderProduct = new OrderProduct(savedOrder, lockedProduct, unitPrice, quantity, cartProduct.getId());
             orderProductList.add(orderProduct);
 
             // 재고 차감
-            inventoryService.decreaseProductStock(product, quantity);
+            inventoryService.decreaseProductStock(lockedProduct, quantity);
 
         }
 

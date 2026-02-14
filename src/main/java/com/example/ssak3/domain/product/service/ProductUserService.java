@@ -4,7 +4,6 @@ import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.enums.ProductStatus;
 import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.common.model.PageResponse;
-import com.example.ssak3.domain.category.repository.CategoryRepository;
 import com.example.ssak3.domain.product.entity.Product;
 import com.example.ssak3.domain.product.model.response.*;
 import com.example.ssak3.domain.product.repository.ProductRepository;
@@ -22,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProductUserService {
 
     private final ProductRepository productRepository;
-    private final CategoryRepository categoryRepository;
     private final ProductRankingService productRankingService;
     private final S3Uploader s3Uploader;
 

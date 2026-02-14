@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>쿠폰 관리 - 싹쓰리 관리자</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+            background: #fafafa;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #ffffff;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+            cursor: pointer;
+        }
+
+        .admin-badge {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-left: 12px;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            background: #f8f9fa;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s ease;
+            color: #495057;
+        }
+
+        .icon-btn:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+
+        .banner {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            padding: 50px 20px;
+            text-align: center;
+            margin: 24px 20px;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(116, 185, 255, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .banner-title {
+            font-size: 42px;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 8px;
+            position: relative;
+            letter-spacing: -1px;
+        }
+
+        .banner-subtitle {
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 400;
+            position: relative;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            color: #212529;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(116, 185, 255, 0.45);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.35);
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #ff6b6b;
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.35);
+        }
+
+        .btn-danger:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+
+        .coupon-table {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+        }
+
+        th {
+            padding: 18px 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: -0.3px;
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+            color: #495057;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #d3f9d8;
+            color: #2f9e44;
+        }
+
+        .badge-warning {
+            background: #fff3bf;
+            color: #f08c00;
+        }
+
+        .badge-danger {
+            background: #ffe3e3;
+            color: #c92a2a;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: 8px;
+        }
+
+        .modal-subtitle {
+            font-size: 14px;
+            color: #868e96;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .form-label.required::after {
+            content: '*';
+            color: #ff6b6b;
+            margin-left: 4px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #74b9ff;
+            box-shadow: 0 0 0 3px rgba(116, 185, 255, 0.1);
+        }
+
+        .form-input:disabled {
+            background: #f8f9fa;
+            cursor: not-allowed;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 12px;
+            margin-top: 28px;
+            padding-top: 24px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .modal-footer .btn {
+            flex: 1;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #868e96;
+        }
+
+        .empty-state-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .empty-state-text {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        footer {
+            background: #212529;
+            color: #adb5bd;
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+        }
+
+        footer p {
+            margin: 10px 0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        footer p:first-child {
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .auth-btn {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
+            white-space: nowrap;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(116, 185, 255, 0.45);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logout-btn {
+            background: #f8f9fa;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: #495057;
+            transition: all 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background: #e9ecef;
+        }
+
+        @media (max-width: 768px) {
+            .banner-title {
+                font-size: 32px;
+            }
+            header {
+                padding: 16px 20px;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            table {
+                font-size: 12px;
+            }
+            th, td {
+                padding: 12px 8px;
+            }
+        }
+
+        .table-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .table-info {
+            font-size: 14px;
+            color: #868e96;
+        }
+
+        .size-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #495057;
+            font-weight: 500;
+        }
+
+        .size-select {
+            padding: 8px 14px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            color: #495057;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .size-select:focus {
+            outline: none;
+            border-color: #74b9ff;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .page-btn {
+            min-width: 38px;
+            height: 38px;
+            padding: 0 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            background: white;
+            color: #495057;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .page-btn:hover {
+            border-color: #74b9ff;
+            color: #74b9ff;
+            transform: translateY(-1px);
+        }
+
+        .page-btn.active {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            border-color: transparent;
+            color: white;
+            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
+        }
+
+        .page-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            transform: none;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div style="display: flex; align-items: center;">
+        <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
+        <span class="admin-badge">관리자</span>
+    </div>
+    <div class="header-icons">
+        <button class="icon-btn">🛒</button>
+
+        <!-- 로그인 안 된 경우 -->
+        <button class="auth-btn" id="loginBtn" style="display: none;">로그인 / 회원가입</button>
+
+        <!-- 로그인 된 경우 -->
+        <div class="user-info" id="userInfo" style="display: none;">
+            <button class="icon-btn" id="myPageBtn" title="마이페이지">👤</button>
+            <button class="logout-btn" id="logoutBtn">로그아웃</button>
+        </div>
+    </div>
+</header>
+
+<div class="banner">
+    <div class="banner-title">쿠폰 관리</div>
+    <div class="banner-subtitle">쿠폰 생성, 수정, 삭제를 관리하세요</div>
+</div>
+
+<div class="container">
+    <div class="section-header">
+        <div class="section-title">전체 쿠폰 목록</div>
+        <button class="btn btn-primary" onclick="openCreateModal()">
+            ➕ 새 쿠폰 생성
+        </button>
+    </div>
+
+    <div class="table-controls">
+        <div class="table-info" id="tableInfo">쿠폰을 불러오는 중...</div>
+        <div class="size-selector">
+            <span>페이지당</span>
+            <select class="size-select" id="pageSizeSelect" onchange="onSizeChange()">
+                <option value="5">5개</option>
+                <option value="10" selected>10개</option>
+                <option value="20">20개</option>
+                <option value="50">50개</option>
+            </select>
+            <span>씩 보기</span>
+        </div>
+    </div>
+
+    <div class="coupon-table">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>쿠폰명</th>
+                <th>할인 금액</th>
+                <th>총 수량</th>
+                <th>발급 수량</th>
+                <th>발급 기간</th>
+                <th>상태</th>
+                <th>작업</th>
+            </tr>
+            </thead>
+            <tbody id="couponTableBody">
+            <!-- 쿠폰 목록이 여기에 동적으로 로드됩니다 -->
+            <tr>
+                <td colspan="8">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⏳</div>
+                        <div class="empty-state-text">로딩 중...</div>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="pagination" id="pagination"></div>
+</div>
+
+<!-- 쿠폰 생성 모달 -->
+<div class="modal" id="createModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">새 쿠폰 생성</div>
+            <div class="modal-subtitle">쿠폰 정보를 입력하세요</div>
+        </div>
+        <form id="createForm">
+            <div class="form-group">
+                <label class="form-label required">쿠폰명</label>
+                <input type="text" class="form-input" id="createName" required maxlength="100" placeholder="예: 배송비 할인 쿠폰">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label required">할인 금액 (원)</label>
+                    <input type="number" class="form-input" id="createDiscountValue" required min="1" placeholder="5000">
+                </div>
+                <div class="form-group">
+                    <label class="form-label required">총 수량 (개)</label>
+                    <input type="number" class="form-input" id="createTotalQuantity" required min="1" placeholder="1000">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label required">발급 시작일</label>
+                    <input type="datetime-local" class="form-input" id="createIssueStartDate" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label required">발급 종료일</label>
+                    <input type="datetime-local" class="form-input" id="createIssueEndDate" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label required">최소 주문 금액 (원)</label>
+                    <input type="number" class="form-input" id="createMinOrderPrice" required min="0" placeholder="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label required">유효 기간 (일)</label>
+                    <input type="number" class="form-input" id="createValidDays" required min="1" placeholder="30">
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeCreateModal()">취소</button>
+                <button type="submit" class="btn btn-primary">생성</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 쿠폰 수정 모달 -->
+<div class="modal" id="editModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">쿠폰 수정</div>
+            <div class="modal-subtitle">수정 가능한 항목만 변경할 수 있습니다</div>
+        </div>
+        <form id="editForm">
+            <input type="hidden" id="editCouponId">
+
+            <div class="form-group">
+                <label class="form-label">쿠폰명 (수정 불가)</label>
+                <input type="text" class="form-input" id="editName" disabled>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">할인 금액 (수정 불가)</label>
+                <input type="text" class="form-input" id="editDiscountValue" disabled>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">총 수량 (개)</label>
+                <input type="number" class="form-input" id="editTotalQuantity" min="1">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">발급 종료일</label>
+                <input type="datetime-local" class="form-input" id="editIssueEndDate">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">유효 기간 (일)</label>
+                <input type="number" class="form-input" id="editValidDays" min="1">
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeEditModal()">취소</button>
+                <button type="submit" class="btn btn-primary">수정</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<footer>
+    <p>© 2025 싹쓰리 - 모두를 위한 귀여운 굿즈</p>
+    <p>고객센터: 010-1234-5678 | <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3b5854554f5a584f7b48485a500815585456">[email&#160;protected]</a></p>
+    <p>개인정보처리방침 | 이용약관 | 배송정책</p>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    const API_BASE_URL = 'http://localhost:8080/ssak3/admin/coupons';
+
+    let currentPage = 0;
+    let pageSize = 10;
+
+    // 쿠폰 목록을 저장할 전역 변수
+    let couponsList = [];
+
+    // 토큰 가져오기
+    function getAuthToken() {
+        return localStorage.getItem('accessToken');
+    }
+
+    // API 헤더 생성
+    function getHeaders() {
+        const token = getAuthToken();
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+        return headers;
+    }
+
+    // 날짜 포맷팅
+    function formatDateTime(dateString) {
+        if (!dateString) return '-';
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}/${month}/${day}`;
+    }
+
+    // 날짜를 datetime-local 형식으로 변환
+    function toDatetimeLocal(dateString) {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+    }
+
+    // 페이징 버튼 생성 함수
+    function updatePagination(pageData) {
+        const totalPages = pageData.totalPages || 0;
+        const totalElements = pageData.totalElements || 0;
+        const start = totalElements === 0 ? 0 : currentPage * pageSize + 1;
+        const end = Math.min((currentPage + 1) * pageSize, totalElements);
+
+        document.getElementById('tableInfo').textContent =
+            totalElements > 0
+                ? `전체 ${totalElements}개 중 ${start}~${end}번째`
+                : '쿠폰이 없습니다';
+
+        const paginationEl = document.getElementById('pagination');
+        paginationEl.innerHTML = '';
+        if (totalPages <= 1) return;
+
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'page-btn';
+        prevBtn.textContent = '‹';
+        prevBtn.disabled = currentPage === 0;
+        prevBtn.onclick = () => loadCoupons(currentPage - 1);
+        paginationEl.appendChild(prevBtn);
+
+        const startPage = Math.max(0, Math.min(currentPage - 2, totalPages - 5));
+        const endPage = Math.min(totalPages, startPage + 5);
+        for (let i = startPage; i < endPage; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'page-btn' + (i === currentPage ? ' active' : '');
+            btn.textContent = i + 1;
+            btn.onclick = () => loadCoupons(i);
+            paginationEl.appendChild(btn);
+        }
+
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'page-btn';
+        nextBtn.textContent = '›';
+        nextBtn.disabled = currentPage >= totalPages - 1;
+        nextBtn.onclick = () => loadCoupons(currentPage + 1);
+        paginationEl.appendChild(nextBtn);
+    }
+
+    // 쿠폰 목록 조회
+    async function loadCoupons(page = 0) {
+        currentPage = page;
+        try {
+            const response = await fetch(`${API_BASE_URL}?page=${page}&size=${pageSize}&sort=issueEndDate,asc`, {
+                headers: getHeaders(),
+                credentials: 'include'
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                renderCoupons(result.data.content);
+                updatePagination(result.data);
+            }
+        } catch (error) {
+            console.error('로딩 실패:', error);
+        }
+    }
+
+    // 페이지당 개수 변경
+    function onSizeChange() {
+        pageSize = parseInt(document.getElementById('pageSizeSelect').value);
+        currentPage = 0;
+        loadCoupons(0);
+    }
+
+    // 쿠폰 목록 렌더링
+    function renderCoupons(coupons) {
+        const tbody = document.getElementById('couponTableBody');
+
+        // 쿠폰 목록을 전역 변수에 저장
+        couponsList = coupons || [];
+
+        if (!coupons || coupons.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="8">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📭</div>
+                            <div class="empty-state-text">등록된 쿠폰이 없습니다</div>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        tbody.innerHTML = coupons.map(coupon => {
+            const now = new Date();
+            const endDate = new Date(coupon.issueEndDate);
+            const isSoldOut = coupon.issuedQuantity >= coupon.totalQuantity;
+            const isExpired = endDate < now;
+
+            let statusBadge;
+            if (isExpired) {
+                statusBadge = '<span class="badge badge-danger">종료</span>';
+            } else if (isSoldOut) {
+                statusBadge = '<span class="badge badge-warning">품절</span>';
+            } else {
+                statusBadge = '<span class="badge badge-success">진행중</span>';
+            }
+
+            return `
+                <tr>
+                    <td>${coupon.id}</td>
+                    <td>${coupon.name}</td>
+                    <td>${coupon.discountValue.toLocaleString()}원</td>
+                    <td>${coupon.totalQuantity.toLocaleString()}개</td>
+                    <td>${coupon.issuedQuantity.toLocaleString()}개</td>
+                    <td>${formatDateTime(coupon.issueStartDate)} ~ ${formatDateTime(coupon.issueEndDate)}</td>
+                    <td>${statusBadge}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-secondary btn-small" onclick="openEditModal(${coupon.id})">수정</button>
+                            <button class="btn btn-danger btn-small" onclick="deleteCoupon(${coupon.id})">삭제</button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    // 쿠폰 생성 모달 열기
+    function openCreateModal() {
+        document.getElementById('createModal').classList.add('active');
+        // 현재 시간을 기본값으로 설정
+        const now = new Date();
+        const tomorrow = new Date(now);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        document.getElementById('createIssueStartDate').value = toDatetimeLocal(now);
+        document.getElementById('createIssueEndDate').value = toDatetimeLocal(tomorrow);
+    }
+
+    // 쿠폰 생성 모달 닫기
+    function closeCreateModal() {
+        document.getElementById('createModal').classList.remove('active');
+        document.getElementById('createForm').reset();
+    }
+
+    // 쿠폰 수정 모달 열기
+    async function openEditModal(couponId) {
+        try {
+            // 전역 변수에 저장된 쿠폰 목록에서 찾기
+            const coupon = couponsList.find(c => c.id === couponId);
+
+            if (!coupon) {
+                alert('쿠폰 정보를 찾을 수 없습니다.');
+                return;
+            }
+
+            document.getElementById('editCouponId').value = coupon.id;
+            document.getElementById('editName').value = coupon.name;
+            document.getElementById('editDiscountValue').value = coupon.discountValue.toLocaleString() + '원';
+            document.getElementById('editTotalQuantity').value = coupon.totalQuantity;
+            document.getElementById('editIssueEndDate').value = toDatetimeLocal(coupon.issueEndDate);
+
+            // validDays는 응답에 없을 수 있으므로 기본값 설정
+            document.getElementById('editValidDays').value = 30;
+
+            document.getElementById('editModal').classList.add('active');
+        } catch (error) {
+            console.error('쿠폰 정보 조회 오류:', error);
+            alert('쿠폰 정보를 불러오는데 실패했습니다.');
+        }
+    }
+
+    // 쿠폰 수정 모달 닫기
+    function closeEditModal() {
+        document.getElementById('editModal').classList.remove('active');
+        document.getElementById('editForm').reset();
+    }
+
+    // 쿠폰 생성
+    document.getElementById('createForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const requestData = {
+            name: document.getElementById('createName').value,
+            discountValue: parseInt(document.getElementById('createDiscountValue').value),
+            totalQuantity: parseInt(document.getElementById('createTotalQuantity').value),
+            issueStartDate: new Date(document.getElementById('createIssueStartDate').value).toISOString(),
+            issueEndDate: new Date(document.getElementById('createIssueEndDate').value).toISOString(),
+            minOrderPrice: parseInt(document.getElementById('createMinOrderPrice').value),
+            validDays: parseInt(document.getElementById('createValidDays').value)
+        };
+
+        try {
+            const response = await fetch(API_BASE_URL, {
+                method: 'POST',
+                headers: getHeaders(),
+                credentials: 'include',
+                body: JSON.stringify(requestData)
+            });
+
+            if (!response.ok) {
+                if (response.status === 401 || response.status === 403) {
+                    alert('관리자 권한이 필요합니다.');
+                    window.location.href = 'login.html';
+                    return;
+                }
+                const error = await response.json();
+                throw new Error(error.message || '쿠폰 생성 실패');
+            }
+
+            alert('쿠폰이 생성되었습니다! 🎉');
+            closeCreateModal();
+            loadCoupons();
+        } catch (error) {
+            console.error('쿠폰 생성 오류:', error);
+            alert(error.message || '쿠폰 생성에 실패했습니다.');
+        }
+    });
+
+    // 쿠폰 수정
+    document.getElementById('editForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const couponId = document.getElementById('editCouponId').value;
+        const requestData = {
+            totalQuantity: parseInt(document.getElementById('editTotalQuantity').value),
+            issueEndDate: new Date(document.getElementById('editIssueEndDate').value).toISOString(),
+            validDays: parseInt(document.getElementById('editValidDays').value)
+        };
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/${couponId}`, {
+                method: 'PATCH',
+                headers: getHeaders(),
+                credentials: 'include',
+                body: JSON.stringify(requestData)
+            });
+
+            if (!response.ok) {
+                if (response.status === 401 || response.status === 403) {
+                    alert('관리자 권한이 필요합니다.');
+                    window.location.href = 'login.html';
+                    return;
+                }
+                throw new Error('쿠폰 수정 실패');
+            }
+
+            alert('쿠폰이 수정되었습니다! ✨');
+            closeEditModal();
+            loadCoupons();
+        } catch (error) {
+            console.error('쿠폰 수정 오류:', error);
+            alert('쿠폰 수정에 실패했습니다.');
+        }
+    });
+
+    // 쿠폰 삭제
+    async function deleteCoupon(couponId) {
+        if (!confirm('정말 이 쿠폰을 삭제하시겠습니까?\n이미 발급된 쿠폰은 유지됩니다.')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/${couponId}`, {
+                method: 'DELETE',
+                headers: getHeaders(),
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                if (response.status === 401 || response.status === 403) {
+                    alert('관리자 권한이 필요합니다.');
+                    window.location.href = 'login.html';
+                    return;
+                }
+                throw new Error('쿠폰 삭제 실패');
+            }
+
+            alert('쿠폰이 삭제되었습니다.');
+            loadCoupons();
+        } catch (error) {
+            console.error('쿠폰 삭제 오류:', error);
+            alert('쿠폰 삭제에 실패했습니다.');
+        }
+    }
+
+    // [핵심] 로그인 상태 확인 로직
+    async function checkLoginStatus() {
+        const loginBtn = document.getElementById('loginBtn');
+        const userInfo = document.getElementById('userInfo');
+        const token = localStorage.getItem('accessToken');
+
+        try {
+            let response;
+            if (token) {
+                response = await fetch('http://localhost:8080/ssak3/users/me', {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+            }
+            if (!token || response.status === 401) {
+                response = await fetch('http://localhost:8080/ssak3/users/me', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+            }
+            if (response.ok) {
+                loginBtn.style.display = 'none';
+                userInfo.style.display = 'flex';
+            } else {
+                throw new Error('Not Authenticated');
+            }
+        } catch (error) {
+            localStorage.removeItem('accessToken');
+            loginBtn.style.display = 'block';
+            userInfo.style.display = 'none';
+        }
+    }
+
+    // [핵심] 로그아웃 로직
+    document.getElementById('logoutBtn').addEventListener('click', async function() {
+        if (!confirm('로그아웃 하시겠습니까?')) return;
+
+        const token = localStorage.getItem('accessToken');
+        try {
+            const logoutRequest = { method: 'POST', credentials: 'include' };
+            if (token) logoutRequest.headers = { 'Authorization': `Bearer ${token}` };
+
+            await fetch('http://localhost:8080/ssak3/auth/logout', logoutRequest);
+            localStorage.removeItem('accessToken');
+            alert('로그아웃 되었습니다.');
+            window.location.href = 'home.html';
+        } catch (e) {
+            localStorage.removeItem('accessToken');
+            alert('로그아웃 되었습니다.');
+            window.location.href = 'home.html';
+        }
+    });
+
+    // 버튼 이벤트 바인딩
+    document.getElementById('loginBtn').addEventListener('click', () => location.href = 'login.html');
+    document.getElementById('myPageBtn').addEventListener('click', () => location.href = 'mypage.html');
+
+    // 모달 외부 클릭 시 닫기
+    document.getElementById('createModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeCreateModal();
+        }
+    });
+
+    document.getElementById('editModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeEditModal();
+        }
+    });
+
+    // 초기 실행
+    checkLoginStatus();
+    loadCoupons();
+
+</script>
+</body>
+</html>

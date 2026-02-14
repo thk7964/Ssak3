@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>문의 상세 - 싹쓰리</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+      background: #fafafa;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #ffffff;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .logo {
+      font-size: 26px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
+      cursor: pointer;
+    }
+
+    .header-icons {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .icon-btn {
+      background: #f8f9fa;
+      border: none;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 18px;
+      transition: all 0.2s ease;
+      color: #495057;
+    }
+
+    .icon-btn:hover {
+      background: #e9ecef;
+      transform: translateY(-2px);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .back-btn {
+      background: #f8f9fa;
+      color: #495057;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      margin-bottom: 20px;
+    }
+
+    .back-btn:hover {
+      background: #e9ecef;
+    }
+
+    .inquiry-detail {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+      border: 1px solid #f0f0f0;
+      margin-bottom: 20px;
+    }
+
+    .detail-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 24px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid #f8f9fa;
+    }
+
+    .detail-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #212529;
+      flex: 1;
+      margin-right: 16px;
+    }
+
+    .status-badge {
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .status-pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .status-answered {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .detail-meta {
+      display: flex;
+      gap: 20px;
+      font-size: 14px;
+      color: #868e96;
+      margin-bottom: 24px;
+    }
+
+    .detail-meta span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .detail-content {
+      font-size: 16px;
+      color: #495057;
+      line-height: 1.8;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      min-height: 200px;
+    }
+
+    .reply-section {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+      border: 1px solid #f0f0f0;
+      margin-bottom: 20px;
+    }
+
+    .reply-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid #f8f9fa;
+    }
+
+    .reply-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #212529;
+    }
+
+    .reply-badge {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .reply-content {
+      font-size: 16px;
+      color: #495057;
+      line-height: 1.8;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      background: #f8f9ff;
+      padding: 24px;
+      border-radius: 12px;
+      border: 1px solid #e8ebff;
+    }
+
+    .no-reply {
+      text-align: center;
+      padding: 40px;
+      color: #868e96;
+    }
+
+    .no-reply-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-edit {
+      background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
+    }
+
+    .btn-edit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(116, 185, 255, 0.45);
+    }
+
+    .btn-delete {
+      background: #ffeded;
+      color: #ff6b6b;
+    }
+
+    .btn-delete:hover {
+      background: #ffd6d6;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .edit-mode .detail-title,
+    .edit-mode .detail-content {
+      display: none;
+    }
+
+    .edit-form {
+      display: none;
+    }
+
+    .edit-mode .edit-form {
+      display: block;
+    }
+
+    .form-input,
+    .form-textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e9ecef;
+      border-radius: 12px;
+      font-size: 15px;
+      font-family: inherit;
+      transition: all 0.2s ease;
+      background: #f8f9fa;
+      margin-bottom: 16px;
+    }
+
+    .form-input:focus,
+    .form-textarea:focus {
+      outline: none;
+      border-color: #74b9ff;
+      background: white;
+    }
+
+    .form-textarea {
+      min-height: 300px;
+      resize: vertical;
+    }
+
+    @media (max-width: 768px) {
+      .inquiry-detail,
+      .reply-section {
+        padding: 24px;
+      }
+
+      .detail-header {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .detail-meta {
+        flex-direction: column;
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
+  <div class="header-icons">
+    <button class="icon-btn" onclick="location.href='home.html'">🏠</button>
+    <button class="icon-btn" onclick="location.href='mypage.html'">👤</button>
+  </div>
+</header>
+
+<div class="container">
+  <button class="back-btn" onclick="location.href='user-inquiry-list.html'">← 목록으로 돌아가기</button>
+
+  <div class="inquiry-detail" id="inquiryDetail">
+    <div class="detail-header">
+      <h1 class="detail-title" id="inquiryTitle">제목을 불러오는 중...</h1>
+      <span class="status-badge" id="statusBadge"></span>
+    </div>
+
+    <div class="edit-form">
+      <input type="text" class="form-input" id="editTitle" placeholder="제목">
+      <textarea class="form-textarea" id="editContent" placeholder="내용"></textarea>
+    </div>
+
+    <div class="detail-meta" id="inquiryMeta">
+      <!-- 메타 정보가 여기에 동적으로 추가됩니다 -->
+    </div>
+
+    <div class="detail-content" id="inquiryContent">
+      내용을 불러오는 중...
+    </div>
+
+    <div class="button-group" id="buttonGroup" style="margin-top: 24px;">
+      <!-- 버튼이 여기에 동적으로 추가됩니다 -->
+    </div>
+  </div>
+
+  <div class="reply-section" id="replySection">
+    <!-- 답변 섹션이 여기에 동적으로 추가됩니다 -->
+  </div>
+</div>
+
+<script>
+  let currentInquiry = null;
+  let isEditMode = false;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const inquiryId = urlParams.get('id');
+
+    if (!inquiryId) {
+      alert('잘못된 접근입니다.');
+      location.href = 'user-inquiry-list.html';
+      return;
+    }
+
+    loadInquiryDetail(inquiryId);
+  });
+
+  async function loadInquiryDetail(inquiryId) {
+    const token = localStorage.getItem('accessToken');
+
+    if (!token) {
+      alert('로그인이 필요합니다.');
+      location.href = 'login.html';
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:8080/ssak3/inquiries/${inquiryId}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer ' + token
+        },
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        throw new Error('문의 정보를 불러오는데 실패했습니다.');
+      }
+
+      const result = await response.json();
+      currentInquiry = result.data;
+
+      renderInquiryDetail(currentInquiry);
+
+    } catch (error) {
+      console.error('Error loading inquiry detail:', error);
+      alert(error.message);
+      location.href = 'user-inquiry-list.html';
+    }
+  }
+
+  function renderInquiryDetail(inquiry) {
+    document.getElementById('inquiryTitle').textContent = inquiry.title;
+    document.getElementById('inquiryContent').textContent = inquiry.content;
+
+    // 상태 배지
+    const statusBadge = document.getElementById('statusBadge');
+    if (inquiry.status === 'PENDING') {
+      statusBadge.className = 'status-badge status-pending';
+      statusBadge.textContent = '🟠 대기중';
+    } else {
+      statusBadge.className = 'status-badge status-answered';
+      statusBadge.textContent = '🟢 답변완료';
+    }
+
+    // 메타 정보
+    const createdDate = formatDate(inquiry.createdAt);
+    const updatedDate = formatDate(inquiry.updatedAt);
+    document.getElementById('inquiryMeta').innerHTML = `
+            <span>🆔 문의번호: #${inquiry.id}</span>
+            <span>📅 작성일: ${createdDate}</span>
+            <span>🔄 수정일: ${updatedDate}</span>
+        `;
+
+    // 버튼 그룹
+    const buttonGroup = document.getElementById('buttonGroup');
+    if (inquiry.status === 'PENDING') {
+      buttonGroup.innerHTML = `
+                <button class="btn btn-edit" onclick="toggleEditMode()">수정하기</button>
+                <button class="btn btn-delete" onclick="handleDelete()">삭제하기</button>
+            `;
+    } else {
+      buttonGroup.innerHTML = `
+                <button class="btn btn-edit" disabled>답변 완료된 문의는 수정할 수 없습니다</button>
+            `;
+    }
+
+    // 답변 섹션
+    const replySection = document.getElementById('replySection');
+    if (inquiry.replyContent) {
+      replySection.innerHTML = `
+                <div class="reply-header">
+                    <span class="reply-title">💬 관리자 답변</span>
+                    <span class="reply-badge">🔐 ADMIN</span>
+                </div>
+                <div class="reply-content">${escapeHtml(inquiry.replyContent)}</div>
+            `;
+    } else {
+      replySection.innerHTML = `
+                <div class="no-reply">
+                    <div class="no-reply-icon">⏳</div>
+                    <div>아직 답변이 등록되지 않았습니다.</div>
+                </div>
+            `;
+    }
+  }
+
+  function toggleEditMode() {
+    isEditMode = !isEditMode;
+    const detailDiv = document.getElementById('inquiryDetail');
+    const buttonGroup = document.getElementById('buttonGroup');
+
+    if (isEditMode) {
+      detailDiv.classList.add('edit-mode');
+      document.getElementById('editTitle').value = currentInquiry.title;
+      document.getElementById('editContent').value = currentInquiry.content;
+
+      buttonGroup.innerHTML = `
+                <button class="btn btn-delete" onclick="toggleEditMode()">취소</button>
+                <button class="btn btn-edit" onclick="handleUpdate()">저장하기</button>
+            `;
+    } else {
+      detailDiv.classList.remove('edit-mode');
+      buttonGroup.innerHTML = `
+                <button class="btn btn-edit" onclick="toggleEditMode()">수정하기</button>
+                <button class="btn btn-delete" onclick="handleDelete()">삭제하기</button>
+            `;
+    }
+  }
+
+  async function handleUpdate() {
+    const title = document.getElementById('editTitle').value.trim();
+    const content = document.getElementById('editContent').value.trim();
+
+    if (!title) {
+      alert('제목을 입력해주세요.');
+      return;
+    }
+
+    if (!content) {
+      alert('내용을 입력해주세요.');
+      return;
+    }
+
+    const token = localStorage.getItem('accessToken');
+
+    try {
+      const response = await fetch(`http://localhost:8080/ssak3/inquiries/${currentInquiry.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        credentials: 'include',
+        body: JSON.stringify({ title, content })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || '수정에 실패했습니다.');
+      }
+
+      alert('문의가 수정되었습니다.');
+      location.reload();
+
+    } catch (error) {
+      console.error('Error updating inquiry:', error);
+      alert(error.message);
+    }
+  }
+
+  async function handleDelete() {
+    if (!confirm('정말 이 문의를 삭제하시겠습니까?')) {
+      return;
+    }
+
+    const token = localStorage.getItem('accessToken');
+
+    try {
+      const response = await fetch(`http://localhost:8080/ssak3/inquiries/${currentInquiry.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': 'Bearer ' + token
+        },
+        credentials: 'include'
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || '삭제에 실패했습니다.');
+      }
+
+      alert('문의가 삭제되었습니다.');
+      location.href = 'user-inquiry-list.html';
+
+    } catch (error) {
+      console.error('Error deleting inquiry:', error);
+      alert(error.message);
+    }
+  }
+
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day} ${hours}:${minutes}`;
+  }
+
+  function escapeHtml(text) {
+    const map = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, m => map[m]);
+  }
+</script>
+
+</body>
+</html>

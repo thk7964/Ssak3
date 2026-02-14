@@ -106,6 +106,7 @@ public enum ErrorCode {
     CHAT_ROOM_ACCESS_DENIED(HttpStatus.FORBIDDEN, "해당 문의 채팅방 접근 권한이 없습니다."),
     CHAT_ROOM_COMPLETE_ACCESS_DENIED(HttpStatus.FORBIDDEN, "문의 채팅을 종료할 권한이 없습니다."),
     INQUIRY_CHAT_ALREADY_COMPLETED(HttpStatus.BAD_REQUEST, "이미 종료된 문의 채팅입니다."),
+    STOMP_MESSAGE_ACCESS_FAILED(HttpStatus.BAD_REQUEST, "유효하지 않은 권한입니다."),
 
     // 서버 에러
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "내부 서버 에러입니다."),

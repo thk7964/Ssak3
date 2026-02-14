@@ -17,6 +17,7 @@ public interface InquiryChatRoomRepository extends JpaRepository<InquiryChatRoom
             "LEFT JOIN FETCH r.admin " +
             "WHERE r.status = 'WAITING' " +
             "OR (r.admin.id = :adminId AND r.status = 'ONGOING') " +
+            "OR (r.admin.id = :adminId AND r.status = 'COMPLETED') " + // 관리자 본인이 완료한 채팅
             "ORDER BY " +
             "CASE r.status WHEN 'ONGOING' THEN 1 " + // 채팅 진행 중인 것을 1순위
             "               WHEN 'WAITING' THEN 2 " + // 채팅 대기 중인 것을 2순위

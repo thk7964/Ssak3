@@ -683,7 +683,7 @@
         if (userCoupons.length > 0) {
             userCoupons.forEach(c => {
                 couponOptions += `
-      <option value="${c.id}" data-discount="${c.discountValue}">
+      <option value="${c.userCouponId}" data-discount="${c.discountValue}">
         ${c.name} (${formatPrice(c.discountValue)} 할인)
       </option>
     `;
@@ -691,7 +691,6 @@
         } else {
             couponOptions += `<option value="" disabled>사용 가능한 쿠폰이 없습니다</option>`;
         }
-
 
         const itemsHtml = selectedItems.map(p => {
             const name = p.productName || '상품';

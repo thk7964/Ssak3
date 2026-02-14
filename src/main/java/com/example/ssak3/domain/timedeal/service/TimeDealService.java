@@ -4,6 +4,7 @@ import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.enums.TimeDealStatus;
 import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.common.model.PageResponse;
+import com.example.ssak3.domain.s3.service.S3Uploader;
 import com.example.ssak3.domain.timedeal.entity.TimeDeal;
 import com.example.ssak3.domain.timedeal.model.response.TimeDealGetResponse;
 import com.example.ssak3.domain.timedeal.model.response.TimeDealListGetResponse;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class TimeDealService {
 
     private final TimeDealRepository timeDealRepository;
+    private final S3Uploader s3Uploader;
 
     /**
      * 타임딜 상세 조회
@@ -30,17 +32,24 @@ public class TimeDealService {
         TimeDeal response = timeDealRepository.findByIdAndIsDeletedFalse(timeDealId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TIME_DEAL_NOT_FOUND)
                 );
-        return TimeDealGetResponse.from(response);
+
+        String imageUrl = s3Uploader.createPresignedGetUrl(response.getImage(), 5);
+        String detailImageUrl = s3Uploader.createPresignedGetUrl(response.getDetailImage(), 5);
+
+        return TimeDealGetResponse.from(response, imageUrl, detailImageUrl);
     }
 
     /**
      * 타임딜 상태별 목록 조회
      */
     @Cacheable(
+            // 어노테이션 - 자동 캐시처리이기 때문에 명시적으로 사용하는 캐시 지정
+            cacheManager = "redisCacheManager",
             value = "timeDealsOpen",
             key = "#pageable.pageNumber + ':' + #pageable.pageSize",
             condition = "#status != null && #status.equalsIgnoreCase('OPEN') && #pageable.pageNumber <= 1"
     )
+
     @Transactional(readOnly = true)
     public PageResponse<TimeDealListGetResponse> getTimeDealStatusList(String status, Pageable pageable) {
         TimeDealStatus timeDealStatus = parseStatus(status);

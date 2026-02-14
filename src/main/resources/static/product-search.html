@@ -424,6 +424,34 @@
                 padding: 16px 20px;
             }
         }
+
+        /* 기존 .product-image 수정 */
+        .product-image {
+            width: 100%;
+            height: 200px;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 실제 이미지 스타일 추가 */
+        .product-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* 비율 유지하며 꽉 채우기 */
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover .product-img {
+            transform: scale(1.05);
+        }
+
+        .emoji-fallback {
+            font-size: 60px;
+        }
     </style>
 </head>
 <body>
@@ -605,12 +633,14 @@
             if (currentMaxPrice) url += `&maxPrice=${currentMaxPrice}`;
 
             const response = await fetch(url);
+            console.log(response);
 
             if (!response.ok) {
                 throw new Error('상품 조회 실패');
             }
 
             const result = await response.json();
+            console.log(result);
             displayProducts(result.data);
         } catch (error) {
             console.error('상품 조회 오류:', error);
@@ -625,17 +655,14 @@
         const totalElements = data.totalElements || 0;
         const totalPages = data.totalPages || 0;
 
-        // 상품 개수 표시
         document.getElementById('productsCount').textContent = `총 ${totalElements}개의 상품`;
 
         if (products.length === 0) {
             container.innerHTML = `
-                <div class="no-results">
-                    <div class="no-results-icon">🔍</div>
-                    <div class="no-results-title">검색 결과가 없습니다</div>
-                    <div class="no-results-desc">다른 검색어나 필터를 시도해보세요</div>
-                </div>
-            `;
+        <div class="no-results">
+            <div class="no-results-icon">🔍</div>
+            <div class="no-results-title">검색 결과가 없습니다</div>
+        </div>`;
             document.getElementById('pagination').innerHTML = '';
             return;
         }
@@ -643,26 +670,39 @@
         const productsHTML = products.map((product, index) => {
             const emoji = productEmojis[index % productEmojis.length];
             const description = product.information || '상품 설명이 없습니다';
-            const hasDeal = product.dealPrice && product.dealPrice < product.price;
+            const hasDeal = product.dealPrice !== null && product.dealPrice < product.price;
+
+            let finalImageUrl = product.imageUrl;
+
+            // 🔥 수정 포인트: onerror에 복잡한 문자열 대신, 단순한 함수 호출이나 처리를 사용
+            // innerHTML 대신 직접 이미지를 숨기고 에모지를 보여주는 방식으로 안전하게 구현했습니다.
+            const imageHtml = finalImageUrl
+                ? `<img src="${finalImageUrl}"
+                class="product-img"
+                alt="${product.name}"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+               <div class="emoji-fallback" style="display:none;">${emoji}</div>`
+                : `<div class="emoji-fallback">${emoji}</div>`;
+
+            const pid = product.productId || product.id;
 
             return `
-                <div class="product-card" onclick="location.href='product-detail.html?id=${product.productId}'">
-                    <div class="product-image">${emoji}</div>
-                    <div class="product-info">
-                        <div class="product-name">${product.name}</div>
-                        <div class="product-desc">${description}</div>
-                        <div class="product-prices">
-                            ${hasDeal ? `<div class="product-deal-price">${product.price.toLocaleString()}원</div>` : ''}
-                            <div class="product-price">${(hasDeal ? product.dealPrice : product.price).toLocaleString()}원</div>
-                        </div>
-                    </div>
+        <div class="product-card" onclick="location.href='product-detail.html?id=${pid}'">
+            <div class="product-image">
+                ${imageHtml}
+            </div>
+            <div class="product-info">
+                <div class="product-name">${product.name}</div>
+                <div class="product-desc">${description}</div>
+                <div class="product-prices">
+                    ${hasDeal ? `<div class="product-deal-price">${product.price.toLocaleString()}원</div>` : ''}
+                    <div class="product-price">${(hasDeal ? product.dealPrice : product.price).toLocaleString()}원</div>
                 </div>
-            `;
+            </div>
+        </div>`;
         }).join('');
 
-        container.innerHTML = `<div class="products-grid">${productsHTML}</div>`;
-
-        // 페이지네이션 표시
+        container.innerHTML = `<div class="products-grid">${productsHTML}</div    >`;
         displayPagination(currentPage, totalPages);
     }
 
@@ -670,24 +710,24 @@
     function displayPagination(currentPage, totalPages) {
         const pagination = document.getElementById('pagination');
 
-        if (totalPages <= 1) {
-            pagination.innerHTML = '';
-            return;
-        }
+        // totalPages가 0일 수도 있으므로, 최소 1개는 보이도록 설정
+        const displayTotal = Math.max(1, totalPages);
 
         let paginationHTML = '';
 
-        // 이전 버튼
+        // 이전 버튼 (페이지가 1개뿐이면 비활성화)
         paginationHTML += `
-            <button class="page-btn" onclick="goToPage(${currentPage - 1})" ${currentPage === 0 ? 'disabled' : ''}>
-                ◀
-            </button>
-        `;
+        <button class="page-btn" onclick="goToPage(${currentPage - 1})"
+            ${currentPage <= 0 ? 'disabled' : ''}>
+            ◀
+        </button>
+    `;
 
-        // 페이지 번호
+        // 페이지 번호 계산
         const startPage = Math.max(0, currentPage - 2);
-        const endPage = Math.min(totalPages - 1, currentPage + 2);
+        const endPage = Math.min(displayTotal - 1, currentPage + 2);
 
+        // 첫 페이지로 가기 (1페이지가 현재 화면에 없을 때만)
         if (startPage > 0) {
             paginationHTML += `<button class="page-btn" onclick="goToPage(0)">1</button>`;
             if (startPage > 1) {
@@ -695,27 +735,30 @@
             }
         }
 
+        // 숫자 버튼 생성 (페이지가 1개여도 i=0부터 i=0까지 실행되므로 '1'이 생성됨)
         for (let i = startPage; i <= endPage; i++) {
             paginationHTML += `
-                <button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">
-                    ${i + 1}
-                </button>
-            `;
-        }
-
-        if (endPage < totalPages - 1) {
-            if (endPage < totalPages - 2) {
-                paginationHTML += `<span style="padding: 0 8px;">...</span>`;
-            }
-            paginationHTML += `<button class="page-btn" onclick="goToPage(${totalPages - 1})">${totalPages}</button>`;
-        }
-
-        // 다음 버튼
-        paginationHTML += `
-            <button class="page-btn" onclick="goToPage(${currentPage + 1})" ${currentPage >= totalPages - 1 ? 'disabled' : ''}>
-                ▶
+            <button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">
+                ${i + 1}
             </button>
         `;
+        }
+
+        // 마지막 페이지로 가기
+        if (endPage < displayTotal - 1) {
+            if (endPage < displayTotal - 2) {
+                paginationHTML += `<span style="padding: 0 8px;">...</span>`;
+            }
+            paginationHTML += `<button class="page-btn" onclick="goToPage(${displayTotal - 1})">${displayTotal}</button>`;
+        }
+
+        // 다음 버튼 (현재 페이지가 마지막 페이지면 비활성화)
+        paginationHTML += `
+        <button class="page-btn" onclick="goToPage(${currentPage + 1})"
+            ${currentPage >= displayTotal - 1 ? 'disabled' : ''}>
+            ▶
+        </button>
+    `;
 
         pagination.innerHTML = paginationHTML;
     }

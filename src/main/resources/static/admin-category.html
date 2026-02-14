@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>카테고리 관리</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 30px 20px;
+        }
+
+        .category-container {
+            background: white;
+            width: 100%;
+            max-width: 700px;
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+        }
+
+        /* 헤더 */
+        .page-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .back-icon-btn {
+            background: #e8ebff;
+            border: none;
+            border-radius: 12px;
+            width: 40px;
+            height: 40px;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+
+        .back-icon-btn:hover {
+            background: #dde1ff;
+        }
+
+        .page-header h2 {
+            color: #667eea;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .header-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: auto;
+        }
+
+        /* 생성 폼 섹션 */
+        .section-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #444;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .create-form {
+            background: #f8f9ff;
+            border: 1px solid #e8ebff;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .form-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1.5px solid #e8ebff;
+            border-radius: 12px;
+            font-size: 15px;
+            color: #333;
+            outline: none;
+            transition: border-color 0.2s;
+            background: white;
+        }
+
+        .form-input:focus {
+            border-color: #667eea;
+        }
+
+        .form-input::placeholder {
+            color: #bbb;
+        }
+
+        .create-btn {
+            padding: 12px 22px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .create-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        .create-btn:active {
+            transform: translateY(0);
+        }
+
+        /* 카테고리 목록 */
+        .list-section {
+            /* 목록 영역 */
+        }
+
+        .list-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .category-count {
+            font-size: 13px;
+            color: #999;
+        }
+
+        .category-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 420px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .category-list::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .category-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .category-list::-webkit-scrollbar-thumb {
+            background: #c5caff;
+            border-radius: 10px;
+        }
+
+        /* 카테고리 아이템 */
+        .category-item {
+            background: #f8f9ff;
+            border: 1.5px solid #e8ebff;
+            border-radius: 14px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .category-item:hover {
+            border-color: #c5caff;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+        }
+
+        .category-item.editing {
+            border-color: #667eea;
+            background: #f0f3ff;
+        }
+
+        .category-id {
+            font-size: 12px;
+            color: #aaa;
+            font-weight: 600;
+            min-width: 32px;
+        }
+
+        .category-name-display {
+            flex: 1;
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .category-edit-input {
+            flex: 1;
+            padding: 7px 12px;
+            border: 1.5px solid #667eea;
+            border-radius: 8px;
+            font-size: 15px;
+            color: #333;
+            outline: none;
+            background: white;
+        }
+
+        .category-dates {
+            font-size: 11px;
+            color: #bbb;
+            text-align: right;
+            line-height: 1.5;
+        }
+
+        /* 아이템 버튼 그룹 */
+        .item-btn-group {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .item-btn {
+            padding: 7px 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .edit-btn {
+            background: #e8ebff;
+            color: #667eea;
+        }
+
+        .edit-btn:hover {
+            background: #dde1ff;
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .save-btn:hover {
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .cancel-btn {
+            background: #f0f0f0;
+            color: #888;
+        }
+
+        .cancel-btn:hover {
+            background: #e5e5e5;
+        }
+
+        .delete-btn {
+            background: #ffeded;
+            color: #ff6b6b;
+        }
+
+        .delete-btn:hover {
+            background: #ffd6d6;
+        }
+
+        /* 빈 상태 */
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #bbb;
+        }
+
+        .empty-state .empty-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .empty-state p {
+            font-size: 15px;
+        }
+
+        /* 로딩 */
+        .loading-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #aaa;
+            font-size: 15px;
+        }
+
+        /* 토스트 알림 */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 9999;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast.success {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .toast.error {
+            background: #ff6b6b;
+        }
+
+        /* 삭제 확인 모달 */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-box {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 340px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            transform: scale(0.92);
+            transition: transform 0.2s;
+        }
+
+        .modal-overlay.active .modal-box {
+            transform: scale(1);
+        }
+
+        .modal-icon {
+            font-size: 40px;
+            margin-bottom: 14px;
+        }
+
+        .modal-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .modal-desc {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 22px;
+            line-height: 1.5;
+        }
+
+        .modal-btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-cancel-btn {
+            flex: 1;
+            padding: 11px;
+            background: #f0f0f0;
+            color: #666;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .modal-cancel-btn:hover {
+            background: #e5e5e5;
+        }
+
+        .modal-confirm-btn {
+            flex: 1;
+            padding: 11px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-confirm-btn:hover {
+            background: #ff5252;
+        }
+
+        @media (max-width: 500px) {
+            .category-container {
+                padding: 24px 18px;
+            }
+            .form-row {
+                flex-direction: column;
+            }
+            .item-btn-group {
+                flex-wrap: wrap;
+            }
+            .category-dates {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- 삭제 확인 모달 -->
+<div class="modal-overlay" id="deleteModal">
+    <div class="modal-box">
+        <div class="modal-icon">🗑️</div>
+        <div class="modal-title">카테고리 삭제</div>
+        <div class="modal-desc" id="modalDesc">이 카테고리를 삭제하시겠습니까?<br>삭제 후 복구가 불가능합니다.</div>
+        <div class="modal-btn-group">
+            <button class="modal-cancel-btn" onclick="closeDeleteModal()">취소</button>
+            <button class="modal-confirm-btn" onclick="confirmDelete()">삭제</button>
+        </div>
+    </div>
+</div>
+
+<!-- 토스트 -->
+<div class="toast" id="toast"></div>
+
+<div class="category-container">
+
+    <!-- 헤더 -->
+    <div class="page-header">
+        <button class="back-icon-btn" onclick="location.href='admin-mypage.html'" title="뒤로가기">←</button>
+        <h2>🗂️ 카테고리 관리</h2>
+        <span class="header-badge">ADMIN</span>
+    </div>
+
+    <!-- 카테고리 생성 폼 -->
+    <div class="section-title">➕ 새 카테고리 추가</div>
+    <div class="create-form">
+        <div class="form-row">
+            <input
+                type="text"
+                id="newCategoryName"
+                class="form-input"
+                placeholder="카테고리 이름을 입력하세요"
+                maxlength="50"
+                onkeydown="if(event.key==='Enter') createCategory()"
+            />
+            <button class="create-btn" onclick="createCategory()">생성</button>
+        </div>
+    </div>
+
+    <!-- 카테고리 목록 -->
+    <div class="list-section">
+        <div class="list-header">
+            <div class="section-title" style="margin-bottom:0">📋 카테고리 목록</div>
+            <span class="category-count" id="categoryCount">총 0개</span>
+        </div>
+        <div class="category-list" id="categoryList">
+            <div class="loading-state">불러오는 중...</div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const BASE_URL = 'http://localhost:8080/ssak3';
+    let deleteTargetId = null;
+    let deleteTargetName = '';
+    let categories = [];
+
+    /* ──────────────── 인증 헤더 ──────────────── */
+    function getAuthHeaders() {
+        const token = localStorage.getItem('accessToken');
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = 'Bearer ' + token;
+        return headers;
+    }
+
+    /* ──────────────── 토스트 ──────────────── */
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = `toast ${type} show`;
+        setTimeout(() => { toast.className = 'toast'; }, 2800);
+    }
+
+    /* ──────────────── 날짜 포맷 ──────────────── */
+    function formatDate(dateStr) {
+        if (!dateStr) return '-';
+        const d = new Date(dateStr);
+        return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+    }
+
+    /* ──────────────── 카테고리 목록 렌더 ──────────────── */
+    function renderCategories(list) {
+        const container = document.getElementById('categoryList');
+        const countEl = document.getElementById('categoryCount');
+        countEl.textContent = `총 ${list.length}개`;
+
+        if (list.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">📭</div>
+                    <p>등록된 카테고리가 없습니다.<br>새 카테고리를 추가해보세요!</p>
+                </div>`;
+            return;
+        }
+
+        container.innerHTML = list.map(cat => `
+            <div class="category-item" id="item-${cat.id}">
+                <span class="category-id">#${cat.id}</span>
+                <span class="category-name-display" id="name-${cat.id}">${escapeHtml(cat.name)}</span>
+                <input
+                    type="text"
+                    class="category-edit-input"
+                    id="input-${cat.id}"
+                    value="${escapeHtml(cat.name)}"
+                    maxlength="50"
+                    style="display:none"
+                    onkeydown="if(event.key==='Enter') saveCategory(${cat.id}); if(event.key==='Escape') cancelEdit(${cat.id});"
+                />
+                <div class="category-dates" id="dates-${cat.id}">
+                    생성: ${formatDate(cat.createdAt)}<br>
+                    수정: ${formatDate(cat.updatedAt)}
+                </div>
+                <div class="item-btn-group" id="btns-${cat.id}">
+                    <button class="item-btn edit-btn" onclick="startEdit(${cat.id})">수정</button>
+                    <button class="item-btn delete-btn" onclick="openDeleteModal(${cat.id}, '${escapeHtml(cat.name)}')">삭제</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function escapeHtml(str) {
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    /* ──────────────── 카테고리 목록 조회 ──────────────── */
+    async function loadCategories() {
+        const container = document.getElementById('categoryList');
+        try {
+            const res = await fetch(`${BASE_URL}/categories`, {
+                method: 'GET',
+                headers: getAuthHeaders(),
+                credentials: 'include'
+            });
+
+            if (!res.ok) throw new Error('failed');
+            const result = await res.json();
+            // 응답 구조: { data: [...] } 또는 직접 배열
+            categories = Array.isArray(result) ? result : (result.data ?? []);
+            renderCategories(categories);
+        } catch (e) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">⚠️</div>
+                    <p>카테고리 목록을 불러오지 못했습니다.</p>
+                </div>`;
+        }
+    }
+
+    /* ──────────────── 카테고리 생성 ──────────────── */
+    async function createCategory() {
+        const input = document.getElementById('newCategoryName');
+        const name = input.value.trim();
+        if (!name) {
+            showToast('카테고리 이름을 입력해주세요.', 'error');
+            input.focus();
+            return;
+        }
+
+        try {
+            const res = await fetch(`${BASE_URL}/admin/categories`, {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                credentials: 'include',
+                body: JSON.stringify({ name })
+            });
+
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.message || '생성 실패');
+            }
+
+            const result = await res.json();
+            const created = result.data ?? result;
+
+            input.value = '';
+            showToast(`'${created.name}' 카테고리가 생성되었습니다.`, 'success');
+            await loadCategories();
+        } catch (e) {
+            showToast(e.message || '카테고리 생성에 실패했습니다.', 'error');
+        }
+    }
+
+    /* ──────────────── 수정 모드 시작 ──────────────── */
+    function startEdit(id) {
+        const item = document.getElementById(`item-${id}`);
+        const nameEl = document.getElementById(`name-${id}`);
+        const inputEl = document.getElementById(`input-${id}`);
+        const btnsEl = document.getElementById(`btns-${id}`);
+        const datesEl = document.getElementById(`dates-${id}`);
+
+        nameEl.style.display = 'none';
+        if (datesEl) datesEl.style.display = 'none';
+        inputEl.style.display = 'block';
+        inputEl.focus();
+        inputEl.select();
+        item.classList.add('editing');
+
+        btnsEl.innerHTML = `
+            <button class="item-btn save-btn" onclick="saveCategory(${id})">저장</button>
+            <button class="item-btn cancel-btn" onclick="cancelEdit(${id})">취소</button>
+        `;
+    }
+
+    /* ──────────────── 수정 취소 ──────────────── */
+    function cancelEdit(id) {
+        const item = document.getElementById(`item-${id}`);
+        const nameEl = document.getElementById(`name-${id}`);
+        const inputEl = document.getElementById(`input-${id}`);
+        const btnsEl = document.getElementById(`btns-${id}`);
+        const datesEl = document.getElementById(`dates-${id}`);
+        const cat = categories.find(c => c.id === id);
+
+        if (cat) inputEl.value = cat.name;
+
+        nameEl.style.display = 'block';
+        if (datesEl) datesEl.style.display = 'block';
+        inputEl.style.display = 'none';
+        item.classList.remove('editing');
+
+        btnsEl.innerHTML = `
+            <button class="item-btn edit-btn" onclick="startEdit(${id})">수정</button>
+            <button class="item-btn delete-btn" onclick="openDeleteModal(${id}, '${escapeHtml(nameEl.textContent)}')">삭제</button>
+        `;
+    }
+
+    /* ──────────────── 카테고리 수정 저장 ──────────────── */
+    async function saveCategory(id) {
+        const inputEl = document.getElementById(`input-${id}`);
+        const name = inputEl.value.trim();
+
+        if (!name) {
+            showToast('카테고리 이름을 입력해주세요.', 'error');
+            inputEl.focus();
+            return;
+        }
+
+        try {
+            const res = await fetch(`${BASE_URL}/admin/categories/${id}`, {
+                method: 'PATCH',
+                headers: getAuthHeaders(),
+                credentials: 'include',
+                body: JSON.stringify({ name })
+            });
+
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.message || '수정 실패');
+            }
+
+            const result = await res.json();
+            const updated = result.data ?? result;
+
+            showToast(`카테고리가 '${updated.name}'(으)로 수정되었습니다.`, 'success');
+            await loadCategories();
+        } catch (e) {
+            showToast(e.message || '카테고리 수정에 실패했습니다.', 'error');
+        }
+    }
+
+    /* ──────────────── 삭제 모달 열기 ──────────────── */
+    function openDeleteModal(id, name) {
+        deleteTargetId = id;
+        deleteTargetName = name;
+        document.getElementById('modalDesc').innerHTML =
+            `<b>'${escapeHtml(name)}'</b> 카테고리를 삭제하시겠습니까?<br>삭제 후 복구가 불가능합니다.`;
+        document.getElementById('deleteModal').classList.add('active');
+    }
+
+    function closeDeleteModal() {
+        deleteTargetId = null;
+        deleteTargetName = '';
+        document.getElementById('deleteModal').classList.remove('active');
+    }
+
+    /* ──────────────── 카테고리 삭제 확인 ──────────────── */
+    async function confirmDelete() {
+        if (!deleteTargetId) return;
+        const id = deleteTargetId;
+        const name = deleteTargetName;
+        closeDeleteModal();
+
+        try {
+            const res = await fetch(`${BASE_URL}/admin/categories/${id}`, {
+                method: 'DELETE',
+                headers: getAuthHeaders(),
+                credentials: 'include'
+            });
+
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.message || '삭제 실패');
+            }
+
+            showToast(`'${name}' 카테고리가 삭제되었습니다.`, 'success');
+            await loadCategories();
+        } catch (e) {
+            showToast(e.message || '카테고리 삭제에 실패했습니다.', 'error');
+        }
+    }
+
+    /* ──────────────── 모달 외부 클릭 닫기 ──────────────── */
+    document.getElementById('deleteModal').addEventListener('click', function(e) {
+        if (e.target === this) closeDeleteModal();
+    });
+
+    /* ──────────────── 초기 로드 ──────────────── */
+    document.addEventListener('DOMContentLoaded', async () => {
+        const token = localStorage.getItem('accessToken');
+        const headers = {};
+        if (token) headers.Authorization = 'Bearer ' + token;
+
+        // 권한 체크
+        try {
+            const res = await fetch(`${BASE_URL}/users/me`, {
+                method: 'GET',
+                headers,
+                credentials: 'include'
+            });
+            if (!res.ok) throw new Error('unauthorized');
+            const result = await res.json();
+            const user = result.data;
+            if (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN') {
+                alert('관리자만 접근할 수 있습니다.');
+                location.href = 'home.html';
+                return;
+            }
+        } catch {
+            alert('로그인이 필요합니다.');
+            location.href = 'login.html';
+            return;
+        }
+
+        await loadCategories();
+    });
+</script>
+
+</body>
+</html>

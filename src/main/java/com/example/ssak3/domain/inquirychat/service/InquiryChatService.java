@@ -15,6 +15,8 @@ import com.example.ssak3.domain.inquirychat.repository.InquiryChatRoomRepository
 import com.example.ssak3.domain.user.entity.User;
 import com.example.ssak3.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -22,6 +24,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class InquiryChatService {
 
     private final InquiryChatRoomRepository roomRepository;
@@ -118,32 +121,38 @@ public class InquiryChatService {
         return InquiryChatStatusUpdateResponse.from(foundRoom);
     }
 
-
     /**
-     * 문의 채팅방 연결
+     * 문의 채팅 메시지 비동기 저장
      */
+    @Async("chatExecutor")  // 별도 스레드에서 실행
     @Transactional
-    public void saveMessage(ChatMessageRequest request) {
+    public void saveMessageAsync(ChatMessageRequest request, Long userId, String role) {  // 비동기 작업 결과를 나타냄
+        try {
+            InquiryChatRoom foundRoom = roomRepository.findById(request.getRoomId())
+                    .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
 
-        InquiryChatRoom foundRoom = roomRepository.findById(request.getRoomId())
-                .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
+            // 이미 종료된 채팅방인지 확인
+            if (foundRoom.getStatus() == ChatRoomStatus.COMPLETED) {
+                log.warn("종료된 채팅방에 메시지 저장 시도 - roomId: {}, userId: {}", request.getRoomId(), userId);
+                throw new CustomException(ErrorCode.INQUIRY_CHAT_ALREADY_COMPLETED);
+            }
 
-        // 이미 종료된 채팅방인지 확인
-        if (foundRoom.getStatus() == ChatRoomStatus.COMPLETED) {
-            throw new CustomException(ErrorCode.INQUIRY_CHAT_ALREADY_COMPLETED);
+            User foundUser = userRepository.findById(userId)
+                    .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+            InquiryChatMessage message = new InquiryChatMessage(
+                    foundRoom,
+                    foundUser,
+                    UserRole.valueOf(role),
+                    request.getType(),
+                    request.getContent()
+            );
+
+            messageRepository.save(message);
+
+        } catch (Exception e) {
+            log.error("비동기 메시지 저장 실패 - roomId: {}, userId: {}, error: {}",
+                    request.getRoomId(), userId, e.getMessage(), e);
         }
-
-        User foundUser = userRepository.findById(request.getSenderId())
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-
-        InquiryChatMessage message = new InquiryChatMessage(
-                foundRoom,
-                foundUser,
-                request.getSenderRole(),
-                request.getType(),
-                request.getContent()
-        );
-
-        messageRepository.save(message);
     }
 }

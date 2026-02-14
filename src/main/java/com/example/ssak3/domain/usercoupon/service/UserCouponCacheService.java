@@ -13,14 +13,14 @@ import java.util.concurrent.TimeUnit;
 public class UserCouponCacheService {
 
     private static final String USER_COUPON_LIST_CACHE_PREFIX = "coupons:user:page:";
-    private final RedisTemplate<String, PageResponse<CouponListForUserGetResponse>> redisTemplate;
+    private final RedisTemplate<String, PageResponse<CouponListForUserGetResponse>> couponRedisTemplate;
 
     /**
      * 사용자용 쿠폰 목록 캐시 저장
      */
     public void saveUserCouponListCache(int pageNumber, int pageSize, PageResponse<CouponListForUserGetResponse> data) {
         String key = USER_COUPON_LIST_CACHE_PREFIX + pageNumber + ":size:" + pageSize;
-        redisTemplate.opsForValue().set(key, data, 10, TimeUnit.MINUTES);   // TTL : 10분
+        couponRedisTemplate.opsForValue().set(key, data, 10, TimeUnit.MINUTES);   // TTL : 10분
     }
 
     /**
@@ -28,14 +28,14 @@ public class UserCouponCacheService {
      */
     public PageResponse<CouponListForUserGetResponse> getUserCouponListCache(int pageNumber, int pageSize) {
         String key = USER_COUPON_LIST_CACHE_PREFIX + pageNumber + ":size:" + pageSize;
-        return redisTemplate.opsForValue().get(key);
+        return couponRedisTemplate.opsForValue().get(key);
     }
 
     /**
      * 쿠폰 정보 수정 or 삭제 시 사용자용 캐시도 비우기
      */
     public void clearUserCouponListCache() {
-        var keys = redisTemplate.keys(USER_COUPON_LIST_CACHE_PREFIX + "*");
-        redisTemplate.delete(keys);
+        var keys = couponRedisTemplate.keys(USER_COUPON_LIST_CACHE_PREFIX + "*");
+        couponRedisTemplate.delete(keys);
     }
 }

@@ -34,7 +34,7 @@ public class CouponService {
     public CouponCreateResponse createCoupon(CouponCreateRequest request) {
 
         // 시작일이 현재 시간보다 이전인 경우 예외
-        if (request.getIssueStartDate().isBefore(LocalDateTime.now())) {
+        if (request.getIssueStartDate().isBefore(LocalDateTime.now().minusMinutes(1))) {
             throw new CustomException(ErrorCode.COUPON_INVALID_START_TIME);
         }
 

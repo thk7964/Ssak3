@@ -97,13 +97,13 @@ public class ProductAdminService {
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
         // 저장되어 있는 이미지 파일이 있는지 확인
-        if (foundProduct.getImage() != null) {
+        if (request.getImage()!=null && foundProduct.getImage() != null) {
             // 기존 파일 먼저 삭제
             s3Uploader.deleteImage(foundProduct.getImage());
         }
 
         // 저장되어 있는 이미지 파일이 있는지 확인
-        if (foundProduct.getDetailImage() != null) {
+        if (request.getDetailImage()!=null && foundProduct.getDetailImage() != null) {
             // 기존 파일 먼저 삭제
             s3Uploader.deleteImage(foundProduct.getDetailImage());
         }

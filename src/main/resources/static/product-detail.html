@@ -114,8 +114,12 @@
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
         }
 
         .product-info-section {
@@ -373,10 +377,6 @@
             }
         }
 
-        /* ════════════════════════════════════════════
-           ★ 리뷰 섹션 추가 스타일 (기존 CSS 미수정)
-           ════════════════════════════════════════════ */
-
         .review-section {
             max-width: 1200px;
             margin: 0 auto 80px;
@@ -459,11 +459,25 @@
             letter-spacing: 2px;
         }
 
-        /* ★ 수정: font-size를 CSS 클래스에 직접 명시 (인라인 style 제거) */
-        .star-on       { color: #f59e0b; font-size: 16px; }  /* 리뷰 카드 별점 */
-        .star-off      { color: #e5e7eb; font-size: 16px; }
-        .star-on--lg   { color: #f59e0b; font-size: 22px; }  /* 평균 요약 별점 */
-        .star-off--lg  { color: #e5e7eb; font-size: 22px; }
+        .star-on {
+            color: #f59e0b;
+            font-size: 16px;
+        }
+
+        .star-off {
+            color: #e5e7eb;
+            font-size: 16px;
+        }
+
+        .star-on--lg {
+            color: #f59e0b;
+            font-size: 22px;
+        }
+
+        .star-off--lg {
+            color: #e5e7eb;
+            font-size: 22px;
+        }
 
         .review-write-btn {
             background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
@@ -499,7 +513,9 @@
             white-space: nowrap;
         }
 
-        .review-login-btn:hover { background: #e9ecef; }
+        .review-login-btn:hover {
+            background: #e9ecef;
+        }
 
         .review-form-wrap {
             background: white;
@@ -511,7 +527,9 @@
             display: none;
         }
 
-        .review-form-wrap.open { display: block; }
+        .review-form-wrap.open {
+            display: block;
+        }
 
         .review-form-heading {
             font-size: 16px;
@@ -549,8 +567,13 @@
             user-select: none;
         }
 
-        .star-picker span.lit  { color: #f59e0b; }
-        .star-picker span:hover { transform: scale(1.2); }
+        .star-picker span.lit {
+            color: #f59e0b;
+        }
+
+        .star-picker span:hover {
+            transform: scale(1.2);
+        }
 
         .star-hint {
             font-size: 13px;
@@ -572,8 +595,13 @@
             box-sizing: border-box;
         }
 
-        .review-textarea:focus { border-color: #74b9ff; }
-        .review-textarea::placeholder { color: #adb5bd; }
+        .review-textarea:focus {
+            border-color: #74b9ff;
+        }
+
+        .review-textarea::placeholder {
+            color: #adb5bd;
+        }
 
         .review-form-error {
             background: #fee2e2;
@@ -585,7 +613,10 @@
             margin-bottom: 12px;
             display: none;
         }
-        .review-form-error.show { display: block; }
+
+        .review-form-error.show {
+            display: block;
+        }
 
         .review-form-footer {
             display: flex;
@@ -606,7 +637,10 @@
             font-family: inherit;
             transition: border-color 0.15s;
         }
-        .btn-cancel:hover { border-color: #adb5bd; }
+
+        .btn-cancel:hover {
+            border-color: #adb5bd;
+        }
 
         .btn-submit {
             padding: 10px 24px;
@@ -621,10 +655,23 @@
             box-shadow: 0 4px 12px rgba(116, 185, 255, 0.3);
             transition: all 0.2s;
         }
-        .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(116, 185, 255, 0.4); }
-        .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-        .review-list { display: flex; flex-direction: column; gap: 14px; }
+        .btn-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(116, 185, 255, 0.4);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .review-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
 
         .review-card {
             background: white;
@@ -635,7 +682,9 @@
             transition: box-shadow 0.2s;
         }
 
-        .review-card:hover { box-shadow: 0 4px 16px rgba(0, 0, 0, 0.09); }
+        .review-card:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.09);
+        }
 
         .review-card-top {
             display: flex;
@@ -645,7 +694,11 @@
             gap: 12px;
         }
 
-        .review-meta { display: flex; flex-direction: column; gap: 4px; }
+        .review-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
 
         .review-author {
             font-size: 14px;
@@ -653,14 +706,21 @@
             color: #212529;
         }
 
-        .review-score { font-size: 15px; letter-spacing: 1px; }
+        .review-score {
+            font-size: 15px;
+            letter-spacing: 1px;
+        }
 
         .review-date {
             font-size: 12px;
             color: #adb5bd;
         }
 
-        .review-actions { display: flex; gap: 6px; flex-shrink: 0; }
+        .review-actions {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
 
         .btn-edit-review, .btn-delete-review {
             border: none;
@@ -675,8 +735,14 @@
             color: #495057;
         }
 
-        .btn-edit-review:hover   { background: #e9ecef; }
-        .btn-delete-review:hover { background: #fee2e2; color: #991b1b; }
+        .btn-edit-review:hover {
+            background: #e9ecef;
+        }
+
+        .btn-delete-review:hover {
+            background: #fee2e2;
+            color: #991b1b;
+        }
 
         .review-body {
             font-size: 14px;
@@ -689,7 +755,10 @@
             margin-top: 14px;
             display: none;
         }
-        .review-edit-form.open { display: block; }
+
+        .review-edit-form.open {
+            display: block;
+        }
 
         .review-empty {
             text-align: center;
@@ -700,8 +769,15 @@
             color: #adb5bd;
         }
 
-        .review-empty-icon { font-size: 38px; margin-bottom: 12px; }
-        .review-empty-text { font-size: 15px; font-weight: 500; }
+        .review-empty-icon {
+            font-size: 38px;
+            margin-bottom: 12px;
+        }
+
+        .review-empty-text {
+            font-size: 15px;
+            font-weight: 500;
+        }
 
         .review-pagination {
             display: flex;
@@ -713,7 +789,8 @@
         }
 
         .page-btn {
-            width: 36px; height: 36px;
+            width: 36px;
+            height: 36px;
             border-radius: 10px;
             border: 1.5px solid #e5e7eb;
             background: white;
@@ -725,7 +802,10 @@
             font-family: inherit;
         }
 
-        .page-btn:hover { border-color: #74b9ff; color: #74b9ff; }
+        .page-btn:hover {
+            border-color: #74b9ff;
+            color: #74b9ff;
+        }
 
         .page-btn.active {
             background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
@@ -734,10 +814,14 @@
             box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
         }
 
-        .page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+        .page-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
 
         .page-arrow {
-            width: 36px; height: 36px;
+            width: 36px;
+            height: 36px;
             border-radius: 10px;
             border: 1.5px solid #e5e7eb;
             background: white;
@@ -748,8 +832,15 @@
             color: #495057;
         }
 
-        .page-arrow:hover  { border-color: #74b9ff; color: #74b9ff; }
-        .page-arrow:disabled { opacity: 0.35; cursor: not-allowed; }
+        .page-arrow:hover {
+            border-color: #74b9ff;
+            color: #74b9ff;
+        }
+
+        .page-arrow:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
 
         .review-loading {
             text-align: center;
@@ -759,10 +850,29 @@
         }
 
         @media (max-width: 768px) {
-            .review-section  { padding: 0 16px; }
-            .review-summary  { padding: 20px; }
-            .review-form-wrap { padding: 20px; }
-            .review-card     { padding: 16px 18px; }
+            .review-section {
+                padding: 0 16px;
+            }
+
+            .review-summary {
+                padding: 20px;
+            }
+
+            .review-section {
+                padding: 0 16px;
+            }
+
+            .review-summary {
+                padding: 20px;
+            }
+
+            .review-form-wrap {
+                padding: 20px;
+            }
+
+            .review-card {
+                padding: 16px 18px;
+            }
         }
 
         /* 기존 .product-image 스타일 수정 및 추가 */
@@ -808,16 +918,24 @@
             align-items: center;
             justify-content: center;
             height: 400px;
+
+            .review-card {
+                padding: 16px 18px;
+            }
         }
     </style>
 </head>
-<body>
 
+<body>
 <header>
     <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
     <div class="header-icons">
         <button class="icon-btn">🔍</button>
-        <button class="icon-btn">🛒</button>
+        <button class="icon-btn"
+                id="cartIconBtn"
+                title="장바구니"
+                onclick="location.href='cart.html'">🛒
+        </button>
         <button class="icon-btn">👤</button>
     </div>
 </header>
@@ -825,13 +943,12 @@
 <button class="back-btn" onclick="history.back()">← 뒤로가기</button>
 
 <div class="product-detail-container" id="productContainer">
-    <div class="loading">상품 정보를 불러오는 중...</div>
+    <div class="loading" id="loading">상품 정보를 불러오는 중...</div>
 </div>
 
 <div class="review-divider"></div>
 
 <section class="review-section" id="reviewSection" style="display:none;">
-
     <div class="review-header">
         <div class="review-title">
             후기
@@ -864,12 +981,10 @@
             <span class="star-hint" id="writeHint">선택 안 됨</span>
         </div>
 
-        <textarea
-                class="review-textarea"
-                id="writeContent"
-                placeholder="상품에 대한 솔직한 후기를 남겨주세요 (10자 이상)"
-                maxlength="500"
-        ></textarea>
+        <textarea class="review-textarea"
+                  id="writeContent"
+                  placeholder="상품에 대한 솔직한 후기를 남겨주세요 (10자 이상)"
+                  maxlength="500"></textarea>
 
         <div class="review-form-footer">
             <button class="btn-cancel" id="writeCancelBtn">취소</button>
@@ -877,9 +992,8 @@
         </div>
     </div>
 
-    <div class="review-list"       id="reviewList"></div>
+    <div class="review-list" id="reviewList"></div>
     <div class="review-pagination" id="reviewPagination"></div>
-
 </section>
 
 <footer>
@@ -894,24 +1008,35 @@
     const productId = urlParams.get('id');
 
     const productEmojis = {
-        1:'🏍️', 2:'✨', 3:'⚔️', 4:'🎮', 5:'🎵',
-        6:'⚡',  7:'🌈', 8:'💎', 9:'🎨', 10:'🧸'
+        1: '🏍️', 2: '✨', 3: '⚔️', 4: '🎮', 5: '🎵',
+        6: '⚡', 7: '🌈', 8: '💎', 9: '🎨', 10: '🧸'
     };
 
     // 상품 상태 한글 변환
     const statusText = {
-        'AVAILABLE'   : '판매중',
-        'SOLDOUT'     : '품절',
+        'FOR_SALE': '판매중',
+        'SOLDOUT': '품절',
         'DISCONTINUED': '단종'
     };
 
+    const getToken = () => localStorage.getItem('accessToken');
+    const isLoggedIn = () => !!getToken();
+
+    function requireLoginAndRedirect() {
+        alert('로그인이 필요한 서비스입니다.');
+        location.href = 'login.html';
+    }
+
     // 상품 정보 로드
     async function loadProductDetail() {
-        if (!productId) { showError('상품을 찾을 수 없습니다.'); return; }
+        if (!productId) {
+            showError('상품을 찾을 수 없습니다.');
+            return;
+        }
         try {
             const response = await fetch(`http://localhost:8080/ssak3/products/${productId}`);
             if (!response.ok) throw new Error('상품을 불러올 수 없습니다.');
-            const result  = await response.json();
+            const result = await response.json();
             const product = result.data;
             displayProduct(product);
         } catch (error) {
@@ -922,62 +1047,65 @@
 
     // 상품 정보 표시
     function displayProduct(product) {
+        window.__currentProduct = product;
         const container = document.getElementById('productContainer');
-        const isAvailable = product.status === 'AVAILABLE';
+        const isAvailable = product.status === 'FOR_SALE';
         const emoji = productEmojis[product.id] || '📦';
 
-        // 🔥 이미지 경로 설정 (백엔드 필드명에 맞춰 확인 필요: image vs imageUrl)
         const mainImgTag = product.imageUrl
             ? `<img src="${product.imageUrl}" class="main-img" alt="${product.name}">`
             : `<div class="emoji-fallback">${emoji}</div>`;
 
         const detailImgTag = product.detailImageUrl
             ? `<div class="detail-image-section">
-                <h3>상세 설명</h3>
-                <img src="${product.detailImageUrl}" class="detail-img" alt="상세이미지">
-           </div>`
+           <h3>상세 설명</h3>
+           <img src="${product.detailImageUrl}" class="detail-img" alt="상세이미지">
+         </div>`
             : '';
 
         container.innerHTML = `
-    <div class="product-main">
+      <div class="product-main">
         <div class="product-image-section">
-            ${mainImgTag}
+          ${mainImgTag}
         </div>
         <div class="product-info-section">
-            <span class="product-category">카테고리 ${product.categoryId}</span>
-            <h1 class="product-name">${product.name}</h1>
-            <div class="product-price">${product.price.toLocaleString()}원</div>
-            <span class="product-status ${isAvailable ? 'FOR_SALE' : 'SOLD_OUT'}">
-                ${isAvailable ? '✓' : '✕'} ${statusText[product.status] || product.status}
-            </span>
-            <div class="divider"></div>
+          <span class="product-category">카테고리 ${product.categoryId}</span>
+          <h1 class="product-name">${product.name}</h1>
+          <div class="product-price">${Number(product.price || 0).toLocaleString()}원</div>
 
-            ${product.information ? `
-                <div class="product-description">
-                    <div class="description-title">상품 정보</div>
-                    <div class="description-text">${product.information}</div>
-                </div>` : ''}
+          <span class="product-status ${isAvailable ? 'available' : 'soldout'}">
+            ${isAvailable ? '✓' : '✕'} ${statusText[product.status] || product.status}
+          </span>
 
-            <div class="quantity-selector">
-                <span class="quantity-label">수량</span>
-                <div class="quantity-controls">
-                    <button class="quantity-btn" onclick="decreaseQuantity()" ${!isAvailable ? 'disabled' : ''}>-</button>
-                    <span class="quantity-value" id="quantityValue">1</span>
-                    <button class="quantity-btn" onclick="increaseQuantity()" ${!isAvailable ? 'disabled' : ''}>+</button>
-                </div>
+          <div class="divider"></div>
+
+          ${product.information ? `
+            <div class="product-description">
+              <div class="description-title">상품 정보</div>
+              <div class="description-text">${product.information}</div>
+            </div>` : ''}
+
+          <div class="quantity-selector">
+            <span class="quantity-label">수량</span>
+            <div class="quantity-controls">
+              <button class="quantity-btn" onclick="decreaseQuantity()" ${!isAvailable ? 'disabled' : ''}>-</button>
+              <span class="quantity-value" id="quantityValue">1</span>
+              <button class="quantity-btn" onclick="increaseQuantity()" ${!isAvailable ? 'disabled' : ''}>+</button>
             </div>
+          </div>
 
-            <div class="action-buttons">
-                <button class="cart-btn" onclick="addToCart()" ${!isAvailable ? 'disabled' : ''}>
-                    🛒 장바구니
-                </button>
-                <button class="buy-btn" onclick="buyNow()" ${!isAvailable ? 'disabled' : ''}>
-                    바로 구매
-                </button>
-            </div>
+          <div class="action-buttons">
+            <button class="cart-btn" onclick="addToCart()" ${!isAvailable ? 'disabled' : ''}>
+              🛒 장바구니
+            </button>
+            <button class="buy-btn" onclick="buyNow()" ${!isAvailable ? 'disabled' : ''}>
+              바로 구매
+            </button>
+          </div>
         </div>
-    </div>
-    ${detailImgTag}
+      </div>
+
+      ${detailImgTag}
     `;
 
         initReviews();
@@ -986,24 +1114,30 @@
     // 에러 표시
     function showError(message) {
         document.getElementById('productContainer').innerHTML = `
-        <div class="error">
-            <div class="error-title">😢 오류가 발생했습니다</div>
-            <div class="error-message">${message}</div>
-        </div>`;
+      <div class="error">
+        <div class="error-title">😢 오류가 발생했습니다</div>
+        <div class="error-message">${message}</div>
+      </div>
+    `;
     }
 
     function increaseQuantity() {
         const el = document.getElementById('quantityValue');
-        el.textContent = parseInt(el.textContent) + 1;
+        el.textContent = String(parseInt(el.textContent || '1', 10) + 1);
     }
 
     function decreaseQuantity() {
         const el = document.getElementById('quantityValue');
-        const q  = parseInt(el.textContent);
-        if (q > 1) el.textContent = q - 1;
+        const qty = parseInt(el.textContent || '1', 10);
+        if (qty > 1) el.textContent = String(qty - 1);
     }
 
     async function addToCart() {
+        if (!isLoggedIn()) {
+            requireLoginAndRedirect();
+            return;
+        }
+
         const product = window.__currentProduct;
         if (!product?.id) {
             alert('상품 정보를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
@@ -1011,60 +1145,36 @@
         }
 
         const quantity = parseInt(document.getElementById('quantityValue')?.textContent || '1', 10);
-
-        // 로그인 토큰(JWT) 우선, 없으면 쿠키(카카오 로그인)로 시도
-        const token = localStorage.getItem('accessToken');
+        const token = getToken();
         const url = 'http://localhost:8080/ssak3/carts';
 
-        const payload = {
-            productId: product.id,
-            quantity: quantity
-            // timeDealId: null (일반 상품이면 생략)
-        };
+        const payload = {productId: product.id, quantity};
 
         try {
-            let res;
+            // JWT로 요청 (로그인 체크 했으니 기본은 JWT로)
+            let res = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(payload)
+            });
 
-            // 1) JWT로 시도
-            if (token) {
-                res = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify(payload)
-                });
-            }
-
-            // 2) 토큰 없거나 401이면 쿠키로 재시도
-            if (!token || res.status === 401) {
-                res = await fetch(url, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    credentials: 'include',
-                    body: JSON.stringify(payload)
-                });
+            // 만약 토큰이 만료/무효로 401이면 로그인으로
+            if (res.status === 401) {
+                requireLoginAndRedirect();
+                return;
             }
 
             const result = await res.json().catch(() => null);
 
             if (!res.ok) {
-                // 로그인 필요 or 기타 에러 메시지 처리
-                const msg = result?.message || '장바구니 담기에 실패했습니다.';
-                alert(msg);
-
-                // 인증 실패면 로그인 페이지로 보내고 싶으면 아래 주석 해제
-                if (res.status === 401) {
-                    // location.href = 'login.html';
-                }
+                alert(result?.message || '장바구니 담기에 실패했습니다.');
                 return;
             }
 
             alert('장바구니에 담았습니다!');
-            // 담고 나서 장바구니로 이동하고 싶으면 아래 주석 해제
-            // location.href = 'cart.html';
-
         } catch (e) {
             console.error('addToCart error:', e);
             alert('네트워크 오류로 장바구니 담기에 실패했습니다.');
@@ -1072,34 +1182,35 @@
     }
 
     function buyNow() {
-        const quantity = document.getElementById('quantityValue').textContent;
-        alert(`${quantity}개 구매하기`);
+        if (!isLoggedIn()) {
+            requireLoginAndRedirect();
+            return;
+        }
+
+        const quantity = document.getElementById('quantityValue')?.textContent || '1';
+        window.location.href = `single-product-order.html?productId=${productId}&quantity=${quantity}`;
     }
 
+    // 초기 실행
     loadProductDetail();
 
-    /* ═══════════════════════════════════════════════════════
-       ★ 리뷰 섹션 (추가)
-       ═══════════════════════════════════════════════════════ */
-
-    const getToken   = () => localStorage.getItem('accessToken');
     function getMyId() {
         const stored = localStorage.getItem('userId');
-        if (stored) return stored;   // ① localStorage 우선
+        if (stored) return stored;
 
         const token = getToken();
         if (!token) return null;
 
         try {
             const payload = JSON.parse(atob(token.split('.')[1]));
-            // ② JWT payload.userId 클레임, 없으면 payload.sub 사용
             return String(payload.userId != null ? payload.userId : (payload.sub || ''));
-        } catch (e) { return null; }
+        } catch (e) {
+            return null;
+        }
     }
-    const isLoggedIn = () => !!getToken();
 
     function authHeaders() {
-        const h = { 'Content-Type': 'application/json' };
+        const h = {'Content-Type': 'application/json'};
         const t = getToken();
         if (t) h['Authorization'] = 'Bearer ' + t;
         return h;
@@ -1108,41 +1219,37 @@
     const reviewApi = {
         getList: async (page = 0) => {
             const params = new URLSearchParams({
-                productId: productId,
-                page     : page,
-                size     : 5,
-                sort     : 'id,desc'
+                productId: productId, page: page, size: 5, sort: 'id,desc'
             });
-            const r = await fetch(
-                `http://localhost:8080/ssak3/reviews?${params}`,
-                { headers: authHeaders(), credentials: 'include' }
-            );
+            const r = await fetch(`http://localhost:8080/ssak3/reviews?${params}`, {
+                headers: authHeaders(), credentials: 'include'
+            });
             if (!r.ok) throw new Error(`HTTP ${r.status}`);
             return (await r.json()).data;
         },
         create: async (content, score) => {
             const r = await fetch('http://localhost:8080/ssak3/reviews', {
-                method : 'POST',
+                method: 'POST',
                 headers: authHeaders(),
                 credentials: 'include',
-                body   : JSON.stringify({ productId: Number(productId), content, score })
+                body: JSON.stringify({productId: Number(productId), content, score})
             });
             if (!r.ok) throw new Error(`HTTP ${r.status}`);
             return (await r.json()).data;
         },
         update: async (reviewId, content, score) => {
             const r = await fetch(`http://localhost:8080/ssak3/reviews/${reviewId}`, {
-                method : 'PATCH',
+                method: 'PATCH',
                 headers: authHeaders(),
                 credentials: 'include',
-                body   : JSON.stringify({ productId: Number(productId), content, score })
+                body: JSON.stringify({productId: Number(productId), content, score})
             });
             if (!r.ok) throw new Error(`HTTP ${r.status}`);
             return (await r.json()).data;
         },
         delete: async (reviewId) => {
             const r = await fetch(`http://localhost:8080/ssak3/reviews/${reviewId}`, {
-                method : 'DELETE',
+                method: 'DELETE',
                 headers: authHeaders(),
                 credentials: 'include'
             });
@@ -1151,35 +1258,26 @@
         }
     };
 
-    let reviews    = [];
-    let curPage    = 0;
+    let reviews = [];
+    let curPage = 0;
     let totalPages = 1;
     let writeScore = 0;
     let editScores = {};
 
     const SCORE_LABELS = ['', '별로예요', '그저 그래요', '보통이에요', '좋아요', '최고예요'];
 
-    /* ─────────────────────────────────────────────────────
-       ★ 수정된 starsHtml
-       - 기존: style="font-size:${size}px"  → IDE/브라우저 에러
-       - 수정: lg 파라미터로 CSS 클래스 전환 (인라인 style 완전 제거)
-             starsHtml(score)       → .star-on / .star-off     (16px, 리뷰 카드용)
-             starsHtml(score, true) → .star-on--lg / .star-off--lg (22px, 평균 요약용)
-       ───────────────────────────────────────────────────── */
     function starsHtml(score, lg) {
-        const n   = Math.round(score || 0);
-        const on  = lg ? 'star-on--lg'  : 'star-on';
+        const n = Math.round(score || 0);
+        const on = lg ? 'star-on--lg' : 'star-on';
         const off = lg ? 'star-off--lg' : 'star-off';
         let h = '';
-        for (let i = 1; i <= 5; i++)
-            h += '<span class="' + (i <= n ? on : off) + '">★</span>';
+        for (let i = 1; i <= 5; i++) h += '<span class="' + (i <= n ? on : off) + '">★</span>';
         return h;
     }
 
     function fmtDate(dt) {
         if (!dt) return '';
-        return new Date(dt).toLocaleDateString('ko-KR',
-            { year: 'numeric', month: '2-digit', day: '2-digit' });
+        return new Date(dt).toLocaleDateString('ko-KR', {year: 'numeric', month: '2-digit', day: '2-digit'});
     }
 
     function esc(s) {
@@ -1190,17 +1288,18 @@
 
     function updateSummary() {
         const el = document.getElementById('reviewSummary');
-        if (!reviews.length) { el.style.display = 'none'; return; }
+        if (!reviews.length) {
+            el.style.display = 'none';
+            return;
+        }
         const avg = reviews.reduce((s, r) => s + (r.score || 0), 0) / reviews.length;
         document.getElementById('avgNumber').textContent = avg.toFixed(1);
-        // ★ 수정: starsHtml(avg, 22) → starsHtml(avg, true)
-        document.getElementById('avgStars').innerHTML    = starsHtml(Math.round(avg), true);
+        document.getElementById('avgStars').innerHTML = starsHtml(Math.round(avg), true);
         el.style.display = 'flex';
     }
 
     function renderList() {
         document.getElementById('reviewCount').textContent = reviews.length + '개';
-
         const listEl = document.getElementById('reviewList');
 
         if (!reviews.length) {
@@ -1214,14 +1313,15 @@
             return;
         }
 
-        listEl.innerHTML = reviews.map(function(r) {
+        listEl.innerHTML = reviews.map(function (r) {
             var isOwner = isLoggedIn() && String(getMyId()) === String(r.userId);
             var actionsHtml = isOwner
                 ? '<div class="review-actions">' +
-                '<button class="btn-edit-review"   onclick="openEdit(' + r.id + ')">수정</button>' +
+                '<button class="btn-edit-review" onclick="openEdit(' + r.id + ')">수정</button>' +
                 '<button class="btn-delete-review" onclick="doDelete(' + r.id + ')">삭제</button>' +
                 '</div>'
                 : '';
+
             var editFormHtml = isOwner
                 ? '<div class="review-edit-form" id="ef_' + r.id + '">' +
                 '<div class="star-row" style="margin-bottom:12px;">' +
@@ -1256,7 +1356,7 @@
                 '</div>';
         }).join('');
 
-        reviews.forEach(function(r) {
+        reviews.forEach(function (r) {
             if (!isLoggedIn() || String(getMyId()) !== String(r.userId)) return;
             editScores[r.id] = r.score || 0;
             bindEditPicker(r.id, r.score || 0);
@@ -1272,45 +1372,50 @@
         if (totalPages <= 1) return;
 
         const prev = document.createElement('button');
-        prev.className   = 'page-arrow';
+        prev.className = 'page-arrow';
         prev.textContent = '‹';
-        prev.disabled    = curPage === 0;
-        prev.addEventListener('click', function() { loadPage(curPage - 1); });
+        prev.disabled = curPage === 0;
+        prev.addEventListener('click', function () {
+            loadPage(curPage - 1);
+        });
         el.appendChild(prev);
 
         const start = Math.max(0, curPage - 2);
-        const end   = Math.min(totalPages - 1, start + 4);
+        const end = Math.min(totalPages - 1, start + 4);
 
         for (let i = start; i <= end; i++) {
             const btn = document.createElement('button');
-            btn.className   = 'page-btn' + (i === curPage ? ' active' : '');
+            btn.className = 'page-btn' + (i === curPage ? ' active' : '');
             btn.textContent = i + 1;
-            (function(_i) {
-                btn.addEventListener('click', function() { loadPage(_i); });
+            (function (_i) {
+                btn.addEventListener('click', function () {
+                    loadPage(_i);
+                });
             })(i);
             el.appendChild(btn);
         }
 
         const next = document.createElement('button');
-        next.className   = 'page-arrow';
+        next.className = 'page-arrow';
         next.textContent = '›';
-        next.disabled    = curPage === totalPages - 1;
-        next.addEventListener('click', function() { loadPage(curPage + 1); });
+        next.disabled = curPage === totalPages - 1;
+        next.addEventListener('click', function () {
+            loadPage(curPage + 1);
+        });
         el.appendChild(next);
     }
 
     async function loadPage(page) {
         curPage = page;
-        document.getElementById('reviewList').innerHTML =
-            '<div class="review-loading">후기를 불러오는 중...</div>';
+        document.getElementById('reviewList').innerHTML = '<div class="review-loading">후기를 불러오는 중...</div>';
 
         try {
             const data = await reviewApi.getList(page);
-            reviews    = data.content    != null ? data.content    : [];
+            reviews = data.content != null ? data.content : [];
             totalPages = data.totalPages != null ? data.totalPages : 1;
         } catch (e) {
             console.warn('[리뷰 API 오류]:', e.message);
-            reviews    = [];
+            reviews = [];
             totalPages = 1;
         }
 
@@ -1319,22 +1424,32 @@
 
     function bindEditPicker(rid, init) {
         const picker = document.getElementById('ep_' + rid);
-        const hint   = document.getElementById('eh_' + rid);
+        const hint = document.getElementById('eh_' + rid);
         if (!picker) return;
 
         const stars = picker.querySelectorAll('span');
 
         function paint(v) {
-            stars.forEach(function(s) { s.className = parseInt(s.dataset.v) <= v ? 'lit' : ''; });
+            stars.forEach(function (s) {
+                s.className = parseInt(s.dataset.v, 10) <= v ? 'lit' : '';
+            });
             hint.textContent = v > 0 ? v + '점 · ' + SCORE_LABELS[v] : '선택 안 됨';
         }
 
         paint(init);
-        stars.forEach(function(s) {
-            const v = parseInt(s.dataset.v);
-            s.addEventListener('mouseenter', function() { paint(v); });
-            s.addEventListener('mouseleave', function() { paint(editScores[rid]); });
-            s.addEventListener('click',      function() { editScores[rid] = v; paint(v); });
+
+        stars.forEach(function (s) {
+            const v = parseInt(s.dataset.v, 10);
+            s.addEventListener('mouseenter', function () {
+                paint(v);
+            });
+            s.addEventListener('mouseleave', function () {
+                paint(editScores[rid]);
+            });
+            s.addEventListener('click', function () {
+                editScores[rid] = v;
+                paint(v);
+            });
         });
     }
 
@@ -1350,33 +1465,40 @@
 
     async function doUpdate(rid) {
         const content = document.getElementById('et_' + rid).value.trim();
-        const score   = editScores[rid] || 0;
-        const errEl   = document.getElementById('ee_' + rid);
-        const btn     = document.getElementById('es_' + rid);
+        const score = editScores[rid] || 0;
+        const errEl = document.getElementById('ee_' + rid);
+        const btn = document.getElementById('es_' + rid);
 
         errEl.classList.remove('show');
 
         if (content.length < 10) {
             errEl.textContent = '후기 내용은 10자 이상 입력해주세요.';
-            errEl.classList.add('show'); return;
+            errEl.classList.add('show');
+            return;
         }
         if (score === 0) {
             errEl.textContent = '별점을 선택해주세요.';
-            errEl.classList.add('show'); return;
+            errEl.classList.add('show');
+            return;
         }
 
-        btn.disabled    = true;
+        btn.disabled = true;
         btn.textContent = '수정 중...';
 
         try {
             await reviewApi.update(rid, content, score);
-            const idx = reviews.findIndex(function(r) { return r.id === rid; });
-            if (idx !== -1) { reviews[idx].content = content; reviews[idx].score = score; }
+            const idx = reviews.findIndex(function (r) {
+                return r.id === rid;
+            });
+            if (idx !== -1) {
+                reviews[idx].content = content;
+                reviews[idx].score = score;
+            }
             renderList();
         } catch (e) {
             errEl.textContent = '수정에 실패했습니다. 다시 시도해주세요.';
             errEl.classList.add('show');
-            btn.disabled    = false;
+            btn.disabled = false;
             btn.textContent = '수정 완료';
         }
     }
@@ -1385,7 +1507,9 @@
         if (!confirm('후기를 삭제하시겠습니까?')) return;
         try {
             await reviewApi.delete(rid);
-            reviews = reviews.filter(function(r) { return r.id !== rid; });
+            reviews = reviews.filter(function (r) {
+                return r.id !== rid;
+            });
             renderList();
         } catch (e) {
             alert('삭제에 실패했습니다. 다시 시도해주세요.');
@@ -1394,19 +1518,28 @@
 
     function initWritePicker() {
         const picker = document.getElementById('writePicker');
-        const hint   = document.getElementById('writeHint');
-        const stars  = picker.querySelectorAll('span');
+        const hint = document.getElementById('writeHint');
+        const stars = picker.querySelectorAll('span');
 
         function paint(v) {
-            stars.forEach(function(s) { s.className = parseInt(s.dataset.v) <= v ? 'lit' : ''; });
+            stars.forEach(function (s) {
+                s.className = parseInt(s.dataset.v, 10) <= v ? 'lit' : '';
+            });
             hint.textContent = v > 0 ? v + '점 · ' + SCORE_LABELS[v] : '선택 안 됨';
         }
 
-        stars.forEach(function(s) {
-            const v = parseInt(s.dataset.v);
-            s.addEventListener('mouseenter', function() { paint(v); });
-            s.addEventListener('mouseleave', function() { paint(writeScore); });
-            s.addEventListener('click',      function() { writeScore = v; paint(v); });
+        stars.forEach(function (s) {
+            const v = parseInt(s.dataset.v, 10);
+            s.addEventListener('mouseenter', function () {
+                paint(v);
+            });
+            s.addEventListener('mouseleave', function () {
+                paint(writeScore);
+            });
+            s.addEventListener('click', function () {
+                writeScore = v;
+                paint(v);
+            });
         });
     }
 
@@ -1414,8 +1547,9 @@
         writeScore = 0;
         document.getElementById('writeContent').value = '';
         document.getElementById('writeHint').textContent = '선택 안 됨';
-        document.getElementById('writePicker').querySelectorAll('span')
-            .forEach(function(s) { s.className = ''; });
+        document.getElementById('writePicker').querySelectorAll('span').forEach(function (s) {
+            s.className = '';
+        });
         document.getElementById('writeError').classList.remove('show');
         document.getElementById('reviewFormWrap').classList.add('open');
         document.getElementById('writeContent').focus();
@@ -1427,21 +1561,23 @@
 
     async function doCreate() {
         const content = document.getElementById('writeContent').value.trim();
-        const errEl   = document.getElementById('writeError');
-        const btn     = document.getElementById('writeSubmitBtn');
+        const errEl = document.getElementById('writeError');
+        const btn = document.getElementById('writeSubmitBtn');
 
         errEl.classList.remove('show');
 
         if (content.length < 10) {
             errEl.textContent = '후기 내용은 10자 이상 입력해주세요.';
-            errEl.classList.add('show'); return;
+            errEl.classList.add('show');
+            return;
         }
         if (writeScore === 0) {
             errEl.textContent = '별점을 선택해주세요.';
-            errEl.classList.add('show'); return;
+            errEl.classList.add('show');
+            return;
         }
 
-        btn.disabled    = true;
+        btn.disabled = true;
         btn.textContent = '등록 중...';
 
         try {
@@ -1453,7 +1589,7 @@
             errEl.textContent = '등록에 실패했습니다. 다시 시도해주세요.';
             errEl.classList.add('show');
         } finally {
-            btn.disabled    = false;
+            btn.disabled = false;
             btn.textContent = '등록';
         }
     }
@@ -1463,7 +1599,7 @@
 
         if (isLoggedIn()) {
             el.innerHTML = '<button class="review-write-btn" id="writeToggleBtn">✏️ 후기 작성</button>';
-            document.getElementById('writeToggleBtn').addEventListener('click', function() {
+            document.getElementById('writeToggleBtn').addEventListener('click', function () {
                 const wrap = document.getElementById('reviewFormWrap');
                 wrap.classList.contains('open') ? closeWrite() : openWrite();
             });
@@ -1483,13 +1619,12 @@
         renderHeaderBtn();
         initWritePicker();
 
-        document.getElementById('writeCancelBtn')
-            .addEventListener('click', closeWrite);
-        document.getElementById('writeSubmitBtn')
-            .addEventListener('click', doCreate);
+        document.getElementById('writeCancelBtn').addEventListener('click', closeWrite);
+        document.getElementById('writeSubmitBtn').addEventListener('click', doCreate);
 
         await loadPage(0);
     }
 </script>
+
 </body>
 </html>

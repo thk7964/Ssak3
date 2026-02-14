@@ -2,11 +2,15 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>장바구니 주문 - 싹쓰리</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
@@ -77,7 +81,9 @@
             gap: 8px;
         }
 
-        .back-btn:hover { background: #e9ecef; }
+        .back-btn:hover {
+            background: #e9ecef;
+        }
 
         .container {
             max-width: 800px;
@@ -157,7 +163,10 @@
             display: block;
         }
 
-        .product-meta { flex: 1; min-width: 0; }
+        .product-meta {
+            flex: 1;
+            min-width: 0;
+        }
 
         .product-name {
             font-size: 16px;
@@ -233,10 +242,17 @@
             display: none;
         }
 
-        .notice.show { display: block; }
+        .notice.show {
+            display: block;
+        }
 
-        .form-group { margin-bottom: 24px; }
-        .form-group:last-child { margin-bottom: 0; }
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
 
         .form-label {
             display: block;
@@ -263,7 +279,9 @@
             box-shadow: 0 0 0 4px rgba(116, 185, 255, 0.1);
         }
 
-        .input-field.error { border-color: #f87171; }
+        .input-field.error {
+            border-color: #f87171;
+        }
 
         .error-message {
             color: #ef4444;
@@ -272,7 +290,9 @@
             display: none;
         }
 
-        .error-message.show { display: block; }
+        .error-message.show {
+            display: block;
+        }
 
         .coupon-select {
             width: 100%;
@@ -306,10 +326,19 @@
             font-size: 15px;
         }
 
-        .summary-row:last-child { margin-bottom: 0; }
+        .summary-row:last-child {
+            margin-bottom: 0;
+        }
 
-        .summary-label { color: #6b7280; font-weight: 500; }
-        .summary-value { font-weight: 700; color: #212529; }
+        .summary-label {
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .summary-value {
+            font-weight: 700;
+            color: #212529;
+        }
 
         .total-row {
             border-top: 2px solid rgba(0, 0, 0, 0.1);
@@ -346,7 +375,9 @@
             box-shadow: 0 6px 20px rgba(116, 185, 255, 0.5);
         }
 
-        .order-btn:active { transform: translateY(0); }
+        .order-btn:active {
+            transform: translateY(0);
+        }
 
         .order-btn:disabled {
             opacity: 0.5;
@@ -384,11 +415,25 @@
         }
 
         @media (max-width: 768px) {
-            header { padding: 16px 20px; }
-            .back-btn { margin: 20px; }
-            .page-title { font-size: 24px; }
-            .product-item { align-items: flex-start; }
-            .line-total { min-width: 90px; }
+            header {
+                padding: 16px 20px;
+            }
+
+            .back-btn {
+                margin: 20px;
+            }
+
+            .page-title {
+                font-size: 24px;
+            }
+
+            .product-item {
+                align-items: flex-start;
+            }
+
+            .line-total {
+                min-width: 90px;
+            }
         }
     </style>
 </head>
@@ -432,19 +477,23 @@
     }
 
     function safeJsonParse(value, fallback) {
-        try { return JSON.parse(value); } catch (_) { return fallback; }
+        try {
+            return JSON.parse(value);
+        } catch (_) {
+            return fallback;
+        }
     }
 
     // 장바구니 페이지에서 저장해둔 선택값 읽기 (order.txt의 /orders/carts 요청 바디 기준)
     function loadSelectionFromStorage() {
         const candidates = [
             // 권장
-            { cartIdKey: 'cartOrder.cartId', listKey: 'cartOrder.cartProductIdList' },
-            { cartIdKey: 'ssak3.cartOrder.cartId', listKey: 'ssak3.cartOrder.cartProductIdList' },
+            {cartIdKey: 'cartOrder.cartId', listKey: 'cartOrder.cartProductIdList'},
+            {cartIdKey: 'ssak3.cartOrder.cartId', listKey: 'ssak3.cartOrder.cartProductIdList'},
 
             // fallback(혹시 기존 구현이 이렇게 되어있을 수도 있어서)
-            { cartIdKey: 'cartId', listKey: 'selectedCartProductIds' },
-            { cartIdKey: 'selectedCartOrderCartId', listKey: 'selectedCartOrderIds' }
+            {cartIdKey: 'cartId', listKey: 'selectedCartProductIds'},
+            {cartIdKey: 'selectedCartOrderCartId', listKey: 'selectedCartOrderIds'}
         ];
 
         for (const c of candidates) {
@@ -490,7 +539,7 @@
 
     function buildAuthHeaders() {
         const token = localStorage.getItem('accessToken');
-        const headers = { 'Content-Type': 'application/json' };
+        const headers = {'Content-Type': 'application/json'};
         if (token) headers.Authorization = 'Bearer ' + token;
         return headers;
     }
@@ -503,17 +552,20 @@
                 credentials: 'include'
             });
 
-            if (res.ok) {
-                const json = await res.json();
-                userCoupons = json.data || [];
-            } else {
+            if (!res.ok) {
                 userCoupons = [];
+                return;
             }
+
+            const json = await res.json();
+
+            userCoupons = Array.isArray(json?.data?.content) ? json.data.content : [];
         } catch (e) {
             console.error('쿠폰 로드 실패:', e);
             userCoupons = [];
         }
     }
+
 
     async function loadCartAndFilterSelected() {
         const res = await fetch(API_BASE + '/ssak3/carts/me', {
@@ -551,7 +603,7 @@
 
         // 구매불가 섞임 체크
         const hasUnpurchasable = selectedItems.some(p => p.purchasable === false);
-        return { hasUnpurchasable };
+        return {hasUnpurchasable};
     }
 
     function calcSubtotal() {
@@ -565,44 +617,32 @@
 
     function getSelectedCouponMeta() {
         const couponSelect = document.getElementById('couponSelect');
-        if (!couponSelect) return { userCouponId: null, discount: 0 };
+        if (!couponSelect) return {userCouponId: null, discount: 0};
 
         const opt = couponSelect.options[couponSelect.selectedIndex];
-        if (!opt || !opt.value) return { userCouponId: null, discount: 0 };
+        if (!opt || !opt.value) return {userCouponId: null, discount: 0};
 
         const discount = Number(opt.dataset.discount || 0);
-        const minPrice = Number(opt.dataset.minPrice || 0);
 
         return {
             userCouponId: Number(opt.value),
-            discount: Number.isFinite(discount) ? discount : 0,
-            minPrice: Number.isFinite(minPrice) ? minPrice : 0
+            discount: Number.isFinite(discount) ? discount : 0
         };
     }
 
     function updateSummary() {
         const subtotal = calcSubtotal();
-        const couponMeta = getSelectedCouponMeta();
-
-        let discount = 0;
-        if (couponMeta.userCouponId) {
-            if (subtotal >= couponMeta.minPrice) {
-                discount = couponMeta.discount;
-            } else {
-                alert(`이 쿠폰은 ${formatPrice(couponMeta.minPrice)} 이상 구매 시 사용 가능합니다.`);
-                document.getElementById('couponSelect').value = '';
-                discount = 0;
-            }
-        }
+        const {userCouponId, discount} = getSelectedCouponMeta();
 
         const shipping = calcShipping(subtotal);
-        const total = subtotal - discount + shipping;
+        const total = subtotal - (userCouponId ? discount : 0) + shipping;
 
         document.getElementById('subtotal').textContent = formatPrice(subtotal);
-        document.getElementById('discount').textContent = discount > 0 ? '-' + formatPrice(discount) : formatPrice(0);
+        document.getElementById('discount').textContent = userCouponId ? '-' + formatPrice(discount) : formatPrice(0);
         document.getElementById('shipping').textContent = formatPrice(shipping);
         document.getElementById('total').textContent = formatPrice(total);
     }
+
 
     function validateAddress() {
         const input = document.getElementById('addressInput');
@@ -622,21 +662,20 @@
     function renderPage(hasUnpurchasable) {
         const container = document.getElementById('mainContainer');
 
-        // 쿠폰 옵션 생성
         let couponOptions = '<option value="">쿠폰을 선택해주세요</option>';
+
         if (userCoupons.length > 0) {
-            userCoupons.forEach(uc => {
-                if (uc.status === 'AVAILABLE' && uc.coupon) {
-                    const c = uc.coupon;
-                    couponOptions += `
-            <option value="${uc.id}"
-                    data-discount="${c.discountValue}"
-                    data-min-price="${c.minOrderPrice}">
-              ${c.name} (${formatPrice(c.discountValue)} 할인)
-            </option>`;
-                }
+            userCoupons.forEach(c => {
+                couponOptions += `
+      <option value="${c.id}" data-discount="${c.discountValue}">
+        ${c.name} (${formatPrice(c.discountValue)} 할인)
+      </option>
+    `;
             });
+        } else {
+            couponOptions += `<option value="" disabled>사용 가능한 쿠폰이 없습니다</option>`;
         }
+
 
         const itemsHtml = selectedItems.map(p => {
             const name = p.productName || '상품';
@@ -768,13 +807,41 @@
                     location.href = 'login.html';
                     return;
                 }
-                let msg = '주문 생성 실패';
+
+                let errBody = null;
                 try {
-                    const err = await res.json();
-                    msg = err.message || msg;
-                } catch (_) {}
-                throw new Error(msg);
+                    errBody = await res.json();
+                } catch (_) {
+                }
+
+                // 서버 응답 형태가 달라도 최대한 잡아내기
+                const serverMsg =
+                    errBody?.message ||
+                    errBody?.error?.message ||
+                    errBody?.data?.message ||
+                    '';
+
+                const serverCode =
+                    errBody?.errorCode ||
+                    errBody?.code ||
+                    errBody?.error?.code ||
+                    '';
+
+                // 결제대기 주문 존재 에러 처리
+                if (
+                    res.status === 400 &&
+                    (serverCode === 'ORDER_PAYMENT_PENDING_EXISTS' ||
+                        serverMsg.includes('결제 대기 중인 주문이 있습니다'))
+                ) {
+                    alert('이미 결제 대기 중인 주문이 있습니다. 해당 주문을 먼저 처리해주세요.');
+                    location.href = 'my-orders.html';
+                    return; // 🔥 반드시 return
+                }
+
+                // 그 외 일반 에러 처리
+                throw new Error(serverMsg || '주문 생성 실패');
             }
+
 
             const json = await res.json();
 
@@ -852,7 +919,7 @@
 
         try {
             await loadUserCoupons();
-            const { hasUnpurchasable } = await loadCartAndFilterSelected();
+            const {hasUnpurchasable} = await loadCartAndFilterSelected();
             renderPage(hasUnpurchasable);
         } catch (e) {
             console.error('초기화 실패:', e);

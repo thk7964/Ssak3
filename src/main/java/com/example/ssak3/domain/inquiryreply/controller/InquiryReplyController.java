@@ -5,6 +5,7 @@ import com.example.ssak3.common.model.AuthUser;
 import com.example.ssak3.domain.inquiryreply.model.request.InquiryReplyCreateRequest;
 import com.example.ssak3.domain.inquiryreply.model.request.InquiryReplyUpdateRequest;
 import com.example.ssak3.domain.inquiryreply.service.InquiryReplyService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -27,7 +28,7 @@ public class InquiryReplyController {
      */
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<ApiResponse> createInquiryReplyApi(@AuthenticationPrincipal AuthUser authUser, @RequestBody InquiryReplyCreateRequest request) {
+    public ResponseEntity<ApiResponse> createInquiryReplyApi(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody InquiryReplyCreateRequest request) {
 
         Long adminId = authUser.getId();
         ApiResponse response = ApiResponse.success("문의 답변 생성 성공", inquiryReplyService.createInquiryReply(adminId, request));
@@ -79,7 +80,7 @@ public class InquiryReplyController {
      */
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/inquiries/{inquiryId}")
-    public ResponseEntity<ApiResponse> updateInquiryReplyApi(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long inquiryId, @RequestBody InquiryReplyUpdateRequest request) {
+    public ResponseEntity<ApiResponse> updateInquiryReplyApi(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long inquiryId, @Valid @RequestBody InquiryReplyUpdateRequest request) {
 
         Long adminId = authUser.getId();
 

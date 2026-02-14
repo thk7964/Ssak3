@@ -72,7 +72,7 @@ public class InquiryService {
         Inquiry foundInquiry =inquiryRepository.findById(inquiryId)
                 .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_NOT_FOUND));
 
-        InquiryReply foundInquiryReply = inquiryReplyRepository.findById(inquiryId)
+        InquiryReply foundInquiryReply = inquiryReplyRepository.findByInquiryIdAndIsDeletedFalse(inquiryId)
                 .orElse(null);  // 문의 답변 없는 경우 null로
 
         foundInquiry.validateUser(user.getId());  // 작성자 검증

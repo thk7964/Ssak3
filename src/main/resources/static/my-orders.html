@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>주문내역 - 싹쓰리</title>
+    <title>전체 주문 내역 - 싹쓰리</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -39,11 +39,7 @@
             flex-shrink: 0;
         }
 
-        .header-icons {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
+        .header-icons { display: flex; gap: 12px; align-items: center; }
 
         .icon-btn {
             background: #f8f9fa;
@@ -56,11 +52,7 @@
             transition: all 0.2s ease;
             color: #495057;
         }
-
-        .icon-btn:hover {
-            background: #e9ecef;
-            transform: translateY(-2px);
-        }
+        .icon-btn:hover { background: #e9ecef; transform: translateY(-2px); }
 
         .auth-btn {
             background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
@@ -106,6 +98,43 @@
             text-align: center;
         }
 
+        /* ✅ 필터 토글 UI */
+        .filters {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 0 auto 16px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            border: 1px solid #eef2f7;
+            background: #ffffff;
+            color: #374151;
+            padding: 10px 14px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-weight: 900;
+            font-size: 13px;
+            transition: all .15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            user-select: none;
+        }
+
+        .filter-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 24px rgba(0,0,0,0.06);
+        }
+
+        .filter-btn.active {
+            border-color: transparent;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: #fff;
+            box-shadow: 0 8px 20px rgba(116, 185, 255, 0.25);
+        }
+
         .card {
             background: white;
             border-radius: 20px;
@@ -131,7 +160,6 @@
             grid-template-columns: 1fr auto;
             gap: 14px;
         }
-
         .order-item:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 28px rgba(0,0,0,0.06);
@@ -146,16 +174,8 @@
             margin-bottom: 8px;
         }
 
-        .order-no {
-            font-weight: 900;
-            color: #212529;
-        }
-
-        .muted {
-            color: #6b7280;
-            font-size: 13px;
-            font-weight: 600;
-        }
+        .order-no { font-weight: 900; color: #212529; }
+        .muted { color: #6b7280; font-size: 13px; font-weight: 600; }
 
         .price {
             font-size: 18px;
@@ -181,7 +201,6 @@
             background: #f8f9fa;
             color: #374151;
         }
-
         .badge.pending { background: #fff7ed; border-color: #fed7aa; color: #9a3412; }
         .badge.done { background: #d1fae5; border-color: #a7f3d0; color: #065f46; }
         .badge.canceled { background: #fee2e2; border-color: #fecaca; color: #991b1b; }
@@ -214,7 +233,6 @@
             color: white;
             box-shadow: 0 4px 12px rgba(116, 185, 255, 0.25);
         }
-
         .btn.primary:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(116, 185, 255, 0.35); }
 
         .btn.danger {
@@ -235,11 +253,7 @@
         .empty .msg { font-size: 16px; font-weight: 800; color: #374151; }
         .empty .submsg { margin-top: 8px; font-size: 13px; }
 
-        .footer-actions {
-            margin-top: 14px;
-            display: flex;
-            justify-content: center;
-        }
+        .footer-actions { margin-top: 14px; display: flex; justify-content: center; }
 
         .more-btn {
             border: none;
@@ -266,12 +280,7 @@
 <header>
     <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
     <div class="header-icons">
-        <button class="icon-btn"
-                id="cartIconBtn"
-                title="장바구니"
-                onclick="location.href='cart.html'">
-            🛒
-        </button>
+        <button class="icon-btn" id="cartIconBtn" title="장바구니" onclick="location.href='cart.html'">🛒</button>
 
         <button class="auth-btn" id="loginBtn" style="display:none;">로그인 / 회원가입</button>
 
@@ -283,7 +292,14 @@
 </header>
 
 <div class="page">
-    <h1 class="page-title">주문내역</h1>
+    <h1 class="page-title">전체 주문 내역</h1>
+
+    <!-- ✅ 전체 버튼 없음 / ✅ 누르면 토글되는 필터 3개 -->
+    <div class="filters">
+        <button class="filter-btn" data-status="PAYMENT_PENDING">결제 대기</button>
+        <button class="filter-btn" data-status="DONE">결제 완료</button>
+        <button class="filter-btn" data-status="CANCELED">취소</button>
+    </div>
 
     <div class="card">
         <div class="list" id="orderList">
@@ -305,8 +321,14 @@
 
     let page = 0;
     const size = 10;
-    let isLast = false;
+    let hasNext = true;   // 첫 로드 가능
     let isLoading = false;
+
+    // ✅ 지금까지 로드한 주문(전체 기준)
+    const allOrders = [];
+
+    // ✅ 선택된 상태들(토글 필터) - 비어있으면 "전체"
+    const selectedStatuses = new Set(); // 'PAYMENT_PENDING' | 'DONE' | 'CANCELED'
 
     function applyHeaderAuthUI() {
         const token = localStorage.getItem('accessToken');
@@ -368,12 +390,8 @@
     function formatDateTime(v) {
         if (!v) return '-';
         try {
-            // LocalDateTime이 "2026-02-12T12:34:56" 형태로 오면 처리
             const d = new Date(v);
-            if (!Number.isNaN(d.getTime())) {
-                return d.toLocaleString('ko-KR');
-            }
-            // 혹시 문자열 그대로면 적당히 가공
+            if (!Number.isNaN(d.getTime())) return d.toLocaleString('ko-KR');
             return String(v).replace('T', ' ');
         } catch {
             return String(v);
@@ -389,97 +407,167 @@
         return { text: s || '상태 없음', cls: '' };
     }
 
-    function getContentFromPageResponse(data) {
-        // PageResponse 구조가 제공되지 않아 유연하게 대응
-        if (!data) return [];
-        if (Array.isArray(data)) return data;
-        return data.content || data.items || data.list || data.results || [];
-    }
-
-    function isLastPage(data) {
-        if (!data || Array.isArray(data)) return true;
-        if (typeof data.last === 'boolean') return data.last;
-        if (typeof data.totalPages === 'number' && typeof data.number === 'number') {
-            return (data.number + 1) >= data.totalPages;
-        }
-        // totalElements/size 기반 추정
-        if (typeof data.totalElements === 'number' && typeof data.size === 'number' && typeof data.number === 'number') {
-            return (data.number + 1) * data.size >= data.totalElements;
-        }
-        return false;
-    }
-
-    function renderEmpty() {
+    function renderEmpty(emoji, msg, submsg) {
         const listEl = document.getElementById('orderList');
         listEl.innerHTML = `
       <div class="empty">
-        <div class="emoji">🧾</div>
-        <div class="msg">주문내역이 없어요</div>
-        <div class="submsg">상품을 주문해보세요!</div>
+        <div class="emoji">${emoji}</div>
+        <div class="msg">${msg}</div>
+        <div class="submsg">${submsg}</div>
       </div>
     `;
     }
 
-    function appendOrders(list) {
+    function buildOrderItem(o) {
+        const orderId = o.orderId;
+        const orderNo = o.orderNo; // ✅ 추가
+        const totalPrice = o.totalPrice;
+        const createdAt = o.createdAt;
+        const st = statusMeta(o.orderStatus);
+
+        const item = document.createElement('div');
+        item.className = 'order-item';
+        item.onclick = () => location.href = `order-detail.html?orderId=${encodeURIComponent(orderId)}`;
+
+        const actionHtml = (String(o.orderStatus) === 'PAYMENT_PENDING')
+            ? `
+      <div class="btn-row">
+        <button class="btn primary" data-action="retry">재결제</button>
+        <button class="btn danger" data-action="cancel">주문 취소</button>
+      </div>
+    `
+            : `<div class="btn-row"></div>`;
+
+        // ✅ 표시용 주문번호: orderNo 우선, 없으면 orderId로 fallback
+        const displayOrderNo = (orderNo && String(orderNo).trim().length > 0)
+            ? orderNo
+            : orderId;
+
+        item.innerHTML = `
+    <div class="left">
+      <div class="topline">
+        <div class="order-no">주문 #${displayOrderNo}</div> <!-- ✅ 변경 -->
+        <span class="badge ${st.cls}">${st.text}</span>
+      </div>
+      <div class="price">${formatWon(totalPrice)}</div>
+      <div class="muted">주문일: ${formatDateTime(createdAt)}</div>
+    </div>
+
+    <div class="right">
+      <div class="muted" style="text-align:right;">상세 보기 →</div>
+      ${actionHtml}
+    </div>
+  `;
+
+        const retryBtn = item.querySelector('button[data-action="retry"]');
+        const cancelBtn = item.querySelector('button[data-action="cancel"]');
+
+        if (retryBtn) {
+            retryBtn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                await retryPayment(orderId, retryBtn, cancelBtn);
+            });
+        }
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                await cancelPending(orderId, retryBtn, cancelBtn);
+            });
+        }
+
+        return item;
+    }
+
+    // ✅ 선택된 상태가 없으면 전체 / 있으면 그 상태들만 보여줌
+    function getFilteredOrders() {
+        if (selectedStatuses.size === 0) return allOrders;
+
+        return allOrders.filter(o => selectedStatuses.has(String(o.orderStatus)));
+    }
+
+    function renderList() {
         const listEl = document.getElementById('orderList');
+        listEl.innerHTML = '';
 
-        // 첫 로드에서 "로딩" empty가 있으면 제거
-        const maybeEmpty = listEl.querySelector('.empty');
-        if (maybeEmpty) listEl.innerHTML = '';
+        const filtered = getFilteredOrders();
 
-        for (const o of list) {
-            const orderId = o.orderId;
-            const totalPrice = o.totalPrice;
-            const createdAt = o.createdAt;
-            const st = statusMeta(o.orderStatus);
-
-            const item = document.createElement('div');
-            item.className = 'order-item';
-            item.onclick = () => location.href = `order-detail.html?orderId=${encodeURIComponent(orderId)}`;
-
-            const actionHtml = (String(o.orderStatus) === 'PAYMENT_PENDING')
-                ? `
-          <div class="btn-row">
-            <button class="btn primary" data-action="retry">재결제</button>
-            <button class="btn danger" data-action="cancel">주문 취소</button>
-          </div>
-        `
-                : `<div class="btn-row"></div>`;
-
-            item.innerHTML = `
-        <div class="left">
-          <div class="topline">
-            <div class="order-no">주문 #${orderId}</div>
-            <span class="badge ${st.cls}">${st.text}</span>
-          </div>
-          <div class="price">${formatWon(totalPrice)}</div>
-          <div class="muted">주문일: ${formatDateTime(createdAt)}</div>
-        </div>
-
-        <div class="right">
-          <div class="muted" style="text-align:right;">상세 보기 →</div>
-          ${actionHtml}
-        </div>
-      `;
-
-            // 버튼 클릭은 카드 클릭(상세이동) 막기
-            const retryBtn = item.querySelector('button[data-action="retry"]');
-            const cancelBtn = item.querySelector('button[data-action="cancel"]');
-
-            if (retryBtn) {
-                retryBtn.addEventListener('click', async (e) => {
-                    e.stopPropagation();
-                    await retryPayment(orderId, retryBtn, cancelBtn);
-                });
+        if (filtered.length === 0) {
+            if (allOrders.length === 0) {
+                renderEmpty('🧾', '주문 내역이 없습니다', '상품을 주문해보세요!');
+            } else if (hasNext) {
+                renderEmpty('🔎', '표시할 주문이 없습니다', '더 보기를 눌러 주문을 더 불러와보세요.');
+            } else {
+                renderEmpty('🧾', '주문 내역이 없습니다', '해당 조건의 주문이 없어요.');
             }
-            if (cancelBtn) {
-                cancelBtn.addEventListener('click', async (e) => {
-                    e.stopPropagation();
-                    await cancelPending(orderId, retryBtn, cancelBtn);
-                });
+            return;
+        }
+
+        for (const o of filtered) listEl.appendChild(buildOrderItem(o));
+    }
+
+    function updateMoreBtn() {
+        const moreBtn = document.getElementById('moreBtn');
+        moreBtn.style.display = hasNext ? 'inline-flex' : 'none';
+        moreBtn.disabled = isLoading;
+    }
+
+    // ✅ 버튼 UI(active) 동기화
+    function syncFilterButtonsUI() {
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            const st = btn.dataset.status;
+            btn.classList.toggle('active', selectedStatuses.has(st));
+        });
+    }
+
+    // ✅ 토글 필터: 다시 누르면 해제 / 모두 해제되면 자동으로 전체 표시
+    function toggleStatus(status) {
+        if (selectedStatuses.has(status)) selectedStatuses.delete(status);
+        else selectedStatuses.add(status);
+
+        syncFilterButtonsUI();
+        renderList();
+    }
+
+    async function loadNextPage() {
+        if (isLoading) return;
+        if (!hasNext && page !== 0) return;
+
+        isLoading = true;
+        updateMoreBtn();
+
+        try {
+            const res = await apiFetch(`/orders?page=${page}&size=${size}`, { method: 'GET' });
+            if (!res.ok) {
+                if (res.status === 401 || res.status === 403) {
+                    alert('로그인이 필요합니다.');
+                    location.href = 'login.html';
+                    return;
+                }
+                const txt = await res.text().catch(() => '');
+                throw new Error(txt || `주문 목록 조회 실패 (${res.status})`);
             }
 
-            listEl.appendChild(item);
+            const json = await res.json();
+            const data = json.data || {};
+            const list = Array.isArray(data.content) ? data.content : [];
+
+            allOrders.push(...list);
+
+            const currentPage = Number(data.page);
+            const totalPages = Number(data.totalPages);
+            hasNext = (Number.isFinite(currentPage) && Number.isFinite(totalPages))
+                ? (currentPage + 1 < totalPages)
+                : false;
+
+            page = Number.isFinite(currentPage) ? (currentPage + 1) : (page + 1);
+
+            renderList();
+        } catch (err) {
+            console.error(err);
+            alert('주문 목록을 불러오지 못했습니다.');
+        } finally {
+            isLoading = false;
+            updateMoreBtn();
         }
     }
 
@@ -517,11 +605,11 @@
                 const txt = await res.text().catch(() => '');
                 throw new Error(txt || `취소 실패 (${res.status})`);
             }
-            // 가장 안전: 목록 새로고침(첫 페이지부터)
-            page = 0;
-            isLast = false;
-            document.getElementById('orderList').innerHTML = '';
-            await loadNextPage(true);
+
+            // ✅ 현재까지 로드된 목록에서 제거 후 다시 렌더
+            const idx = allOrders.findIndex(o => Number(o.orderId) === Number(orderId));
+            if (idx >= 0) allOrders.splice(idx, 1);
+            renderList();
         } catch (err) {
             console.error(err);
             alert('주문 취소에 실패했습니다.');
@@ -530,58 +618,24 @@
         }
     }
 
-    async function loadNextPage(force = false) {
-        if (isLoading) return;
-        if (isLast && !force) return;
-
-        isLoading = true;
-        const moreBtn = document.getElementById('moreBtn');
-        moreBtn.disabled = true;
-
-        try {
-            const res = await apiFetch(`/orders?page=${page}&size=${size}`, { method: 'GET' });
-            if (!res.ok) {
-                if (res.status === 401 || res.status === 403) {
-                    alert('로그인이 필요합니다.');
-                    location.href = 'login.html';
-                    return;
-                }
-                const txt = await res.text().catch(() => '');
-                throw new Error(txt || `주문 목록 조회 실패 (${res.status})`);
-            }
-
-            const json = await res.json();
-            const data = json.data;
-            const list = getContentFromPageResponse(data);
-            isLast = isLastPage(data);
-
-            if (!list || list.length === 0) {
-                if (page === 0) renderEmpty();
-                moreBtn.style.display = 'none';
-                return;
-            }
-
-            appendOrders(list);
-
-            page += 1;
-
-            moreBtn.style.display = isLast ? 'none' : 'inline-flex';
-        } catch (err) {
-            console.error(err);
-            alert('주문 목록을 불러오지 못했습니다.');
-        } finally {
-            isLoading = false;
-            moreBtn.disabled = false;
-        }
+    function initFilterButtons() {
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => toggleStatus(btn.dataset.status));
+        });
     }
 
     (async function init() {
         applyHeaderAuthUI();
         initHeaderActions();
+        initFilterButtons();
 
-        document.getElementById('moreBtn').addEventListener('click', () => loadNextPage());
+        // ✅ 기본은 전체(선택 없음)
+        syncFilterButtonsUI();
 
+        // ✅ 첫 페이지 로드
         await loadNextPage();
+
+        document.getElementById('moreBtn').addEventListener('click', loadNextPage);
     })();
 </script>
 </body>

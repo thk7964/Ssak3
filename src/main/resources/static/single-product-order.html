@@ -118,18 +118,20 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
+            overflow: hidden; /* ✅ 핵심 */
             flex-shrink: 0;
             font-size: 80px; /* fallback 이모지용 */
         }
 
+        /* [수정됨] 이미지 크기/비율 제어 */
         .product-image img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: cover; /* ✅ 핵심 */
             display: block;
         }
 
+        /* [추가] 이미지 실패 시 fallback 이모지 */
         .product-image .emoji-fallback {
             line-height: 1;
         }
@@ -407,14 +409,14 @@
 <header>
     <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
     <div class="header-icons">
-        <button class="icon-btn">🔍</button>
+        <button class="icon-btn" onclick="location.href='search.html'">🔍</button>
         <button class="icon-btn"
                 id="cartIconBtn"
                 title="장바구니"
                 onclick="location.href='cart.html'">
             🛒
         </button>
-        <button class="icon-btn">👤</button>
+        <button class="icon-btn" onclick="location.href='mypage.html'">👤</button>
     </div>
 </header>
 
@@ -423,7 +425,8 @@
 <div class="container" id="mainContainer">
     <div class="loading">주문 정보를 불러오는 중...</div>
 </div>
-
+<div id="payment-overlay"
+     style=" display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; "></div>
 <footer>
     <p>© 2025 싹쓰리 - 모두를 위한 귀여운 굿즈</p>
     <p>고객센터: 010-1234-5678 | contact@ssak3.com</p>
@@ -431,10 +434,10 @@
 </footer>
 
 <script>
-    const API_BASE = 'http://localhost:8080';
-    let userCoupons = [];
+    const API_BASE = 'http://localhost:8080'; // [추가] loadUserCoupons에서 사용하던 값 누락되어 있어서 추가
+    let userCoupons = [];                      // [추가] userCoupons 전역 누락되어 있어서 추가
 
-    function buildAuthHeaders() {
+    function buildAuthHeaders() {              // [추가] loadUserCoupons에서 사용하던 함수 누락되어 있어서 추가
         const token = localStorage.getItem('accessToken');
         const headers = {'Content-Type': 'application/json'};
         if (token) headers.Authorization = 'Bearer ' + token;
@@ -504,6 +507,9 @@
                     detailImageUrl: td.detailImageUrl
                 };
 
+                /* =========================
+                   [수정됨] 타임딜/일반 상품 모두에서 공통으로 쓸 대표 이미지 키(viewImageUrl) 설정
+                ========================= */
                 productData.viewImageUrl = td.imageUrl || td.detailImageUrl || null;
 
             } else {
@@ -514,12 +520,17 @@
 
                 productData = result.data;
 
+                /* =========================
+                   [수정됨] 일반 상품도 대표 이미지 키(viewImageUrl)로 통일
+                   - 백엔드 필드명이 imageUrl / image / detailImageUrl 등 섞여 있어도 대응
+                ========================= */
                 productData.viewImageUrl = productData.imageUrl || productData.image || productData.detailImageUrl || null;
             }
 
             console.log('[Step2] loadUserCoupons start');
             await loadUserCoupons();
 
+            // [수정됨] renderOrderPage 2번 호출되던 부분 정리 (한 번만 호출)
             renderOrderPage();
 
         } catch (error) {
@@ -529,8 +540,45 @@
         }
     }
 
+    async function loadUserCoupons() {
+        try {
+            // ✅ [수정] 내 쿠폰 조회 API로 변경
+            const res = await fetch(API_BASE + '/ssak3/user-coupons/me', {
+                method: 'GET',
+                headers: buildAuthHeaders(),
+                credentials: 'include'
+            });
+
+            if (!res.ok) {
+                userCoupons = [];
+                return;
+            }
+
+            const json = await res.json();
+
+            // page(content) 형태 대응
+            const list = Array.isArray(json?.data?.content) ? json.data.content : [];
+
+            // ✅ [수정] AVAILABLE만 필터 + 프론트에서 쓰기 좋은 형태로 정규화
+            userCoupons = list
+                .filter(item => item?.status === 'AVAILABLE')
+                .map(item => ({
+                    userCouponId: item.userCouponId,          // ✅ 주문 API에 보낼 값
+                    name: item.couponName,                    // ✅ 화면 표시
+                    discountValue: item.discountValue || 0,   // ✅ 할인 금액
+                    expiredAt: item.expiredAt,                // (원하면 표시 가능)
+                    couponId: item.couponId                   // (필요시)
+                }));
+
+            console.log('[Coupons me AVAILABLE]', userCoupons);
+        } catch (e) {
+            console.error('쿠폰 로드 실패:', e);
+            userCoupons = [];
+        }
+    }
+
     function renderOrderPage() {
-        const imgUrl = productData?.viewImageUrl || null;
+        const imgUrl = productData?.viewImageUrl || null;          // [수정됨] 대표 이미지 키로만 렌더
         const fallbackEmoji = productEmojis[productData?.id] || '📦';
         const container = document.getElementById('mainContainer');
 
@@ -539,17 +587,24 @@
         const initialShipping = initialSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
         const initialTotal = initialSubtotal + initialShipping;
 
-        // 쿠폰 옵션 생성
         let couponOptions = '<option value="">쿠폰을 선택해주세요</option>';
         if (userCoupons.length > 0) {
             userCoupons.forEach(c => {
-                couponOptions += `<option value="${c.id}" data-discount="${c.discountValue}">
-    ${c.name} (${formatPrice(c.discountValue)} 할인)
-  </option>`;
+                couponOptions += `
+      <option value="${c.userCouponId}"
+              data-discount="${c.discountValue || 0}"
+              data-min-price="${c.minOrderPrice || 0}">
+        ${c.name} (${formatPrice(c.discountValue || 0)} 할인)
+      </option>`;
             });
-
         }
 
+        /* =========================
+           [수정됨] cart-order.html의 thumb 방식으로 동일하게:
+           - img가 있으면 <img>
+           - onerror면 fallback 이모지로 교체
+           - CSS에서 overflow/cover로 네모칸 안에 딱 맞게
+        ========================= */
         const thumbInner = imgUrl
             ? `<img src="${imgUrl}" alt="${productData.name}"
                    onerror="this.remove(); this.parentElement.innerHTML='<span class=\\'emoji-fallback\\'>${fallbackEmoji}</span>';">`
@@ -737,8 +792,6 @@
 
                     throw new Error(serverMsg || '주문 생성 실패');
                 }
-
-                // 정상일 때만 json 파싱
                 return response.json();
             })
             .then(responseData => {
@@ -748,7 +801,54 @@
                     throw new Error('결제 URL이 없습니다.');
                 }
 
-                window.location.href = responseData.data.url;
+                const paymentUrl = responseData.data.url;
+
+                document.getElementById("payment-overlay").style.display = "block";
+
+                const width = 1100;
+                const height = 700;
+                const left = (window.screen.width / 2) - (width / 2);
+                const top = (window.screen.height / 2) - (height / 2);
+
+                const popup = window.open(
+                    paymentUrl,
+                    'paymentPopup',
+                    `width=${width},height=${height},top=${top},left=${left},resizable=no,scrollbars=yes`
+                );
+
+                if (!popup) {
+                    alert('팝업이 차단되었습니다. 팝업 허용 후 다시 시도해주세요.');
+                    document.getElementById("payment-overlay").style.display = "none";
+                    return;
+                }
+
+                let paymentFinished = false;
+
+                const checkPopupClosed = setInterval(() => {
+                    if (popup.closed) {
+                        clearInterval(checkPopupClosed);
+
+                        document.getElementById("payment-overlay").style.display = "none";
+
+                        if (!paymentFinished) {
+                            alert("결제가 취소되었습니다.");
+                            window.location.href = "home.html";
+                        }
+                    }
+                }, 500);
+
+                window.addEventListener("message", function handler(event) {
+                    if (event.origin !== window.location.origin) return;
+
+                    if (event.data.type === "PAYMENT_FINISHED") {
+                        paymentFinished = true;
+                        clearInterval(checkPopupClosed);
+
+                        document.getElementById("payment-overlay").style.display = "none";
+                        window.location.href = event.data.redirectUrl;
+                        window.removeEventListener("message", handler);
+                    }
+                });
             })
             .catch(error => {
                 console.error('주문 실패:', error);
@@ -758,26 +858,6 @@
                 alert('주문 처리 중 오류가 발생했습니다: ' + error.message);
             });
 
-    }
-
-    async function loadUserCoupons() {
-        try {
-            const res = await fetch(API_BASE + '/ssak3/user-coupons?status=AVAILABLE', {
-                method: 'GET',
-                headers: buildAuthHeaders(),
-                credentials: 'include'
-            });
-
-            if (res.ok) {
-                const json = await res.json();
-                userCoupons = Array.isArray(json?.data?.content) ? json.data.content : [];
-            } else {
-                userCoupons = [];
-            }
-        } catch (e) {
-            console.error('쿠폰 로드 실패:', e);
-            userCoupons = [];
-        }
     }
 
     loadProductInfo();

@@ -441,7 +441,7 @@
 <header>
     <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
     <div class="header-icons">
-        <button class="icon-btn" onclick="alert('검색은 아직 준비 중이에요!')">🔍</button>
+        <button class="icon-btn" onclick="location.href='search.html'">🔍</button>
         <button class="icon-btn" onclick="location.href='cart.html'">🛒</button>
         <button class="icon-btn" onclick="location.href='mypage.html'">👤</button>
     </div>
@@ -453,6 +453,7 @@
     <div class="loading">주문 정보를 불러오는 중...</div>
 </div>
 
+<div id="payment-overlay" style=" display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; "></div>
 <footer>
     <p>© 2025 싹쓰리 - 모두를 위한 귀여운 굿즈</p>
     <p>고객센터: 010-1234-5678 | contact@ssak3.com</p>
@@ -545,7 +546,8 @@
 
     async function loadUserCoupons() {
         try {
-            const res = await fetch(API_BASE + '/ssak3/user-coupons?status=AVAILABLE', {
+            // ✅ [수정] 내 쿠폰 조회 API로 변경
+            const res = await fetch(API_BASE + '/ssak3/user-coupons/me', {
                 method: 'GET',
                 headers: buildAuthHeaders(),
                 credentials: 'include'
@@ -558,12 +560,27 @@
 
             const json = await res.json();
 
-            userCoupons = Array.isArray(json?.data?.content) ? json.data.content : [];
+            // page(content) 형태 대응
+            const list = Array.isArray(json?.data?.content) ? json.data.content : [];
+
+            // ✅ [수정] AVAILABLE만 필터 + 프론트에서 쓰기 좋은 형태로 정규화
+            userCoupons = list
+                .filter(item => item?.status === 'AVAILABLE')
+                .map(item => ({
+                    userCouponId: item.userCouponId,          // ✅ 주문 API에 보낼 값
+                    name: item.couponName,                    // ✅ 화면 표시
+                    discountValue: item.discountValue || 0,   // ✅ 할인 금액
+                    expiredAt: item.expiredAt,                // (원하면 표시 가능)
+                    couponId: item.couponId                   // (필요시)
+                }));
+
+            console.log('[Coupons me AVAILABLE]', userCoupons);
         } catch (e) {
             console.error('쿠폰 로드 실패:', e);
             userCoupons = [];
         }
     }
+
 
 
     async function loadCartAndFilterSelected() {
@@ -666,7 +683,7 @@
         if (userCoupons.length > 0) {
             userCoupons.forEach(c => {
                 couponOptions += `
-      <option value="${c.id}" data-discount="${c.discountValue}">
+      <option value="${c.userCouponId}" data-discount="${c.discountValue}">
         ${c.name} (${formatPrice(c.discountValue)} 할인)
       </option>
     `;
@@ -674,7 +691,6 @@
         } else {
             couponOptions += `<option value="" disabled>사용 가능한 쿠폰이 없습니다</option>`;
         }
-
 
         const itemsHtml = selectedItems.map(p => {
             const name = p.productName || '상품';
@@ -849,7 +865,52 @@
             }
 
             // 결제 페이지로 이동
-            location.href = json.data.url;
+            document.getElementById("payment-overlay").style.display = "block";
+
+            const width = 1100;
+            const height = 700;
+            const left = (window.screen.width / 2) - (width / 2);
+            const top = (window.screen.height / 2) - (height / 2);
+
+            const popup = window.open(
+                json.data.url,
+                'paymentPopup',
+                `width=${width},height=${height},top=${top},left=${left},resizable=no,scrollbars=yes`
+            );
+
+            if (!popup) {
+                alert('팝업이 차단되었습니다. 팝업 허용 후 다시 시도해주세요.');
+                document.getElementById("payment-overlay").style.display = "none";
+                return;
+            }
+            let paymentFinished = false;
+
+            const checkPopupClosed = setInterval(() => {
+                if (popup.closed) {
+                    clearInterval(checkPopupClosed);
+
+                    document.getElementById("payment-overlay").style.display = "none";
+
+                    if (!paymentFinished) {
+                        alert("결제가 취소되었습니다.");
+                        window.location.href = "home.html";
+                    }
+                }
+            }, 500);
+
+// 🔥 성공 메시지 받으면 cancel 막기
+            window.addEventListener("message", function handler(event) {
+                if (event.origin !== window.location.origin) return;
+
+                if (event.data.type === "PAYMENT_FINISHED") {
+                    paymentFinished = true;
+                    clearInterval(checkPopupClosed);
+
+                    document.getElementById("payment-overlay").style.display = "none";
+                    window.location.href = event.data.redirectUrl;
+                    window.removeEventListener("message", handler);
+                }
+            });
         } catch (e) {
             console.error('주문 실패:', e);
             alert('주문 처리 중 오류가 발생했습니다: ' + (e.message || '알 수 없는 오류'));
@@ -883,7 +944,6 @@
             }
         }
     }
-
     init();
 </script>
 </body>

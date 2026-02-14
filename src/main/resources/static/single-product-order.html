@@ -542,18 +542,35 @@
 
     async function loadUserCoupons() {
         try {
-            const res = await fetch(API_BASE + '/ssak3/user-coupons?status=AVAILABLE', {
+            // ✅ [수정] 내 쿠폰 조회 API로 변경
+            const res = await fetch(API_BASE + '/ssak3/user-coupons/me', {
                 method: 'GET',
                 headers: buildAuthHeaders(),
                 credentials: 'include'
             });
 
-            if (res.ok) {
-                const json = await res.json();
-                userCoupons = Array.isArray(json?.data?.content) ? json.data.content : [];
-            } else {
+            if (!res.ok) {
                 userCoupons = [];
+                return;
             }
+
+            const json = await res.json();
+
+            // page(content) 형태 대응
+            const list = Array.isArray(json?.data?.content) ? json.data.content : [];
+
+            // ✅ [수정] AVAILABLE만 필터 + 프론트에서 쓰기 좋은 형태로 정규화
+            userCoupons = list
+                .filter(item => item?.status === 'AVAILABLE')
+                .map(item => ({
+                    userCouponId: item.userCouponId,          // ✅ 주문 API에 보낼 값
+                    name: item.couponName,                    // ✅ 화면 표시
+                    discountValue: item.discountValue || 0,   // ✅ 할인 금액
+                    expiredAt: item.expiredAt,                // (원하면 표시 가능)
+                    couponId: item.couponId                   // (필요시)
+                }));
+
+            console.log('[Coupons me AVAILABLE]', userCoupons);
         } catch (e) {
             console.error('쿠폰 로드 실패:', e);
             userCoupons = [];
@@ -570,13 +587,15 @@
         const initialShipping = initialSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
         const initialTotal = initialSubtotal + initialShipping;
 
-        // 쿠폰 옵션 생성
         let couponOptions = '<option value="">쿠폰을 선택해주세요</option>';
         if (userCoupons.length > 0) {
             userCoupons.forEach(c => {
-                couponOptions += `<option value="${c.id}" data-discount="${c.discountValue}">
-    ${c.name} (${formatPrice(c.discountValue)} 할인)
-  </option>`;
+                couponOptions += `
+      <option value="${c.userCouponId}"
+              data-discount="${c.discountValue || 0}"
+              data-min-price="${c.minOrderPrice || 0}">
+        ${c.name} (${formatPrice(c.discountValue || 0)} 할인)
+      </option>`;
             });
         }
 

@@ -3,6 +3,7 @@ package com.example.ssak3.domain.review.service;
 import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.common.model.AuthUser;
+import com.example.ssak3.domain.order.repository.OrderRepository;
 import com.example.ssak3.domain.product.entity.Product;
 import com.example.ssak3.domain.product.repository.ProductRepository;
 import com.example.ssak3.domain.review.entity.Review;
@@ -29,6 +30,7 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
+    private final OrderRepository orderRepository;
 
     /**
      * 후기 생성
@@ -38,6 +40,10 @@ public class ReviewService {
 
         User foundUser = userRepository.findByIdAndIsDeletedFalse(user.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        if (orderRepository.existsByUserId(foundUser.getId())) {
+            throw new CustomException(ErrorCode.USER_NOT_ORDERED);
+        }
 
         Product foundProduct = productRepository.findByIdAndIsDeletedFalse(request.getProductId())
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));

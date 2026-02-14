@@ -54,3 +54,6 @@ cloud:
       static: ${AWS_S3_REGION}
     stack:
       auto: false
+
+server:
+  forward-headers-strategy: native

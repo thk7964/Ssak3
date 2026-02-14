@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>문의 작성 - 싹쓰리</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+            background: #fafafa;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #ffffff;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+            cursor: pointer;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            background: #f8f9fa;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s ease;
+            color: #495057;
+        }
+
+        .icon-btn:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .back-btn {
+            background: #f8f9fa;
+            color: #495057;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            margin-bottom: 20px;
+        }
+
+        .back-btn:hover {
+            background: #e9ecef;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            border: 1px solid #f0f0f0;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 15px;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 8px;
+        }
+
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            background: #f8f9fa;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #74b9ff;
+            background: white;
+        }
+
+        .form-textarea {
+            min-height: 300px;
+            resize: vertical;
+        }
+
+        .char-count {
+            text-align: right;
+            font-size: 13px;
+            color: #868e96;
+            margin-top: 4px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(116, 185, 255, 0.45);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-cancel {
+            background: #f8f9fa;
+            color: #495057;
+        }
+
+        .btn-cancel:hover {
+            background: #e9ecef;
+        }
+
+        .info-box {
+            background: #f8f9ff;
+            border: 1px solid #e8ebff;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        .info-box-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .info-box-text {
+            font-size: 13px;
+            color: #495057;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .form-container {
+                padding: 24px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
+    <div class="header-icons">
+        <button class="icon-btn" onclick="location.href='home.html'">🏠</button>
+        <button class="icon-btn" onclick="location.href='mypage.html'">👤</button>
+    </div>
+</header>
+
+<div class="container">
+    <button class="back-btn" onclick="location.href='user-inquiry-list.html'">← 목록으로 돌아가기</button>
+
+    <h1 class="page-title">✏️ 새 문의 작성</h1>
+
+    <div class="form-container">
+        <div class="info-box">
+            <div class="info-box-title">💡 문의 작성 안내</div>
+            <div class="info-box-text">
+                문의하실 내용을 상세히 작성해주세요. 관리자가 확인 후 빠르게 답변드리겠습니다.<br>
+                답변이 완료된 후에는 수정 및 삭제가 불가능합니다.
+            </div>
+        </div>
+
+        <form id="inquiryForm">
+            <div class="form-group">
+                <label class="form-label" for="title">제목 *</label>
+                <input
+                        type="text"
+                        id="title"
+                        class="form-input"
+                        placeholder="문의 제목을 입력해주세요"
+                        maxlength="100"
+                        required
+                >
+                <div class="char-count" id="titleCount">0 / 100</div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="content">내용 *</label>
+                <textarea
+                        id="content"
+                        class="form-textarea"
+                        placeholder="문의 내용을 상세히 작성해주세요"
+                        maxlength="2000"
+                        required
+                ></textarea>
+                <div class="char-count" id="contentCount">0 / 2000</div>
+            </div>
+
+            <div class="button-group">
+                <button type="button" class="btn btn-cancel" onclick="handleCancel()">취소</button>
+                <button type="submit" class="btn btn-submit" id="submitBtn">문의 등록</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const titleInput = document.getElementById('title');
+    const contentInput = document.getElementById('content');
+    const titleCount = document.getElementById('titleCount');
+    const contentCount = document.getElementById('contentCount');
+    const form = document.getElementById('inquiryForm');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // 글자 수 카운터
+    titleInput.addEventListener('input', () => {
+        titleCount.textContent = `${titleInput.value.length} / 100`;
+    });
+
+    contentInput.addEventListener('input', () => {
+        contentCount.textContent = `${contentInput.value.length} / 2000`;
+    });
+
+    // 폼 제출
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const title = titleInput.value.trim();
+        const content = contentInput.value.trim();
+
+        if (!title) {
+            alert('제목을 입력해주세요.');
+            titleInput.focus();
+            return;
+        }
+
+        if (!content) {
+            alert('내용을 입력해주세요.');
+            contentInput.focus();
+            return;
+        }
+
+        const token = localStorage.getItem('accessToken');
+
+        if (!token) {
+            alert('로그인이 필요합니다.');
+            location.href = 'login.html';
+            return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = '등록 중...';
+
+        try {
+            const response = await fetch('http://localhost:8080/ssak3/inquiries', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                credentials: 'include',
+                body: JSON.stringify({ title, content })
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.message || '문의 등록에 실패했습니다.');
+            }
+
+            alert('문의가 성공적으로 등록되었습니다.');
+            location.href = 'user-inquiry-list.html';
+
+        } catch (error) {
+            console.error('Error creating inquiry:', error);
+            alert(error.message || '문의 등록에 실패했습니다.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = '문의 등록';
+        }
+    });
+
+    function handleCancel() {
+        if (titleInput.value.trim() || contentInput.value.trim()) {
+            if (confirm('작성 중인 내용이 있습니다. 정말 취소하시겠습니까?')) {
+                location.href = 'user-inquiry-list.html';
+            }
+        } else {
+            location.href = 'user-inquiry-list.html';
+        }
+    }
+</script>
+
+</body>
+</html>

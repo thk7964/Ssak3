@@ -122,13 +122,13 @@ public class TimeDealAdminService {
         }
 
         // 저장되어 있는 이미지 파일이 있는지 확인
-        if (timeDeal.getImage() != null) {
+        if (request.getImage()!=null && timeDeal.getImage()!=null) {
             // 기존 파일 먼저 삭제
             s3Uploader.deleteImage(timeDeal.getImage());
         }
 
         // 저장되어 있는 상세 이미지 파일이 있는지 확인
-        if (timeDeal.getDetailImage() != null) {
+        if (request.getDetailImage()!=null && timeDeal.getDetailImage()!=null) {
             // 기존 파일 먼저 삭제
             s3Uploader.deleteImage(timeDeal.getDetailImage());
         }

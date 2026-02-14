@@ -1,10 +1,5 @@
 package com.example.ssak3.domain.s3.service;
 
-import com.amazonaws.HttpMethod;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.DeleteObjectRequest;
-import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
-import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.domain.s3.model.response.ImagePutUrlResponse;
@@ -12,21 +7,33 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetUrlRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
+import java.time.Duration;
 import java.util.UUID;
 
 @RequiredArgsConstructor
 @Component
 public class S3Uploader {
 
-    private final AmazonS3Client amazonS3Client;
+    private final S3Client s3Client;
 
-    @Value("${cloud.aws.s3.bucket}")
+    private final S3Presigner s3Presigner;
+
+    @Value("${spring.cloud.aws.s3.bucket}")
     private String bucket;
 
     /**
@@ -35,14 +42,10 @@ public class S3Uploader {
     public String uploadImage(MultipartFile multipartFile, String dirName) {
         validateMultipartFile(multipartFile);
 
-        // S3 key 만들기
         String key = buildS3Key(dirName, multipartFile.getOriginalFilename());
 
         try {
-            String uploadImageUrl = putS3(multipartFile, key);
-
-            return uploadImageUrl;
-
+            return putS3(multipartFile, key);
         } catch (IOException e) {
             throw new CustomException(ErrorCode.IMAGE_UPLOAD_ERROR);
         }
@@ -58,17 +61,20 @@ public class S3Uploader {
 
         String key = buildS3Key(dirName, originalFilename);
 
-        Date expiration = new Date(System.currentTimeMillis() + expireMinutes * 60 * 1000L);
+        PutObjectRequest putReq = PutObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .build();
 
-        GeneratePresignedUrlRequest request = new GeneratePresignedUrlRequest(bucket, key)
-                .withMethod(HttpMethod.PUT)
-                .withExpiration(expiration);
+        PutObjectPresignRequest presignReq = PutObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofMinutes(expireMinutes))
+                .putObjectRequest(putReq)
+                .build();
 
-        URL presignedUrl =  amazonS3Client.generatePresignedUrl(request);
+        PresignedPutObjectRequest presigned = s3Presigner.presignPutObject(presignReq);
 
-        String uploadUrl = presignedUrl.toString();
-
-        String imageUrl = amazonS3Client.getUrl(bucket, key).toString();
+        String uploadUrl = presigned.url().toString();
+        String imageUrl = getPublicUrl(bucket, key).toString();
 
         return ImagePutUrlResponse.from(uploadUrl, imageUrl);
     }
@@ -83,15 +89,14 @@ public class S3Uploader {
 
         String key = extractKey(fileUrl);
 
-        Date expiration = new Date(System.currentTimeMillis() + expireMinutes * 60 * 1000L);
+        GetObjectPresignRequest presignReq = GetObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofMinutes(expireMinutes))
+                .getObjectRequest(r -> r.bucket(bucket).key(key))
+                .build();
 
-        GeneratePresignedUrlRequest request = new GeneratePresignedUrlRequest(bucket, key)
-                .withMethod(HttpMethod.GET)
-                .withExpiration(expiration);
+        PresignedGetObjectRequest presigned = s3Presigner.presignGetObject(presignReq);
 
-        URL presignedUrl = amazonS3Client.generatePresignedUrl(request);
-
-        return presignedUrl.toString();
+        return presigned.url().toString();
     }
 
     /**
@@ -107,10 +112,7 @@ public class S3Uploader {
             throw new CustomException(ErrorCode.INVALID_URL);
         }
 
-        // "amazonaws.com/" 뒤가 key
         String encodedKey = fileUrl.substring(idx + "amazonaws.com/".length());
-
-        // 한글 파일명 등 퍼센트 인코딩 디코딩
         return URLDecoder.decode(encodedKey, StandardCharsets.UTF_8);
     }
 
@@ -122,29 +124,33 @@ public class S3Uploader {
 
         String key = extractKey(fileUrl);
 
-        amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, key));
+        s3Client.deleteObject(DeleteObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .build());
     }
 
     /**
      * S3 업로드
      */
     private String putS3(MultipartFile multipartFile, String key) throws IOException {
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(multipartFile.getSize());
-        metadata.setContentType(multipartFile.getContentType());
+        PutObjectRequest putReq = PutObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .contentType(multipartFile.getContentType())
+                .contentLength(multipartFile.getSize())
+                .build();
 
-        amazonS3Client.putObject(
-                bucket,
-                key,
-                multipartFile.getInputStream(),
-                metadata
+        s3Client.putObject(
+                putReq,
+                RequestBody.fromInputStream(multipartFile.getInputStream(), multipartFile.getSize())
         );
 
-        return amazonS3Client.getUrl(bucket, key).toString();
+        return getPublicUrl(bucket, key).toString();
     }
 
     /**
-     * S3 key 생성: dirName/uuid_filename 형태
+     * S3 key 생성
      */
     private String buildS3Key(String dirName, String fileName) {
         return dirName + "/" + UUID.randomUUID() + "_" + fileName;
@@ -154,5 +160,12 @@ public class S3Uploader {
         if (multipartFile == null || multipartFile.isEmpty()) {
             throw new CustomException(ErrorCode.INVALID_FILE);
         }
+    }
+
+    private URL getPublicUrl(String bucket, String key) {
+        return s3Client.utilities().getUrl(GetUrlRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .build());
     }
 }

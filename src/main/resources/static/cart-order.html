@@ -441,7 +441,7 @@
 <header>
     <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
     <div class="header-icons">
-        <button class="icon-btn" onclick="alert('검색은 아직 준비 중이에요!')">🔍</button>
+        <button class="icon-btn" onclick="location.href='search.html'">🔍</button>
         <button class="icon-btn" onclick="location.href='cart.html'">🛒</button>
         <button class="icon-btn" onclick="location.href='mypage.html'">👤</button>
     </div>
@@ -546,7 +546,8 @@
 
     async function loadUserCoupons() {
         try {
-            const res = await fetch(API_BASE + '/ssak3/user-coupons?status=AVAILABLE', {
+            // ✅ [수정] 내 쿠폰 조회 API로 변경
+            const res = await fetch(API_BASE + '/ssak3/user-coupons/me', {
                 method: 'GET',
                 headers: buildAuthHeaders(),
                 credentials: 'include'
@@ -559,12 +560,27 @@
 
             const json = await res.json();
 
-            userCoupons = Array.isArray(json?.data?.content) ? json.data.content : [];
+            // page(content) 형태 대응
+            const list = Array.isArray(json?.data?.content) ? json.data.content : [];
+
+            // ✅ [수정] AVAILABLE만 필터 + 프론트에서 쓰기 좋은 형태로 정규화
+            userCoupons = list
+                .filter(item => item?.status === 'AVAILABLE')
+                .map(item => ({
+                    userCouponId: item.userCouponId,          // ✅ 주문 API에 보낼 값
+                    name: item.couponName,                    // ✅ 화면 표시
+                    discountValue: item.discountValue || 0,   // ✅ 할인 금액
+                    expiredAt: item.expiredAt,                // (원하면 표시 가능)
+                    couponId: item.couponId                   // (필요시)
+                }));
+
+            console.log('[Coupons me AVAILABLE]', userCoupons);
         } catch (e) {
             console.error('쿠폰 로드 실패:', e);
             userCoupons = [];
         }
     }
+
 
 
     async function loadCartAndFilterSelected() {

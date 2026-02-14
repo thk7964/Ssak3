@@ -135,6 +135,7 @@
         .product-image .emoji-fallback {
             line-height: 1;
         }
+
         /* ========================= */
 
         .product-details {
@@ -408,14 +409,14 @@
 <header>
     <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
     <div class="header-icons">
-        <button class="icon-btn">🔍</button>
+        <button class="icon-btn" onclick="location.href='search.html'">🔍</button>
         <button class="icon-btn"
                 id="cartIconBtn"
                 title="장바구니"
                 onclick="location.href='cart.html'">
             🛒
         </button>
-        <button class="icon-btn">👤</button>
+        <button class="icon-btn" onclick="location.href='mypage.html'">👤</button>
     </div>
 </header>
 
@@ -424,7 +425,8 @@
 <div class="container" id="mainContainer">
     <div class="loading">주문 정보를 불러오는 중...</div>
 </div>
-<div id="payment-overlay" style=" display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; "></div>
+<div id="payment-overlay"
+     style=" display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; "></div>
 <footer>
     <p>© 2025 싹쓰리 - 모두를 위한 귀여운 굿즈</p>
     <p>고객센터: 010-1234-5678 | contact@ssak3.com</p>
@@ -437,7 +439,7 @@
 
     function buildAuthHeaders() {              // [추가] loadUserCoupons에서 사용하던 함수 누락되어 있어서 추가
         const token = localStorage.getItem('accessToken');
-        const headers = { 'Content-Type': 'application/json' };
+        const headers = {'Content-Type': 'application/json'};
         if (token) headers.Authorization = 'Bearer ' + token;
         return headers;
     }
@@ -538,32 +540,39 @@
         }
     }
 
-    let userCoupons = [];
-
     async function loadUserCoupons() {
         try {
-            const token = localStorage.getItem('accessToken');
-            const headers = {};
-
-            if (token) {
-                headers.Authorization = 'Bearer ' + token;
-            }
-
-            const response = await fetch('http://localhost:8080/ssak3/user-coupons', {
+            // ✅ [수정] 내 쿠폰 조회 API로 변경
+            const res = await fetch(API_BASE + '/ssak3/user-coupons/me', {
                 method: 'GET',
-                headers: headers,
+                headers: buildAuthHeaders(),
                 credentials: 'include'
             });
 
-            if (response.ok) {
-                const result = await response.json();
-                userCoupons = result.data || [];
-            } else {
-                console.log('쿠폰 정보를 불러올 수 없습니다.');
+            if (!res.ok) {
                 userCoupons = [];
+                return;
             }
-        } catch (error) {
-            console.error('쿠폰 로드 오류:', error);
+
+            const json = await res.json();
+
+            // page(content) 형태 대응
+            const list = Array.isArray(json?.data?.content) ? json.data.content : [];
+
+            // ✅ [수정] AVAILABLE만 필터 + 프론트에서 쓰기 좋은 형태로 정규화
+            userCoupons = list
+                .filter(item => item?.status === 'AVAILABLE')
+                .map(item => ({
+                    userCouponId: item.userCouponId,          // ✅ 주문 API에 보낼 값
+                    name: item.couponName,                    // ✅ 화면 표시
+                    discountValue: item.discountValue || 0,   // ✅ 할인 금액
+                    expiredAt: item.expiredAt,                // (원하면 표시 가능)
+                    couponId: item.couponId                   // (필요시)
+                }));
+
+            console.log('[Coupons me AVAILABLE]', userCoupons);
+        } catch (e) {
+            console.error('쿠폰 로드 실패:', e);
             userCoupons = [];
         }
     }
@@ -578,17 +587,16 @@
         const initialShipping = initialSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
         const initialTotal = initialSubtotal + initialShipping;
 
-        // 쿠폰 옵션 생성
         let couponOptions = '<option value="">쿠폰을 선택해주세요</option>';
         if (userCoupons.length > 0) {
-            userCoupons.forEach(userCoupon => {
-                // AVAILABLE 상태의 쿠폰만 표시
-                if (userCoupon.status === 'AVAILABLE' && userCoupon.coupon) {
-                    const coupon = userCoupon.coupon;
-                    couponOptions += `<option value="${userCoupon.id}" data-discount="${coupon.discountValue}" data-min-price="${coupon.minOrderPrice}">${coupon.name} (${formatPrice(coupon.discountValue)} 할인)</option>`;
-                }
+            userCoupons.forEach(c => {
+                couponOptions += `
+      <option value="${c.userCouponId}"
+              data-discount="${c.discountValue || 0}"
+              data-min-price="${c.minOrderPrice || 0}">
+        ${c.name} (${formatPrice(c.discountValue || 0)} 할인)
+      </option>`;
             });
-
         }
 
         /* =========================

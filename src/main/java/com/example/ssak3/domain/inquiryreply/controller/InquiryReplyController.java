@@ -5,6 +5,7 @@ import com.example.ssak3.common.model.AuthUser;
 import com.example.ssak3.domain.inquiryreply.model.request.InquiryReplyCreateRequest;
 import com.example.ssak3.domain.inquiryreply.model.request.InquiryReplyUpdateRequest;
 import com.example.ssak3.domain.inquiryreply.service.InquiryReplyService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -27,7 +28,7 @@ public class InquiryReplyController {
      */
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<ApiResponse> createInquiryReplyApi(@AuthenticationPrincipal AuthUser authUser, @RequestBody InquiryReplyCreateRequest request) {
+    public ResponseEntity<ApiResponse> createInquiryReplyApi(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody InquiryReplyCreateRequest request) {
 
         Long adminId = authUser.getId();
         ApiResponse response = ApiResponse.success("문의 답변 생성 성공", inquiryReplyService.createInquiryReply(adminId, request));
@@ -35,17 +36,32 @@ public class InquiryReplyController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+
     /**
-     * 문의 답변 목록 조회 API
+     * 문의 목록 조회 API
      */
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping
-    public ResponseEntity<ApiResponse> getInquiryReplyListApi(@PageableDefault(size = 10, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable) {
+    @GetMapping("/inquiries")
+    public ResponseEntity<ApiResponse> getInquiryListApi(@PageableDefault(size = 10, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        ApiResponse response = ApiResponse.success("문의 답변 목록 조회 성공", inquiryReplyService.getInquiryReplyList(pageable));
+        ApiResponse response = ApiResponse.success("문의 목록 조회 성공", inquiryReplyService.getInquiryList(pageable));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+
+    /**
+     * 관리자용 문의 상세 조회 API
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/inquiries/{inquiryId}")
+    public ResponseEntity<ApiResponse> getInquiryForAdminApi(@PathVariable Long inquiryId) {
+
+        ApiResponse response = ApiResponse.success("문의 상세 조회 성공", inquiryReplyService.getInquiryForAdmin(inquiryId));
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
 
     /**
      * 문의 답변 상세 조회 API
@@ -63,12 +79,12 @@ public class InquiryReplyController {
      * 문의 답변 수정 API
      */
     @PreAuthorize("hasRole('ADMIN')")
-    @PatchMapping("/{inquiryReplyId}")
-    public ResponseEntity<ApiResponse> updateInquiryReplyApi(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long inquiryReplyId, @RequestBody InquiryReplyUpdateRequest request) {
+    @PatchMapping("/inquiries/{inquiryId}")
+    public ResponseEntity<ApiResponse> updateInquiryReplyApi(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long inquiryId, @Valid @RequestBody InquiryReplyUpdateRequest request) {
 
         Long adminId = authUser.getId();
 
-        ApiResponse response = ApiResponse.success("문의 답변 수정 성공", inquiryReplyService.updateInquiryReply(adminId, inquiryReplyId, request));
+        ApiResponse response = ApiResponse.success("문의 답변 수정 성공", inquiryReplyService.updateInquiryReply(adminId, inquiryId, request));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -77,9 +93,10 @@ public class InquiryReplyController {
      * 문의 답변 삭제 API
      */
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/{inquiryReplyId}")
-    public ResponseEntity<ApiResponse> deleteInquiryReplyApi(@PathVariable Long inquiryReplyId) {
-        ApiResponse response = ApiResponse.success("문의 답변 삭제 성공", inquiryReplyService.deleteInquiryReply(inquiryReplyId));
+    @DeleteMapping("/inquiries/{inquiryId}")
+    public ResponseEntity<ApiResponse> deleteInquiryReplyApi(@PathVariable Long inquiryId) {
+        
+        ApiResponse response = ApiResponse.success("문의 답변 삭제 성공", inquiryReplyService.deleteInquiryReply(inquiryId));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

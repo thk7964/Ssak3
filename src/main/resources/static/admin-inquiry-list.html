@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>문의 관리 - 관리자</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+            background: #fafafa;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #ffffff;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+            cursor: pointer;
+        }
+
+        .header-title {
+            flex: 1;
+            font-size: 20px;
+            font-weight: 600;
+            color: #212529;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-common {
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: 0.2s;
+        }
+
+        .home-btn {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .home-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .admin-btn {
+            background: #f8f9fa;
+            color: #495057;
+        }
+
+        .admin-btn:hover {
+            background: #e9ecef;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .back-section {
+            margin-bottom: 24px;
+        }
+
+        .back-btn {
+            background: #f8f9fa;
+            color: #495057;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background: #e9ecef;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            padding: 40px;
+            border-radius: 24px;
+            margin-bottom: 40px;
+            color: white;
+            box-shadow: 0 10px 40px rgba(116, 185, 255, 0.25);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            font-size: 15px;
+            opacity: 0.9;
+        }
+
+        .admin-badge {
+            background: white;
+            color: #74b9ff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 12px 24px;
+            border: 2px solid #e9ecef;
+            background: white;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #495057;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .filter-tab:hover {
+            border-color: #74b9ff;
+            color: #74b9ff;
+        }
+
+        .filter-tab.active {
+            background: #74b9ff;
+            color: white;
+            border-color: #74b9ff;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f8f9fa;
+            padding: 16px 24px;
+            text-align: left;
+            font-size: 13px;
+            color: #495057;
+            border-bottom: 1px solid #e9ecef;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 16px 24px;
+            font-size: 14px;
+            color: #495057;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
+        }
+
+        tbody tr {
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .inquiry-title-cell {
+            font-weight: 600;
+            color: #212529;
+            max-width: 400px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-answered {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .reply-btn {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .reply-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .replied-label {
+            background: #f8f9fa;
+            color: #495057;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .empty-row td {
+            text-align: center;
+            padding: 80px 20px;
+            color: #adb5bd;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .empty-text {
+            font-size: 18px;
+            margin-bottom: 24px;
+            color: #868e96;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .page-btn {
+            min-width: 36px;
+            height: 36px;
+            padding: 0 10px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            cursor: pointer;
+            background: #fff;
+            color: #495057;
+            font-size: 13px;
+            font-weight: 500;
+            transition: 0.15s;
+        }
+
+        .page-btn:hover:not(:disabled) {
+            background: #f0f7ff;
+            border-color: #74b9ff;
+        }
+
+        .page-btn.active {
+            background: #74b9ff;
+            color: white;
+            border-color: #74b9ff;
+            font-weight: 700;
+        }
+
+        .page-btn.nav {
+            font-weight: 700;
+            color: #74b9ff;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 16px 20px;
+            }
+
+            .container {
+                padding: 24px 16px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
+    <div class="header-title">💬 문의 관리 시스템</div>
+    <div class="header-icons">
+        <button class="btn-common home-btn" onclick="location.href='home.html'">홈으로</button>
+        <button class="btn-common admin-btn" onclick="location.href='admin-mypage.html'">관리자페이지</button>
+    </div>
+</header>
+
+<div class="container">
+    <div class="back-section">
+        <button class="back-btn" onclick="location.href='admin-mypage.html'">← 관리자 페이지로 돌아가기</button>
+    </div>
+
+    <div class="page-header">
+        <div>
+            <h1>문의 관리</h1>
+            <p id="totalCountDisplay">전체 문의를 관리하세요</p>
+        </div>
+        <span class="admin-badge">🔐 ADMIN</span>
+    </div>
+
+    <div class="filter-tabs">
+        <button class="filter-tab active" data-filter="ALL" onclick="filterInquiries('ALL', event)">전체</button>
+        <button class="filter-tab" data-filter="PENDING" onclick="filterInquiries('PENDING', event)">🟠 대기중</button>
+        <button class="filter-tab" data-filter="ANSWERED" onclick="filterInquiries('ANSWERED', event)">🟢 답변완료</button>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+            <tr>
+                <th>문의번호</th>
+                <th>제목</th>
+                <th>작성자 ID</th>
+                <th>상태</th>
+                <th>작성일시</th>
+                <th>관리</th>
+            </tr>
+            </thead>
+            <tbody id="inquiryTableBody">
+            <tr class="empty-row">
+                <td colspan="6">로딩 중...</td>
+            </tr>
+            </tbody>
+        </table>
+        <div id="pagination" class="pagination"></div>
+    </div>
+</div>
+
+<script>
+    let allInquiries = [];
+    let filteredInquiries = [];
+    let currentFilter = 'ALL';
+    let currentPage = 0;
+    let totalPages = 0;
+    const PAGE_GROUP_SIZE = 10;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        checkAdminAuth();
+        loadInquiries(currentPage);
+    });
+
+    async function checkAdminAuth() {
+        const token = localStorage.getItem('accessToken');
+
+        if (!token) {
+            alert('로그인이 필요합니다.');
+            location.href = 'login.html';
+            return;
+        }
+
+        try {
+            const response = await fetch('http://localhost:8080/ssak3/users/me', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                },
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                throw new Error('인증 실패');
+            }
+
+            const result = await response.json();
+            if (result.data.role !== 'ADMIN') {
+                alert('관리자만 접근할 수 있습니다.');
+                location.href = 'home.html';
+            }
+        } catch (error) {
+            alert('인증에 실패했습니다.');
+            location.href = 'login.html';
+        }
+    }
+
+    async function loadInquiries(page = 0) {
+        const token = localStorage.getItem('accessToken');
+
+        try {
+            const response = await fetch(`http://localhost:8080/ssak3/admin/inquiry-replies/inquiries?page=${page}&size=10&sort=createdAt,desc`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                },
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                throw new Error('문의 목록을 불러오는데 실패했습니다.');
+            }
+
+            const result = await response.json();
+            const data = result.data;
+
+            currentPage = data.currentPage;
+            totalPages = data.totalPages;
+            allInquiries = data.content;
+
+            console.log(`총 ${allInquiries.length}개의 문의를 불러왔습니다.`);
+
+            document.getElementById('totalCountDisplay').innerText =
+                `전체 문의 ${data.totalElements ?? 0}개 | 실시간 관리 중`;
+
+            filterInquiries(currentFilter);
+
+        } catch (error) {
+            console.error('Error loading inquiries:', error);
+            document.getElementById('inquiryTableBody').innerHTML = `
+                <tr class="empty-row">
+                    <td colspan="6">문의 목록을 불러오는데 실패했습니다.</td>
+                </tr>
+            `;
+        }
+    }
+
+    function filterInquiries(filter, event) {
+        currentFilter = filter;
+
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        if (event) {
+            event.target.classList.add('active');
+        } else {
+            document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
+        }
+
+        if (filter === 'ALL') {
+            filteredInquiries = [...allInquiries];
+        } else {
+            filteredInquiries = allInquiries.filter(inq => inq.status === filter);
+        }
+
+        renderInquiries();
+    }
+
+    function renderInquiries() {
+        const tbody = document.getElementById('inquiryTableBody');
+
+        if (filteredInquiries.length === 0) {
+            tbody.innerHTML = `
+                <tr class="empty-row">
+                    <td colspan="6">
+                        <div class="empty-icon">📭</div>
+                        <div class="empty-text">표시할 문의가 없습니다.</div>
+                    </td>
+                </tr>
+            `;
+            document.getElementById('pagination').innerHTML = '';
+            return;
+        }
+
+        tbody.innerHTML = filteredInquiries.map(inquiry => {
+            const statusClass = inquiry.status === 'PENDING' ? 'status-pending' : 'status-answered';
+            const statusText = inquiry.status === 'PENDING' ? '대기중' : '답변완료';
+            const createdDate = formatDate(inquiry.createdAt);
+
+            return `
+                <tr onclick="viewInquiryDetail(${inquiry.id})">
+                    <td>#${inquiry.id}</td>
+                    <td class="inquiry-title-cell">${escapeHtml(inquiry.title)}</td>
+                    <td>#${inquiry.userId}</td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td>${createdDate}</td>
+                    <td onclick="event.stopPropagation()">
+                        ${inquiry.status === 'PENDING'
+                ? `<button class="action-btn reply-btn" onclick="goToReply(${inquiry.id})">답변하기</button>`
+                : `<span class="replied-label">✓ 답변완료</span>`
+            }
+                    </td>
+                </tr>
+            `;
+        }).join('');
+
+        renderPagination();
+    }
+
+    function renderPagination() {
+        const container = document.getElementById('pagination');
+        if (!container) return;
+
+        const groupStart = Math.floor(currentPage / PAGE_GROUP_SIZE) * PAGE_GROUP_SIZE;
+        const groupEnd = Math.min(groupStart + PAGE_GROUP_SIZE, totalPages);
+
+        if (totalPages <= 1) {
+            container.innerHTML = '';
+            return;
+        }
+
+        let html = '';
+
+        if (groupStart > 0) {
+            html += `<button class="page-btn nav" onclick="loadInquiries(${groupStart - 1})">이전</button>`;
+        }
+
+        for (let i = groupStart; i < groupEnd; i++) {
+            const activeClass = (i === currentPage) ? 'active' : '';
+            html += `<button class="page-btn ${activeClass}" onclick="loadInquiries(${i})">${i + 1}</button>`;
+        }
+
+        if (groupEnd < totalPages) {
+            html += `<button class="page-btn nav" onclick="loadInquiries(${groupEnd})">다음</button>`;
+        }
+
+        container.innerHTML = html;
+    }
+
+    function viewInquiryDetail(inquiryId) {
+        location.href = `admin-inquiry-detail.html?id=${inquiryId}`;
+    }
+
+    function goToReply(inquiryId) {
+        location.href = `admin-inquiry-reply.html?id=${inquiryId}`;
+    }
+
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${year}-${month}-${day} ${hours}:${minutes}`;
+    }
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return text.replace(/[&<>"']/g, m => map[m]);
+    }
+</script>
+
+</body>
+</html>

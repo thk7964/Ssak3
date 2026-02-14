@@ -1586,7 +1586,7 @@
             renderList();
             closeWrite();
         } catch (e) {
-            errEl.textContent = '등록에 실패했습니다. 다시 시도해주세요.';
+            errEl.textContent = '실 구매자만 후기를 남길 수 있습니다. 후기 작성은 상품당 한 번만 작성 가능합니다.';
             errEl.classList.add('show');
         } finally {
             btn.disabled = false;

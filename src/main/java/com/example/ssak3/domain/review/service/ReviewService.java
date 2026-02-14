@@ -41,7 +41,7 @@ public class ReviewService {
         User foundUser = userRepository.findByIdAndIsDeletedFalse(user.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        if (orderRepository.existsByUserId(foundUser.getId())) {
+        if (!orderRepository.existsByUserId(foundUser.getId())) {
             throw new CustomException(ErrorCode.USER_NOT_ORDERED);
         }
 

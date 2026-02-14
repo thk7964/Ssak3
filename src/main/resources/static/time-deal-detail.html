@@ -483,6 +483,22 @@
             font-weight: 600;
             font-size: 15px;
         }
+        .product-main-image {
+            width: 100%;
+            max-height: 420px;
+            object-fit: contain;
+            border-radius: 16px;
+        }
+
+        .product-detail-image {
+            width: 100%;
+            margin-top: 24px;
+            border-radius: 12px;
+        }
+
+        .no-image {
+            font-size: 120px;
+        }
 
         @media (max-width: 768px) {
             .product-main {
@@ -657,8 +673,13 @@
         container.innerHTML = `
         <div class="product-main">
             <div class="product-image-section">
-                <div class="product-image">${emoji}</div>
+                ${
+                    timeDeal.imageUrl
+                        ? `<img src="${timeDeal.imageUrl}" alt="대표 이미지" class="product-main-image">`
+                        : `<div class="product-image no-image">${emoji}</div>`
+                }
             </div>
+
             <div class="product-info-section">
                 <span class="product-category">⏰ 타임딜 특가</span>
                 <h1 class="product-name">${timeDeal.productName}</h1>
@@ -693,10 +714,21 @@
             </div>
         </div>
 
-        ${timeDeal.productInformation ? `
+        ${timeDeal.productInformation || timeDeal.detailImageUrl ? `
             <div class="product-description" style="margin-top:60px;">
                 <h3 class="description-title">상품 상세 설명</h3>
-                <p class="description-text">${timeDeal.productInformation}</p>
+
+                ${
+                    timeDeal.productInformation
+                        ? `<p class="description-text">${timeDeal.productInformation}</p>`
+                        : ''
+                }
+
+                ${
+                    timeDeal.detailImageUrl
+                        ? `<img src="${timeDeal.detailImageUrl}" alt="상세 이미지" class="product-detail-image">`
+                        : ''
+                }
             </div>
         ` : ''}
     `;
@@ -758,7 +790,7 @@
             }
 
             const result = await res.json();
-            if (!result.success) throw new Error(result.message);
+            if (!result.success) throw new Error(result.message || '장바구니 담기에 실패했습니다.');
 
             alert('장바구니에 담았습니다!');
 
@@ -767,7 +799,6 @@
             alert(e.message || '장바구니 담기 중 오류가 발생했습니다.');
         }
     }
-
 
     function buyNow() {
 

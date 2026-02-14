@@ -259,7 +259,7 @@
 
         .deals-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             gap: 24px;
             margin-bottom: 50px;
         }
@@ -312,14 +312,32 @@
             50% { opacity: 0.7; }
         }
 
+        /* 기존 deal-image 수정 */
         .deal-image {
             width: 100%;
             height: 220px;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            background: #f8f9fa;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 실제 이미지 */
+        .deal-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .deal-card:hover .deal-img {
+            transform: scale(1.05);
+        }
+
+        .emoji-fallback {
+            font-size: 70px;
         }
 
         .deal-info {
@@ -526,7 +544,7 @@
 
 <div class="container">
     <h2 class="section-title" id="sectionTitle">진행중 타임딜</h2>
-    <div id="dealsContainer">
+    <div id="dealsContainer" class="deals-grid">
         <div class="loading">타임딜 목록을 불러오는 중...</div>
     </div>
     <div id="paginationContainer"></div>
@@ -677,39 +695,62 @@
 
         if (deals.length === 0) {
             container.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-icon">🔍</div>
-                    <div class="empty-title">타임딜이 없습니다</div>
-                    <div class="empty-message">현재 진행중인 타임딜이 없어요</div>
-                </div>
-            `;
+            <div class="empty-state">
+                <div class="empty-icon">🔍</div>
+                <div class="empty-title">타임딜이 없습니다</div>
+                <div class="empty-message">현재 진행중인 타임딜이 없어요</div>
+            </div>
+        `;
             return;
         }
 
-        container.innerHTML = `
-            <div class="deals-grid">
-                ${deals.map(deal => {
-                    const emoji = productEmojis[deal.id % 10 + 1] || '🎁';
-                    return `
-                        <div class="deal-card" onclick="goToTimeDeal(${deal.id})">
-                            <span class="status-badge ${deal.status}">${statusText[deal.status]}</span>
-                            <div class="deal-image">${emoji}</div>
-                            <div class="deal-info">
-                                <div class="deal-name">${deal.productName}</div>
-                                <div class="price-section">
-                                    <div class="deal-price">${formatPrice(deal.dealPrice)}</div>
-                                </div>
-                                <div class="time-info">
-                                    시작: ${formatDateTime(deal.startAt)}<br>
-                                    종료: ${formatDateTime(deal.endAt)}
-                                </div>
-                                <div class="remaining-time" id="remaining-${deal.id}">⏰ 계산 중...</div>
-                            </div>
+        container.innerHTML = deals.map(deal => {
+
+            // 기본 이모지 (이미지 없을 때)
+            const emoji = productEmojis[deal.id % 10 + 1] || '🎁';
+
+            const imageHtml = deal.imageUrl
+                ? `
+                <img src="${deal.imageUrl}"
+                     class="deal-img"
+                     alt="${deal.productName}"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="emoji-fallback" style="display:none;">${emoji}</div>
+              `
+                : `<div class="emoji-fallback">${emoji}</div>`;
+
+            return `
+            <div class="deal-card" onclick="goToTimeDeal(${deal.id})">
+
+                <span class="status-badge ${deal.status}">
+                    ${statusText[deal.status]}
+                </span>
+
+                <div class="deal-image">
+                    ${imageHtml}
+                </div>
+
+                <div class="deal-info">
+                    <div class="deal-name">${deal.productName}</div>
+
+                    <div class="price-section">
+                        <div class="deal-price">
+                            ${formatPrice(deal.dealPrice)}
                         </div>
-                    `;
-                }).join('')}
+                    </div>
+
+                    <div class="time-info">
+                        시작: ${formatDateTime(deal.startAt)}<br>
+                        종료: ${formatDateTime(deal.endAt)}
+                    </div>
+
+                    <div class="remaining-time" id="remaining-${deal.id}">
+                        ⏰ 계산 중...
+                    </div>
+                </div>
             </div>
         `;
+        }).join("");
     }
 
     function renderPagination() {

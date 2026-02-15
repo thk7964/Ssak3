@@ -33,6 +33,10 @@ public class JwtFilter extends OncePerRequestFilter {
         // 1. 헤더에서 토큰 찾기 (일반 로그인)
         String accessToken = request.getHeader(JwtUtil.HEADER);
 
+        if (accessToken != null && (accessToken.equalsIgnoreCase("Bearer null") || accessToken.equalsIgnoreCase("null"))) {
+            accessToken = null;
+        }
+
         // 2. 쿠키에서 토큰 찾기 (카카오 로그인)
         if (accessToken == null || !accessToken.startsWith(JwtUtil.BEARER_PREFIX)) {
             if (request.getCookies() != null) {
@@ -40,23 +44,25 @@ public class JwtFilter extends OncePerRequestFilter {
                         .filter(cookie -> "accessToken".equals(cookie.getName()))
                         .map(Cookie::getValue)
                         .findFirst()
-                        .map(token -> {
-                            if (!token.startsWith(JwtUtil.BEARER_PREFIX)) {
-                                return JwtUtil.BEARER_PREFIX + token;
-                            }
-                            return token;
-                        })
                         .orElse(null);
             }
         }
 
-        if (accessToken == null || !accessToken.startsWith(JwtUtil.BEARER_PREFIX)) {
+        if (accessToken == null) {
             filterChain.doFilter(request, response);
             return;
         }
 
         try {
-            String rawToken = jwtUtil.substringToken(accessToken);
+            String rawToken;
+
+            // Prefix가 있을 때만 자르고, 없으면(쿠키일 경우) 그대로 사용
+            if (accessToken.startsWith(JwtUtil.BEARER_PREFIX)) {
+                rawToken = jwtUtil.substringToken(accessToken);
+            } else {
+                rawToken = accessToken;
+            }
+
             Claims claims = jwtUtil.extractClaims(rawToken);
 
             Long id = Long.valueOf(claims.getSubject());

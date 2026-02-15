@@ -344,35 +344,38 @@
 <script>
     let currentPage = 0;
     let totalPages = 0;
-    const PAGE_GROUP_SIZE = 10;
+    const PAGE_GROUP_SIZE = 10; // 👈 이게 없어서 에러가 났던 거예요.
 
     document.addEventListener('DOMContentLoaded', () => {
-        loadInquiries(currentPage);
+        loadInquiries(0); // 👈 여기서 함수를 호출해줘야 로그가 찍힙니다!
     });
 
     async function loadInquiries(page = 0) {
+        // 1. 일단 로컬스토리지 토큰을 가져와봅니다. (일반 로그인용)
         const token = localStorage.getItem('accessToken');
 
-        if (!token) {
-            alert('로그인이 필요합니다.');
-            location.href = 'login.html';
-            return;
-        }
-
         try {
+            // 2. 토큰이 없어도 쫓아내지 말고 일단 fetch를 보냅니다. (쿠키가 알아서 날아갈 테니까요)
+            const headers = {};
+            if (token && token !== "null") {
+                headers['Authorization'] = 'Bearer ' + token;
+            }
+
             const response = await fetch(`http://localhost:8080/ssak3/inquiries?page=${page}&size=10&sort=createdAt,desc`, {
                 method: 'GET',
-                headers: {
-                    'Authorization': 'Bearer ' + token
-                },
-                credentials: 'include'
+                headers: headers, // 토큰이 있으면 담고, 없으면 빈 상태로 보냄
+                credentials: 'include' // 👈 이게 있어서 쿠키가 자동으로 서버에 전달됩니다!
             });
 
-            if (!response.ok) {
-                throw new Error('Failed to fetch inquiries');
+            // 3. 만약 서버가 "토큰도 없고 쿠키도 없는데?"라고 401을 주면 그때 쫓아냅니다.
+            if (response.status === 401) {
+                alert('로그인이 필요합니다.');
+                location.href = 'login.html';
+                return;
             }
 
             const result = await response.json();
+
             const data = result.data;
 
             currentPage = data.currentPage;
@@ -402,7 +405,7 @@
                 <tr class="empty-row">
                     <td colspan="4">
                         <div class="empty-icon">📭</div>
-                        <div class="empty-text">아직 작성한 문의가 없습니다.</div>
+                        <div class="empty-text">아직 작성한 문의가 <없></없>습니다.</div>
                         <button class="create-btn" onclick="location.href='user-inquiry-create.html'">첫 문의 작성하기</button>
                     </td>
                 </tr>

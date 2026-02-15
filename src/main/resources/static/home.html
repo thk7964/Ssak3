@@ -17,23 +17,32 @@
             min-height: 100vh;
         }
 
+        /* ───────────── 상단바 ───────────── */
         header {
-            background: #ffffff;
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 24px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.5);
+            box-shadow: 0 2px 16px rgba(116, 185, 255, 0.15);
             position: sticky;
             top: 0;
             z-index: 100;
-            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 28px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* 로고 왼쪽, 버튼 오른쪽 */
+            gap: 16px;
         }
 
         .logo {
-            font-size: 26px;
-            font-weight: 700;
+            font-size: 22px;
+            font-weight: 800;
             background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -41,127 +50,148 @@
             letter-spacing: -0.5px;
             cursor: pointer;
             flex-shrink: 0;
+            text-decoration: none;
         }
 
-        .search-container {
+        /* 가운데 검색창 */
+        .header-search {
             flex: 1;
-            max-width: 500px;
-            position: relative;
-        }
-
-        .search-wrapper {
+            max-width: 400px;
+            margin: 0 20px; /* 좌우 여백으로 중앙 배치 */
             display: flex;
-            gap: 8px;
-            background: #f8f9fa;
-            padding: 8px 16px;
-            border-radius: 24px;
-            border: 2px solid transparent;
-            transition: all 0.3s ease;
+            align-items: center;
+            background: #f3f4f6;
+            border-radius: 10px;
+            border: 1.5px solid transparent;
+            overflow: hidden;
+            transition: all 0.15s ease;
         }
 
-        .search-wrapper:focus-within {
+        .header-search:focus-within {
             background: white;
-            border-color: #74b9ff;
-            box-shadow: 0 0 0 4px rgba(116, 185, 255, 0.1);
+            border-color: #a29bfe;
+            box-shadow: 0 0 0 3px rgba(162, 155, 254, 0.12);
         }
 
-        .search-input {
+        .header-search input {
             flex: 1;
             border: none;
             background: transparent;
+            padding: 9px 14px;
             font-size: 14px;
+            color: #374151;
             outline: none;
-            color: #495057;
         }
 
-        .search-input::placeholder {
-            color: #adb5bd;
+        .header-search input::placeholder {
+            color: #9ca3af;
         }
 
-        .search-btn {
-            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+        .header-search-btn {
             border: none;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
+            background: transparent;
+            padding: 9px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #a29bfe;
             cursor: pointer;
-            font-size: 16px;
-            transition: all 0.2s ease;
+            white-space: nowrap;
+            transition: color 0.15s ease;
+            border-left: 1.5px solid #e5e7eb;
+        }
+
+        .header-search-btn:hover {
+            color: #74b9ff;
+        }
+
+        .header-nav {
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 8px;
             flex-shrink: 0;
         }
 
-        .search-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
-        }
-
-        .header-icons {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .icon-btn {
-            background: #f8f9fa;
-            border: none;
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 18px;
-            transition: all 0.2s ease;
-            color: #495057;
-        }
-
-        .icon-btn:hover {
-            background: #e9ecef;
-            transform: translateY(-2px);
-        }
-
-        .auth-btn {
-            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 12px;
-            cursor: pointer;
+        .navbar-link {
+            padding: 8px 16px;
+            color: #4b5563;
             font-size: 14px;
-            font-weight: 600;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s ease;
+            border: none;
+            background: transparent;
+            white-space: nowrap;
+        }
+
+        .navbar-link:hover {
+            color: #74b9ff;
+            background: rgba(116, 185, 255, 0.08);
+        }
+
+        .navbar-link.active {
+            color: #a29bfe;
+            font-weight: 700;
+        }
+
+        .navbar-divider {
+            width: 1px;
+            height: 18px;
+            background: #e5e7eb;
+            margin: 0 4px;
+        }
+
+        /* 로그인 — 글자 스타일 */
+        .auth-btn {
+            padding: 8px 16px;
+            color: #4b5563;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s ease;
+            border: none;
+            background: transparent;
             white-space: nowrap;
         }
 
         .auth-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(116, 185, 255, 0.45);
+            color: #74b9ff;
+            background: rgba(116, 185, 255, 0.08);
         }
 
+        /* 로그인 된 경우 */
         .user-info {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
+        }
+
+        .user-info .navbar-link {
+            color: #000000; /* 검정색으로 변경 */
         }
 
         .logout-btn {
-            background: #f8f9fa;
-            border: none;
             padding: 8px 16px;
-            border-radius: 10px;
+            color: #ef4444;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            color: #495057;
-            transition: all 0.2s ease;
+            text-decoration: none;
+            transition: all 0.15s ease;
+            border: none;
+            background: transparent;
+            white-space: nowrap;
         }
 
         .logout-btn:hover {
-            background: #e9ecef;
+            background: rgba(239, 68, 68, 0.08);
         }
 
+        /* ───────────── 배너 ───────────── */
         .banner {
             background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
             padding: 60px 20px;
@@ -242,15 +272,49 @@
             margin: 0 auto;
         }
 
-        .section-title {
-            font-size: 28px;
-            color: #212529;
-            margin-bottom: 30px;
-            font-weight: 700;
-            text-align: center;
-            letter-spacing: -0.5px;
+        /* ───────────── 섹션 타이틀 (세련된 버전) ───────────── */
+        .section-title-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 32px;
         }
 
+        .section-title-line {
+            flex: 1;
+            max-width: 120px;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #d1d5db);
+        }
+
+        .section-title-line.right {
+            background: linear-gradient(to left, transparent, #d1d5db);
+        }
+
+        .section-title {
+            font-size: 20px;
+            color: #374151;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title-accent {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            color: #a29bfe;
+            background: rgba(162, 155, 254, 0.1);
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px solid rgba(162, 155, 254, 0.25);
+        }
+
+        /* ───────────── 상품 그리드 ───────────── */
         .products-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -258,14 +322,27 @@
             margin-bottom: 50px;
         }
 
+        .product-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            transition: all 0.25s ease;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(116, 185, 255, 0.18);
+        }
+
         .product-image {
             width: 100%;
             height: 220px;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            background: #f8f9fa;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 80px;
             position: relative;
             overflow: hidden;
         }
@@ -274,22 +351,84 @@
             background: linear-gradient(135deg, #74b9ff15 0%, #a29bfe15 100%);
         }
 
+        .product-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover .product-img {
+            transform: scale(1.05);
+        }
+
+        .emoji-fallback {
+            font-size: 60px;
+        }
+
+        /* ───────────── 랭크 뱃지 (세련된 버전) ───────────── */
+        .rank-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            backdrop-filter: blur(8px);
+            background: rgba(255, 255, 255, 0.85);
+            color: #6b7280;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+            border: 1.5px solid rgba(255,255,255,0.9);
+        }
+
+        .rank-1 {
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            color: white;
+            width: 30px;
+            height: 30px;
+            font-size: 12px;
+            box-shadow: 0 4px 14px rgba(253, 160, 133, 0.5);
+            border: none;
+        }
+
+        .rank-2 {
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+            color: #475569;
+            border: none;
+        }
+
+        .rank-3 {
+            background: linear-gradient(135deg, #fbbf7a 0%, #d97706 100%);
+            color: white;
+            border: none;
+        }
+
         .product-info {
-            padding: 20px;
+            padding: 18px;
         }
 
         .product-name {
-            font-size: 17px;
+            font-size: 15px;
             font-weight: 600;
             color: #212529;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             letter-spacing: -0.3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .product-desc {
-            font-size: 13px;
-            color: #868e96;
-            margin-bottom: 16px;
+            font-size: 12px;
+            color: #9ca3af;
+            margin-bottom: 14px;
             line-height: 1.4;
         }
 
@@ -300,7 +439,7 @@
         }
 
         .product-price {
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 700;
             background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
             -webkit-background-clip: text;
@@ -312,10 +451,10 @@
             background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 12px;
+            padding: 8px 16px;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             transition: all 0.2s ease;
             box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
@@ -351,102 +490,59 @@
         }
 
         @media (max-width: 768px) {
-            .banner-title {
-                font-size: 32px;
-            }
+            .banner-title { font-size: 32px; }
             .products-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 16px;
             }
-            header {
-                padding: 16px 20px;
+            .header-inner {
+                padding: 0 16px;
                 flex-wrap: wrap;
+                height: auto;
+                padding-top: 12px;
+                padding-bottom: 12px;
+                gap: 10px;
             }
             .search-container {
                 order: 3;
                 width: 100%;
                 max-width: 100%;
-                margin-top: 12px;
             }
-        }
-
-        .rank-badge {
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
-            color: white;
-            font-size: 13px;
-            font-weight: 700;
-            padding: 6px 10px;
-            border-radius: 14px;
-            box-shadow: 0 4px 12px rgba(255, 154, 158, 0.35);
-            z-index: 10;
-        }
-
-        .rank-1 {
-            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
-            box-shadow: 0 6px 16px rgba(253, 160, 133, 0.5);
-        }
-
-        /* 기존 .product-image 스타일 수정 */
-        .product-image {
-            width: 100%;
-            height: 220px;
-            background: #f8f9fa;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* 실제 이미지 스타일 추가 */
-        .product-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* 카드에 꽉 차게 */
-            transition: transform 0.3s ease;
-        }
-
-        .product-card:hover .product-img {
-            transform: scale(1.05); /* 호버 시 살짝 확대 효과 */
-        }
-
-        /* 이미지가 없을 때 보여줄 이모지용 */
-        .emoji-fallback {
-            font-size: 60px;
         }
     </style>
 </head>
 <body>
-<header>
-    <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
 
-    <!-- 검색창 -->
-    <div class="search-container">
-        <div class="search-wrapper">
+<!-- ───────────── 상단바 ───────────── -->
+<header>
+    <div class="header-inner">
+        <a class="logo" onclick="location.href='home.html'">SSAK3</a>
+
+        <!-- 가운데 검색창 -->
+        <div class="header-search">
             <input
                     type="text"
-                    class="search-input"
                     id="searchInput"
-                    placeholder="상품을 검색해보세요 🔍"
+                    placeholder="상품을 검색해보세요"
                     onkeypress="handleSearchEnter(event)"
             >
-            <button class="search-btn" onclick="handleSearch()">🔍</button>
+            <button class="header-search-btn" onclick="handleSearch()">검색</button>
         </div>
-    </div>
 
-    <div class="header-icons">
-        <button class="icon-btn" onclick="location.href='cart.html'">🛒</button>
+        <div class="header-nav">
+            <a class="navbar-link" onclick="location.href='product-search.html'">전체 상품</a>
+            <a class="navbar-link" onclick="location.href='time-deals.html'">타임딜</a>
+            <a class="navbar-link" onclick="location.href='cart.html'">장바구니</a>
+            <div class="navbar-divider"></div>
 
-        <!-- 로그인 안 된 경우 -->
-        <button class="auth-btn" id="loginBtn" style="display: none;">로그인 / 회원가입</button>
+            <!-- 로그인 안 된 경우 -->
+            <button class="auth-btn" id="loginBtn" style="display: none;">로그인 / 회원가입</button>
 
-        <!-- 로그인 된 경우 -->
-        <div class="user-info" id="userInfo" style="display: none;">
-            <button class="icon-btn" id="myPageBtn" title="마이페이지">👤</button>
-            <button class="logout-btn" id="logoutBtn">로그아웃</button>
+            <!-- 로그인 된 경우 -->
+            <div class="user-info" id="userInfo" style="display: none;">
+                <a class="navbar-link active" id="myPageBtn">마이페이지</a>
+                <a class="navbar-link" id="logoutBtn" style="color:#ef4444;">로그아웃</a>
+            </div>
         </div>
     </div>
 </header>
@@ -461,9 +557,15 @@
     <a href="product-search.html">📦 전체 상품</a>
 </nav>
 
-
 <div class="products-section">
-    <h2 class="section-title">인기 조회수 TOP 10 상품</h2>
+    <!-- 세련된 섹션 타이틀 -->
+    <div class="section-title-wrap">
+        <span class="section-title-line"></span>
+        <h2 class="section-title">
+            지금 가장 인기있는 상품
+        </h2>
+        <span class="section-title-line right"></span>
+    </div>
 
     <div class="products-grid" id="popularProducts">
     </div>
@@ -471,7 +573,7 @@
 
 <footer>
     <p>© 2025 싹쓰리 - 모두를 위한 귀여운 굿즈</p>
-    <p>고객센터: 010-1234-5678 | contact@ssak3.com</p>
+    <p>고객센터: 010-1234-5678 | <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="24474b4a50454750645757454f170a474b49">[email&#160;protected]</a></p>
     <p>개인정보처리방침 | 이용약관 | 배송정책</p>
 </footer>
 
@@ -525,10 +627,13 @@
                     ? `<img src="${product.imageUrl}" class="product-img" alt="${product.name}">`
                     : `<div class="emoji-fallback">🛍️</div>`;
 
+                // 세련된 랭크 뱃지: 1~3등 특별 스타일, 나머지는 심플
+                const rankClass = index === 0 ? 'rank-1' : index === 1 ? 'rank-2' : index === 2 ? 'rank-3' : '';
+
                 card.innerHTML = `
                 <div class="product-image">
-                    <div class="rank-badge ${index === 0 ? 'rank-1' : ''}">
-                        ${index + 1}등
+                    <div class="rank-badge ${rankClass}">
+                        ${index + 1}
                     </div>
                     ${imageHtml}
                 </div>
@@ -663,6 +768,8 @@
             alert('장바구니에 추가되었습니다!');
         });
     });
+
+    // document.querySelecto
 
     // document.querySelectorAll('.product-card').forEach((card, index) => {
     //     card.addEventListener('click', () => {

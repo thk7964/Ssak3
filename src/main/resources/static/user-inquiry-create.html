@@ -320,10 +320,13 @@
 
         const token = localStorage.getItem('accessToken');
 
-        if (!token) {
-            alert('로그인이 필요합니다.');
-            location.href = 'login.html';
-            return;
+// 💡 토큰이 없어도 일단 진행! (백엔드 필터가 쿠키를 검사할 테니까요)
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+
+        if (token && token !== "null") {
+            headers['Authorization'] = 'Bearer ' + token;
         }
 
         submitBtn.disabled = true;
@@ -332,13 +335,19 @@
         try {
             const response = await fetch('http://localhost:8080/ssak3/inquiries', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + token
-                },
-                credentials: 'include',
+                headers: headers,
+                credentials: 'include', // 👈 쿠키를 실어 보내는 핵심!
                 body: JSON.stringify({ title, content })
             });
+
+            // 💡 서버에서 진짜 인증 안 된 유저(토큰X, 쿠키X)라고 하면 그때 보냅니다.
+            if (response.status === 401) {
+                alert('로그인이 필요한 서비스입니다.');
+                location.href = 'login.html';
+                return;
+            }
+
+            // ... 이하 성공 로직 동일
 
             const result = await response.json();
 

@@ -1,9 +1,12 @@
 package com.example.ssak3.domain.review.service;
 
 import com.example.ssak3.common.enums.ErrorCode;
+import com.example.ssak3.common.enums.OrderStatus;
 import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.common.model.AuthUser;
 import com.example.ssak3.domain.order.repository.OrderRepository;
+import com.example.ssak3.domain.orderProduct.entity.OrderProduct;
+import com.example.ssak3.domain.orderProduct.repository.OrderProductRepository;
 import com.example.ssak3.domain.product.entity.Product;
 import com.example.ssak3.domain.product.repository.ProductRepository;
 import com.example.ssak3.domain.review.entity.Review;
@@ -21,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -30,7 +34,7 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
-    private final OrderRepository orderRepository;
+    private final OrderProductRepository orderProductRepository;
 
     /**
      * 후기 생성
@@ -41,16 +45,19 @@ public class ReviewService {
         User foundUser = userRepository.findByIdAndIsDeletedFalse(user.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        if (!orderRepository.existsByUserId(foundUser.getId())) {
+        if (!orderProductRepository.existsByOrderUserIdAndProductIdAndOrderStatus(foundUser.getId(), request.getProductId(), OrderStatus.DONE)) {
             throw new CustomException(ErrorCode.USER_NOT_ORDERED);
+        }
+
+        Optional<Review> review = reviewRepository.findByUserIdAndProductId(foundUser.getId(), request.getProductId());
+
+        if (review.isPresent()) {
+            throw new CustomException(ErrorCode.ALREADY_REVIEWED);
         }
 
         Product foundProduct = productRepository.findByIdAndIsDeletedFalse(request.getProductId())
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
-        if (reviewRepository.existsByUserId(foundUser.getId())) {
-            throw new CustomException(ErrorCode.ALREADY_REVIEWED);
-        }
 
         Review createReview = new Review(
                 foundUser,

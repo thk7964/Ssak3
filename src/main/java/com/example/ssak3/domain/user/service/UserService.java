@@ -101,7 +101,13 @@ public class UserService {
      * 유저를 얻어오는 내부 전용 메소드
      */
     private User getUser(AuthUser authUser) {
-        return userRepository.findByIdAndIsDeletedFalse(authUser.getId())
+        User user = userRepository.findById(authUser.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        if (user.isDeleted()) {
+            throw new CustomException(ErrorCode.WITHDRAWN_USER);
+        }
+
+        return user;
     }
 }

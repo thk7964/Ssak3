@@ -370,35 +370,33 @@
   async function loadInquiryDetail(inquiryId) {
     const token = localStorage.getItem('accessToken');
 
-    if (!token) {
-      alert('로그인이 필요합니다.');
-      location.href = 'login.html';
-      return;
-    }
+      try {
+          // 2. 토큰이 없어도 쫓아내지 말고 일단 fetch를 보냅니다. (쿠키가 알아서 날아갈 테니까요)
+          const headers = {};
+          if (token && token !== "null") {
+              headers['Authorization'] = 'Bearer ' + token;
+          }
 
-    try {
-      const response = await fetch(`http://localhost:8080/ssak3/inquiries/${inquiryId}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': 'Bearer ' + token
-        },
-        credentials: 'include'
-      });
+          const response = await fetch(`http://localhost:8080/ssak3/inquiries/${inquiryId}`, {
+            method: 'GET',
+            headers: headers,
+            credentials: 'include'
+          });
 
-      if (!response.ok) {
-        throw new Error('문의 정보를 불러오는데 실패했습니다.');
-      }
+          if (!response.ok) {
+            throw new Error('문의 정보를 불러오는데 실패했습니다.');
+          }
 
-      const result = await response.json();
-      currentInquiry = result.data;
+          const result = await response.json();
+          currentInquiry = result.data;
 
-      renderInquiryDetail(currentInquiry);
+          renderInquiryDetail(currentInquiry);
 
-    } catch (error) {
-      console.error('Error loading inquiry detail:', error);
-      alert(error.message);
-      location.href = 'user-inquiry-list.html';
-    }
+        } catch (error) {
+          console.error('Error loading inquiry detail:', error);
+          alert(error.message);
+          location.href = 'user-inquiry-list.html';
+        }
   }
 
   function renderInquiryDetail(inquiry) {

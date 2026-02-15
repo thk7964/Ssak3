@@ -1020,7 +1020,22 @@
     };
 
     const getToken = () => localStorage.getItem('accessToken');
-    const isLoggedIn = () => !!getToken();
+    const isLoggedIn = async () => {
+        const token = getToken();
+        // 자체 로그인 토큰 있으면 바로 로그인 상태
+        if (token) return true;
+
+        // 카카오 로그인은 서버 호출로 확인
+        try {
+            const res = await fetch('http://localhost:8080/ssak3/users/me', {
+                headers: token ? { 'Authorization': 'Bearer ' + token } : {},
+                credentials: 'include', // 쿠키 인증 포함
+            });
+            return res.ok; // 200이면 로그인 상태
+        } catch {
+            return false;
+        }
+    };
 
     function requireLoginAndRedirect() {
         alert('로그인이 필요한 서비스입니다.');
@@ -1133,35 +1148,39 @@
     }
 
     async function addToCart() {
-        if (!isLoggedIn()) {
-            requireLoginAndRedirect();
-            return;
-        }
-
         const product = window.__currentProduct;
         if (!product?.id) {
             alert('상품 정보를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
             return;
         }
 
-        const quantity = parseInt(document.getElementById('quantityValue')?.textContent || '1', 10);
+        const quantity = parseInt(
+            document.getElementById('quantityValue')?.textContent || '1',
+            10
+        );
+
         const token = getToken();
         const url = 'http://localhost:8080/ssak3/carts';
 
-        const payload = {productId: product.id, quantity};
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
 
         try {
-            // JWT로 요청 (로그인 체크 했으니 기본은 JWT로)
-            let res = await fetch(url, {
+            const res = await fetch(url, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(payload)
+                headers: headers,
+                credentials: 'include', // ✅ 카카오 쿠키 인증
+                body: JSON.stringify({
+                    productId: product.id,
+                    quantity: quantity
+                })
             });
 
-            // 만약 토큰이 만료/무효로 401이면 로그인으로
             if (res.status === 401) {
                 requireLoginAndRedirect();
                 return;
@@ -1182,32 +1201,12 @@
     }
 
     function buyNow() {
-        if (!isLoggedIn()) {
-            requireLoginAndRedirect();
-            return;
-        }
-
         const quantity = document.getElementById('quantityValue')?.textContent || '1';
         window.location.href = `single-product-order.html?productId=${productId}&quantity=${quantity}`;
     }
 
     // 초기 실행
     loadProductDetail();
-
-    function getMyId() {
-        const stored = localStorage.getItem('userId');
-        if (stored) return stored;
-
-        const token = getToken();
-        if (!token) return null;
-
-        try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            return String(payload.userId != null ? payload.userId : (payload.sub || ''));
-        } catch (e) {
-            return null;
-        }
-    }
 
     function authHeaders() {
         const h = {'Content-Type': 'application/json'};
@@ -1258,6 +1257,8 @@
         }
     };
 
+    let __myId = null;
+    let __isLoggedIn = false;
     let reviews = [];
     let curPage = 0;
     let totalPages = 1;
@@ -1314,7 +1315,7 @@
         }
 
         listEl.innerHTML = reviews.map(function (r) {
-            var isOwner = isLoggedIn() && String(getMyId()) === String(r.userId);
+            var isOwner = __isLoggedIn && __myId === String(r.userId);
             var actionsHtml = isOwner
                 ? '<div class="review-actions">' +
                 '<button class="btn-edit-review" onclick="openEdit(' + r.id + ')">수정</button>' +
@@ -1357,7 +1358,7 @@
         }).join('');
 
         reviews.forEach(function (r) {
-            if (!isLoggedIn() || String(getMyId()) !== String(r.userId)) return;
+            if (!__isLoggedIn || __myId !== String(r.userId)) return;
             editScores[r.id] = r.score || 0;
             bindEditPicker(r.id, r.score || 0);
         });
@@ -1597,7 +1598,7 @@
     function renderHeaderBtn() {
         const el = document.getElementById('reviewHeaderBtn');
 
-        if (isLoggedIn()) {
+        if (__isLoggedIn) {
             el.innerHTML = '<button class="review-write-btn" id="writeToggleBtn">✏️ 후기 작성</button>';
             document.getElementById('writeToggleBtn').addEventListener('click', function () {
                 const wrap = document.getElementById('reviewFormWrap');
@@ -1616,6 +1617,8 @@
 
         document.getElementById('reviewSection').style.display = 'block';
 
+        await initAuth();
+
         renderHeaderBtn();
         initWritePicker();
 
@@ -1623,6 +1626,39 @@
         document.getElementById('writeSubmitBtn').addEventListener('click', doCreate);
 
         await loadPage(0);
+    }
+
+    async function initAuth() {
+        try {
+            const token = getToken();
+
+            const headers = {};
+            if (token) {
+                headers['Authorization'] = 'Bearer ' + token;
+            }
+
+            const res = await fetch('http://localhost:8080/ssak3/users/me', {
+                headers: headers,
+                credentials: 'include'
+            });
+
+            if (!res.ok) {
+                __isLoggedIn = false;
+                __myId = null;
+                return;
+            }
+
+            const result = await res.json();
+
+            __isLoggedIn = true;
+            __myId = String(result.data.id);
+
+            console.log("내 id:", __myId);
+
+        } catch (e) {
+            __isLoggedIn = false;
+            __myId = null;
+        }
     }
 </script>
 

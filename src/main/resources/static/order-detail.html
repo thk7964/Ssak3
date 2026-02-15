@@ -276,19 +276,29 @@
     const FREE_SHIPPING_THRESHOLD = 30000;
     const SHIPPING_FEE = 3000;
 
-    function applyHeaderAuthUI() {
-        const token = localStorage.getItem('accessToken');
+    async function applyHeaderAuthUI() {
         const loginBtn = document.getElementById('loginBtn');
         const userInfo = document.getElementById('userInfo');
 
-        if (token) {
-            loginBtn.style.display = 'none';
-            userInfo.style.display = 'flex';
-        } else {
+        try {
+            const res = await fetch('http://localhost:8080/ssak3/users/me', {
+                method: 'GET',
+                credentials: 'include' // 🔥 쿠키 인증
+            });
+
+            if (res.ok) {
+                loginBtn.style.display = 'none';
+                userInfo.style.display = 'flex';
+            } else {
+                loginBtn.style.display = 'inline-block';
+                userInfo.style.display = 'none';
+            }
+        } catch {
             loginBtn.style.display = 'inline-block';
             userInfo.style.display = 'none';
         }
     }
+
 
     function initHeaderActions() {
         document.getElementById('cartIconBtn').onclick = () => location.href = 'cart.html';
@@ -587,7 +597,7 @@
     }
 
     (async function init() {
-        applyHeaderAuthUI();
+        await applyHeaderAuthUI();
         initHeaderActions();
 
         const orderId = getOrderIdFromQuery();

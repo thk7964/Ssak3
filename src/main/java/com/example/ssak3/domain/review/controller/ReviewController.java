@@ -30,7 +30,7 @@ public class ReviewController {
             @AuthenticationPrincipal AuthUser user,
             @Valid @RequestBody ReviewCreateRequest request) {
         ApiResponse response = ApiResponse.success("후기를 생성하였습니다.", reviewService.createReview(user, request));
-        System.out.println(user);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

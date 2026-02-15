@@ -425,8 +425,7 @@
 <div class="container" id="mainContainer">
     <div class="loading">주문 정보를 불러오는 중...</div>
 </div>
-<div id="payment-overlay"
-     style=" display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; "></div>
+<div id="payment-overlay" style=" display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; "></div>
 <footer>
     <p>© 2025 싹쓰리 - 모두를 위한 귀여운 굿즈</p>
     <p>고객센터: 010-1234-5678 | contact@ssak3.com</p>
@@ -832,7 +831,7 @@
 
                         if (!paymentFinished) {
                             alert("결제가 취소되었습니다.");
-                            window.location.href = "home.html";
+                            window.location.href = "my-orders.html";
                         }
                     }
                 }, 500);

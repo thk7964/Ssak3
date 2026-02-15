@@ -314,7 +314,9 @@
     <div class="footer-actions">
         <button class="more-btn" id="moreBtn" style="display:none;">더 보기</button>
     </div>
+
 </div>
+<div id="payment-overlay" style=" display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; "></div>
 
 <script>
     const API_BASE = 'http://localhost:8080/ssak3';
@@ -575,21 +577,56 @@
         if (retryBtn) retryBtn.disabled = true;
         if (cancelBtn) cancelBtn.disabled = true;
 
+        const overlay = document.getElementById('payment-overlay');
+
         try {
             const res = await apiFetch(`/orders/${orderId}/retry-payment`, { method: 'POST' });
             if (!res.ok) {
                 const txt = await res.text().catch(() => '');
                 throw new Error(txt || `재결제 실패 (${res.status})`);
             }
+
             const json = await res.json();
             const url = json?.data?.url;
             if (!url) throw new Error('결제 URL이 없습니다.');
-            location.href = url;
+
+            // ✅ 오버레이 표시
+            overlay.style.display = 'block';
+
+            // ✅ 결제용 팝업 띄우기
+            const width = 500;
+            const height = 700;
+            const left = (window.innerWidth - width) / 2;
+            const top = (window.innerHeight - height) / 2;
+
+            const paymentWindow = window.open(
+                url,
+                'paymentPopup',
+                `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes`
+            );
+
+            if (!paymentWindow) {
+                alert('팝업이 차단되었습니다. 브라우저 설정을 확인해주세요.');
+                overlay.style.display = 'none';
+                return;
+            }
+
+            // ✅ 팝업 닫힘 감지
+            const timer = setInterval(() => {
+                if (paymentWindow.closed) {
+                    clearInterval(timer);
+                    overlay.style.display = 'none';  // 오버레이 숨김
+                    page = 0;
+                    allOrders.length = 0;
+                    loadNextPage();  // 주문 목록 갱신
+                }
+            }, 500);
         } catch (err) {
             console.error(err);
             alert('재결제 요청에 실패했습니다.');
             if (retryBtn) retryBtn.disabled = false;
             if (cancelBtn) cancelBtn.disabled = false;
+            overlay.style.display = 'none';
         }
     }
 

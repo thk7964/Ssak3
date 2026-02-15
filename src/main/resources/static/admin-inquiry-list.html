@@ -358,7 +358,7 @@
     <div class="header-title">💬 문의 관리 시스템</div>
     <div class="header-icons">
         <button class="btn-common home-btn" onclick="location.href='home.html'">홈으로</button>
-        <button class="btn-common admin-btn" onclick="location.href='admin-mypage.html'">관리자페이지</button>
+        <button class="btn-common logout-btn" id="logoutBtn">로그아웃</button>
     </div>
 </header>
 
@@ -488,6 +488,14 @@
             `;
         }
     }
+
+    // ─────────────────────────────────────────
+    // 로그아웃
+    // ─────────────────────────────────────────
+    document.getElementById('logoutBtn')?.addEventListener('click', () => {
+        localStorage.removeItem('accessToken');
+        location.href = 'login.html';
+    });
 
     function filterInquiries(filter, event) {
         currentFilter = filter;

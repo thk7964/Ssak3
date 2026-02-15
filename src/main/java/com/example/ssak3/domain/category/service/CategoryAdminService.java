@@ -27,6 +27,7 @@ public class CategoryAdminService {
     /**
      * 카테고리 생성 비즈니스 로직
      */
+    @CacheEvict(value = "categoryRedisCache", allEntries = true)
     @Transactional
     public CategoryCreateResponse createCategory(CategoryCreateRequest request) {
 

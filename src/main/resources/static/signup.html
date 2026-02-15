@@ -292,6 +292,21 @@
 </div>
 
 <script>
+    // API URL 설정
+    const API_URL = (() => {
+        const hostname = window.location.hostname;
+
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return 'http://localhost:8080';
+        }
+
+        if (hostname === 'admin.ssak3.store') {
+            return 'https://admin.ssak3.store';
+        }
+
+        return 'https://ssak3.store';
+    })();
+
     // 유효성 검사 패턴
     const patterns = {
         email: /^(?:\w+\.?)*\w+@(?:\w+\.)+\w+$/,
@@ -444,7 +459,7 @@
 
         // API 호출
         try {
-            const response = await fetch('http://localhost:8080/ssak3/auth/signup', {
+            const response = await fetch(`${API_URL}/ssak3/auth/signup`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

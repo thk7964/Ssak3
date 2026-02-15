@@ -557,6 +557,21 @@
 </footer>
 
 <script>
+    // API URL 설정
+    const API_URL = (() => {
+        const hostname = window.location.hostname;
+
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return 'http://localhost:8080';
+        }
+
+        if (hostname === 'admin.ssak3.store') {
+            return 'https://admin.ssak3.store';
+        }
+
+        return 'https://ssak3.store';
+    })();
+
     let currentStatus = 'OPEN';
     let currentPage = 0;
     let totalPages = 0;
@@ -645,7 +660,7 @@
 
     async function loadTimeDeals(status = null, page = 0) {
         try {
-            let url = `http://localhost:8080/ssak3/time-deals?page=${page}&size=12`;
+            let url = `${API_URL}/ssak3/time-deals?page=${page}&size=12`;
             if (status) {
                 url += `&status=${status}`;
             }
@@ -861,7 +876,7 @@
             let response;
             // 1. 일반 로그인(JWT) 우선 확인
             if (token) {
-                response = await fetch('http://localhost:8080/ssak3/users/me', {
+                response = await fetch(`${API_URL}/ssak3/users/me`, {
                     method: 'GET',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -869,7 +884,7 @@
 
             // 2. 토큰이 없거나 만료된 경우 카카오(쿠키) 확인
             if (!token || response.status === 401) {
-                response = await fetch('http://localhost:8080/ssak3/users/me', {
+                response = await fetch(`${API_URL}/ssak3/users/me`, {
                     method: 'GET',
                     credentials: 'include' // 쿠키 포함
                 });
@@ -901,7 +916,7 @@
             };
             if (token) logoutRequest.headers = { 'Authorization': `Bearer ${token}` };
 
-            const response = await fetch('http://localhost:8080/ssak3/auth/logout', logoutRequest);
+            const response = await fetch(`${API_URL}/ssak3/auth/logout`, logoutRequest);
 
             localStorage.removeItem('accessToken');
 

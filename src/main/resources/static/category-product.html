@@ -601,7 +601,23 @@
     <p>개인정보처리방침 | 이용약관 | 배송정책</p>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+<script>
+    // API URL 설정
+    const API_URL = (() => {
+        const hostname = window.location.hostname;
+
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return 'http://localhost:8080';
+        }
+
+        if (hostname === 'admin.ssak3.store') {
+            return 'https://admin.ssak3.store';
+        }
+
+        return 'https://ssak3.store';
+    })();
+
     // ───────── URL 파라미터 파싱 ─────────
     const urlParams = new URLSearchParams(window.location.search);
     const categoryId = urlParams.get('categoryId');
@@ -610,7 +626,7 @@
     // ───────── 카테고리 목록 로드 + 네비 활성화 ─────────
     async function loadCategories() {
         try {
-            const res = await fetch('http://localhost:8080/ssak3/categories');
+            const res = await fetch(`${API_URL}/ssak3/categories`);
             const result = await res.json();
             if (!result.success) return;
 
@@ -656,7 +672,7 @@
         const grid = document.getElementById('productsGrid');
 
         try {
-            const res = await fetch(`http://localhost:8080/ssak3/products?${params}`);
+            const res = await fetch(`${API_URL}/ssak3/products?${params}`);
             const result = await res.json();
 
             if (!result.success) {
@@ -823,13 +839,13 @@
         try {
             let response;
             if (token) {
-                response = await fetch('http://localhost:8080/ssak3/users/me', {
+                response = await fetch(`${API_URL}/ssak3/users/me`, {
                     method: 'GET',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
             }
             if (!token || response.status === 401) {
-                response = await fetch('http://localhost:8080/ssak3/users/me', {
+                response = await fetch(`${API_URL}/ssak3/users/me`, {
                     method: 'GET', credentials: 'include'
                 });
             }
@@ -851,7 +867,7 @@
         try {
             const req = { method: 'POST', credentials: 'include' };
             if (token) req.headers = { 'Authorization': `Bearer ${token}` };
-            await fetch('http://localhost:8080/ssak3/auth/logout', req);
+            await fetch(`${API_URL}/ssak3/auth/logout`, req);
         } catch (e) {
             console.error('로그아웃 통신 에러:', e);
         } finally {

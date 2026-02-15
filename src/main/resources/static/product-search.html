@@ -522,7 +522,23 @@
     <p>개인정보처리방침 | 이용약관 | 배송정책</p>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+<script>
+    // API URL 설정
+    const API_URL = (() => {
+        const hostname = window.location.hostname;
+
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return 'http://localhost:8080';
+        }
+
+        if (hostname === 'admin.ssak3.store') {
+            return 'https://admin.ssak3.store';
+        }
+
+        return 'https://ssak3.store';
+    })();
+
     // 로그인 상태 확인 및 UI 업데이트
     async function checkLoginStatus() {
         const token = localStorage.getItem('accessToken');
@@ -535,7 +551,7 @@
                 headers.Authorization = 'Bearer ' + token;
             }
 
-            const response = await fetch('http://localhost:8080/ssak3/users/me', {
+            const response = await fetch(`${API_URL}/ssak3/users/me`, {
                 method: 'GET',
                 headers: headers,
                 credentials: 'include'
@@ -627,7 +643,7 @@
     // 상품 조회 API 호출
     async function loadProducts() {
         try {
-            let url = `http://localhost:8080/ssak3/products/search?page=${currentPage}&size=20`;
+            let url = `${API_URL}/ssak3/products/search?page=${currentPage}&size=20`;
             if (currentKeyword) url += `&keyword=${encodeURIComponent(currentKeyword)}`;
             if (currentMinPrice) url += `&minPrice=${currentMinPrice}`;
             if (currentMaxPrice) url += `&maxPrice=${currentMaxPrice}`;

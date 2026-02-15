@@ -674,7 +674,23 @@
     <p>개인정보처리방침 | 이용약관 | 배송정책</p>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+<script>
+    // API URL 설정
+    const API_URL = (() => {
+        const hostname = window.location.hostname;
+
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return 'http://localhost:8080';
+        }
+
+        if (hostname === 'admin.ssak3.store') {
+            return 'https://admin.ssak3.store';
+        }
+
+        return 'https://ssak3.store';
+    })();
+
     const API_BASE_URL = 'http://localhost:8080/ssak3/user-coupons';
 
     let currentPage = 0;
@@ -759,7 +775,7 @@
 
         try {
             const response = await fetch(
-                `${API_BASE_URL}/me?page=${page}&size=${pageSize}&status=${currentTab}`, {
+                `${API_URL}/ssak3/user-coupons/me?page=${page}&size=${pageSize}&status=${currentTab}`, {
                     method: 'GET',
                     headers: getHeaders(),
                     credentials: 'include'
@@ -864,7 +880,7 @@
         if (!confirm('정말 이 쿠폰을 삭제하시겠습니까?')) return;
 
         try {
-            const response = await fetch(`${API_BASE_URL}/${userCouponId}`, {
+            const response = await fetch(`${API_URL}/ssak3/user-coupons/${userCouponId}`, {
                 method: 'DELETE',
                 headers: getHeaders(),
                 credentials: 'include'
@@ -921,7 +937,7 @@
         for (const status of ['AVAILABLE', 'USED', 'EXPIRED']) {
             try {
                 const res = await fetch(
-                    `${API_BASE_URL}/me?page=0&size=1&status=${status}`, {
+                    `${API_URL}/ssak3/user-coupons/me?page=0&size=1&status=${status}`, {
                         headers: getHeaders(), credentials: 'include'
                     });
                 if (res.ok) {
@@ -943,13 +959,13 @@
         try {
             let response;
             if (token) {
-                response = await fetch('http://localhost:8080/ssak3/users/me', {
+                response = await fetch(`${API_URL}/ssak3/users/me`, {
                     method: 'GET',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
             }
             if (!token || response.status === 401) {
-                response = await fetch('http://localhost:8080/ssak3/users/me', {
+                response = await fetch(`${API_URL}:8080/ssak3/users/me`, {
                     method: 'GET',
                     credentials: 'include'
                 });
@@ -973,7 +989,7 @@
         try {
             const req = { method: 'POST', credentials: 'include' };
             if (token) req.headers = { 'Authorization': `Bearer ${token}` };
-            await fetch('http://localhost:8080/ssak3/auth/logout', req);
+            await fetch(`${API_URL}/ssak3/auth/logout`, req);
             localStorage.removeItem('accessToken');
             alert('로그아웃 되었습니다.');
             window.location.href = 'home.html';

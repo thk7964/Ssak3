@@ -351,6 +351,21 @@
 </div>
 
 <script>
+  // API URL 설정
+  const API_URL = (() => {
+    const hostname = window.location.hostname;
+
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return 'http://localhost:8080';
+    }
+
+    if (hostname === 'admin.ssak3.store') {
+      return 'https://admin.ssak3.store';
+    }
+
+    return 'https://ssak3.store';
+  })();
+
   let currentInquiry = null;
   let isEditMode = false;
 
@@ -377,7 +392,7 @@
               headers['Authorization'] = 'Bearer ' + token;
           }
 
-          const response = await fetch(`http://localhost:8080/ssak3/inquiries/${inquiryId}`, {
+          const response = await fetch(`${API_URL}/ssak3/inquiries/${inquiryId}`, {
             method: 'GET',
             headers: headers,
             credentials: 'include'
@@ -495,7 +510,7 @@
     const token = localStorage.getItem('accessToken');
 
     try {
-      const response = await fetch(`http://localhost:8080/ssak3/inquiries/${currentInquiry.id}`, {
+      const response = await fetch(`${API_URL}/ssak3/inquiries/${currentInquiry.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -528,7 +543,7 @@
     const token = localStorage.getItem('accessToken');
 
     try {
-      const response = await fetch(`http://localhost:8080/ssak3/inquiries/${currentInquiry.id}`, {
+      const response = await fetch(`${API_URL}/ssak3/inquiries/${currentInquiry.id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': 'Bearer ' + token

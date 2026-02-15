@@ -56,6 +56,18 @@ public class ReviewController {
     }
 
     /**
+     * 내가 쓴 후기 목록조회 API
+     */
+    @GetMapping("/ssak3/reviews/me")
+    public ResponseEntity<ApiResponse> getMyReviewListApi(
+            @AuthenticationPrincipal AuthUser user,
+            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        ApiResponse response = ApiResponse.success("내가 쓴 후기목록을 조회하였습니다.", reviewService.getMyReviewList( user, pageable));
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    /**
      * 후기 수정 API
      */
     @PatchMapping("/{reviewId}")

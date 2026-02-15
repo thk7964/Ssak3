@@ -4,6 +4,7 @@ import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.enums.OrderStatus;
 import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.common.model.AuthUser;
+import com.example.ssak3.common.model.PageResponse;
 import com.example.ssak3.domain.order.repository.OrderRepository;
 import com.example.ssak3.domain.orderProduct.entity.OrderProduct;
 import com.example.ssak3.domain.orderProduct.repository.OrderProductRepository;
@@ -107,6 +108,18 @@ public class ReviewService {
                 // 다시 double 타입으로 변환 why? JSON 직렬화(객체를 전송 가능한 형태로 바꾸는 과정)
                 .doubleValue();
         return ReviewPageResponse.from(reviewPage, roundedAvgScore);
+    }
+
+    /**
+     * 내가 쓴 후기 목록조회
+     */
+    @Transactional(readOnly = true)
+    public PageResponse getMyReviewList(AuthUser user, Pageable pageable) {
+
+        Page<ReviewListGetResponse> reviewPage = reviewRepository.findByUserIdAndIsDeletedFalse(user.getId(), pageable)
+                .map(ReviewListGetResponse::from);
+
+        return PageResponse.from(reviewPage);
     }
 
     /**

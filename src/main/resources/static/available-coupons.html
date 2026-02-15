@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>다운 가능한 쿠폰 - 싹쓰리</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+            background: #fafafa;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #ffffff;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+            cursor: pointer;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            background: #f8f9fa;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s ease;
+            color: #495057;
+        }
+
+        .icon-btn:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+
+        .banner {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            padding: 50px 20px;
+            text-align: center;
+            margin: 24px 20px;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(116, 185, 255, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .banner-title {
+            font-size: 42px;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 8px;
+            position: relative;
+            letter-spacing: -1px;
+        }
+
+        .banner-subtitle {
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 400;
+            position: relative;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 20px;
+            flex-wrap: wrap;
+            background: white;
+            margin: 0 20px;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #495057;
+            font-weight: 500;
+            font-size: 14px;
+            padding: 10px 18px;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            background: #f8f9fa;
+        }
+
+        nav a:hover {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
+        }
+
+        nav a.active {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .section-header {
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            color: #212529;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+
+        .section-subtitle {
+            font-size: 14px;
+            color: #868e96;
+        }
+
+        .coupon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .coupon-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid #f0f0f0;
+        }
+
+        .coupon-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+            border-color: #e9ecef;
+        }
+
+        .coupon-header {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            padding: 28px 24px;
+            color: white;
+            position: relative;
+        }
+
+        .coupon-name {
+            font-size: 19px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -0.3px;
+        }
+
+        .coupon-discount {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .coupon-body {
+            padding: 24px;
+        }
+
+        .coupon-info {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .coupon-info-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #495057;
+        }
+
+        .coupon-info-label {
+            color: #868e96;
+            font-weight: 500;
+        }
+
+        .coupon-footer {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 20px;
+            border-radius: 12px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(116, 185, 255, 0.45);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #868e96;
+        }
+
+        .empty-state-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .empty-state-text {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .empty-state-subtext {
+            font-size: 14px;
+            color: #adb5bd;
+        }
+
+        footer {
+            background: #212529;
+            color: #adb5bd;
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+        }
+
+        footer p {
+            margin: 10px 0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        footer p:first-child {
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .banner-title {
+                font-size: 32px;
+            }
+            .coupon-grid {
+                grid-template-columns: 1fr;
+            }
+            header {
+                padding: 16px 20px;
+            }
+        }
+
+        .list-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .section-info {
+            font-size: 14px;
+            color: #868e96;
+        }
+
+        .size-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #495057;
+            font-weight: 500;
+        }
+
+        .size-select {
+            padding: 8px 14px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            color: #495057;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .size-select:focus {
+            outline: none;
+            border-color: #74b9ff;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            margin-top: 36px;
+            flex-wrap: wrap;
+        }
+
+        .page-btn {
+            min-width: 38px;
+            height: 38px;
+            padding: 0 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            background: white;
+            color: #495057;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .page-btn:hover {
+            border-color: #74b9ff;
+            color: #74b9ff;
+            transform: translateY(-1px);
+        }
+
+        .page-btn.active {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            border-color: transparent;
+            color: white;
+            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
+        }
+
+        .page-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* 이미 다운로드한 쿠폰 */
+        .coupon-card.downloaded {
+            opacity: 0.65;
+            filter: grayscale(40%);
+        }
+
+        .coupon-card.downloaded .coupon-header {
+            background: linear-gradient(135deg, #adb5bd 0%, #868e96 100%);
+        }
+
+        .coupon-card.downloaded:hover {
+            transform: none;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        }
+
+        .btn-downloaded {
+            flex: 1;
+            padding: 14px 20px;
+            border-radius: 12px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            background: #e9ecef;
+            color: #868e96;
+            cursor: not-allowed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
+    <div class="header-icons">
+        <button class="icon-btn">🔍</button>
+        <button class="icon-btn">🛒</button>
+        <button class="icon-btn" onclick="location.href='mypage.html'" title="마이페이지">👤</button>
+    </div>
+</header>
+
+<div class="banner">
+    <div class="banner-title">다운 가능한 쿠폰</div>
+    <div class="banner-subtitle">지금 바로 쿠폰을 받아보세요</div>
+</div>
+
+<nav>
+    <a href="my-coupons.html">내 쿠폰함</a>
+    <a href="available-coupons.html" class="active">다운 가능한 쿠폰</a>
+</nav>
+
+<div class="container">
+    <div class="section-header">
+        <div class="section-title">지금 다운로드 가능한 쿠폰</div>
+        <div class="section-subtitle">마음에 드는 쿠폰을 받아가세요!</div>
+    </div>
+
+    <div class="list-controls">
+        <div class="section-info" id="pageInfo">쿠폰을 불러오는 중...</div>
+        <div class="size-selector">
+            <span>페이지당</span>
+            <select class="size-select" id="pageSizeSelect" onchange="onSizeChange()">
+                <option value="5">5개</option>
+                <option value="10" selected>10개</option>
+                <option value="20">20개</option>
+                <option value="50">50개</option>
+            </select>
+            <span>씩 보기</span>
+        </div>
+    </div>
+
+    <div class="coupon-grid" id="availableCouponsGrid">
+        <div class="empty-state">
+            <div class="empty-state-icon">⏳</div>
+            <div class="empty-state-text">로딩 중...</div>
+        </div>
+    </div>
+
+    <div class="pagination" id="pagination"></div>
+</div>
+
+<footer>
+    <p>© 2025 싹쓰리 - 모두를 위한 귀여운 굿즈</p>
+    <p>고객센터: 010-1234-5678 | <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="492a26273d282a3d093a3a28227a672a2624">[email&#160;protected]</a></p>
+    <p>개인정보처리방침 | 이용약관 | 배송정책</p>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    const API_BASE_URL = 'http://localhost:8080/ssak3/user-coupons';
+
+    let currentPage = 0;
+    let pageSize = 10;
+    let downloadedCouponIds = new Set(); // 이미 다운로드한 쿠폰 ID 목록
+
+    // ── 유틸 ─────────────────────────────────────────────
+
+    function getAuthToken() {
+        return localStorage.getItem('accessToken');
+    }
+
+    function getHeaders() {
+        const token = getAuthToken();
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+        return headers;
+    }
+
+    function formatDate(dateString) {
+        if (!dateString) return '-';
+        const date = new Date(dateString);
+        return `${date.getFullYear()}/${String(date.getMonth()+1).padStart(2,'0')}/${String(date.getDate()).padStart(2,'0')} ${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`;
+    }
+
+    // ── 이미 다운로드한 쿠폰 ID 목록 불러오기 ────────────
+    // restrictedStatuses (재발급 차단 대상): AVAILABLE, USED, USED_DELETED
+    // UNUSED_DELETED는 수량이 복구되고 재발급 가능하므로 제외
+
+    async function loadDownloadedCouponIds() {
+        // 재발급이 막혀있는 세 상태를 병렬로 조회
+        const restrictedStatuses = ['AVAILABLE', 'USED', 'USED_DELETED'];
+        try {
+            const results = await Promise.all(
+                restrictedStatuses.map(status =>
+                    fetch(`${API_BASE_URL}/me?page=0&size=200&status=${status}`, {
+                        headers: getHeaders(),
+                        credentials: 'include'
+                    }).then(res => res.ok ? res.json() : { data: { content: [] } })
+                )
+            );
+            // 세 상태의 couponId를 하나의 Set으로 합치기
+            downloadedCouponIds = new Set(
+                results.flatMap(result => (result.data?.content || []).map(c => c.couponId))
+            );
+        } catch (e) {
+            console.warn('다운로드 목록 조회 실패 (표시 기능만 비활성):', e.message);
+        }
+    }
+
+    // ── 페이지 사이즈 변경 ────────────────────────────────
+
+    function onSizeChange() {
+        pageSize = parseInt(document.getElementById('pageSizeSelect').value);
+        currentPage = 0;
+        loadAvailableCoupons(0);
+    }
+
+    // ── 페이지네이션 업데이트 ─────────────────────────────
+
+    function updatePagination(pageData) {
+        const totalPages = pageData.totalPages || 0;
+        const current = currentPage; // 전역변수 직접 사용 (pageData.number는 백엔드 응답에 없을 수 있음)
+        const totalElements = pageData.totalElements || 0;
+        const start = totalElements === 0 ? 0 : current * pageSize + 1;
+        const end = Math.min((current + 1) * pageSize, totalElements);
+
+        document.getElementById('pageInfo').textContent =
+            totalElements > 0
+                ? `전체 ${totalElements}개 중 ${start}~${end}번째`
+                : '다운 가능한 쿠폰이 없습니다';
+
+        const paginationEl = document.getElementById('pagination');
+        paginationEl.innerHTML = '';
+        if (totalPages <= 1) return;
+
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'page-btn';
+        prevBtn.textContent = '‹';
+        prevBtn.disabled = current === 0;
+        prevBtn.onclick = () => loadAvailableCoupons(current - 1);
+        paginationEl.appendChild(prevBtn);
+
+        const startPage = Math.max(0, Math.min(current - 2, totalPages - 5));
+        const endPage = Math.min(totalPages, startPage + 5);
+        for (let i = startPage; i < endPage; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'page-btn' + (i === current ? ' active' : '');
+            btn.textContent = i + 1;
+            btn.onclick = () => loadAvailableCoupons(i);
+            paginationEl.appendChild(btn);
+        }
+
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'page-btn';
+        nextBtn.textContent = '›';
+        nextBtn.disabled = current >= totalPages - 1;
+        nextBtn.onclick = () => loadAvailableCoupons(current + 1);
+        paginationEl.appendChild(nextBtn);
+    }
+
+    // ── 쿠폰 목록 조회 ────────────────────────────────────
+
+    async function loadAvailableCoupons(page = 0) {
+        currentPage = page;
+        const grid = document.getElementById('availableCouponsGrid');
+        grid.innerHTML = `<div class="empty-state"><div class="empty-state-icon">⏳</div><div class="empty-state-text">로딩 중...</div></div>`;
+
+        try {
+            const response = await fetch(`${API_BASE_URL}?page=${page}&size=${pageSize}`, {
+                method: 'GET',
+                headers: getHeaders(),
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('❌ API 에러:', errorText);
+                throw new Error('쿠폰 목록 조회 실패');
+            }
+
+            const result = await response.json();
+            const data = result.data;
+
+            renderAvailableCoupons(data.content || []);
+            updatePagination(data);
+        } catch (error) {
+            console.error('❌ 쿠폰 조회 오류:', error);
+            grid.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">⚠️</div>
+                    <div class="empty-state-text">데이터를 불러오는데 실패했습니다</div>
+                    <div class="empty-state-subtext">${error.message}</div>
+                    <div class="empty-state-subtext" style="margin-top:10px;font-size:12px;">F12를 눌러 콘솔을 확인해주세요</div>
+                </div>
+            `;
+        }
+    }
+
+    // ── 쿠폰 렌더링 ───────────────────────────────────────
+
+    function renderAvailableCoupons(coupons) {
+        const grid = document.getElementById('availableCouponsGrid');
+
+        if (!coupons || coupons.length === 0) {
+            grid.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">📭</div>
+                    <div class="empty-state-text">현재 다운 가능한 쿠폰이 없습니다</div>
+                    <div class="empty-state-subtext">새로운 쿠폰이 곧 등록될 예정이에요!</div>
+                </div>
+            `;
+            return;
+        }
+
+        grid.innerHTML = coupons.map(coupon => {
+            const isDownloaded = downloadedCouponIds.has(coupon.id);
+
+            const cardClass = isDownloaded ? 'coupon-card downloaded' : 'coupon-card';
+
+            const footerBtn = isDownloaded
+                ? `<button class="btn-downloaded" disabled>다운로드 완료</button>`
+                : `<button class="btn btn-primary" onclick="downloadCoupon(${coupon.id})">쿠폰 다운로드</button>`;
+
+            return `
+                <div class="${cardClass}">
+                    <div class="coupon-header">
+                        ${isDownloaded ? '<div style="position:absolute;top:12px;right:16px;background:rgba(255,255,255,0.25);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;">다운로드 완료</div>' : ''}
+                        <div class="coupon-name">${coupon.name}</div>
+                        <div class="coupon-discount">${coupon.discountValue.toLocaleString()}원 할인</div>
+                    </div>
+                    <div class="coupon-body">
+                        <div class="coupon-info">
+                            <div class="coupon-info-item">
+                                <span class="coupon-info-label">발급 마감</span>
+                                <span>${formatDate(coupon.issueEndDate)}</span>
+                            </div>
+                            <div class="coupon-info-item">
+                                <span class="coupon-info-label">최소 주문금액</span>
+                                <span>${(coupon.minOrderPrice !== null && coupon.minOrderPrice !== undefined) ? coupon.minOrderPrice.toLocaleString() + '원' : '제한 없음'}</span>
+                            </div>
+                            <div class="coupon-info-item">
+                                <span class="coupon-info-label">유효 기간</span>
+                                <span>${(coupon.validDays !== null && coupon.validDays !== undefined) ? '발급일로부터 ' + coupon.validDays + '일' : '제한 없음'}</span>
+                            </div>
+                        </div>
+                        <div class="coupon-footer">${footerBtn}</div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // ── 쿠폰 다운로드 ─────────────────────────────────────
+
+    async function downloadCoupon(couponId) {
+        try {
+            const response = await fetch(API_BASE_URL, {
+                method: 'POST',
+                headers: getHeaders(),
+                credentials: 'include',
+                body: JSON.stringify({ couponId: couponId })
+            });
+
+            if (!response.ok) {
+                if (response.status === 401) {
+                    alert('로그인이 필요한 서비스입니다.');
+                    window.location.href = 'login.html';
+                    return;
+                }
+                const error = await response.json();
+                throw new Error(error.message || '쿠폰 발급 실패');
+            }
+
+            alert('쿠폰이 발급되었습니다! 🎉\n내 쿠폰함에서 확인해보세요.');
+
+            // 다운로드 목록 갱신 후 현재 페이지 리렌더
+            await loadDownloadedCouponIds();
+            loadAvailableCoupons(currentPage);
+        } catch (error) {
+            console.error('쿠폰 발급 오류:', error);
+            alert(error.message || '쿠폰 발급에 실패했습니다.');
+        }
+    }
+
+    // ── 초기 실행 ─────────────────────────────────────────
+
+    window.addEventListener('DOMContentLoaded', async () => {
+        await loadDownloadedCouponIds(); // 먼저 내 쿠폰 ID 로드
+        loadAvailableCoupons(0);         // 그 다음 목록 렌더
+    });
+</script>
+</body>
+</html>

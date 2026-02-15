@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 public class OrderListGetResponse {
 
     private final Long orderId;
+    private final String orderNo;
     private final Long totalPrice;
     private final OrderStatus orderStatus;
     private final LocalDateTime createdAt;
@@ -20,6 +21,7 @@ public class OrderListGetResponse {
     public static OrderListGetResponse from(Order order) {
         return new OrderListGetResponse(
                 order.getId(),
+                order.getOrderNo(),
                 order.getTotalPrice(),
                 order.getStatus(),
                 order.getCreatedAt(),

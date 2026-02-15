@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>장바구니 - 싹쓰리</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+            background: #fafafa;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #ffffff;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .search-wrapper {
+            display: flex;
+            gap: 8px;
+            background: #f8f9fa;
+            padding: 8px 16px;
+            border-radius: 24px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .search-wrapper:focus-within {
+            background: white;
+            border-color: #74b9ff;
+            box-shadow: 0 0 0 4px rgba(116, 185, 255, 0.1);
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            outline: none;
+            color: #495057;
+        }
+
+        .search-input::placeholder { color: #adb5bd; }
+
+        .search-btn {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .search-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            background: #f8f9fa;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s ease;
+            color: #495057;
+        }
+
+        .icon-btn:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+
+        .auth-btn {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
+            white-space: nowrap;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(116, 185, 255, 0.45);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logout-btn {
+            background: #f8f9fa;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: #495057;
+            transition: all 0.2s ease;
+        }
+
+        .logout-btn:hover { background: #e9ecef; }
+
+        /* page */
+        .page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 28px 20px 60px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: #212529;
+            letter-spacing: -0.5px;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            border: 1px solid #f0f0f0;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 18px 20px;
+            border-bottom: 1px solid #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .muted {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .select-all {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            color: #212529;
+            user-select: none;
+        }
+
+        .danger-btn {
+            border: none;
+            background: #ffeded;
+            color: #ff6b6b;
+            padding: 10px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 13px;
+            transition: transform .15s ease, box-shadow .15s ease;
+        }
+        .danger-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(255, 107, 107, 0.18);
+        }
+        .danger-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .list {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .item {
+            display: grid;
+            grid-template-columns: 28px 96px 1fr auto;
+            gap: 14px;
+            padding: 14px;
+            border-radius: 16px;
+            border: 1px solid #f0f0f0;
+            transition: all .2s ease;
+            cursor: pointer;
+        }
+        .item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(0,0,0,0.06);
+            border-color: #e9ecef;
+        }
+
+        .item.disabled {
+            opacity: 0.55;
+            cursor: default;
+        }
+        .item.disabled:hover {
+            transform: none;
+            box-shadow: none;
+            border-color: #f0f0f0;
+        }
+
+        .chk {
+            display: flex;
+            align-items: flex-start;
+            padding-top: 6px;
+        }
+
+        .thumb {
+            width: 96px;
+            height: 96px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 1px solid #f0f0f0;
+            flex-shrink: 0;
+            font-size: 38px;
+        }
+        .thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 0;
+        }
+
+        .name-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+        }
+        .name {
+            font-size: 16px;
+            font-weight: 800;
+            color: #212529;
+            letter-spacing: -0.3px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 800;
+            white-space: nowrap;
+            user-select: none;
+        }
+        .badge.ok {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .badge.no {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .price {
+            font-size: 18px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            width: fit-content;
+        }
+
+        .sub {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .qty-box {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 14px;
+            border: 1px solid #eef2f7;
+            background: #f8fdff;
+        }
+
+        .qty-btn {
+            width: 34px;
+            height: 34px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 800;
+            color: #495057;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+        }
+        .qty-btn:hover { border-color: #74b9ff; color: #74b9ff; }
+        .qty-btn:disabled { opacity: .5; cursor: not-allowed; border-color: #e5e7eb; color: #9ca3af; }
+
+        .qty-val {
+            min-width: 28px;
+            text-align: center;
+            font-weight: 800;
+            color: #212529;
+        }
+
+        .line {
+            font-size: 14px;
+            color: #374151;
+            font-weight: 800;
+        }
+
+        .right {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-end;
+            justify-content: space-between;
+        }
+
+        .trash {
+            border: none;
+            background: #f8f9fa;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all .2s ease;
+            user-select: none;
+        }
+        .trash:hover { background: #e9ecef; transform: translateY(-1px); }
+        .trash:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+        .summary {
+            padding: 18px 20px;
+        }
+
+        .summary-title {
+            font-size: 16px;
+            font-weight: 900;
+            color: #212529;
+            margin-bottom: 12px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px dashed #eef2f7;
+            color: #374151;
+            font-weight: 700;
+        }
+        .row:last-child { border-bottom: none; }
+
+        .total {
+            font-size: 20px;
+            font-weight: 900;
+            color: #212529;
+            letter-spacing: -0.3px;
+        }
+
+        .buy-btn {
+            width: 100%;
+            margin-top: 14px;
+            padding: 16px 18px;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            font-weight: 800;
+            font-size: 15px;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(116, 185, 255, 0.4);
+            transition: all .2s ease;
+        }
+        .buy-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(116, 185, 255, 0.5); }
+        .buy-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .empty {
+            padding: 60px 20px;
+            text-align: center;
+            color: #6b7280;
+        }
+        .empty .emoji { font-size: 50px; margin-bottom: 10px; }
+        .empty .msg { font-size: 16px; font-weight: 700; color: #374151; }
+        .empty .submsg { margin-top: 8px; font-size: 13px; }
+
+        .ghost-btn {
+            margin-top: 16px;
+            border: 2px solid #74b9ff;
+            background: white;
+            color: #74b9ff;
+            padding: 12px 16px;
+            border-radius: 14px;
+            cursor: pointer;
+            font-weight: 800;
+            transition: all .2s ease;
+        }
+        .ghost-btn:hover {
+            background: #74b9ff;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(116, 185, 255, 0.3);
+        }
+
+        @media (max-width: 980px) {
+            .layout { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 16px 20px;
+                flex-wrap: wrap;
+            }
+            .search-container {
+                order: 3;
+                width: 100%;
+                max-width: 100%;
+                margin-top: 12px;
+            }
+            .item { grid-template-columns: 28px 84px 1fr; }
+            .right { grid-column: 1 / -1; flex-direction: row; align-items: center; justify-content: flex-end; gap: 10px; }
+            .thumb { width: 84px; height: 84px; }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
+
+    <div class="search-container">
+        <div class="search-wrapper">
+            <input
+                    type="text"
+                    class="search-input"
+                    id="searchInput"
+                    placeholder="상품을 검색해보세요 🔍"
+                    onkeypress="handleSearchEnter(event)"
+            >
+            <button class="search-btn" onclick="handleSearch()">🔍</button>
+        </div>
+    </div>
+
+    <div class="header-icons">
+        <button class="icon-btn"
+                id="cartIconBtn"
+                title="장바구니"
+                onclick="location.href='cart.html'">
+            🛒
+        </button>
+
+        <button class="auth-btn" id="loginBtn" style="display:none;">로그인 / 회원가입</button>
+
+        <div class="user-info" id="userInfo" style="display:none;">
+            <button class="icon-btn" id="myPageBtn" title="마이페이지">👤</button>
+            <button class="logout-btn" id="logoutBtn">로그아웃</button>
+        </div>
+    </div>
+</header>
+
+<div class="page">
+    <h1 class="page-title">장바구니</h1>
+
+    <div class="layout">
+        <!-- left -->
+        <div class="card">
+            <div class="card-header">
+                <label class="select-all">
+                    <input type="checkbox" id="selectAllChk" />
+                    전체 선택 <span class="muted">(구매 가능 상품만)</span>
+                </label>
+
+                <button class="danger-btn" id="deleteSelectedBtn" disabled>선택 삭제</button>
+            </div>
+
+            <div class="list" id="cartList"></div>
+        </div>
+
+        <!-- right -->
+        <div class="card">
+            <div class="summary">
+                <div class="summary-title">결제 요약</div>
+
+                <div class="row">
+                    <span>선택 상품 수</span>
+                    <span id="selectedCount">0개</span>
+                </div>
+                <div class="row">
+                    <span>선택 합계</span>
+                    <span class="total" id="selectedTotal">0원</span>
+                </div>
+
+                <button class="buy-btn" id="buySelectedBtn" disabled>선택 상품 구매하기</button>
+                <div class="muted" style="margin-top:10px;">
+                    ※ 구매 불가 상품은 선택할 수 없어요.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function checkLogin() {
+        try {
+            const res = await apiFetch('/users/me', { method: 'GET' });
+
+            if (res.ok) {
+                document.getElementById('loginBtn').style.display = 'none';
+                document.getElementById('userInfo').style.display = 'flex';
+            } else {
+                document.getElementById('loginBtn').style.display = 'inline-block';
+                document.getElementById('userInfo').style.display = 'none';
+            }
+        } catch (e) {
+            document.getElementById('loginBtn').style.display = 'inline-block';
+            document.getElementById('userInfo').style.display = 'none';
+        }
+    }
+
+    const API_BASE = 'http://localhost:8080/ssak3';
+
+    // 상태
+    let cartData = null;
+    const selected = new Set();  // cartProductId
+    const pending = new Set();   // cartProductId (요청 중)
+
+    // ------- 검색 -------
+    function handleSearch() {
+        const keyword = document.getElementById('searchInput').value.trim();
+        if (keyword) window.location.href = `search.html?keyword=${encodeURIComponent(keyword)}`;
+        else alert('검색어를 입력해주세요!');
+    }
+    function handleSearchEnter(event) { if (event.key === 'Enter') handleSearch(); }
+
+    // ------- 헤더(로그인 UI) -------
+    function applyHeaderAuthUI() {
+        const token = localStorage.getItem('accessToken');
+        const loginBtn = document.getElementById('loginBtn');
+        const userInfo = document.getElementById('userInfo');
+
+        if (token) {
+            loginBtn.style.display = 'none';
+            userInfo.style.display = 'flex';
+        } else {
+            loginBtn.style.display = 'inline-block';
+            userInfo.style.display = 'none';
+        }
+    }
+
+    function initHeaderActions() {
+        document.getElementById('cartIconBtn').onclick = () => location.href = 'cart.html';
+        document.getElementById('myPageBtn').onclick = () => location.href = 'mypage.html';
+        document.getElementById('loginBtn').onclick = () => location.href = 'login.html';
+        document.getElementById('logoutBtn').onclick = () => {
+            localStorage.removeItem('accessToken');
+            applyHeaderAuthUI();
+            alert('로그아웃 되었습니다.');
+            location.href = 'home.html';
+        };
+    }
+
+    // ------- 유틸 -------
+    function formatWon(n) {
+        const num = Number(n || 0);
+        return num.toLocaleString('ko-KR') + '원';
+    }
+
+    function getPurchasableItems() {
+        const list = (cartData && cartData.productList) ? cartData.productList : [];
+        return list.filter(p => p.purchasable === true);
+    }
+
+    function getItemById(cartProductId) {
+        const list = (cartData && cartData.productList) ? cartData.productList : [];
+        return list.find(p => String(p.cartProductId) === String(cartProductId));
+    }
+
+    // ------- 부분 업데이트 헬퍼(핵심) -------
+    function getItemEl(cartProductId) {
+        return document.querySelector(`.item[data-id="${String(cartProductId)}"]`);
+    }
+
+    function setItemPending(cartProductId, isPending) {
+        const el = getItemEl(cartProductId);
+        if (!el) return;
+
+        const minus = el.querySelector('.minus');
+        const plus = el.querySelector('.plus');
+        const trash = el.querySelector('.trash');
+
+        if (minus) minus.disabled = isPending ? true : minus.disabled;
+        if (plus)  plus.disabled  = isPending ? true : plus.disabled;
+        if (trash) trash.disabled = isPending ? true : false;
+    }
+
+    function applyQuantityUpdateToDom(cartProductId) {
+        const el = getItemEl(cartProductId);
+        const item = getItemById(cartProductId);
+        if (!el || !item) return;
+
+        const qtyVal = el.querySelector('.qty-val');
+        const line = el.querySelector('.line');
+        const price = el.querySelector('.price');
+        const minus = el.querySelector('.minus');
+        const plus = el.querySelector('.plus');
+
+        if (qtyVal) qtyVal.textContent = Number(item.quantity || 1);
+        if (line) line.textContent = `합계 ${formatWon(item.linePrice)}`;
+        if (price) price.textContent = formatWon(item.unitPrice);
+
+        const purchasable = item.purchasable === true;
+        const isPending = pending.has(String(cartProductId));
+        if (minus) minus.disabled = !purchasable || isPending || Number(item.quantity || 1) <= 1;
+        if (plus)  plus.disabled  = !purchasable || isPending;
+    }
+
+    // ------- API fetch: 토큰 우선, 401이면 쿠키 시도 -------
+    async function apiFetch(path, options = {}) {
+        const url = API_BASE + path;
+        const token = localStorage.getItem('accessToken');
+
+        if (token) {
+            const res1 = await fetch(url, {
+                ...options,
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(options.headers || {}),
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            if (res1.status !== 401) return res1;
+        }
+
+        return fetch(url, {
+            ...options,
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(options.headers || {})
+            }
+        });
+    }
+
+    // ------- 렌더(초기/삭제/구매불가 전환 시만 사용) -------
+    function renderCart() {
+        const listEl = document.getElementById('cartList');
+        listEl.innerHTML = '';
+
+        const list = (cartData && cartData.productList) ? cartData.productList : [];
+
+        if (!list.length) {
+            listEl.innerHTML = `
+        <div class="empty">
+          <div class="emoji">🛒</div>
+          <div class="msg">장바구니가 비어있어요</div>
+          <div class="submsg">마음에 드는 상품을 담아보세요!</div>
+          <button class="ghost-btn" onclick="location.href='home.html'">상품 보러가기</button>
+        </div>
+      `;
+            selected.clear();
+            document.getElementById('selectAllChk').checked = false;
+            updateSummary();
+            updateSelectAllState();
+            return;
+        }
+
+        for (const p of list) {
+            const id = String(p.cartProductId);
+            const isSelected = selected.has(id);
+            const isPurchasable = p.purchasable === true;
+            const isPending = pending.has(id);
+
+            const itemEl = document.createElement('div');
+            itemEl.className = 'item' + (isPurchasable ? '' : ' disabled');
+            itemEl.dataset.id = id;
+
+            const hasImg = !!p.imageUrl;
+
+            itemEl.innerHTML = `
+        <div class="chk">
+          <input type="checkbox" class="itemChk" ${isSelected ? 'checked' : ''} ${isPurchasable ? '' : 'disabled'} />
+        </div>
+
+        <div class="thumb" aria-label="product image">
+          ${hasImg ? `<img src="${String(p.imageUrl)}" alt="${p.productName || '상품'}">` : `<span class="fallback">🧺</span>`}
+        </div>
+
+        <div class="info">
+          <div class="name-row">
+            <div class="name" title="${p.productName || ''}">${p.productName || '-'}</div>
+            <span class="badge ${isPurchasable ? 'ok' : 'no'}">
+              ${isPurchasable ? '구매 가능' : '구매 불가'}
+            </span>
+          </div>
+
+          <div class="price">${formatWon(p.unitPrice)}</div>
+
+          <div class="sub">
+            <div class="qty-box" role="group" aria-label="quantity">
+              <button class="qty-btn minus" ${(!isPurchasable || isPending || Number(p.quantity) <= 1) ? 'disabled' : ''}>−</button>
+              <div class="qty-val">${Number(p.quantity || 1)}</div>
+              <button class="qty-btn plus" ${(!isPurchasable || isPending) ? 'disabled' : ''}>+</button>
+            </div>
+            <div class="line">합계 ${formatWon(p.linePrice)}</div>
+          </div>
+        </div>
+
+        <div class="right">
+          <button class="trash" ${isPending ? 'disabled' : ''} title="삭제">🗑️</button>
+        </div>
+      `;
+
+            // 이미지 로딩 실패 시 이모지 표시
+            const img = itemEl.querySelector('img');
+            if (img) {
+                img.onerror = () => {
+                    img.remove();
+                    const thumb = itemEl.querySelector('.thumb');
+                    if (thumb) thumb.innerHTML = `<span class="fallback">🧺</span>`;
+                };
+            }
+
+            // 카드 클릭 -> 체크 토글 (구매 가능만)
+            itemEl.addEventListener('click', (e) => {
+                if (e.target.closest('button')) return;
+                if (e.target.matches('input[type="checkbox"]')) return;
+                if (!isPurchasable) return;
+
+                const chk = itemEl.querySelector('.itemChk');
+                chk.checked = !chk.checked;
+                toggleSelected(id, chk.checked);
+            });
+
+            // 체크박스 직접 변경
+            itemEl.querySelector('.itemChk').addEventListener('change', (e) => {
+                if (!isPurchasable) return;
+                toggleSelected(id, e.target.checked);
+            });
+
+            // ✅ 수량 - / + : 루프변수 p를 쓰지 말고 "현재" 데이터를 읽어서 계산
+            itemEl.querySelector('.minus').addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const cur = getItemById(id);
+                if (!cur || cur.purchasable !== true) return;
+                const nextQty = Math.max(1, Number(cur.quantity || 1) - 1);
+                await updateQuantity(id, nextQty);
+            });
+
+            itemEl.querySelector('.plus').addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const cur = getItemById(id);
+                if (!cur || cur.purchasable !== true) return;
+                const nextQty = Number(cur.quantity || 1) + 1;
+                await updateQuantity(id, nextQty);
+            });
+
+            // 삭제
+            itemEl.querySelector('.trash').addEventListener('click', async (e) => {
+                e.stopPropagation();
+                await deleteOne(id);
+            });
+
+            listEl.appendChild(itemEl);
+        }
+
+        updateSummary();
+        updateSelectAllState();
+    }
+
+    function toggleSelected(id, checked) {
+        if (checked) selected.add(String(id));
+        else selected.delete(String(id));
+
+        updateSummary();
+        updateSelectAllState();
+    }
+
+    function updateSummary() {
+        let count = 0;
+        let total = 0;
+
+        for (const id of selected) {
+            const item = getItemById(id);
+            if (!item) continue;
+            if (item.purchasable !== true) continue;
+            count += 1;
+            total += Number(item.linePrice || 0);
+        }
+
+        document.getElementById('selectedCount').textContent = `${count}개`;
+        document.getElementById('selectedTotal').textContent = formatWon(total);
+
+        document.getElementById('deleteSelectedBtn').disabled = (count === 0);
+        document.getElementById('buySelectedBtn').disabled = (count === 0);
+    }
+
+    function updateSelectAllState() {
+        const purchasable = getPurchasableItems();
+        const purchasableIds = purchasable.map(p => String(p.cartProductId));
+
+        const selectAll = document.getElementById('selectAllChk');
+
+        if (purchasableIds.length === 0) {
+            selectAll.checked = false;
+            selectAll.indeterminate = false;
+            return;
+        }
+
+        const selectedCount = purchasableIds.filter(id => selected.has(id)).length;
+
+        if (selectedCount === 0) {
+            selectAll.checked = false;
+            selectAll.indeterminate = false;
+        } else if (selectedCount === purchasableIds.length) {
+            selectAll.checked = true;
+            selectAll.indeterminate = false;
+        } else {
+            selectAll.checked = false;
+            selectAll.indeterminate = true;
+        }
+    }
+
+    // ------- 데이터 로드 -------
+    async function loadCart() {
+        try {
+            const res = await apiFetch('/carts/me', { method: 'GET' });
+            if (!res.ok) {
+                if (res.status === 401 || res.status === 403) {
+                    alert('로그인이 필요합니다.');
+                    location.href = 'login.html';
+                    return;
+                }
+                const text = await res.text().catch(() => '');
+                throw new Error(text || `장바구니 조회 실패 (${res.status})`);
+            }
+
+            const json = await res.json();
+            cartData = json.data || { productList: [] };
+            renderCart();
+        } catch (err) {
+            console.error(err);
+            alert('장바구니를 불러오지 못했습니다.');
+        }
+    }
+
+    // ------- 수량 변경(✅ 부분 업데이트: 이미지 유지) -------
+    async function updateQuantity(cartProductId, nextQty) {
+        const id = String(cartProductId);
+        if (pending.has(id)) return;
+
+        const item = getItemById(id);
+        if (!item) return;
+        if (item.purchasable !== true) return;
+
+        pending.add(id);
+        // ✅ 전체 렌더 금지: 해당 카드 버튼만 잠깐 비활성화
+        applyQuantityUpdateToDom(id);
+        setItemPending(id, true);
+
+        try {
+            const res = await apiFetch('/carts', {
+                method: 'PATCH',
+                body: JSON.stringify({
+                    cartProductId: Number(cartProductId),
+                    quantity: Number(nextQty)
+                })
+            });
+
+            if (!res.ok) {
+                const text = await res.text().catch(() => '');
+                throw new Error(text || `수량 변경 실패 (${res.status})`);
+            }
+
+            const json = await res.json();
+            const updated = json.data; // { cartProductId, quantity, unitPrice, linePrice, purchasable }
+
+            // 로컬 cartData 반영 (imageUrl은 그대로 유지됨)
+            const list = cartData.productList || [];
+            const idx = list.findIndex(p => String(p.cartProductId) === String(updated.cartProductId));
+            if (idx >= 0) {
+                list[idx] = { ...list[idx], ...updated };
+            }
+
+            // 구매 가능 -> 불가로 바뀌면 구조(체크 disabled, 배지 등) 변경이 있으니 전체 렌더
+            if (updated.purchasable !== true) {
+                selected.delete(String(updated.cartProductId));
+                pending.delete(id);
+                renderCart();
+                return;
+            }
+
+            // ✅ 수량/합계/가격만 DOM 갱신 (이미지는 그대로)
+            applyQuantityUpdateToDom(updated.cartProductId);
+
+            // 요약/전체선택 상태만 업데이트
+            updateSummary();
+            updateSelectAllState();
+
+        } catch (err) {
+            console.error(err);
+            alert('수량 변경에 실패했습니다.');
+            await loadCart(); // 안전 재동기화
+        } finally {
+            pending.delete(id);
+            // pending 해제 후 버튼 상태 다시 계산
+            applyQuantityUpdateToDom(id);
+            setItemPending(id, false);
+        }
+    }
+
+    // ------- 삭제 -------
+    async function deleteOne(cartProductId) {
+        const id = String(cartProductId);
+        if (pending.has(id)) return;
+
+        pending.add(id);
+        const el = getItemEl(id);
+        if (el) setItemPending(id, true);
+
+        try {
+            const res = await apiFetch('/carts', {
+                method: 'DELETE',
+                body: JSON.stringify({ cartProductId: Number(cartProductId) })
+            });
+
+            if (!res.ok) {
+                const text = await res.text().catch(() => '');
+                throw new Error(text || `삭제 실패 (${res.status})`);
+            }
+
+            selected.delete(id);
+            cartData.productList = (cartData.productList || []).filter(p => String(p.cartProductId) !== id);
+            pending.delete(id);
+
+            // 구조 변경이라 전체 렌더
+            renderCart();
+        } catch (err) {
+            console.error(err);
+            alert('삭제에 실패했습니다.');
+            await loadCart();
+        } finally {
+            pending.delete(id);
+        }
+    }
+
+    async function deleteSelected() {
+        const ids = Array.from(selected);
+        if (ids.length === 0) return;
+
+        if (!confirm(`선택한 ${ids.length}개 상품을 삭제할까요?`)) return;
+
+        for (const id of ids) {
+            const item = getItemById(id);
+            if (!item) { selected.delete(id); continue; }
+            await deleteOne(id);
+        }
+
+        updateSummary();
+        updateSelectAllState();
+    }
+
+    // ------- 전체선택 -------
+    function onSelectAllChanged(checked) {
+        const purchasableIds = getPurchasableItems().map(p => String(p.cartProductId));
+        if (checked) {
+            for (const id of purchasableIds) selected.add(id);
+        } else {
+            for (const id of purchasableIds) selected.delete(id);
+        }
+        updateSummary();
+        updateSelectAllState();
+        // 체크 UI 반영이 필요해서 전체 렌더 1번
+        renderCart();
+    }
+
+    // ------- 구매 버튼(✅ "전달만" 수행) -------
+    async function buySelected() {
+        // 선택된 것 중 구매가능한 것만 다시 필터 (안전)
+        const ids = Array.from(selected)
+            .map(Number)
+            .filter(Number.isFinite)
+            .filter(id => {
+                const item = getItemById(id);
+                return item && item.purchasable === true;
+            });
+
+        if (ids.length === 0) return;
+
+        // cartId 확보 (carts/me 응답에 있어야 함)
+        const cid = Number(cartData?.cartId);
+        if (!Number.isFinite(cid)) {
+            alert('장바구니 정보(cartId)를 찾을 수 없습니다. 새로고침 후 다시 시도해주세요.');
+            return;
+        }
+
+        // ✅ 주문서 페이지로 전달
+        sessionStorage.setItem('cartOrder.cartId', String(cid));
+        sessionStorage.setItem('cartOrder.cartProductIdList', JSON.stringify(ids));
+
+        // ✅ 주문서 페이지로 이동
+        location.href = 'cart-order.html';
+    }
+
+    // ------- 초기화 -------
+    function initEvents() {
+        document.getElementById('selectAllChk').addEventListener('change', (e) => {
+            onSelectAllChanged(e.target.checked);
+        });
+
+        document.getElementById('deleteSelectedBtn').addEventListener('click', deleteSelected);
+        document.getElementById('buySelectedBtn').addEventListener('click', buySelected);
+    }
+
+    (async function init() {
+        await checkLogin();
+        initHeaderActions();
+        initEvents();
+        await loadCart();
+    })();
+</script>
+</body>
+</html>

@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>타임딜 - 싹쓰리</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+            background: #fafafa;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #ffffff;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .search-wrapper {
+            display: flex;
+            gap: 8px;
+            background: #f8f9fa;
+            padding: 8px 16px;
+            border-radius: 24px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .search-wrapper:focus-within {
+            background: white;
+            border-color: #74b9ff;
+            box-shadow: 0 0 0 4px rgba(116, 185, 255, 0.1);
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            outline: none;
+            color: #495057;
+        }
+
+        .search-input::placeholder {
+            color: #adb5bd;
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .search-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            background: #f8f9fa;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s ease;
+            color: #495057;
+        }
+
+        .icon-btn:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+
+        .auth-btn {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
+            white-space: nowrap;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(116, 185, 255, 0.45);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logout-btn {
+            background: #f8f9fa;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: #495057;
+            transition: all 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background: #e9ecef;
+        }
+
+        .banner {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            padding: 60px 20px;
+            text-align: center;
+            margin: 24px 20px;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(255, 107, 107, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .banner-title {
+            font-size: 48px;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 12px;
+            position: relative;
+            letter-spacing: -1px;
+        }
+
+        .banner-subtitle {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 400;
+            position: relative;
+        }
+
+        .filter-section {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            padding: 20px;
+            flex-wrap: wrap;
+            background: white;
+            margin: 0 20px;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .filter-btn {
+            padding: 10px 24px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #495057;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn:hover {
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+            transform: translateY(-2px);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+            border-color: #ff6b6b;
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.35);
+        }
+
+        .container {
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 28px;
+            color: #212529;
+            margin-bottom: 30px;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: -0.5px;
+        }
+
+        .deals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 24px;
+            margin-bottom: 50px;
+        }
+
+        .deal-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border: 1px solid #f0f0f0;
+            position: relative;
+        }
+
+        .deal-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            z-index: 10;
+        }
+
+        .status-badge.READY {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-badge.OPEN {
+            background: #dcfce7;
+            color: #166534;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .status-badge.CLOSED {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* 기존 deal-image 수정 */
+        .deal-image {
+            width: 100%;
+            height: 220px;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 실제 이미지 */
+        .deal-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .deal-card:hover .deal-img {
+            transform: scale(1.05);
+        }
+
+        .emoji-fallback {
+            font-size: 70px;
+        }
+
+        .deal-info {
+            padding: 20px;
+        }
+
+        .deal-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: 12px;
+            letter-spacing: -0.3px;
+        }
+
+        .price-section {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .deal-price {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .time-info {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .remaining-time {
+            font-size: 15px;
+            font-weight: 700;
+            color: #ff6b6b;
+            padding: 8px 12px;
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe4e6 100%);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 60px 20px;
+            font-size: 18px;
+            color: #6b7280;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .empty-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .empty-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: 10px;
+        }
+
+        .empty-message {
+            font-size: 16px;
+            color: #6b7280;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 40px;
+        }
+
+        .page-btn {
+            min-width: 40px;
+            height: 40px;
+            padding: 0 12px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #495057;
+            transition: all 0.2s ease;
+        }
+
+        .page-btn:hover {
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+        }
+
+        .page-btn.active {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+            border-color: #ff6b6b;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        footer {
+            background: #212529;
+            color: #adb5bd;
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+        }
+
+        footer p {
+            margin: 10px 0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        footer p:first-child {
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .banner-title {
+                font-size: 32px;
+            }
+            .deals-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+            header {
+                padding: 16px 20px;
+                flex-wrap: wrap;
+            }
+            .search-container {
+                order: 3;
+                width: 100%;
+                max-width: 100%;
+                margin-top: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
+
+    <!-- 검색창 -->
+    <div class="search-container">
+        <div class="search-wrapper">
+            <input
+                    type="text"
+                    class="search-input"
+                    id="searchInput"
+                    placeholder="상품을 검색해보세요 🔍"
+                    onkeypress="handleSearchEnter(event)"
+            >
+            <button class="search-btn" onclick="handleSearch()">🔍</button>
+        </div>
+    </div>
+
+    <div class="header-icons">
+        <button class="icon-btn"
+                id="cartIconBtn"
+                title="장바구니"
+                onclick="location.href='cart.html'">
+            🛒
+        </button>
+
+        <!-- 로그인 안 된 경우 -->
+        <button class="auth-btn" id="loginBtn" style="display: none;">로그인 / 회원가입</button>
+
+        <!-- 로그인 된 경우 -->
+        <div class="user-info" id="userInfo" style="display: none;">
+            <button class="icon-btn" id="myPageBtn" title="마이페이지">👤</button>
+            <button class="logout-btn" id="logoutBtn">로그아웃</button>
+        </div>
+    </div>
+</header>
+
+<div class="banner">
+    <div class="banner-title">⏰ 타임딜 특가</div>
+    <div class="banner-subtitle">놓치면 후회할 특별한 할인!</div>
+</div>
+
+<div class="filter-section">
+    <button class="filter-btn" onclick="filterDeals(null)">전체</button>
+    <button class="filter-btn" onclick="filterDeals('READY')">🔜 오픈 예정</button>
+    <button class="filter-btn active" onclick="filterDeals('OPEN')">🔥 진행중</button>
+    <button class="filter-btn" onclick="filterDeals('CLOSED')">✔️ 종료</button>
+</div>
+
+<div class="container">
+    <h2 class="section-title" id="sectionTitle">진행중 타임딜</h2>
+    <div id="dealsContainer" class="deals-grid">
+        <div class="loading">타임딜 목록을 불러오는 중...</div>
+    </div>
+    <div id="paginationContainer"></div>
+</div>
+
+<footer>
+    <p>© 2025 싹쓰리 - 모두를 위한 귀여운 굿즈</p>
+    <p>고객센터: 010-1234-5678 | support@ssak3.com</p>
+    <p>개인정보처리방침 | 이용약관 | 배송정책</p>
+</footer>
+
+<script>
+    let currentStatus = 'OPEN';
+    let currentPage = 0;
+    let totalPages = 0;
+    let currentDeals = [];
+    let countdownIntervals = [];
+    let refreshInterval = null;
+
+    const statusText = {
+        'READY': '오픈 예정',
+        'OPEN': '진행중',
+        'CLOSED': '종료'
+    };
+
+    const productEmojis = {
+        1: '🏍️', 2: '✨', 3: '⚔️', 4: '🎮', 5: '🎵',
+        6: '⚡', 7: '🌈', 8: '💎', 9: '🎨', 10: '🧸'
+    };
+
+    function formatPrice(price) {
+        return price.toLocaleString('ko-KR') + '원';
+    }
+
+    function formatDateTime(dateTimeStr) {
+        const date = new Date(dateTimeStr);
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const day = date.getDate().toString().padStart(2, '0');
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        return `${month}/${day} ${hours}:${minutes}`;
+    }
+
+    function calculateRemainingTime(startAt, endAt) {
+        const now = new Date();
+        const start = new Date(startAt);
+        const end = new Date(endAt);
+
+        let targetTime;
+        let prefix;
+
+        if (now < start) {
+            targetTime = start;
+            prefix = '시작까지';
+        } else if (now < end) {
+            targetTime = end;
+            prefix = '종료까지';
+        } else {
+            return null;
+        }
+
+        const diff = targetTime - now;
+        if (diff <= 0) return null;
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        let timeStr = '';
+        if (days > 0) {
+            timeStr = `${days}일 ${hours}시간 ${minutes}분 ${seconds}초`;
+        } else if (hours > 0) {
+            timeStr = `${hours}시간 ${minutes}분 ${seconds}초`;
+        } else if (minutes > 0) {
+            timeStr = `${minutes}분 ${seconds}초`;
+        } else {
+            timeStr = `${seconds}초`;
+        }
+
+        return `${prefix} ${timeStr}`;
+    }
+
+    function updateAllCountdowns() {
+        currentDeals.forEach(deal => {
+            const remainingElement = document.getElementById(`remaining-${deal.id}`);
+            if (remainingElement) {
+                const remainingTime = calculateRemainingTime(deal.startAt, deal.endAt);
+                if (remainingTime) {
+                    remainingElement.textContent = `⏰ ${remainingTime}`;
+                    remainingElement.style.display = 'block';
+                } else {
+                    remainingElement.style.display = 'none';
+                }
+            }
+        });
+    }
+
+    async function loadTimeDeals(status = null, page = 0) {
+        try {
+            let url = `http://localhost:8080/ssak3/time-deals?page=${page}&size=12`;
+            if (status) {
+                url += `&status=${status}`;
+            }
+
+            console.log('타임딜 API 호출:', url); // 디버깅용
+
+            const response = await fetch(url);
+            
+            console.log('응답 상태:', response.status); // 디버깅용
+            
+            if (!response.ok) {
+                throw new Error('타임딜 목록을 불러올 수 없습니다.');
+            }
+
+            const result = await response.json();
+            console.log('API 응답 데이터:', result); // 디버깅용
+            
+            const data = result.data;
+
+            totalPages = data.totalPages;
+            currentPage = page;
+            currentDeals = data.content;
+
+            renderDeals(data.content);
+            renderPagination();
+
+            // 기존 인터벌 정리
+            countdownIntervals.forEach(interval => clearInterval(interval));
+            countdownIntervals = [];
+
+            // 1초마다 모든 카운트다운 업데이트
+            const interval = setInterval(updateAllCountdowns, 1000);
+            countdownIntervals.push(interval);
+            
+            // 즉시 한 번 업데이트
+            updateAllCountdowns();
+        } catch (error) {
+            console.error('타임딜 로드 오류:', error);
+            showError('타임딜 목록을 불러오는데 실패했습니다.');
+        }
+    }
+
+    function renderDeals(deals) {
+        const container = document.getElementById('dealsContainer');
+
+        console.log('렌더링할 타임딜 개수:', deals.length);
+
+        if (deals.length === 0) {
+            container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">🔍</div>
+                <div class="empty-title">타임딜이 없습니다</div>
+                <div class="empty-message">현재 진행중인 타임딜이 없어요</div>
+            </div>
+        `;
+            return;
+        }
+
+        container.innerHTML = deals.map(deal => {
+
+            // 기본 이모지 (이미지 없을 때)
+            const emoji = productEmojis[deal.id % 10 + 1] || '🎁';
+
+            const imageHtml = deal.imageUrl
+                ? `
+                <img src="${deal.imageUrl}"
+                     class="deal-img"
+                     alt="${deal.productName}"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="emoji-fallback" style="display:none;">${emoji}</div>
+              `
+                : `<div class="emoji-fallback">${emoji}</div>`;
+
+            return `
+            <div class="deal-card" onclick="goToTimeDeal(${deal.id})">
+
+                <span class="status-badge ${deal.status}">
+                    ${statusText[deal.status]}
+                </span>
+
+                <div class="deal-image">
+                    ${imageHtml}
+                </div>
+
+                <div class="deal-info">
+                    <div class="deal-name">${deal.productName}</div>
+
+                    <div class="price-section">
+                        <div class="deal-price">
+                            ${formatPrice(deal.dealPrice)}
+                        </div>
+                    </div>
+
+                    <div class="time-info">
+                        시작: ${formatDateTime(deal.startAt)}<br>
+                        종료: ${formatDateTime(deal.endAt)}
+                    </div>
+
+                    <div class="remaining-time" id="remaining-${deal.id}">
+                        ⏰ 계산 중...
+                    </div>
+                </div>
+            </div>
+        `;
+        }).join("");
+    }
+
+    function renderPagination() {
+        const container = document.getElementById('paginationContainer');
+        
+        if (totalPages <= 1) {
+            container.innerHTML = '';
+            return;
+        }
+
+        let paginationHTML = `<div class="pagination">`;
+
+        // 이전 버튼
+        paginationHTML += `
+            <button class="page-btn" onclick="changePage(${currentPage - 1})" ${currentPage === 0 ? 'disabled' : ''}>
+                ←
+            </button>
+        `;
+
+        // 페이지 번호
+        const startPage = Math.max(0, currentPage - 2);
+        const endPage = Math.min(totalPages - 1, currentPage + 2);
+
+        for (let i = startPage; i <= endPage; i++) {
+            paginationHTML += `
+                <button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">
+                    ${i + 1}
+                </button>
+            `;
+        }
+
+        // 다음 버튼
+        paginationHTML += `
+            <button class="page-btn" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages - 1 ? 'disabled' : ''}>
+                →
+            </button>
+        `;
+
+        paginationHTML += `</div>`;
+        container.innerHTML = paginationHTML;
+    }
+
+    function changePage(page) {
+        if (page < 0 || page >= totalPages) return;
+        loadTimeDeals(currentStatus, page);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function filterDeals(status) {
+        currentStatus = status;
+        currentPage = 0;
+
+        // 필터 버튼 활성화 상태 변경
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        event.target.classList.add('active');
+
+        // 섹션 타이틀 변경
+        const titles = {
+            null: '전체 타임딜',
+            'READY': '오픈 예정 타임딜',
+            'OPEN': '진행중 타임딜',
+            'CLOSED': '종료된 타임딜'
+        };
+        document.getElementById('sectionTitle').textContent = titles[status];
+
+        loadTimeDeals(status, 0);
+    }
+
+    function goToTimeDeal(timeDealId) {
+        // 타임딜 상세 페이지로 이동
+        window.location.href = `time-deal-detail.html?id=${timeDealId}`;
+    }
+
+    function showError(message) {
+        const container = document.getElementById('dealsContainer');
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">😢</div>
+                <div class="empty-title">오류가 발생했습니다</div>
+                <div class="empty-message">${message}</div>
+            </div>
+        `;
+    }
+
+    // [공통] 검색 처리 함수
+    function handleSearch() {
+        const keyword = document.getElementById('searchInput').value.trim();
+        if (keyword) {
+            window.location.href = `search.html?keyword=${encodeURIComponent(keyword)}`;
+        } else {
+            alert('검색어를 입력해주세요!');
+        }
+    }
+
+    function handleSearchEnter(event) {
+        if (event.key === 'Enter') handleSearch();
+    }
+
+    // [핵심] 로그인 상태 확인 로직
+    async function checkLoginStatus() {
+        const loginBtn = document.getElementById('loginBtn');
+        const userInfo = document.getElementById('userInfo');
+        const token = localStorage.getItem('accessToken');
+
+        try {
+            let response;
+            // 1. 일반 로그인(JWT) 우선 확인
+            if (token) {
+                response = await fetch('http://localhost:8080/ssak3/users/me', {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+            }
+
+            // 2. 토큰이 없거나 만료된 경우 카카오(쿠키) 확인
+            if (!token || response.status === 401) {
+                response = await fetch('http://localhost:8080/ssak3/users/me', {
+                    method: 'GET',
+                    credentials: 'include' // 쿠키 포함
+                });
+            }
+
+            if (response.ok) {
+                loginBtn.style.display = 'none';
+                userInfo.style.display = 'flex';
+            } else {
+                throw new Error('Not Authenticated');
+            }
+        } catch (error) {
+            localStorage.removeItem('accessToken');
+            loginBtn.style.display = 'block';
+            userInfo.style.display = 'none';
+        }
+    }
+
+    // [핵심] 로그아웃 로직
+    document.getElementById('logoutBtn').addEventListener('click', async function() {
+        if (!confirm('로그아웃 하시겠습니까?')) return;
+
+        const token = localStorage.getItem('accessToken');
+
+        try {
+            const logoutRequest = {
+                method: 'POST',
+                credentials: 'include'
+            };
+            if (token) logoutRequest.headers = { 'Authorization': `Bearer ${token}` };
+
+            const response = await fetch('http://localhost:8080/ssak3/auth/logout', logoutRequest);
+
+            localStorage.removeItem('accessToken');
+
+            if (!response.ok) {
+                console.warn('서버 세션은 만료되지 않았을 수 있음:', response.status);
+            }
+
+            alert('로그아웃 되었습니다.');
+            window.location.href = 'home.html';
+
+        } catch (e) {
+            console.error('로그아웃 통신 에러:', e);
+            localStorage.removeItem('accessToken');
+            alert('로그아웃 되었습니다.');
+            window.location.replace('home.html');
+        }
+    });
+
+    // 버튼 이벤트 바인딩
+    document.getElementById('loginBtn').addEventListener('click', () => location.href = 'login.html');
+    document.getElementById('myPageBtn').addEventListener('click', () => location.href = 'mypage.html');
+
+    // 초기 실행
+    checkLoginStatus();
+    loadTimeDeals(currentStatus, 0);
+</script>
+</body>
+</html>

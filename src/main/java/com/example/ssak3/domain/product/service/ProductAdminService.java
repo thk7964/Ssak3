@@ -19,12 +19,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ProductService {
+public class ProductAdminService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
@@ -56,39 +55,11 @@ public class ProductService {
     }
 
     /**
-     * 상품 상세조회(사용자)
-     */
-    @Transactional
-    public ProductGetResponse getProduct(Long productId, String ip) {
-
-        Product foundProduct = productRepository.findByIdAndIsDeletedFalse(productId)
-                .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
-
-        if (foundProduct.getStatus().equals(ProductStatus.STOP_SALE)) {
-            throw new CustomException(ErrorCode.PRODUCT_NOT_VIEWABLE);
-        }
-
-        if (foundProduct.getStatus().equals(ProductStatus.BEFORE_SALE)) {
-            throw new CustomException(ErrorCode.PRODUCT_NOT_VIEWABLE);
-        }
-
-        try {
-            productRankingService.increaseViewCount(productId, ip);
-        } catch (Exception e) {
-            log.warn("Redis 조회수 업데이트 실패: productId = {}", foundProduct.getId());
-        }
-
-        String viewImageUrl = s3Uploader.createPresignedGetUrl(foundProduct.getImage(), 5);
-        String viewDetailImageUrl = s3Uploader.createPresignedGetUrl(foundProduct.getDetailImage(), 5);
-
-        return ProductGetResponse.from(foundProduct, viewImageUrl, viewDetailImageUrl);
-    }
-
-    /**
      * 상품 상세조회(관리자)
      */
     @Transactional(readOnly = true)
     public ProductGetResponse getProductAdmin(Long productId) {
+        log.info("product service 조회 전: {}", productId);
         Product foundProduct = productRepository.findByIdAndIsDeletedFalse(productId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
@@ -96,30 +67,13 @@ public class ProductService {
         String viewDetailImageUrl = s3Uploader.createPresignedGetUrl(foundProduct.getDetailImage(), 5);
 
         return ProductGetResponse.from(foundProduct, viewImageUrl, viewDetailImageUrl);
-    }
-
-    /**
-     * 상품 목록조회(사용자)
-     */
-    @Transactional(readOnly = true)
-    public PageResponse<ProductListGetResponse> getProductList(Long categoryId, Pageable pageable) {
-
-        Page<Product> productList = productRepository.findProductListByCategoryId(categoryId, pageable);
-
-        Page<ProductListGetResponse> mapped = productList.map(p -> {
-            String viewImageUrl = s3Uploader.createPresignedGetUrl(p.getImage(), 5);
-            return ProductListGetResponse.from(p, viewImageUrl);
-        });
-
-
-        return PageResponse.from(mapped);
     }
 
     /**
      * 상품 목록조회(관리자)
      */
     @Transactional(readOnly = true)
-    public Object getProductListAdmin(Long categoryId, Pageable pageable) {
+    public PageResponse<ProductListGetResponse> getProductListAdmin(Long categoryId, Pageable pageable) {
         Page<Product> productList = productRepository.findProductListByCategoryIdForAdmin(categoryId, pageable);
 
         Page<ProductListGetResponse> mapped = productList.map(p -> {
@@ -143,13 +97,13 @@ public class ProductService {
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
         // 저장되어 있는 이미지 파일이 있는지 확인
-        if (foundProduct.getImage() != null) {
+        if (request.getImage()!=null && foundProduct.getImage() != null) {
             // 기존 파일 먼저 삭제
             s3Uploader.deleteImage(foundProduct.getImage());
         }
 
         // 저장되어 있는 이미지 파일이 있는지 확인
-        if (foundProduct.getDetailImage() != null) {
+        if (request.getDetailImage()!=null && foundProduct.getDetailImage() != null) {
             // 기존 파일 먼저 삭제
             s3Uploader.deleteImage(foundProduct.getDetailImage());
         }
@@ -184,10 +138,12 @@ public class ProductService {
      */
     @Transactional
     public ProductUpdateStatusResponse updateProductStatus(ProductUpdateStatusRequest request) {
+        log.info("productService 상태변경 전: {}", request.getStatus());
         Product foundProduct = productRepository.findByIdAndIsDeletedFalse(request.getProductId())
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
-
         foundProduct.updateStatus(request.getStatus());
+        log.info("productService 상태변경 후: {}", foundProduct.getStatus());
         return ProductUpdateStatusResponse.from(foundProduct);
     }
+
 }

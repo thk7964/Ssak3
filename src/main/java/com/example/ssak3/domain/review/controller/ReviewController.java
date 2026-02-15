@@ -30,6 +30,7 @@ public class ReviewController {
             @AuthenticationPrincipal AuthUser user,
             @Valid @RequestBody ReviewCreateRequest request) {
         ApiResponse response = ApiResponse.success("후기를 생성하였습니다.", reviewService.createReview(user, request));
+
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -51,6 +52,18 @@ public class ReviewController {
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         ApiResponse response = ApiResponse.success("후기목록을 조회하였습니다.", reviewService.getReviewList(productId, pageable));
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    /**
+     * 내가 쓴 후기 목록조회 API
+     */
+    @GetMapping("/ssak3/reviews/me")
+    public ResponseEntity<ApiResponse> getMyReviewListApi(
+            @AuthenticationPrincipal AuthUser user,
+            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        ApiResponse response = ApiResponse.success("내가 쓴 후기목록을 조회하였습니다.", reviewService.getMyReviewList( user, pageable));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

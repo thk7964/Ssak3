@@ -12,12 +12,14 @@ public enum ErrorCode {
     NICKNAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 닉네임입니다."),
     PHONE_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 가입된 전화번호입니다."),
     UNREGISTERED_USER(HttpStatus.NOT_FOUND, "가입되지 않은 사용자입니다."),
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."),
-    WITHDRAWN_USER(HttpStatus.NOT_FOUND, "탈퇴한 유저입니다."),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."),
+    WITHDRAWN_USER(HttpStatus.NOT_FOUND, "탈퇴한 회원입니다."),
     INVALID_USER_ROLE(HttpStatus.BAD_REQUEST, "유효하지 않은 권한입니다."),
     NOT_ALLOWED_CHANGE_SUPER_ADMIN(HttpStatus.BAD_REQUEST, "최고 관리자로는 변경할 수 없습니다."),
+    ALREADY_REVIEWED(HttpStatus.BAD_REQUEST, "이미 후기를 작성한 유저입니다."),
     UNAUTHORIZED_USER(HttpStatus.UNAUTHORIZED, "인증되지 않은 사용자입니다."),
     FORBIDDEN_USER(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
+    INVALID_BIRTH(HttpStatus.BAD_REQUEST, "생일은 현재 시점보다 과거여야 합니다."),
 
     // Product 에러
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다."),
@@ -29,7 +31,7 @@ public enum ErrorCode {
 
     // Review 에러
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "후기를 찾을 수 없습니다."),
-    REVIEW_AUTHOR_MISMATCH(HttpStatus.NOT_FOUND, "사용자와 후기작성자가 일치하지 않습니다."),
+    REVIEW_AUTHOR_MISMATCH(HttpStatus.NOT_FOUND, "사용자와 후기 작성자가 일치하지 않습니다."),
 
     // Category 에러
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "카테고리를 찾을 수 없습니다."),
@@ -46,6 +48,8 @@ public enum ErrorCode {
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문을 찾을 수 없습니다."),
     ORDER_INVALID(HttpStatus.BAD_REQUEST, "유효하지 않은 주문입니다"),
     ORDER_CAN_NOT_BE_CANCELED(HttpStatus.BAD_REQUEST, "주문을 취소할 수 없습니다."),
+    USER_NOT_ORDERED(HttpStatus.NOT_FOUND, "주문하지 않은 사용자입니다."),
+    ORDER_PAYMENT_PENDING_EXISTS(HttpStatus.BAD_REQUEST, "결제 대기 중인 주문이 있습니다."),
 
     //TimeDeal 에러
     TIME_DEAL_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 세일 상품을 찾을 수 없습니다."),
@@ -102,6 +106,7 @@ public enum ErrorCode {
     CHAT_ROOM_ACCESS_DENIED(HttpStatus.FORBIDDEN, "해당 문의 채팅방 접근 권한이 없습니다."),
     CHAT_ROOM_COMPLETE_ACCESS_DENIED(HttpStatus.FORBIDDEN, "문의 채팅을 종료할 권한이 없습니다."),
     INQUIRY_CHAT_ALREADY_COMPLETED(HttpStatus.BAD_REQUEST, "이미 종료된 문의 채팅입니다."),
+    STOMP_MESSAGE_ACCESS_FAILED(HttpStatus.BAD_REQUEST, "유효하지 않은 권한입니다."),
 
     // 서버 에러
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "내부 서버 에러입니다."),

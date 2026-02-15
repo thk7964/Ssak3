@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>전체 주문 내역 - 싹쓰리</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+            background: #fafafa;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #ffffff;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .header-icons { display: flex; gap: 12px; align-items: center; }
+
+        .icon-btn {
+            background: #f8f9fa;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s ease;
+            color: #495057;
+        }
+        .icon-btn:hover { background: #e9ecef; transform: translateY(-2px); }
+
+        .auth-btn {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 700;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
+            white-space: nowrap;
+        }
+        .auth-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(116, 185, 255, 0.45); }
+
+        .user-info { display: flex; align-items: center; gap: 12px; }
+        .logout-btn {
+            background: #f8f9fa;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 700;
+            color: #495057;
+            transition: all 0.2s ease;
+        }
+        .logout-btn:hover { background: #e9ecef; }
+
+        .page {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 28px 20px 60px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 900;
+            color: #212529;
+            letter-spacing: -0.5px;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+
+        /* ✅ 필터 토글 UI */
+        .filters {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 0 auto 16px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            border: 1px solid #eef2f7;
+            background: #ffffff;
+            color: #374151;
+            padding: 10px 14px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-weight: 900;
+            font-size: 13px;
+            transition: all .15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            user-select: none;
+        }
+
+        .filter-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 24px rgba(0,0,0,0.06);
+        }
+
+        .filter-btn.active {
+            border-color: transparent;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: #fff;
+            box-shadow: 0 8px 20px rgba(116, 185, 255, 0.25);
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            border: 1px solid #f0f0f0;
+            overflow: hidden;
+        }
+
+        .list {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .order-item {
+            border: 1px solid #f0f0f0;
+            border-radius: 18px;
+            padding: 16px;
+            transition: all .2s ease;
+            cursor: pointer;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 14px;
+        }
+        .order-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(0,0,0,0.06);
+            border-color: #e9ecef;
+        }
+
+        .left .topline {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+
+        .order-no { font-weight: 900; color: #212529; }
+        .muted { color: #6b7280; font-size: 13px; font-weight: 600; }
+
+        .price {
+            font-size: 18px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            width: fit-content;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 900;
+            white-space: nowrap;
+            user-select: none;
+            border: 1px solid #eef2f7;
+            background: #f8f9fa;
+            color: #374151;
+        }
+        .badge.pending { background: #fff7ed; border-color: #fed7aa; color: #9a3412; }
+        .badge.done { background: #d1fae5; border-color: #a7f3d0; color: #065f46; }
+        .badge.canceled { background: #fee2e2; border-color: #fecaca; color: #991b1b; }
+        .badge.failed { background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; }
+
+        .right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+            justify-content: space-between;
+            min-width: 170px;
+        }
+
+        .btn-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+
+        .btn {
+            border: none;
+            border-radius: 12px;
+            padding: 10px 12px;
+            font-weight: 900;
+            cursor: pointer;
+            transition: all .15s ease;
+            font-size: 13px;
+            user-select: none;
+        }
+
+        .btn.primary {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.25);
+        }
+        .btn.primary:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(116, 185, 255, 0.35); }
+
+        .btn.danger {
+            background: #ffeded;
+            color: #ff6b6b;
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.15);
+        }
+        .btn.danger:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(255, 107, 107, 0.22); }
+
+        .btn:disabled { opacity: .55; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+
+        .empty {
+            padding: 60px 20px;
+            text-align: center;
+            color: #6b7280;
+        }
+        .empty .emoji { font-size: 50px; margin-bottom: 10px; }
+        .empty .msg { font-size: 16px; font-weight: 800; color: #374151; }
+        .empty .submsg { margin-top: 8px; font-size: 13px; }
+
+        .footer-actions { margin-top: 14px; display: flex; justify-content: center; }
+
+        .more-btn {
+            border: none;
+            border-radius: 16px;
+            padding: 14px 18px;
+            cursor: pointer;
+            font-weight: 900;
+            background: #f8f9fa;
+            color: #374151;
+            transition: all .15s ease;
+        }
+        .more-btn:hover { background: #e9ecef; transform: translateY(-1px); }
+        .more-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+        @media (max-width: 768px) {
+            header { padding: 16px 20px; }
+            .right { min-width: 0; align-items: flex-start; }
+            .order-item { grid-template-columns: 1fr; }
+            .btn-row { justify-content: flex-start; }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
+    <div class="header-icons">
+        <button class="icon-btn" id="cartIconBtn" title="장바구니" onclick="location.href='cart.html'">🛒</button>
+
+        <button class="auth-btn" id="loginBtn" style="display:none;">로그인 / 회원가입</button>
+
+        <div class="user-info" id="userInfo" style="display:none;">
+            <button class="icon-btn" id="myPageBtn" title="마이페이지">👤</button>
+            <button class="logout-btn" id="logoutBtn">로그아웃</button>
+        </div>
+    </div>
+</header>
+
+<div class="page">
+    <h1 class="page-title">전체 주문 내역</h1>
+
+    <!-- ✅ 전체 버튼 없음 / ✅ 누르면 토글되는 필터 3개 -->
+    <div class="filters">
+        <button class="filter-btn" data-status="PAYMENT_PENDING">결제 대기</button>
+        <button class="filter-btn" data-status="DONE">결제 완료</button>
+        <button class="filter-btn" data-status="CANCELED">취소</button>
+    </div>
+
+    <div class="card">
+        <div class="list" id="orderList">
+            <div class="empty">
+                <div class="emoji">📦</div>
+                <div class="msg">주문내역을 불러오는 중...</div>
+                <div class="submsg">잠시만 기다려주세요</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-actions">
+        <button class="more-btn" id="moreBtn" style="display:none;">더 보기</button>
+    </div>
+
+</div>
+<div id="payment-overlay" style=" display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; "></div>
+
+<script>
+    const API_BASE = 'http://localhost:8080/ssak3';
+
+    let page = 0;
+    const size = 10;
+    let hasNext = true;   // 첫 로드 가능
+    let isLoading = false;
+
+    // ✅ 지금까지 로드한 주문(전체 기준)
+    const allOrders = [];
+
+    // ✅ 선택된 상태들(토글 필터) - 비어있으면 "전체"
+    const selectedStatuses = new Set(); // 'PAYMENT_PENDING' | 'DONE' | 'CANCELED'
+
+    async function applyHeaderAuthUI() {
+        const loginBtn = document.getElementById('loginBtn');
+        const userInfo = document.getElementById('userInfo');
+        const token = localStorage.getItem('accessToken');
+        try {
+            const res = await fetch('http://localhost:8080/ssak3/users/me', {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'Authorization': token ? `Bearer ${token}` : ''
+                }
+            });
+
+            if (res.ok) {
+                loginBtn.style.display = 'none';
+                userInfo.style.display = 'flex';
+            } else {
+                loginBtn.style.display = 'inline-block';
+                userInfo.style.display = 'none';
+            }
+        } catch {
+            console.error('헤더 인증 실패', e);
+            loginBtn.style.display = 'inline-block';
+            userInfo.style.display = 'none';
+        }
+    }
+
+    function initHeaderActions() {
+        document.getElementById('cartIconBtn').onclick = () => location.href = 'cart.html';
+        document.getElementById('myPageBtn').onclick = () => location.href = 'mypage.html';
+        document.getElementById('loginBtn').onclick = () => location.href = 'login.html';
+        document.getElementById('logoutBtn').onclick = () => {
+            localStorage.removeItem('accessToken');
+            applyHeaderAuthUI();
+            alert('로그아웃 되었습니다.');
+            location.href = 'home.html';
+        };
+    }
+
+    async function apiFetch(path, options = {}) {
+        const url = API_BASE + path;
+        const token = localStorage.getItem('accessToken');
+
+        if (token) {
+            const res1 = await fetch(url, {
+                ...options,
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(options.headers || {}),
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            if (res1.status !== 401) return res1;
+        }
+
+        return fetch(url, {
+            ...options,
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(options.headers || {})
+            }
+        });
+    }
+
+    function formatWon(n) {
+        const num = Number(n || 0);
+        return num.toLocaleString('ko-KR') + '원';
+    }
+
+    function formatDateTime(v) {
+        if (!v) return '-';
+        try {
+            const d = new Date(v);
+            if (!Number.isNaN(d.getTime())) return d.toLocaleString('ko-KR');
+            return String(v).replace('T', ' ');
+        } catch {
+            return String(v);
+        }
+    }
+
+    function statusMeta(status) {
+        const s = String(status || '');
+        if (s === 'PAYMENT_PENDING') return { text: '결제 대기', cls: 'pending' };
+        if (s === 'DONE') return { text: '결제 완료', cls: 'done' };
+        if (s === 'CANCELED') return { text: '취소', cls: 'canceled' };
+        if (s === 'PAYMENT_FAILED') return { text: '결제 실패', cls: 'failed' };
+        return { text: s || '상태 없음', cls: '' };
+    }
+
+    function renderEmpty(emoji, msg, submsg) {
+        const listEl = document.getElementById('orderList');
+        listEl.innerHTML = `
+      <div class="empty">
+        <div class="emoji">${emoji}</div>
+        <div class="msg">${msg}</div>
+        <div class="submsg">${submsg}</div>
+      </div>
+    `;
+    }
+
+    function buildOrderItem(o) {
+        const orderId = o.orderId;
+        const orderNo = o.orderNo; // ✅ 추가
+        const totalPrice = o.totalPrice;
+        const createdAt = o.createdAt;
+        const st = statusMeta(o.orderStatus);
+
+        const item = document.createElement('div');
+        item.className = 'order-item';
+        item.onclick = () => location.href = `order-detail.html?orderId=${encodeURIComponent(orderId)}`;
+
+        const actionHtml = (String(o.orderStatus) === 'PAYMENT_PENDING')
+            ? `
+      <div class="btn-row">
+        <button class="btn primary" data-action="retry">재결제</button>
+        <button class="btn danger" data-action="cancel">주문 취소</button>
+      </div>
+    `
+            : `<div class="btn-row"></div>`;
+
+        // ✅ 표시용 주문번호: orderNo 우선, 없으면 orderId로 fallback
+        const displayOrderNo = (orderNo && String(orderNo).trim().length > 0)
+            ? orderNo
+            : orderId;
+
+        item.innerHTML = `
+    <div class="left">
+      <div class="topline">
+        <div class="order-no">주문 #${displayOrderNo}</div> <!-- ✅ 변경 -->
+        <span class="badge ${st.cls}">${st.text}</span>
+      </div>
+      <div class="price">${formatWon(totalPrice)}</div>
+      <div class="muted">주문일: ${formatDateTime(createdAt)}</div>
+    </div>
+
+    <div class="right">
+      <div class="muted" style="text-align:right;">상세 보기 →</div>
+      ${actionHtml}
+    </div>
+  `;
+
+        const retryBtn = item.querySelector('button[data-action="retry"]');
+        const cancelBtn = item.querySelector('button[data-action="cancel"]');
+
+        if (retryBtn) {
+            retryBtn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                await retryPayment(orderId, retryBtn, cancelBtn);
+            });
+        }
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                await cancelPending(orderId, retryBtn, cancelBtn);
+            });
+        }
+
+        return item;
+    }
+
+    // ✅ 선택된 상태가 없으면 전체 / 있으면 그 상태들만 보여줌
+    function getFilteredOrders() {
+        if (selectedStatuses.size === 0) return allOrders;
+
+        return allOrders.filter(o => selectedStatuses.has(String(o.orderStatus)));
+    }
+
+    function renderList() {
+        const listEl = document.getElementById('orderList');
+        listEl.innerHTML = '';
+
+        const filtered = getFilteredOrders();
+
+        if (filtered.length === 0) {
+            if (allOrders.length === 0) {
+                renderEmpty('🧾', '주문 내역이 없습니다', '상품을 주문해보세요!');
+            } else if (hasNext) {
+                renderEmpty('🔎', '표시할 주문이 없습니다', '더 보기를 눌러 주문을 더 불러와보세요.');
+            } else {
+                renderEmpty('🧾', '주문 내역이 없습니다', '해당 조건의 주문이 없어요.');
+            }
+            return;
+        }
+
+        for (const o of filtered) listEl.appendChild(buildOrderItem(o));
+    }
+
+    function updateMoreBtn() {
+        const moreBtn = document.getElementById('moreBtn');
+        moreBtn.style.display = hasNext ? 'inline-flex' : 'none';
+        moreBtn.disabled = isLoading;
+    }
+
+    // ✅ 버튼 UI(active) 동기화
+    function syncFilterButtonsUI() {
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            const st = btn.dataset.status;
+            btn.classList.toggle('active', selectedStatuses.has(st));
+        });
+    }
+
+    // ✅ 토글 필터: 다시 누르면 해제 / 모두 해제되면 자동으로 전체 표시
+    function toggleStatus(status) {
+        if (selectedStatuses.has(status)) selectedStatuses.delete(status);
+        else selectedStatuses.add(status);
+
+        syncFilterButtonsUI();
+        renderList();
+    }
+
+    async function loadNextPage() {
+        if (isLoading) return;
+        if (!hasNext && page !== 0) return;
+
+        isLoading = true;
+        updateMoreBtn();
+
+        try {
+            const res = await apiFetch(`/orders?page=${page}&size=${size}`, { method: 'GET' });
+            if (!res.ok) {
+                if (res.status === 401 || res.status === 403) {
+                    alert('로그인이 필요합니다.');
+                    location.href = 'login.html';
+                    return;
+                }
+                const txt = await res.text().catch(() => '');
+                throw new Error(txt || `주문 목록 조회 실패 (${res.status})`);
+            }
+
+            const json = await res.json();
+            const data = json.data || {};
+            const list = Array.isArray(data.content) ? data.content : [];
+
+            allOrders.push(...list);
+
+            const currentPage = Number(data.page);
+            const totalPages = Number(data.totalPages);
+            hasNext = (Number.isFinite(currentPage) && Number.isFinite(totalPages))
+                ? (currentPage + 1 < totalPages)
+                : false;
+
+            page = Number.isFinite(currentPage) ? (currentPage + 1) : (page + 1);
+
+            renderList();
+        } catch (err) {
+            console.error(err);
+            alert('주문 목록을 불러오지 못했습니다.');
+        } finally {
+            isLoading = false;
+            updateMoreBtn();
+        }
+    }
+
+    async function retryPayment(orderId, retryBtn, cancelBtn) {
+        if (retryBtn) retryBtn.disabled = true;
+        if (cancelBtn) cancelBtn.disabled = true;
+
+        const overlay = document.getElementById('payment-overlay');
+
+        try {
+            const res = await apiFetch(`/orders/${orderId}/retry-payment`, { method: 'POST' });
+            if (!res.ok) {
+                const txt = await res.text().catch(() => '');
+                throw new Error(txt || `재결제 실패 (${res.status})`);
+            }
+
+            const json = await res.json();
+            const url = json?.data?.url;
+            if (!url) throw new Error('결제 URL이 없습니다.');
+
+            // ✅ 오버레이 표시
+            overlay.style.display = 'block';
+
+            // ✅ 결제용 팝업 띄우기
+            const width = 500;
+            const height = 700;
+            const left = (window.innerWidth - width) / 2;
+            const top = (window.innerHeight - height) / 2;
+
+            const paymentWindow = window.open(
+                url,
+                'paymentPopup',
+                `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes`
+            );
+
+            if (!paymentWindow) {
+                alert('팝업이 차단되었습니다. 브라우저 설정을 확인해주세요.');
+                overlay.style.display = 'none';
+                return;
+            }
+
+            // ✅ 팝업 닫힘 감지
+            const timer = setInterval(() => {
+                if (paymentWindow.closed) {
+                    clearInterval(timer);
+                    overlay.style.display = 'none';  // 오버레이 숨김
+                    page = 0;
+                    allOrders.length = 0;
+                    loadNextPage();  // 주문 목록 갱신
+                }
+            }, 500);
+        } catch (err) {
+            console.error(err);
+            alert('재결제 요청에 실패했습니다.');
+            if (retryBtn) retryBtn.disabled = false;
+            if (cancelBtn) cancelBtn.disabled = false;
+            overlay.style.display = 'none';
+        }
+    }
+
+    async function cancelPending(orderId, retryBtn, cancelBtn) {
+        if (!confirm('결제 대기 주문을 취소할까요?')) return;
+
+        if (retryBtn) retryBtn.disabled = true;
+        if (cancelBtn) cancelBtn.disabled = true;
+
+        try {
+            const res = await apiFetch(`/orders/${orderId}/cancel-pending`, { method: 'PATCH' });
+            if (!res.ok) {
+                const txt = await res.text().catch(() => '');
+                throw new Error(txt || `취소 실패 (${res.status})`);
+            }
+
+            // ✅ 현재까지 로드된 목록에서 제거 후 다시 렌더
+            const idx = allOrders.findIndex(o => Number(o.orderId) === Number(orderId));
+            if (idx >= 0) allOrders.splice(idx, 1);
+            renderList();
+        } catch (err) {
+            console.error(err);
+            alert('주문 취소에 실패했습니다.');
+            if (retryBtn) retryBtn.disabled = false;
+            if (cancelBtn) cancelBtn.disabled = false;
+        }
+    }
+
+    function initFilterButtons() {
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => toggleStatus(btn.dataset.status));
+        });
+    }
+
+    (async function init() {
+        applyHeaderAuthUI();
+        initHeaderActions();
+        initFilterButtons();
+
+        // ✅ 기본은 전체(선택 없음)
+        syncFilterButtonsUI();
+
+        // ✅ 첫 페이지 로드
+        await loadNextPage();
+
+        document.getElementById('moreBtn').addEventListener('click', loadNextPage);
+    })();
+</script>
+</body>
+</html>

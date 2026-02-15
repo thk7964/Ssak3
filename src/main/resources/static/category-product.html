@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>카테고리 상품 - 싹쓰리</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+            background: #fafafa;
+            min-height: 100vh;
+            color: #222;
+        }
+
+        /* ── HEADER ── */
+        header {
+            background: #ffffff;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .search-wrapper {
+            display: flex;
+            gap: 8px;
+            background: #f8f9fa;
+            padding: 8px 16px;
+            border-radius: 24px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .search-wrapper:focus-within {
+            background: white;
+            border-color: #74b9ff;
+            box-shadow: 0 0 0 4px rgba(116,185,255,0.1);
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            outline: none;
+            color: #495057;
+        }
+
+        .search-input::placeholder {
+            color: #adb5bd;
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .search-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(116,185,255,0.35);
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            background: #f8f9fa;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s ease;
+            color: #495057;
+        }
+
+        .icon-btn:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+
+        .auth-btn {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(116,185,255,0.35);
+            white-space: nowrap;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(116,185,255,0.45);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logout-btn {
+            background: #f8f9fa;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: #495057;
+            transition: all 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background: #e9ecef;
+        }
+
+        /* ── PAGE HERO ── */
+        .page-hero {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            padding: 50px 40px;
+            margin: 24px 20px;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(116,185,255,0.25);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+        }
+
+        .hero-text {
+            position: relative;
+        }
+
+        .hero-text h1 {
+            font-size: 36px;
+            font-weight: 800;
+            color: white;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+        }
+
+        .hero-text p {
+            font-size: 15px;
+            color: rgba(255,255,255,0.85);
+        }
+
+        .hero-count {
+            position: relative;
+            text-align: center;
+            background: rgba(255,255,255,0.2);
+            border-radius: 16px;
+            padding: 18px 28px;
+            backdrop-filter: blur(8px);
+        }
+
+        .count-num {
+            font-size: 36px;
+            font-weight: 800;
+            color: white;
+            display: block;
+        }
+
+        .count-label {
+            font-size: 14px;
+            color: rgba(255,255,255,0.85);
+            margin-top: 4px;
+        }
+
+        /* ── CATEGORY NAV ── */
+        nav,
+        #categoryNav {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 20px;
+            flex-wrap: wrap;
+            background: white;
+            margin: 0 20px;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        nav a,
+        #categoryNav a {
+            text-decoration: none;
+            color: #495057;
+            font-weight: 500;
+            font-size: 14px;
+            padding: 10px 18px;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            background: #f8f9fa;
+        }
+
+        nav a:hover,
+        #categoryNav a:hover {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(116,185,255,0.35);
+        }
+
+        nav a.active,
+        #categoryNav a.active {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(116,185,255,0.35);
+        }
+
+        /* ── TOOLBAR ── */
+        .toolbar {
+            max-width: 1200px;
+            margin: 32px auto 0;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            color: #212529;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        /* ── PRODUCTS ── */
+        .products-section {
+            padding: 24px 20px 60px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 24px;
+            margin-bottom: 50px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+            cursor: pointer;
+            border: 1px solid #f0f0f0;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+            border-color: #e9ecef;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 220px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-img-tag {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-card:hover .product-image {
+            background: linear-gradient(135deg, #74b9ff15 0%, #a29bfe15 100%);
+        }
+
+        .product-info {
+            padding: 20px;
+        }
+
+        .product-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 6px;
+            letter-spacing: -0.3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .product-date {
+            font-size: 12px;
+            color: #adb5bd;
+            margin-bottom: 14px;
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .product-price {
+            font-size: 17px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .add-btn {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(116,185,255,0.35);
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(116,185,255,0.45);
+        }
+
+        .add-btn:active {
+            transform: translateY(0);
+        }
+
+        /* ── EMPTY / ERROR STATE ── */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 80px 20px;
+            color: #adb5bd;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+        }
+
+        /* ── SKELETON ── */
+        .skeleton {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid #f0f0f0;
+        }
+
+        .skeleton-img {
+            height: 220px;
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        .skeleton-body {
+            padding: 20px;
+        }
+
+        .skeleton-line {
+            height: 14px;
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .skeleton-line.short  { width: 70%; }
+        .skeleton-line.shorter { width: 45%; }
+
+        @keyframes shimmer {
+            0%   { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* ── PAGINATION ── */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .page-btn {
+            background: white;
+            border: 1px solid #e9ecef;
+            color: #495057;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .page-btn.wide {
+            width: auto;
+            padding: 0 16px;
+        }
+
+        .page-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(116,185,255,0.35);
+        }
+
+        .page-btn.active {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(116,185,255,0.35);
+        }
+
+        .page-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            background: #212529;
+            color: #adb5bd;
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+        }
+
+        footer p {
+            margin: 10px 0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        footer p:first-child {
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 1024px) {
+            .products-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            header { padding: 16px 20px; flex-wrap: wrap; }
+            .search-container { order: 3; width: 100%; max-width: 100%; margin-top: 12px; }
+            .page-hero { flex-direction: column; gap: 24px; text-align: center; }
+            .hero-text h1 { font-size: 26px; }
+            .products-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ───────── HEADER ───────── -->
+<header>
+    <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
+
+    <div class="search-container">
+        <div class="search-wrapper">
+            <input type="text" class="search-input" id="searchInput"
+                   placeholder="상품을 검색해보세요 🔍"
+                   onkeypress="handleSearchEnter(event)">
+            <button class="search-btn" onclick="handleSearch()">🔍</button>
+        </div>
+    </div>
+
+    <div class="header-icons">
+        <button class="icon-btn">🛒</button>
+        <button class="auth-btn" id="loginBtn" style="display:none;">로그인 / 회원가입</button>
+        <div class="user-info" id="userInfo" style="display:none;">
+            <button class="icon-btn" id="myPageBtn" title="마이페이지">👤</button>
+            <button class="logout-btn" id="logoutBtn">로그아웃</button>
+        </div>
+    </div>
+</header>
+
+<!-- ───────── CATEGORY NAV ───────── -->
+
+
+<!-- ───────── PAGE HERO ───────── -->
+<div class="page-hero">
+    <div class="hero-text">
+        <h1 id="heroTitle">카테고리 상품</h1>
+        <p id="heroSubtitle">해당 카테고리의 모든 상품을 확인하세요</p>
+    </div>
+    <div class="hero-count">
+        <span class="count-num" id="totalCount">-</span>
+        <div class="count-label">개의 상품</div>
+    </div>
+</div>
+
+<!-- ───────── TOOLBAR ───────── -->
+<div class="toolbar">
+    <span class="section-title" id="toolbarTitle">전체 상품</span>
+</div>
+
+<!-- ───────── PRODUCTS GRID ───────── -->
+<div class="products-section">
+    <div class="products-grid" id="productsGrid">
+        <!-- 스켈레톤 로딩 -->
+        <div class="skeleton"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line short"></div><div class="skeleton-line shorter"></div></div></div>
+        <div class="skeleton"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line short"></div><div class="skeleton-line shorter"></div></div></div>
+        <div class="skeleton"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line short"></div><div class="skeleton-line shorter"></div></div></div>
+        <div class="skeleton"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line short"></div><div class="skeleton-line shorter"></div></div></div>
+        <div class="skeleton"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line short"></div><div class="skeleton-line shorter"></div></div></div>
+    </div>
+
+    <!-- 페이지네이션 -->
+    <div class="pagination" id="pagination"></div>
+</div>
+
+<!-- ───────── FOOTER ───────── -->
+<footer>
+    <p>© 2025 싹쓰리 - 모두를 위한 귀여운 굿즈</p>
+    <p>고객센터: 010-1234-5678 | <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="adcec2c3d9ccced9eddedeccc69e83cec2c0">[email&#160;protected]</a></p>
+    <p>개인정보처리방침 | 이용약관 | 배송정책</p>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    // ───────── URL 파라미터 파싱 ─────────
+    const urlParams = new URLSearchParams(window.location.search);
+    const categoryId = urlParams.get('categoryId');
+    let currentPage = parseInt(urlParams.get('page') || '0');
+
+    // ───────── 카테고리 목록 로드 + 네비 활성화 ─────────
+    async function loadCategories() {
+        try {
+            const res = await fetch('http://localhost:8080/ssak3/categories');
+            const result = await res.json();
+            if (!result.success) return;
+
+            const categories = result.data.content || result.data;
+            const nav = document.getElementById('categoryNav');
+
+            categories.forEach(cat => {
+                const a = document.createElement('a');
+                a.textContent = cat.name;
+                a.href = `category-products.html?categoryId=${cat.id}`;
+
+                // 현재 페이지와 같은 카테고리면 active
+                if (String(cat.id) === String(categoryId)) {
+                    a.classList.add('active');
+                    // hero / toolbar 제목 업데이트
+                    document.getElementById('heroTitle').textContent = `${cat.name} 상품`;
+                    document.getElementById('heroSubtitle').textContent = `${cat.name} 카테고리의 모든 상품을 확인하세요`;
+                    document.getElementById('toolbarTitle').textContent = cat.name;
+                    document.title = `${cat.name} - 싹쓰리`;
+                }
+
+                nav.appendChild(a);
+            });
+        } catch (e) {
+            console.error('카테고리 로딩 실패:', e);
+        }
+    }
+
+    // ───────── 상품 목록 로드 ─────────
+    async function loadProducts(page = 0) {
+        // categoryId 없으면 잘못된 접근
+        if (!categoryId) {
+            renderError('카테고리 정보가 없습니다. 홈에서 카테고리를 선택해주세요.');
+            return;
+        }
+
+        const params = new URLSearchParams({
+            categoryId,
+            page,
+            size : 10
+        });
+
+        const grid = document.getElementById('productsGrid');
+
+        try {
+            const res = await fetch(`http://localhost:8080/ssak3/products?${params}`);
+            const result = await res.json();
+
+            if (!result.success) {
+                renderError(result.message || '상품을 불러오지 못했습니다.');
+                return;
+            }
+
+            // 응답이 Page 객체인 경우와 단순 배열인 경우 모두 처리
+            const isPage = result.data && result.data.content !== undefined;
+            const products = isPage ? result.data.content : result.data;
+            const totalElements = isPage ? result.data.totalElements : products.length;
+            const totalPages = isPage ? result.data.totalPages : 1;
+
+            // 총 개수 표시
+            document.getElementById('totalCount').textContent = totalElements.toLocaleString();
+
+            grid.innerHTML = '';
+
+            if (!products || products.length === 0) {
+                grid.innerHTML = `
+ <div class="empty-state">
+ <div class="empty-icon">🛍️</div>
+ <p>이 카테고리에 등록된 상품이 없습니다.</p>
+ </div>`;
+                document.getElementById('pagination').innerHTML = '';
+                return;
+            }
+
+            products.forEach((product, i) => {
+                const card = createProductCard(product, i);
+                grid.appendChild(card);
+            });
+
+            renderPagination(page, totalPages);
+
+        } catch (e) {
+            console.error('상품 로딩 실패:', e);
+            renderError('서버와 통신 중 오류가 발생했습니다.');
+        }
+    }
+
+    // ───────── 상품 카드 생성 ─────────
+    function createProductCard(product, index) {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.style.animationDelay = `${index * 0.05}s`;
+
+        const formattedDate = product.createdAt
+            ? new Date(product.createdAt).toLocaleDateString('ko-KR', { year:'numeric', month:'short', day:'numeric' })
+            : '';
+
+        const displayPrice = (product.dealPrice ?? product.price ?? 0).toLocaleString();
+
+        let imageContent;
+        if (product.imageUrl) {
+            imageContent = `<img class="product-img-tag" src="${product.imageUrl}" alt="${product.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+<div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:64px;">🛍️</div>`;
+        } else {
+            imageContent = `<span>🛍️</span>`;
+        }
+
+        card.innerHTML = `
+<div class="product-image">${imageContent}</div>
+<div class="product-info">
+<div class="product-name" title="${product.name}">${product.name}</div>
+<div class="product-date">${formattedDate}</div>
+<div class="product-footer">
+<div class="product-price">${displayPrice}원</div>
+<button class="add-btn" data-id="${product.id}">담기</button>
+</div>
+</div>`;
+
+        // 담기 버튼 (버블 방지)
+        card.querySelector('.add-btn').addEventListener('click', e => {
+            e.stopPropagation();
+            alert('장바구니에 추가되었습니다!');
+        });
+
+        // 카드 클릭 → 상세 페이지
+        card.addEventListener('click', () => {
+            window.location.href = `product-detail.html?id=${product.id}`;
+        });
+
+        return card;
+    }
+
+    // ───────── 에러 표시 ─────────
+    function renderError(msg) {
+        document.getElementById('productsGrid').innerHTML = `
+<div class="empty-state">
+<div class="empty-icon">⚠️</div>
+<p>${msg}</p>
+</div>`;
+        document.getElementById('totalCount').textContent = '0';
+    }
+
+    // ───────── 페이지네이션 렌더 ─────────
+    function renderPagination(current, total) {
+        const pag = document.getElementById('pagination');
+        if (total <= 1) { pag.innerHTML = ''; return; }
+
+        const range = 2;// 현재 페이지 앞뒤 표시 범위
+        let html = '';
+        const mkBtn = (page, label, cls = '') =>
+            `<button class="page-btn ${cls}" onclick="goPage(${page})">${label}</button>`;
+
+        // 이전
+        html += `<button class="page-btn wide" ${current === 0 ? 'disabled' : ''} onclick="goPage(${current - 1})">◀ 이전</button>`;
+
+        // 첫 페이지
+        if (current - range > 0) {
+            html += mkBtn(0, 1);
+            if (current - range > 1) html += `<span style="padding:0 4px;color:#adb5bd;">…</span>`;
+        }
+
+        // 페이지 번호
+        for (let i = Math.max(0, current - range); i <= Math.min(total - 1, current + range); i++) {
+            html += mkBtn(i, i + 1, i === current ? 'active' : '');
+        }
+
+        // 마지막 페이지
+        if (current + range < total - 1) {
+            if (current + range < total - 2) html += `<span style="padding:0 4px;color:#adb5bd;">…</span>`;
+            html += mkBtn(total - 1, total);
+        }
+
+        // 다음
+        html += `<button class="page-btn wide" ${current === total - 1 ? 'disabled' : ''} onclick="goPage(${current + 1})">다음 ▶</button>`;
+
+        pag.innerHTML = html;
+    }
+
+    // ───────── 페이지 이동 ─────────
+    function goPage(page) {
+        currentPage = page;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        loadProducts(page);
+
+        // URL도 업데이트 (뒤로가기 대응)
+        const url = new URL(window.location);
+        url.searchParams.set('page', page);
+        window.history.pushState({}, '', url);
+
+    }
+
+    // ───────── 검색 ─────────
+    function handleSearch() {
+        const keyword = document.getElementById('searchInput').value.trim();
+        window.location.href = keyword
+            ? `product-search.html?keyword=${encodeURIComponent(keyword)}&page=0`
+            : 'product-search.html';
+    }
+
+    function handleSearchEnter(e) {
+        if (e.key === 'Enter') handleSearch();
+    }
+
+    // ───────── 로그인 상태 확인 ─────────
+    async function checkLoginStatus() {
+        const loginBtn = document.getElementById('loginBtn');
+        const userInfo = document.getElementById('userInfo');
+        const token = localStorage.getItem('accessToken');
+
+        try {
+            let response;
+            if (token) {
+                response = await fetch('http://localhost:8080/ssak3/users/me', {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+            }
+            if (!token || response.status === 401) {
+                response = await fetch('http://localhost:8080/ssak3/users/me', {
+                    method: 'GET', credentials: 'include'
+                });
+            }
+            if (response.ok) {
+                loginBtn.style.display = 'none';
+                userInfo.style.display = 'flex';
+            } else throw new Error('Not Authenticated');
+        } catch {
+            localStorage.removeItem('accessToken');
+            loginBtn.style.display = 'block';
+            userInfo.style.display = 'none';
+        }
+    }
+
+    // ───────── 로그아웃 ─────────
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+        if (!confirm('로그아웃 하시겠습니까?')) return;
+        const token = localStorage.getItem('accessToken');
+        try {
+            const req = { method: 'POST', credentials: 'include' };
+            if (token) req.headers = { 'Authorization': `Bearer ${token}` };
+            await fetch('http://localhost:8080/ssak3/auth/logout', req);
+        } catch (e) {
+            console.error('로그아웃 통신 에러:', e);
+        } finally {
+            localStorage.removeItem('accessToken');
+            alert('로그아웃 되었습니다.');
+            window.location.href = 'home.html';
+        }
+    });
+
+    document.getElementById('loginBtn').addEventListener('click', () => location.href = 'login.html');
+    document.getElementById('myPageBtn').addEventListener('click', () => {
+        location.href = 'mypage.html';
+    });
+
+    // ───────── 페이지 초기화 (매우 중요!) ─────────
+    window.addEventListener('DOMContentLoaded', () => {
+        // 1. 카테고리 목록 가져오기
+        loadCategories();
+
+        // 2. 현재 URL의 page 파라미터에 맞는 상품 목록 가져오기
+        loadProducts(currentPage);
+
+        // 3. 로그인 상태 확인하여 헤더 UI 변경
+        checkLoginStatus();
+    });
+</script>
+</body>
+</html>

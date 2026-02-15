@@ -29,9 +29,8 @@ public class CartProductService {
 
     private final CartProductRepository cartProductRepository;
     private final ProductRepository productRepository;
-
-    private final CartService cartService;
     private final TimeDealRepository timeDealRepository;
+    private final CartService cartService;
 
     /**
      * 장바구니에 상품 담기
@@ -39,11 +38,9 @@ public class CartProductService {
     @Transactional
     public CartProductListGetResponse addCartProduct(Long userId, CartProductAddRequest request) {
 
-        // 상품 조회
         Product product = productRepository.findByIdAndIsDeletedFalse(request.getProductId())
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
-        // 카트 조회(없으면 생성)
         Cart cart = cartService.getOrCreateCart(userId);
 
         Long timeDealId = request.getTimeDealId();
@@ -69,18 +66,15 @@ public class CartProductService {
             }
         }
 
-        // 카트에 같은 상품이 담겨있는지 조회
         Optional<CartProduct> cartProductOptional = isTimeDeal
                 ? cartProductRepository.findByCartIdAndProductIdAndTimeDealId(cart.getId(), product.getId(), timeDealId)
                 : cartProductRepository.findByCartIdAndProductIdAndTimeDealIsNull(cart.getId(), product.getId());
 
         CartProduct cartProduct;
 
-        // 기존 상품 있음
         if (cartProductOptional.isPresent()) {
             cartProduct = cartProductOptional.get();
 
-            // 수량 누적
             int newQuantity = cartProduct.getQuantity() + request.getQuantity();
 
             if (newQuantity > product.getQuantity()) {
@@ -88,14 +82,9 @@ public class CartProductService {
             }
 
             cartProduct.changeQuantity(newQuantity);
-        }
-
-        // 기존 상품 없음
-        else {
-
+        } else {
             long count = cartProductRepository.countByCartId(cart.getId());
 
-            // 장바구니에 담을 수 있는 상품 개수 30개로 제한
             if (count >= 30) {
                 throw new CustomException(ErrorCode.CART_PRODUCT_LIMIT);
             }
@@ -107,13 +96,9 @@ public class CartProductService {
             cartProduct = new CartProduct(cart, product, timeDeal, request.getQuantity());
 
             cartProductRepository.save(cartProduct);
-
-
         }
         return CartProductListGetResponse.from(cartProduct, timeDeal, null);
-
     }
-
 
     /**
      * 장바구니 상품 수량 변경
@@ -122,6 +107,7 @@ public class CartProductService {
     public CartProductListGetResponse updateCartProductQuantity(Long userId, CartProductQuantityUpdateRequest request) {
 
         int newQuantity = request.getQuantity();
+
         if (newQuantity <= 0) {
             throw new CustomException(ErrorCode.INVALID_QUANTITY);
         }
@@ -142,7 +128,6 @@ public class CartProductService {
             if (timeDeal == null || timeDeal.getStatus() != TimeDealStatus.OPEN) {
                 throw new CustomException(ErrorCode.TIME_DEAL_INVALID_STATUS);
             }
-
         } else {
             if (product.getStatus() != ProductStatus.FOR_SALE) {
                 throw new CustomException(ErrorCode.PRODUCT_NOT_FOR_SALE);
@@ -158,7 +143,6 @@ public class CartProductService {
         return CartProductListGetResponse.from(cartProduct, timeDeal, null);
     }
 
-
     /**
      * 장바구니 상품 삭제
      */
@@ -171,6 +155,7 @@ public class CartProductService {
                 .orElseThrow(() -> new CustomException(ErrorCode.CART_PRODUCT_NOT_FOUND));
 
         CartProductDeleteResponse response = CartProductDeleteResponse.from(cartProduct.getId(), cartProduct.getCreatedAt(), cartProduct.getUpdatedAt());
+
         cartProductRepository.delete(cartProduct);
 
         return response;

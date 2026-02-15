@@ -5,8 +5,6 @@ import com.example.ssak3.common.enums.OrderStatus;
 import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.common.model.AuthUser;
 import com.example.ssak3.common.model.PageResponse;
-import com.example.ssak3.domain.order.repository.OrderRepository;
-import com.example.ssak3.domain.orderProduct.entity.OrderProduct;
 import com.example.ssak3.domain.orderProduct.repository.OrderProductRepository;
 import com.example.ssak3.domain.product.entity.Product;
 import com.example.ssak3.domain.product.repository.ProductRepository;
@@ -23,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Optional;
@@ -47,7 +46,7 @@ public class ReviewService {
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         if (!orderProductRepository.existsByOrderUserIdAndProductIdAndOrderStatus(foundUser.getId(), request.getProductId(), OrderStatus.DONE)) {
-            throw new CustomException(ErrorCode.USER_NOT_ORDERED);
+            throw new CustomException(ErrorCode.USER_NOT_PURCHASED_PRODUCT);
         }
 
         Optional<Review> review = reviewRepository.findByUserIdAndProductId(foundUser.getId(), request.getProductId());

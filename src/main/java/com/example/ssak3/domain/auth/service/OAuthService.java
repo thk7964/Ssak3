@@ -10,7 +10,6 @@ import com.example.ssak3.domain.user.repository.UserRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,19 +30,16 @@ public class OAuthService {
     @Transactional
     public boolean kakaoLogin(String code, HttpServletResponse httpServletResponse) {
 
-        boolean isNewUser = false; // 카카오 로그인 시 기존 회원인지 확인하는 변수
+        boolean isNewUser = false;
 
-        // 1. 받은 인가 코드를 기반으로 Access Token 얻기
         String accessToken = kakaoClient.getKakaoToken(code).getAccessToken();
 
-        // 2. Access Token을 통해 사용자 정보 얻기
         KakaoUserInfoResponse kakaoUserInfo = kakaoClient.getKakaoUserInfo(accessToken);
 
-        // 3. 우리 서비스에 가입된 유저가 아니면 회원 가입
         User user = userRepository.findByEmail(kakaoUserInfo.getKakaoAccount().getEmail())
                 .orElseGet(() -> signup(kakaoUserInfo));
 
-        if (user.getPhone() == null) { // phone이 null이면 카카오 로그인으로 새로 가입된 유저
+        if (user.getPhone() == null) {
             isNewUser = true;
         }
 
@@ -51,12 +47,12 @@ public class OAuthService {
         String token = jwtUtil.substringToken(rawToken);
 
         Cookie cookie = new Cookie("accessToken", token);
-        
+
         cookie.setPath("/");
-        cookie.setHttpOnly(true); // XSS 방어 코드
+        cookie.setHttpOnly(true);
         cookie.setMaxAge(60 * 60);
 
-        httpServletResponse.addCookie(cookie); // 쿠키에 실어 보냄
+        httpServletResponse.addCookie(cookie);
 
         return isNewUser;
     }

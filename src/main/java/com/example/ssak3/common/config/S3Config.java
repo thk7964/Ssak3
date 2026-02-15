@@ -24,18 +24,19 @@ public class S3Config {
 
     @Bean
     public AwsCredentialsProvider awsCredentialsProvider() {
-        return StaticCredentialsProvider.create(
-                AwsBasicCredentials.create(accessKey, secretKey)
-        );
+
+        return StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey, secretKey));
     }
 
     @Bean
     public Region awsRegion() {
+
         return Region.of(region);
     }
 
     @Bean
     public S3Client s3Client(AwsCredentialsProvider credentialsProvider, Region awsRegion) {
+
         return S3Client.builder()
                 .credentialsProvider(credentialsProvider)
                 .region(awsRegion)
@@ -44,6 +45,7 @@ public class S3Config {
 
     @Bean
     public S3Presigner s3Presigner(AwsCredentialsProvider credentialsProvider, Region awsRegion) {
+
         return S3Presigner.builder()
                 .credentialsProvider(credentialsProvider)
                 .region(awsRegion)

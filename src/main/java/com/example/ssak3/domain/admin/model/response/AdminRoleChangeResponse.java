@@ -15,6 +15,7 @@ public class AdminRoleChangeResponse {
     private final UserRole role;
 
     public static AdminRoleChangeResponse from(User user) {
+
         return new AdminRoleChangeResponse(
                 user.getId(),
                 user.getName(),

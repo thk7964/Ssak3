@@ -30,9 +30,13 @@ public class AuthService {
     @Transactional
     public SignupResponse signup(SignupRequest request) {
 
+        String name = request.getName().replaceAll("\\s", "");
         String nickname = request.getNickname().replaceAll("\\s", "");
+        String email = request.getEmail().replaceAll("\\s", "");
+        String password = request.getPassword().replaceAll("\\s", "");
+        String phone = request.getPhone().replaceAll("\\s", "");
 
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmail(email)) {
             throw new CustomException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
 
@@ -49,12 +53,12 @@ public class AuthService {
         }
 
         User user = new User(
-                request.getName().replaceAll("\\s", ""),
+                name,
                 nickname,
-                request.getEmail(),
-                passwordEncoder.encode(request.getPassword()),
+                email,
+                passwordEncoder.encode(password),
                 request.getBirth(),
-                request.getPhone(),
+                phone,
                 request.getAddress());
 
         User savedUser = userRepository.save(user);
@@ -68,12 +72,10 @@ public class AuthService {
     @Transactional
     public LoginResponse login(LoginRequest request) {
 
-        // 가입된 이메일인지 검증
         if (!userRepository.existsByEmail(request.getEmail())) {
             throw new CustomException(ErrorCode.UNREGISTERED_USER);
         }
 
-        // 탈퇴한 유저는 예외 처리
         User user = userRepository.findByEmailAndIsDeletedFalse(request.getEmail())
                 .orElseThrow(() -> new CustomException(ErrorCode.WITHDRAWN_USER));
 

@@ -7,6 +7,7 @@ import com.example.ssak3.domain.inquirychat.model.request.ChatMessageRequest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+
 import java.time.LocalDateTime;
 
 @Getter

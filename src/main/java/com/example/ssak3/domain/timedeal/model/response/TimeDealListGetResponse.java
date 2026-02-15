@@ -2,7 +2,10 @@ package com.example.ssak3.domain.timedeal.model.response;
 
 import com.example.ssak3.common.enums.TimeDealStatus;
 import com.example.ssak3.domain.timedeal.entity.TimeDeal;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 

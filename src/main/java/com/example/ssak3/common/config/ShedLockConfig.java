@@ -17,10 +17,11 @@ public class ShedLockConfig {
 
     @Bean
     public LockProvider lockProvider(DataSource dataSource) {
+
         return new JdbcTemplateLockProvider(
                 JdbcTemplateLockProvider.Configuration.builder()
                         .withJdbcTemplate(new JdbcTemplate(dataSource))
-                        .usingDbTime() // 서버 시간 오차 방지
+                        .usingDbTime()
                         .build()
         );
     }

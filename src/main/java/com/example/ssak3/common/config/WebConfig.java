@@ -14,9 +14,11 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+
         CorsConfiguration config = new CorsConfiguration();
+
         config.setAllowedOrigins(List.of(
-                "http://localhost:63342",
+                "http://localhost:63342", // 서버 배포 시 수정 필요
                 "https://ssak3-front.s3.ap-northeast-2.amazonaws.com",
                 "http://ssak3-front.s3-website.ap-northeast-2.amazonaws.com/"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
@@ -26,6 +28,7 @@ public class WebConfig implements WebMvcConfigurer {
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
+
         return source;
     }
 }

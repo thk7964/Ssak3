@@ -1,10 +1,9 @@
 package com.example.ssak3.domain.category.service;
 
 import com.example.ssak3.domain.category.entity.Category;
-import com.example.ssak3.domain.category.model.response.*;
+import com.example.ssak3.domain.category.model.response.CategoryListGetResponse;
 import com.example.ssak3.domain.category.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;

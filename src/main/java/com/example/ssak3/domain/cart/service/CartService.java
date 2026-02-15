@@ -1,7 +1,6 @@
 package com.example.ssak3.domain.cart.service;
 
 import com.example.ssak3.common.enums.ErrorCode;
-import com.example.ssak3.common.enums.TimeDealStatus;
 import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.domain.cart.entity.Cart;
 import com.example.ssak3.domain.cart.model.response.CartGetResponse;
@@ -42,10 +41,8 @@ public class CartService {
 
         Cart cart = getOrCreateCart(userId);
 
-        // 장바구니 상품 조회
         List<CartProduct> cartProductList = cartProductRepository.findAllByCartIdOrderByUpdatedAtDesc(cart.getId());
 
-        // 장바구니에 담긴 타임딜의 id
         List<Long> timeDealIds = cartProductList.stream()
                 .map(CartProduct::getTimeDeal)
                 .filter(Objects::nonNull)
@@ -88,6 +85,5 @@ public class CartService {
                     Cart cart = new Cart(user);
                     return cartRepository.save(cart);
                 });
-
     }
 }

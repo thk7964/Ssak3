@@ -1,7 +1,10 @@
 package com.example.ssak3.domain.auth.model.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -24,7 +27,7 @@ public class SignupRequest {
     private String email;
 
     @NotBlank(message = "비밀번호는 필수 입력 사항입니다.")
-    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*])[A-Za-z\\d!@#$%^&*]{8,16}$", message = "비밀번호는 8자 이상 16자 이하 영문 대소문자, 숫자, 특수 문자를 포함해야 합니다.")
+    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*])[A-Za-z\\d!@#$%^&*]{8,16}$", message = "비밀번호는 8자 이상 16자 이하 영문 대문자, 소문자, 숫자, 특수 문자를 포함해야 합니다.")
     private String password;
 
     @NotNull(message = "생일은 필수 입력 사항입니다.")

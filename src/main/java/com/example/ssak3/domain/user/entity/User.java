@@ -71,15 +71,15 @@ public class User extends BaseEntity {
     }
 
     public void update(UserUpdateRequest request) {
-        this.name = (request.getName() != null && !request.getName().contains(" ")) ? request.getName() : this.name;
-        this.nickname = (request.getNickname() != null && !request.getNickname().contains(" ")) ? request.getNickname() : this.nickname;
+        this.name = (request.getName() != null) ? request.getName().replaceAll("\\s", "") : this.name;
+        this.nickname = (request.getNickname() != null) ? request.getNickname().replaceAll("\\s", "") : this.nickname;
         this.birth = (request.getBirth() != null) ? request.getBirth() : this.birth;
-        this.phone = (request.getPhone() != null) ? request.getPhone() : this.phone;
+        this.phone = (request.getPhone() != null) ? request.getPhone().replaceAll("\\s", "") : this.phone;
         this.address = (request.getAddress() != null) ? request.getAddress() : this.address;
     }
 
-    public void updatePassword(String password) {
-        this.password = (password != null && !password.contains(" ")) ? password : this.password;
+    public void updatePassword(String newPassword) {
+        this.password = (newPassword != null) ? newPassword.replaceAll("\\s", "") : this.password;
     }
 
     public void softDelete() {

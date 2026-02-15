@@ -2,7 +2,6 @@ package com.example.ssak3.domain.productviewhistory.service;
 
 import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.exception.CustomException;
-import com.example.ssak3.domain.product.entity.Product;
 import com.example.ssak3.domain.product.repository.ProductRepository;
 import com.example.ssak3.domain.productviewhistory.entity.ProductViewHistory;
 import com.example.ssak3.domain.productviewhistory.repository.ProductViewHistoryRepository;

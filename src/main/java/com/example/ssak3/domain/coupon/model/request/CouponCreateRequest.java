@@ -3,6 +3,7 @@ package com.example.ssak3.domain.coupon.model.request;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
 @Getter

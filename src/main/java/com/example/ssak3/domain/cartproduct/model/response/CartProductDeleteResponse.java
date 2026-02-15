@@ -1,12 +1,12 @@
 package com.example.ssak3.domain.cartproduct.model.response;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Getter
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CartProductDeleteResponse {
 
     private final Long cartProductId;
@@ -14,6 +14,7 @@ public class CartProductDeleteResponse {
     private final LocalDateTime updatedAt;
 
     public static CartProductDeleteResponse from(Long cartProductId, LocalDateTime createdAt, LocalDateTime updatedAt) {
+
         return new CartProductDeleteResponse(
                 cartProductId,
                 createdAt,

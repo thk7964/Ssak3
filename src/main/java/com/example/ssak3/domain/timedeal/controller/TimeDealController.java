@@ -4,7 +4,6 @@ import com.example.ssak3.common.model.ApiResponse;
 import com.example.ssak3.domain.timedeal.service.TimeDealService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

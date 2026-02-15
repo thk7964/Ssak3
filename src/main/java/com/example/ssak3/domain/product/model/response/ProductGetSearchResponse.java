@@ -1,7 +1,5 @@
 package com.example.ssak3.domain.product.model.response;
 
-import com.example.ssak3.domain.product.entity.Product;
-import com.example.ssak3.domain.timedeal.entity.TimeDeal;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

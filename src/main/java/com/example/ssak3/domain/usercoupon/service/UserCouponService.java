@@ -127,13 +127,23 @@ public class UserCouponService {
     /**
      * 내 쿠폰 목록 조회 로직
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public PageResponse<UserCouponListGetResponse> getMyCouponList(Long userId, Pageable pageable, UserCouponStatus status) {
 
-        Page<UserCouponListGetResponse> userCouponPage = userCouponRepository.findAllActiveCouponsByUserId(userId, pageable, status)
-                .map(UserCouponListGetResponse::from);
+        Page<UserCoupon> userCouponPage = userCouponRepository.findAllActiveCouponsByUserId(userId, pageable, status);
 
-        return PageResponse.from(userCouponPage);
+        // AVAILABLE 조회 시에만 만료 체크 로직 실행
+        if (status == UserCouponStatus.AVAILABLE) {
+            LocalDateTime now = LocalDateTime.now();
+            userCouponPage.getContent().forEach(uc -> {
+                if (uc.getExpiredAt() != null && uc.getExpiredAt().isBefore(now)) {
+                    uc.changeStatus(UserCouponStatus.EXPIRED);
+                    userCouponRepository.save(uc);
+                }
+            });
+        }
+
+        return PageResponse.from(userCouponPage.map(UserCouponListGetResponse::from));
     }
 
     /**

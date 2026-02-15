@@ -52,7 +52,7 @@ public class UserCoupon extends BaseEntity {
         this.status=UserCouponStatus.AVAILABLE;
     }
 
-    // 상태 : 삭제 됨
+    // 상태 변경
     public void changeStatus(UserCouponStatus targetStatus) {
         this.status = targetStatus;
     }

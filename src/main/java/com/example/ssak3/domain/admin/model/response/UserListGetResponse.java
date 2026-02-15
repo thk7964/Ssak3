@@ -19,6 +19,7 @@ public class UserListGetResponse {
     private final LocalDateTime updatedAt;
 
     public static UserListGetResponse from(User user) {
+
         return new UserListGetResponse(
                 user.getId(),
                 user.getName(),

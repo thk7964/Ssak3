@@ -16,7 +16,7 @@ public class CouponListGetResponse {
     private final Integer issuedQuantity;
     private final LocalDateTime issueStartDate;
     private final LocalDateTime issueEndDate;
-    private final Integer valiDays;
+    private final Integer validDays;
     private final boolean isDeleted;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;

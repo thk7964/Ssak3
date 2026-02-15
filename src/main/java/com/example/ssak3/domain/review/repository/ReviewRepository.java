@@ -16,6 +16,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     Page<Review> findByProductIdAndIsDeletedFalse(Long productId, Pageable pageable);
 
+    Page<Review> findByUserIdAndIsDeletedFalse(Long id, Pageable pageable);
+
     @Query("""
     select avg(r.score)
     from Review r
@@ -25,4 +27,5 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     Double findAverageScoreByProductId(Long productId);
 
     Optional<Review> findByUserIdAndProductId(Long id, Long productId);
+
 }

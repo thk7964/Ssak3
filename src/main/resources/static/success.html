@@ -84,7 +84,7 @@
       function goToParent() {
           window.opener.postMessage({
               type: "PAYMENT_FINISHED",
-              redirectUrl: "home.html"
+              redirectUrl: "my-orders.html"
           }, window.location.origin);
 
           window.close();

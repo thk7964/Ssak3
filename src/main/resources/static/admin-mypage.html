@@ -224,9 +224,21 @@
     </div>
 </div>
 
-<script src="/js/config.js"></script>
 <script>
-    const API_URL = window.APP_CONFIG.getApiUrl();
+    // API URL 설정
+    const API_URL = (() => {
+        const hostname = window.location.hostname;
+
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return 'http://localhost:8080';
+        }
+
+        if (hostname === 'admin.ssak3.store') {
+            return 'https://admin.ssak3.store';
+        }
+
+        return 'https://ssak3.store';
+    })();
 
     document.addEventListener('DOMContentLoaded', () => {
         const token = localStorage.getItem('accessToken');
@@ -236,8 +248,7 @@
             headers.Authorization = 'Bearer ' + token;
         }
 
-        // 관리자 정보 조회
-        fetch(`${API_URL}/ssak3/users/me`, {
+        fetch(`API_URL/ssak3/users/me`, {
             method: 'GET',
             headers: headers,
             credentials: 'include'
@@ -253,18 +264,7 @@
 
                 // USER이면 일반 사용자 페이지로 리다이렉트
                 if (user.role === 'USER') {
-                    const currentDomain = window.location.hostname;
-
-                    // 일반 사용자는 user 도메인으로
-                    if (currentDomain !== 'localhost' &&
-                        currentDomain !== '127.0.0.1' &&
-                        currentDomain !== 'ssak3.store' &&
-                        !currentDomain.includes('ssak3.store')) {
-
-                        window.location.href = 'https://ssak3.store/mypage.html';
-                    } else {
-                        location.href = 'mypage.html';
-                    }
+                    location.href = 'mypage.html';
                     return;
                 }
 

@@ -332,15 +332,28 @@
     // ✅ 선택된 상태들(토글 필터) - 비어있으면 "전체"
     const selectedStatuses = new Set(); // 'PAYMENT_PENDING' | 'DONE' | 'CANCELED'
 
-    function applyHeaderAuthUI() {
-        const token = localStorage.getItem('accessToken');
+    async function applyHeaderAuthUI() {
         const loginBtn = document.getElementById('loginBtn');
         const userInfo = document.getElementById('userInfo');
+        const token = localStorage.getItem('accessToken');
+        try {
+            const res = await fetch('http://localhost:8080/ssak3/users/me', {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'Authorization': token ? `Bearer ${token}` : ''
+                }
+            });
 
-        if (token) {
-            loginBtn.style.display = 'none';
-            userInfo.style.display = 'flex';
-        } else {
+            if (res.ok) {
+                loginBtn.style.display = 'none';
+                userInfo.style.display = 'flex';
+            } else {
+                loginBtn.style.display = 'inline-block';
+                userInfo.style.display = 'none';
+            }
+        } catch {
+            console.error('헤더 인증 실패', e);
             loginBtn.style.display = 'inline-block';
             userInfo.style.display = 'none';
         }

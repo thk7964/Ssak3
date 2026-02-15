@@ -299,7 +299,10 @@
     </div>
 </div>
 
+<script src="/js/config.js"></script>
 <script>
+    const API_URL = window.APP_CONFIG.getApiUrl();
+
     let currentUser = null;
     let currentAction = null;
 
@@ -310,7 +313,7 @@
         const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
 
         try {
-            const res = await fetch('http://localhost:8080/ssak3/users/me', {
+            const res = await fetch(`${API_BASE_URL}/ssak3/users/me`, {
                 method: 'GET',
                 headers: headers,
                 credentials: 'include'
@@ -321,7 +324,19 @@
             const result = await res.json();
             currentUser = result.data;
 
+            // 관리자 도메인 리다이렉트 로직 추가
             if (currentUser.role === 'ADMIN' || currentUser.role === 'SUPER_ADMIN') {
+                const currentDomain = window.location.hostname;
+
+                if (currentDomain !== 'localhost' &&
+                    currentDomain !== '127.0.0.1' &&
+                    currentDomain !== 'admin.ssak3.store') {
+
+                    window.location.href = 'https://admin.ssak3.store/admin-mypage.html';
+                    return;
+                }
+
+                // 로컬이거나 이미 admin 도메인인 경우
                 window.location.href = 'admin-mypage.html';
                 return;
             }
@@ -412,7 +427,7 @@
 
         try {
 
-            const res = await fetch('http://localhost:8080/ssak3/users/me/password', {
+            const res = await fetch(`${API_URL}/ssak3/users/me/password`, {
                 method: 'PATCH',
                 headers: headers,
                 credentials: 'include',
@@ -438,7 +453,7 @@
         const token = localStorage.getItem('accessToken');
 
         try {
-            const response = await fetch('http://localhost:8080/ssak3/users/me/password-verification', {
+            const response = await fetch(`${API_URL}/ssak3/users/me/password-verification`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -515,7 +530,7 @@
         if (token && token !== 'null') headers['Authorization'] = `Bearer ${token}`;
 
         try {
-            const res = await fetch('http://localhost:8080/ssak3/users/me', {
+            const res = await fetch(`${API_URL}/ssak3/users/me`, {
                 method: 'PATCH',
                 headers: headers,
                 credentials: 'include',
@@ -553,7 +568,7 @@
         if (token && token !== 'null') headers['Authorization'] = `Bearer ${token}`;
 
         try {
-            const res = await fetch('http://localhost:8080/ssak3/users/me', {
+            const res = await fetch(`${API_URL}/ssak3/users/me`, {
                 method: 'DELETE',
                 headers: headers,
                 credentials: 'include'
@@ -577,7 +592,7 @@
     async function handleLogout() {
         const token = localStorage.getItem('accessToken');
         try {
-            await fetch('http://localhost:8080/ssak3/auth/logout', {
+            await fetch(`${API_URL}/ssak3/auth/logout`, {
                 method: 'POST',
                 headers: token ? { 'Authorization': 'Bearer ' + token } : {},
                 credentials: 'include'

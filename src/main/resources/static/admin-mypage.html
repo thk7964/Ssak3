@@ -224,7 +224,10 @@
     </div>
 </div>
 
+<script src="/js/config.js"></script>
 <script>
+    const API_URL = window.APP_CONFIG.getApiUrl();
+
     document.addEventListener('DOMContentLoaded', () => {
         const token = localStorage.getItem('accessToken');
 
@@ -233,7 +236,8 @@
             headers.Authorization = 'Bearer ' + token;
         }
 
-        fetch('http://localhost:8080/ssak3/users/me', {
+        // 관리자 정보 조회
+        fetch(`${API_URL}/ssak3/users/me`, {
             method: 'GET',
             headers: headers,
             credentials: 'include'
@@ -249,7 +253,18 @@
 
                 // USER이면 일반 사용자 페이지로 리다이렉트
                 if (user.role === 'USER') {
-                    location.href = 'mypage.html';
+                    const currentDomain = window.location.hostname;
+
+                    // 일반 사용자는 user 도메인으로
+                    if (currentDomain !== 'localhost' &&
+                        currentDomain !== '127.0.0.1' &&
+                        currentDomain !== 'ssak3.store' &&
+                        !currentDomain.includes('ssak3.store')) {
+
+                        window.location.href = 'https://ssak3.store/mypage.html';
+                    } else {
+                        location.href = 'mypage.html';
+                    }
                     return;
                 }
 
@@ -275,7 +290,7 @@
         localStorage.removeItem('accessToken');
 
         try {
-            const response = await fetch('http://localhost:8080/ssak3/auth/logout', {
+            const response = await fetch(`${API_URL}/ssak3/auth/logout`, {
                 method: 'POST',
                 credentials: 'include'
             });

@@ -3,85 +3,200 @@
 <head>
     <meta charset="UTF-8">
     <title>마이 페이지</title>
-    <style>
-        /* 기존 스타일 유지 */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
-            min-height: 100vh;
-            display: flex; justify-content: center; align-items: center; padding: 40px 20px;
-        }
-
-        .profile-container {
-            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
-            border-radius: 24px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-            width: 100%; max-width: 550px; padding: 40px;
-        }
-        .header { text-align: center; margin-bottom: 30px; }
-        .header h1 {
-            font-size: 28px; font-weight: 700;
-            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .info-group { margin-bottom: 18px; position: relative; }
-        .info-label { display: block; color: #6b7280; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
-        .info-value-box {
-            width: 100%; padding: 14px 16px; border: 2px solid #f3f4f6;
-            border-radius: 12px; font-size: 15px; background: white; color: #374151;
-            min-height: 50px; display: flex; align-items: center;
-        }
-        .edit-input { width: 100%; padding: 12px; border: 2px solid #74b9ff; border-radius: 10px; outline: none; }
-
-        /* 추가된 기능 버튼 그리드 스타일 */
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin: 20px 0;
-        }
-        .feature-btn {
-            padding: 16px;
-            background: white;
-            color: #374151;
-            border: 2px solid #f3f4f6;
-            border-radius: 16px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-            transition: all 0.2s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
-        .feature-btn:hover {
-            border-color: #74b9ff;
-            background: #f8fdff;
-            transform: translateY(-2px);
-        }
-        .feature-icon { font-size: 24px; }
-
-        .btn-group { margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .base-btn {
-            padding: 14px; background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
-            color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 600;
-            cursor: pointer; text-align: center;
-        }
-        .base-btn.secondary { background: #e5e7eb; color: #6b7280; }
-        .base-btn.danger { background: #fca5a5; color: #b91c1c; }
-
-        /* 모달 스타일 */
-        .modal {
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-            justify-content: center; align-items: center; z-index: 1000;
-        }
-        .modal-content { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 350px; text-align: center; }
-        .modal-content input { width: 100%; padding: 12px; margin: 15px 0; border: 2px solid #e5e7eb; border-radius: 10px; }
-    </style>
 </head>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-bottom: 40px;
+    }
+
+    /* ───────────── 상단바 ───────────── */
+    .navbar {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(255,255,255,0.5);
+        box-shadow: 0 2px 16px rgba(116, 185, 255, 0.15);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+    .navbar-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 28px;
+        height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .navbar-logo {
+        font-size: 22px;
+        font-weight: 800;
+        background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-decoration: none;
+        letter-spacing: -0.5px;
+        cursor: pointer;
+    }
+    .navbar-menu {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .navbar-link {
+        padding: 8px 16px;
+        color: #4b5563;
+        font-size: 14px;
+        font-weight: 500;
+        border-radius: 8px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.15s ease;
+        border: none;
+        background: transparent;
+    }
+    .navbar-link:hover {
+        color: #74b9ff;
+        background: rgba(116, 185, 255, 0.08);
+    }
+    .navbar-link.active {
+        color: #a29bfe;
+        font-weight: 700;
+    }
+    .navbar-divider {
+        width: 1px;
+        height: 18px;
+        background: #e5e7eb;
+        margin: 0 4px;
+    }
+
+    /* ───────────── 프로필 카드 ───────────── */
+    .profile-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 24px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        width: 100%;
+        max-width: 550px;
+        padding: 40px;
+        margin-top: 40px;
+    }
+    .header { text-align: center; margin-bottom: 30px; }
+    .header h1 {
+        font-size: 28px; font-weight: 700;
+        background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .info-group { margin-bottom: 18px; position: relative; }
+    .info-label { display: block; color: #6b7280; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+    .info-value-box {
+        width: 100%; padding: 14px 16px; border: 2px solid #f3f4f6;
+        border-radius: 12px; font-size: 15px; background: white; color: #374151;
+        min-height: 50px; display: flex; align-items: center;
+    }
+    .edit-input { width: 100%; padding: 12px; border: 2px solid #74b9ff; border-radius: 10px; outline: none; font-size: 14px; }
+
+    /* 기능 버튼 그리드 */
+    .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin: 20px 0;
+    }
+    .feature-btn {
+        padding: 16px;
+        background: white;
+        color: #374151;
+        border: 2px solid #f3f4f6;
+        border-radius: 16px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+    }
+    .feature-btn:hover {
+        border-color: #74b9ff;
+        background: #f8fdff;
+        transform: translateY(-2px);
+    }
+    .feature-icon { font-size: 24px; }
+
+    /* 하단 버튼 그룹 */
+    .btn-group { margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .base-btn {
+        padding: 14px;
+        background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+        color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 600;
+        cursor: pointer; text-align: center; transition: opacity 0.15s;
+    }
+    .base-btn:hover { opacity: 0.88; }
+    .base-btn.secondary { background: #e5e7eb; color: #6b7280; }
+    .base-btn.primary-action {
+        background: #f3f4f6;   /* 연한 회색 */
+        color: #374151;
+        border: 1px solid #e5e7eb;
+    }
+
+    .base-btn.primary-action:hover {
+        background: #e5e7eb;
+    }
+
+    .base-btn.soft-danger {
+        background: #fecaca;  /* 연핑크 */
+        color: #b91c1c;
+    }
+
+
+    /* 모달 */
+    .modal {
+        display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+        justify-content: center; align-items: center; z-index: 1000;
+    }
+    .modal-content {
+        background: white; padding: 30px; border-radius: 20px;
+        width: 90%; max-width: 380px; text-align: center;
+    }
+    .modal-content input {
+        width: 100%; padding: 12px; margin: 12px 0;
+        border: 2px solid #e5e7eb; border-radius: 10px;
+        font-size: 14px; outline: none;
+        transition: border-color 0.15s;
+    }
+    .modal-content input:focus { border-color: #74b9ff; }
+    .modal-subtitle {
+        font-size: 13px; color: #6b7280; margin-top: 6px; line-height: 1.5;
+    }
+    .password-hint {
+        font-size: 12px; color: #9ca3af; text-align: left; margin-top: -6px; margin-bottom: 6px;
+        line-height: 1.4;
+    }
+</style>
 <body>
 
+<!-- ───────────── 상단바 ───────────── -->
+<nav class="navbar">
+    <div class="navbar-inner">
+        <a class="navbar-logo" onclick="location.href='home.html'">SSAK3</a>
+        <div class="navbar-menu">
+            <a class="navbar-link" onclick="location.href='home.html'">홈</a>
+            <a class="navbar-link" onclick="location.href='product-search.html'">상품</a>
+        </div>
+    </div>
+</nav>
+
+<!-- ───────────── 프로필 카드 ───────────── -->
 <div class="profile-container">
     <div class="header"><h1>내 프로필</h1></div>
 
@@ -130,10 +245,10 @@
     </div>
 
     <div id="viewBtnGroup" class="btn-group">
-        <button class="base-btn secondary" onclick="location.href='home.html'">홈으로</button>
-        <button class="base-btn secondary" onclick="handleLogout()">로그아웃</button>
-        <button class="base-btn" id="editBtn">내 정보 수정</button>
-        <button class="base-btn danger" id="deleteBtn">회원 탈퇴</button>
+        <button class="base-btn primary-action" id="editBtn">내 정보 수정</button>
+        <button class="base-btn primary-action" onclick="handleLogout()">로그아웃</button>
+        <button class="base-btn primary-action" id="changePwBtn">비밀번호 변경</button>
+        <button class="base-btn soft-danger" id="deleteBtn">회원 탈퇴</button>
     </div>
 
     <div id="editBtnGroup" class="btn-group" style="display: none;">
@@ -142,10 +257,25 @@
     </div>
 </div>
 
+<div id="changePasswordModal" class="modal">
+    <div class="modal-content">
+        <h3>🔑 비밀번호 변경</h3>
+        <p class="modal-subtitle">새로운 비밀번호를 입력해주세요.</p>
+        <input type="password" id="newPassword" placeholder="새 비밀번호">
+        <p class="password-hint">8~16자 영문 대소문자, 숫자, 특수문자(!@#$%^&*) 포함</p>
+        <input type="password" id="newPasswordConfirm" placeholder="새 비밀번호 확인">
+        <div style="display: flex; gap: 10px; margin-top: 4px;">
+            <button class="base-btn secondary" style="flex:1" onclick="closeModal()">취소</button>
+            <button class="base-btn" style="flex:1" onclick="submitChangePassword()">변경하기</button>
+        </div>
+    </div>
+</div>
+
+
 <div id="passwordModal" class="modal">
     <div class="modal-content">
         <h3>🔐 본인 확인</h3>
-        <p style="font-size: 14px; color: #6b7280; margin-top: 5px;">비밀번호를 입력해주세요.</p>
+        <p class="modal-subtitle">비밀번호를 입력해주세요.</p>
         <input type="password" id="currentPassword" placeholder="비밀번호 입력">
         <div style="display: flex; gap: 10px;">
             <button class="base-btn secondary" style="flex:1" onclick="closeModal()">취소</button>
@@ -153,6 +283,7 @@
         </div>
     </div>
 </div>
+
 
 <div id="kakaoDeleteModal" class="modal">
     <div class="modal-content">
@@ -172,7 +303,6 @@
     let currentUser = null;
     let currentAction = null;
 
-    // 페이지 로드 시 단 한 번만 실행
     document.addEventListener('DOMContentLoaded', fetchUserData);
 
     async function fetchUserData() {
@@ -191,39 +321,34 @@
             const result = await res.json();
             currentUser = result.data;
 
-            // 1. 권한 체크 및 리다이렉트
             if (currentUser.role === 'ADMIN' || currentUser.role === 'SUPER_ADMIN') {
                 window.location.href = 'admin-mypage.html';
                 return;
             }
 
-            // 2. UI 데이터 업데이트
             updateUI(currentUser);
 
         } catch (e) {
-            console.error("데이터 로드 실패:", e);
+            console.error(e);
             alert('로그인이 필요하거나 세션이 만료되었습니다.');
             location.href = 'login.html';
         }
     }
 
-    // 데이터를 화면에 그려주는 전용 함수 (관심사 분리)
     function updateUI(user) {
         const setText = (id, val) => {
             const el = document.getElementById(id);
             if (el) el.innerText = val || '미설정';
         };
-
         setText('userName', user.name);
-        setText('userNickname', user.nickname); // 닉네임이 안 보이던 문제 해결
+        setText('userNickname', user.nickname);
         setText('userEmail', user.email);
         setText('userBirth', user.birth);
         setText('userPhone', user.phone);
         setText('userAddress', user.address);
     }
 
-    // --- 아래는 기존의 버튼 핸들러들 (유지하되 중복된 DOMContentLoaded는 삭제) ---
-
+    // ─── 버튼 이벤트 ────────────────────────────────
     document.getElementById('editBtn').onclick = () => {
         currentAction = 'edit';
         if (currentUser.provider === 'KAKAO') enableEditMode();
@@ -236,48 +361,136 @@
         else openModal('passwordModal');
     };
 
-    function openModal(modalId) { document.getElementById(modalId).style.display = 'flex'; }
+    document.getElementById('changePwBtn').onclick = () => {
+        if (!currentUser) return;
+
+        // 카카오 로그인 유저인 경우 안내 문구 출력
+        if (currentUser.provider === 'KAKAO') {
+            alert('카카오 계정의 비밀번호 변경은 카카오 페이지를 이용해 주세요.');
+            window.open('https://accounts.kakao.com/weblogin/account/info', '_blank');
+            return;
+        }
+
+        currentAction = 'changePassword';
+        openModal('passwordModal');
+    };
+
+    function openModal(modalId) {
+        document.getElementById(modalId).style.display = 'flex';
+    }
     function closeModal() {
         document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
-        document.getElementById('currentPassword').value = '';
-        document.getElementById('deleteConfirmText').value = '';
+
+        ['currentPassword', 'deleteConfirmText', 'newPassword', 'newPasswordConfirm']
+            .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
     }
 
+    async function submitChangePassword() {
+
+        const newPassword = document.getElementById('newPassword').value;
+        const newPasswordConfirm = document.getElementById('newPasswordConfirm').value;
+
+        if (!newPassword) {
+            alert('새 비밀번호를 입력해주세요.');
+            return;
+        }
+
+        const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,16}$/;
+        if (!passwordRegex.test(newPassword)) {
+            alert('비밀번호 형식이 올바르지 않습니다.');
+            return;
+        }
+
+        if (newPassword !== newPasswordConfirm) {
+            alert('새 비밀번호가 일치하지 않습니다.');
+            return;
+        }
+
+        const token = localStorage.getItem('accessToken');
+        const headers = { 'Content-Type': 'application/json' };
+        if (token && token !== 'null') headers['Authorization'] = `Bearer ${token}`;
+
+        try {
+
+            const res = await fetch('http://localhost:8080/ssak3/users/me/password', {
+                method: 'PATCH',
+                headers: headers,
+                credentials: 'include',
+                body: JSON.stringify({ newPassword })
+            });
+
+            if (res.ok) {
+                alert('비밀번호가 성공적으로 변경되었습니다.');
+                closeModal();
+            } else {
+                alert('변경 실패');
+            }
+
+        } catch (e) {
+            alert('서버 오류');
+        }
+    }
+
+
     async function verifyPassword() {
+
         const password = document.getElementById('currentPassword').value;
         const token = localStorage.getItem('accessToken');
+
         try {
             const response = await fetch('http://localhost:8080/ssak3/users/me/password-verification', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
                 credentials: 'include',
                 body: JSON.stringify({ password })
             });
+
             const result = await response.json();
+
             if (result.data && result.data.isPasswordMatch) {
+
                 closeModal();
-                if (currentAction === 'edit') enableEditMode();
-                else deleteUser();
-            } else { alert('비밀번호가 일치하지 않습니다.'); }
-        } catch (e) { alert('인증 중 오류가 발생했습니다.'); }
+
+                if (currentAction === 'edit') {
+                    enableEditMode();
+                }
+                else if (currentAction === 'delete') {
+                    deleteUser();
+                }
+                else if (currentAction === 'changePassword') {
+                    openModal('changePasswordModal'); // 🔥 검증 성공 후 새 비밀번호 모달 열기
+                }
+
+            } else {
+                alert('비밀번호가 일치하지 않습니다.');
+            }
+
+        } catch (e) {
+            alert('인증 중 오류가 발생했습니다.');
+        }
     }
+
 
     function verifyKakaoDelete() {
         if (document.getElementById('deleteConfirmText').value === 'Delete') deleteUser();
         else alert('문구가 일치하지 않습니다.');
     }
 
+    // ─── 정보 수정 모드 ────────────────────────────────
     function enableEditMode() {
         document.getElementById('viewBtnGroup').style.display = 'none';
         document.querySelector('.feature-grid').style.display = 'none';
         document.getElementById('editBtnGroup').style.display = 'flex';
 
         const fields = [
-            {id: 'userName', val: currentUser.name},
-            {id: 'userNickname', val: currentUser.nickname},
-            {id: 'userBirth', val: currentUser.birth, type: 'date'},
-            {id: 'userPhone', val: currentUser.phone, type: 'tel'},
-            {id: 'userAddress', val: currentUser.address}
+            { id: 'userName',    val: currentUser.name },
+            { id: 'userNickname',val: currentUser.nickname },
+            { id: 'userBirth',   val: currentUser.birth,  type: 'date' },
+            { id: 'userPhone',   val: currentUser.phone,  type: 'tel' },
+            { id: 'userAddress', val: currentUser.address }
         ];
 
         fields.forEach(f => {
@@ -288,87 +501,67 @@
         });
     }
 
-    // 1. 정보 수정 함수 리팩토링
     async function validateAndUpdate() {
         const data = {
-            name: document.getElementById('input_userName').value.trim(),
+            name:     document.getElementById('input_userName').value.trim(),
             nickname: document.getElementById('input_userNickname').value.trim(),
-            birth: document.getElementById('input_userBirth').value,
-            phone: document.getElementById('input_userPhone').value.trim(),
-            address: document.getElementById('input_userAddress').value.trim()
+            birth:    document.getElementById('input_userBirth').value,
+            phone:    document.getElementById('input_userPhone').value.trim(),
+            address:  document.getElementById('input_userAddress').value.trim()
         };
 
         const token = localStorage.getItem('accessToken');
         const headers = { 'Content-Type': 'application/json' };
-
-        // 로컬 스토리지 토큰이 유효할 때만 헤더 추가 (일반 로그인 대응)
-        if (token && token !== 'null') {
-            headers['Authorization'] = `Bearer ${token}`;
-        }
-
-        // 1. let으로 선언하여 재할당 가능하게 함
-        let res;
+        if (token && token !== 'null') headers['Authorization'] = `Bearer ${token}`;
 
         try {
-            res = await fetch('http://localhost:8080/ssak3/users/me', {
+            const res = await fetch('http://localhost:8080/ssak3/users/me', {
                 method: 'PATCH',
                 headers: headers,
                 credentials: 'include',
                 body: JSON.stringify(data)
             });
 
-            // 2. 응답이 성공(200 OK 등)일 때
             if (res.ok) {
                 alert('정보가 성공적으로 수정되었습니다.');
                 location.reload();
-            }
-            // 3. 응답이 실패했을 때 (400, 401, 409, 500 등)
-            else {
-                // 에러 데이터를 한 번만 파싱
+            } else {
                 const errData = await res.json();
-
                 if (res.status === 401) {
                     alert('인증이 만료되었습니다. 다시 로그인해주세요.');
                     location.href = 'login.html';
-                }
-                // 4. 백엔드 에러 코드에 따른 메시지 분기 (중복 체크 실패 등)
-                else if (errData.errorCode === 'NICKNAME_ALREADY_EXISTS' || (errData.message && errData.message.includes('NICKNAME'))) {
+                } else if (errData.errorCode === 'NICKNAME_ALREADY_EXISTS' || (errData.message && errData.message.includes('NICKNAME'))) {
                     alert('이미 탈퇴한 유저의 닉네임이거나 사용할 수 없는 닉네임입니다.');
-                }
-                else if (errData.errorCode === 'EMAIL_ALREADY_EXISTS' || (errData.message && errData.message.includes('EMAIL'))) {
+                } else if (errData.errorCode === 'EMAIL_ALREADY_EXISTS' || (errData.message && errData.message.includes('EMAIL'))) {
                     alert('이미 탈퇴한 유저의 이메일이거나 사용할 수 없는 이메일입니다.');
-                }
-                else {
+                } else {
                     alert('수정 실패: ' + (errData.message || '오류 발생'));
                 }
             }
         } catch (e) {
-            // 5. 서버 연결 자체가 안 되거나 네트워크 문제일 때만 일로 옵니다.
             console.error("Network Error:", e);
             alert('서버와 통신할 수 없습니다. 네트워크를 확인해주세요.');
         }
     }
 
-    // 2. 회원 탈퇴 함수 리팩토링
+    // ─── 회원 탈퇴 ────────────────────────────────
     async function deleteUser() {
         if (!confirm('정말로 탈퇴하시겠습니까? 모든 정보가 삭제됩니다.')) return;
 
         const token = localStorage.getItem('accessToken');
         const headers = {};
-        if (token && token !== 'null') {
-            headers['Authorization'] = `Bearer ${token}`;
-        }
+        if (token && token !== 'null') headers['Authorization'] = `Bearer ${token}`;
 
         try {
             const res = await fetch('http://localhost:8080/ssak3/users/me', {
                 method: 'DELETE',
                 headers: headers,
-                credentials: 'include' // 카카오 쿠키 전달 필수
+                credentials: 'include'
             });
 
             if (res.ok) {
                 alert('회원 탈퇴가 완료되었습니다. 이용해 주셔서 감사합니다.');
-                localStorage.clear(); // 토큰 삭제
+                localStorage.clear();
                 location.href = 'home.html';
             } else {
                 const errData = await res.json();
@@ -380,6 +573,7 @@
         }
     }
 
+    // ─── 로그아웃 ────────────────────────────────
     async function handleLogout() {
         const token = localStorage.getItem('accessToken');
         try {

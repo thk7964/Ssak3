@@ -590,6 +590,18 @@
 
     const API_BASE = 'http://localhost:8080/ssak3';
 
+    function getToken() {
+        // localStorage 먼저 확인 (자체 로그인 + 카카오 로그인에서 JS용으로 저장한 token)
+        const tokenFromLS = localStorage.getItem('accessToken');
+        if (tokenFromLS) return tokenFromLS;
+
+        // 쿠키에서 token 확인 (카카오 로그인 전용, HttpOnly가 아니어야 JS 접근 가능)
+        const match = document.cookie.match(/(^|;\s*)accessToken=([^;]+)/);
+        if (match) return 'Bearer ' + match[2];
+
+        return null;
+    }
+
     function buildAuthHeaders(withJson = false) {
         const token = localStorage.getItem('accessToken');
         const headers = {};
@@ -750,73 +762,58 @@
     }
 
     async function addToCart() {
-
-        const token = localStorage.getItem('accessToken');
-        if (!token) {
-            alert('로그인이 필요한 서비스입니다.');
-            window.location.href = 'login.html';
+        if (!timeDealData?.productId) {
+            alert('상품 정보를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
             return;
         }
 
-        if (!timeDealData) return;
+        const quantity = parseInt(document.getElementById('quantityValue')?.textContent || '1', 10);
+        const token = getToken();
 
-        const payload = {
-            productId: Number(timeDealData.productId),
-            quantity: Number(quantity),
-            timeDealId: Number(timeDealId)
-        };
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
 
         try {
             const res = await fetch(`${API_BASE}/carts`, {
                 method: 'POST',
-                headers: buildAuthHeaders(true),
-                credentials: 'include',
-                body: JSON.stringify(payload)
+                headers,
+                credentials: 'include', // 카카오 로그인 쿠키 포함
+                body: JSON.stringify({
+                    productId: Number(timeDealData.productId),
+                    quantity,
+                    timeDealId: Number(timeDealId)
+                })
             });
 
-            if (!res.ok) {
-                if (res.status === 401) {
-                    alert('로그인이 필요한 서비스입니다.');
-                    window.location.href = 'login.html';
-                    return;
-                }
-
-                let msg = '장바구니 담기에 실패했습니다.';
-                try {
-                    const err = await res.json();
-                    msg = err?.message || msg;
-                } catch (_) {}
-                throw new Error(msg);
+            if (res.status === 401) {
+                requireLoginAndRedirect();
+                return;
             }
 
-            const result = await res.json();
-            if (!result.success) throw new Error(result.message || '장바구니 담기에 실패했습니다.');
+            const result = await res.json().catch(() => null);
+
+            if (!res.ok) {
+                alert(result?.message || '장바구니 담기에 실패했습니다.');
+                return;
+            }
 
             alert('장바구니에 담았습니다!');
-
         } catch (e) {
-            console.error(e);
-            alert(e.message || '장바구니 담기 중 오류가 발생했습니다.');
+            console.error('addToCart error:', e);
+            alert('네트워크 오류로 장바구니 담기에 실패했습니다.');
         }
     }
 
     function buyNow() {
+        const quantity = parseInt(document.getElementById('quantityValue')?.textContent || '1', 10);
+        const productId = Number(timeDealData?.productId);
 
-        const token = localStorage.getItem('accessToken');
-        if (!token) {
-            alert('로그인이 필요한 서비스입니다.');
-            window.location.href = 'login.html';
-            return;
-        }
-
-        if (!timeDealData) return;
-
-        const productId = Number(timeDealData.productId);
-        const qty = Number(quantity);
+        if (!productId) return alert('상품 정보를 불러오는 중입니다.');
 
         window.location.href =
-            `single-product-order.html?productId=${productId}&quantity=${qty}&timeDealId=${encodeURIComponent(timeDealId)}`;
+            `single-product-order.html?productId=${productId}&quantity=${quantity}&timeDealId=${encodeURIComponent(timeDealId)}`;
     }
+
 
     function showError(msg) {
         document.getElementById('productContainer').innerHTML = `

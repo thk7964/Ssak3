@@ -12,8 +12,8 @@ public enum ErrorCode {
     NICKNAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 닉네임입니다."),
     PHONE_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 가입된 전화번호입니다."),
     UNREGISTERED_USER(HttpStatus.NOT_FOUND, "가입되지 않은 사용자입니다."),
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."),
-    WITHDRAWN_USER(HttpStatus.NOT_FOUND, "탈퇴한 유저입니다."),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."),
+    WITHDRAWN_USER(HttpStatus.NOT_FOUND, "탈퇴한 회원입니다."),
     INVALID_USER_ROLE(HttpStatus.BAD_REQUEST, "유효하지 않은 권한입니다."),
     NOT_ALLOWED_CHANGE_SUPER_ADMIN(HttpStatus.BAD_REQUEST, "최고 관리자로는 변경할 수 없습니다."),
     ALREADY_REVIEWED(HttpStatus.BAD_REQUEST, "이미 후기를 작성한 유저입니다."),
@@ -31,7 +31,7 @@ public enum ErrorCode {
 
     // Review 에러
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "후기를 찾을 수 없습니다."),
-    REVIEW_AUTHOR_MISMATCH(HttpStatus.NOT_FOUND, "사용자와 후기작성자가 일치하지 않습니다."),
+    REVIEW_AUTHOR_MISMATCH(HttpStatus.NOT_FOUND, "사용자와 후기 작성자가 일치하지 않습니다."),
 
     // Category 에러
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "카테고리를 찾을 수 없습니다."),

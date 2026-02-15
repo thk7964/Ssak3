@@ -579,6 +579,23 @@
 </div>
 
 <script>
+    async function checkLogin() {
+        try {
+            const res = await apiFetch('/users/me', { method: 'GET' });
+
+            if (res.ok) {
+                document.getElementById('loginBtn').style.display = 'none';
+                document.getElementById('userInfo').style.display = 'flex';
+            } else {
+                document.getElementById('loginBtn').style.display = 'inline-block';
+                document.getElementById('userInfo').style.display = 'none';
+            }
+        } catch (e) {
+            document.getElementById('loginBtn').style.display = 'inline-block';
+            document.getElementById('userInfo').style.display = 'none';
+        }
+    }
+
     const API_BASE = 'http://localhost:8080/ssak3';
 
     // 상태
@@ -1074,7 +1091,7 @@
     }
 
     (async function init() {
-        applyHeaderAuthUI();
+        await checkLogin();
         initHeaderActions();
         initEvents();
         await loadCart();

@@ -470,7 +470,7 @@
                 type: 'TALK',
                 roomId: roomId,
                 senderId: currentUser.userId,
-                senderRole: currentUser.role,
+                senderRole: currentUser.role === 'USER' ? 'USER' : 'ADMIN',
                 content: content
             })
         });
@@ -485,7 +485,7 @@
                 type: type,
                 roomId: roomId,
                 senderId: currentUser.userId,
-                senderRole: currentUser.role === 'ADMIN' ? '관리자' : '사용자',
+                senderRole: currentUser.role === 'USER' ? 'USER' : 'ADMIN',
                 content: ''
             })
         });

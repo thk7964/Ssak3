@@ -603,7 +603,7 @@
                 type: 'TALK',
                 roomId: roomId,
                 senderId: currentUser.userId,
-                senderRole: currentUser.role,
+                senderRole: currentUser.role === 'ADMIN' ? 'ADMIN' : 'USER',
                 content: content
             })
         });
@@ -621,7 +621,7 @@
                 type: type,
                 roomId: roomId,
                 senderId: currentUser.userId,
-                senderRole: '관리자',
+                senderRole: currentUser.role === 'ADMIN' ? 'ADMIN' : 'USER',
                 content: ''
             })
         });

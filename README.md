@@ -1245,3 +1245,347 @@ public class ProductRankingService {
 
 - 모니터링 체계 구축: CPU, Memory, JVM Heap 등을 실시간 대시보드로 시각화하여, 부하 발생 시 어느 지점에서 병목이 생기는지 즉시 파악할 수 있는 환경 구축하기
 </details>
+
+<details>
+  <summary><h3>⚡  타임딜 open 목록 조회 성능 최적화</h3></summary>
+
+  <h3>⁉️  성능개선 포인트</h3>
+
+  - 타임딜 OPEN 목록 조회 시, 사용자 트래픽이 많을 경우 동일한 조회 요청이 반복되며 **DB 조회 부담이 증가했습니다.**
+- 특히 첫 페이지는 새로 OPEN 되는 타임딜이 노출되는 구간으로, 접속자가 집중되면서 **응답 속도 지연이 발생할 가능성이 높았습니다.**
+- 이러한 특성상 전체 페이지 중 일부 구간(첫 페이지)에 트래픽이 편중되는 구조임을, **성능 테스트 결과를 통해, 첫 페이지에 요청이 집중될수록 응답 시간이 크게 증가하는 현상을 확인했습니다.**
+
+<h3>🙋‍♀️ 해결 방법</h3>
+
+- **Spring Cache + Redis** 기반 캐싱 적용
+- 캐시 전략:
+    - 트래픽 집중도가 가장 높은 첫 페이지 중심 캐싱
+    - 조건 : #status == 'OPEN' &&#pageable.pageNumber <= 1
+- READY/ CLOSED 상태는 조회 빈도가 낮고 상태 변경이 잦아 캐싱 효율이 낮다고 판단하여  제외했습니다.
+- 나머지 페이지는 실시간 DB 조회로 처리하여 메모리 부담을 최소화했습니다.
+
+<h3>✨ 구현 내용 </h3>
+
+- Redis 기반 CacheManager를 구성하여 타임딜 OPEN 목록 조회 결과를 캐싱했습니다.
+- 캐시 TTL은 10분으로 설정해, 캐시가 비정상적으로 오래 유지되는 상황을 방지했습니다.
+- @Cacheable을 적용하여 OPEN 상태이면서 첫 페이지(pageNumber ≤ 1) 요청만 캐싱되도록 조건을 명시했습니다.
+- 페이지 번호와 페이지 사이즈를 캐시 키로 사용해 페이지별 응답 데이터의 정합성을 유지했습니다.
+- 조회 메서드는 readOnly 트랜잭션으로 구성해 캐시 미스 시에도 DB 부하를 최소화했습니다.
+
+  <img width="593" height="737" alt="image" src="https://github.com/user-attachments/assets/b3e6be5b-73e6-4036-b3ee-7cea35270c97" />
+  <img width="877" height="284" alt="image" src="https://github.com/user-attachments/assets/8d528556-5adb-45b2-b419-467e5438376a" />
+
+<h3>💡 결과 및 효과</h3>
+
+1. p95 기준 응답 시간 대폭 개선
+- 캐싱 전: **약 5.05s**
+- 캐싱 후: **약 25.45ms (0.025s)**
+- 동일한 테스트 환경에서 비교했을 때, **p95 기준 약 99.5% 이상 응답 시간 감소**를 확인했습니다.
+
+- 캐싱 전
+  <img width="826" height="606" alt="image" src="https://github.com/user-attachments/assets/a1f1c488-46e2-4d87-b8d4-5d067b15eca1" />
+
+- 캐싱 후
+  <img width="872" height="593" alt="image" src="https://github.com/user-attachments/assets/27f1c821-05df-4917-a098-19eea8fc4a46" />
+
+2. 평균 응답 시간 및 지연 구간 개선
+- 평균 응답 시간: **1.49s →9.72ms (0.009s)**
+- p90 구간: **2.8s → 16.59ms**
+- p95 구간: 5**.06s → 25.45ms**
+
+p90 / p95 구간 모두 초 단위에서 밀리초 단위로 감소하여, 트래픽이 집중되는 상황에서도 **사용자 체감 성능이 획기적으로 개선**되었습니다.
+
+특히 기존에는 일부 요청이 최대 8.93**s**까지 지연되었으나, 캐싱 이후에는 최대 지연도 **372.49ms** 수준으로 안정화되었습니다.
+
+3. 처리량 증가
+- 동일한 부하 조건에서
+    - 캐싱 전: **4,886 requests**
+    - 캐싱 후: 11,198 **requests**
+
+동일한 테스트 조건에서 총 처리 요청  수 약 2.3배 증가, 초당 처리량 약 2.5배 증가 했습니다.
+
+캐싱 적용 이후 **더 많은 요청을 안정적으로 처리**할 수 있음을 확인했습니다.
+
+4. 테스트 환경에 대한 해석
+- 본 성능 테스트는 서버 환경 제약으로 인해 **로컬 개발 PC에서 수행**되었습니다.
+- 실제 운영 서버는 vCPU 2 Core / Memory 2GB(t3.small) 환경으로, 테스트 환경 대비 자원이 제한적이기 때문에 절대적인 응답 시간 수치는 더 불리할 수 있습니다.
+- 다만 캐싱 전·후를 **동일한 환경에서 비교**했기 때문에, **상대적인 성능 개선 효과(p95 감소, 처리량 증가)는 유의미하다고 판단했습니다.**
+
+<h3>📝 향후 고도화 방안</h3>
+
+- 데이터가 증가함에 따라 OFFSET 기반 페이징은 페이지 번호가 커질수록 불필요한 스캔 비용이 증가하는 한계가 있습니다.
+- 향후에는 커서 기반 페이징과 적절한 인덱싱을 적용하여, 대용량 데이터 환경에서도 조회 성능 저하를 방지할 수 있을 것으로 판단했습니다.
+</details>
+
+<details>
+  <summary><h3>👍 문의 채팅 메시지 처리 방식 최적화</h3></summary>
+  
+<img width="972" height="390" alt="image" src="https://github.com/user-attachments/assets/2a9a8b0e-3894-4002-ad26-711ccf63a9ed" />
+
+
+*위 이미지는 동기 메시지 수신 방법을 도식화한 것입니다.*
+
+이 방식은 채팅 메시지가 들어오면 먼저 DB에 저장된 후 해당 내용이 Redis를 거쳐서 채팅방에 뿌려지는 형식입니다. 초기 STOMP 적용 시, 순수 WebSocket에서 사용하던 **동기 방식의 DB 저장 로직**을 그대로 가져오면서 다음과 같은 처리 흐름이 만들어졌습니다:
+
+```
+    메시지 수신 → DB 저장 (대기) → Redis 발행 → 클라이언트 수신
+```
+
+하지만 이 방식은 DB 저장이 완료될 때까지 메시지 전달이 지연되는 구조로, **실시간성이 생명인 채팅 기능**에는 적합하지 않다고 판단되었습니다.
+
+따라서 채팅 메시지의 우선순위를 재정의했습니다.
+
+1. **1순위**: 실시간 메시지 전달 (사용자 경험)
+2. **2순위**: 영구 저장 (이력 조회)
+
+우선순위 재정의 과정을 통해 DB 저장은 백그라운드에서 처리하고, **실시간 전달에만 집중**하는 비동기 구조가 필요하다고 판단했습니다.
+
+<h3>🙋‍♀️ 해결 방법</h3>
+
+<details>
+  <summary>@Async를 활용한 비동기 저장</summary>
+
+  메시지 수신 후 Redis를 즉시 발행하며 DB 저장 요청은 별도의 스레드에서 처리
+
+**장점**
+
+- 즉각적인 메시지 전달 (지연 시간 최소화)
+- 구현 복잡도 낮음 (`@Async` 어노테이션만으로 처리)
+- 기존 코드 구조 유지 가능
+
+**단점**
+
+- 메시지 단위 처리로 DB 부하는 동일
+- 대량 메시지 발생 시 스레드 풀 고갈 가능성
+
+**적용 이유**
+
+- 1:1 채팅 특성상 메시지 발생 빈도가 높지 않음
+- 빠른 개선 효과를 얻을 수 있음
+- 추후 Batch 전환 시에도 호환 가능한 구조
+  
+</details>
+
+<details>
+  <summary>Spring Batch를 활용한 일괄 저장</summary>
+  메시지 수신 → Redis 발행 → 메모리 큐 적재 → Batch Insert(일정 주기)
+
+**장점**
+
+- DB 부하 대폭 감소
+- 트랜잭션 횟수 최소화
+
+**단점**
+
+- 구현 복잡도 증가
+- 메모리 관리 필요
+- 서버 재시작 시 큐 데이터 유실 위험
+
+**보류 사유**
+
+- 현재 트래픽 규모에서는 과도한 최적화로 판단
+- 메시지 유실 방지를 위한 추가 안전장치 필요
+</details>
+
+<h3>✨ 구현 내용 </h3>
+
+- 비동기 저장 방식 구현하기
+  <details>
+    <summary>InquiryChatStompController</summary>
+
+  ```java
+
+    /**
+     * 채팅 메시지 전송 API
+     */
+    @MessageMapping("/chat/message")
+    public void sendMessage(@Payload ChatMessageRequest request, StompHeaderAccessor accessor) {
+        
+        // 핸들러의 세션에서 인증된 유저 정보 꺼내기
+        Map<String, Object> sessionAttributes = accessor.getSessionAttributes();
+        Long userId = (Long) sessionAttributes.get("userId");
+        String role = (String) sessionAttributes.get("role");
+
+        // Redis 먼저 발행
+        ChatMessageResponse tempResponse = ChatMessageResponse.fromRequest(request, userId, role);
+        redisTemplate.convertAndSend(chatTopic.getTopic(), tempResponse);
+
+        // DB 저장은 비동기로 처리
+        inquiryChatService.saveMessageAsync(request, userId, role);
+    }
+  ```
+  </details>
+  <details>
+  <summary>InquiryChatService</summary>
+
+  ```java
+  @Async("chatExecutor")  // 별도 스레드에서 실행
+  @Transactional
+  public void saveMessageAsync(ChatMessageRequest request, Long userId, String role) {
+      try {
+          InquiryChatRoom foundRoom = roomRepository.findById(request.getRoomId())
+                  .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
+  
+          if (foundRoom.getStatus() == ChatRoomStatus.COMPLETED) {
+              throw new CustomException(ErrorCode.INQUIRY_CHAT_ALREADY_COMPLETED);
+          }
+  
+          User foundUser = userRepository.findById(userId)
+                  .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+  
+          InquiryChatMessage message = new InquiryChatMessage(
+                  foundRoom,
+                  foundUser,
+                  UserRole.valueOf(role),
+                  request.getType(),
+                  request.getContent()
+          );
+  
+          messageRepository.save(message);            
+      } catch (Exception e) {
+          log.error("메시지 저장 실패 - roomId: {}, userId: {}, error: {}", 
+              request.getRoomId(), userId, e.getMessage(), e);
+      }
+  }
+  ```
+  **변경점**
+  
+  - `saveMessageAsync()` 메서드 추가 (비동기)
+  - `@Async("chatExecutor")` 사용하여 별도 스레드에서
+  
+  </details>
+  <details>
+  <summary>ChatMessageResponse</summary>
+
+  ```java
+  @Getter
+  @RequiredArgsConstructor
+  @NoArgsConstructor(force = true)  // 역직렬화 가능
+  public class ChatMessageResponse {
+      private final Long roomId;
+      private final Long senderId;
+      private final UserRole senderRole;
+      private final ChatMessageType type;
+      private final String content;
+      private final LocalDateTime createdAt;
+      private final LocalDateTime updatedAt;
+  
+      // 채팅 메시지 Response(DB 조회 메시지)
+      public static ChatMessageResponse from(InquiryChatMessage inquiryChatMessage) {
+          return new ChatMessageResponse(
+                  inquiryChatMessage.getRoom().getId(),
+                  inquiryChatMessage.getSender().getId(),
+                  inquiryChatMessage.getSenderRole(),
+                  inquiryChatMessage.getType(),
+                  inquiryChatMessage.getContent(),
+                  inquiryChatMessage.getCreatedAt(),
+                  inquiryChatMessage.getUpdatedAt()
+          );
+      }
+  
+      // 공지 메시지 Response
+      public static ChatMessageResponse from(ChatMessageRequest request, String noticeMessage) {
+          return new ChatMessageResponse(
+                  request.getRoomId(),
+                  0L,
+                  request.getSenderRole(),
+                  request.getType(),
+                  noticeMessage,
+                  LocalDateTime.now(),
+                  LocalDateTime.now()
+          );
+      }
+  
+      // 메시지 요청으로부터 임시 Response 생성(DB 저장 전 Redis로 먼저 보냄)
+      public static ChatMessageResponse fromRequest(ChatMessageRequest request, Long userId, String role) {
+          return new ChatMessageResponse(
+                  request.getRoomId(),
+                  userId,
+                  UserRole.valueOf(role),
+                  request.getType(),
+                  request.getContent(),
+                  LocalDateTime.now(),  // DB 저장 전이므로 현재 시간 기준
+                  LocalDateTime.now()
+          );
+      }
+  }
+  ```
+  **변경점**
+  
+  - `saveMessageAsync()` 메서드 추가 (비동기)
+  - `@Async("chatExecutor")` 사용하여 별도 스레드에서
+  
+  </details>
+  <details>
+  <summary>AsyncConfig</summary>
+
+  - 새로 추가하는 파일
+
+  ```java
+  @Configuration
+  @EnableAsync
+  public class AsyncConfig {
+  
+      @Bean(name = "chatExecutor")
+      public Executor chatExecutor() {
+          ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+  
+          // 기본 스레드 수 (항상 유지)
+          executor.setCorePoolSize(5);
+  
+          // 최대 스레드 수 (큐가 꽉 찼을 때 증가)
+          executor.setMaxPoolSize(10);
+  
+          // 대기 큐
+          executor.setQueueCapacity(100);
+  
+          // 스레드 이름 설정 (로그에서 확인 가능)
+          executor.setThreadNamePrefix("chat-async-");
+  
+          // 큐가 꽉 찼을 때 호출한 스레드에서 직접 실행 (메시지 손실 방지)
+          executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+  
+          executor.initialize();
+          return executor;
+      }
+  }
+  ```
+  
+  **스레드 풀 설계 근거**
+
+  | 항목 | 값 | 설명 | 이유 |
+  | --- | --- | --- | --- |
+  | **corePoolSize** | 5 | 항상 유지되는 기본 스레드 수 | 평균 동시 채팅 수 고려 |
+  | **maxPoolSize** | 10 | 부하가 높을 때 최대 10개까지 증가 | 피크 시간대 대응 |
+  | **queueCapacity** | 100 | 대기 중인 작업을 100개까지 큐에 보관 | 급격한 트래픽 스파이크 버퍼 |
+  | **CallerRunsPolicy** | - | 큐가 꽉 차면 메시지를 버리지 않고 호출 스레드에서 실행 | 큐 초과 시 메인 스레드에서 처리 |
+
+  
+  </details>
+
+  <details>
+  <summary>변경된 동작 흐름</summary>
+
+  ```java
+  1. 클라이언트가 /pub/chat/message로 메시지 전송
+     ↓
+  2. InquiryChatStompController.sendMessage() 실행
+     ↓
+  3. ChatMessageResponse.fromRequest()로 임시 응답 생성
+     ↓
+  4. Redis로 즉시 발행
+     ↓
+  5. RedisSubscriber → 구독자들에게 전송
+     ↓
+  6. (동시에) saveMessageAsync()가 별도 스레드에서 DB 저장
+  ```
+  </details>
+
+<h3>💡 결과 및 효과</h3>
+- 추가 예정 
+
+<h3>📝 향후 고도화 방안</h3>
+
+- **Spring Batch를 활용한 Bulk Insert**
+    - 현재의 메시지 단위 비동기 처리를 넘어, Redis를 버퍼로 활용하는 **Write-Back** 전략을 도입하고자 합니다. 메시지를 Redis 리스트에 임시 저장한 뒤, 일정 수량 이상 모이면 `Bulk Insert`를 수행하는 **Spring Batch** 연동하는 작업을 진행해보고 싶습니다.
+</details>

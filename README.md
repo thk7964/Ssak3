@@ -619,3 +619,266 @@ Public Subnet에 있는 서버는 Public IP를 가지는데 이는 인터넷 어
     - 현재는 SSH 키를 사용한 방식을 사용하고 있지만 이 방식도 키가 유출 및 분실 될 경우의 위험성을 인지하고 있습니다. 이러한 위험을 없애기 위해, 포트 개방 없이 브라우저 기반으로 안전하게 인스턴스에 접속할 수 있는 SSM Session Manager로 전환하는 고도화 방안을 고려하고 있습니다.
 
 </details>
+
+
+---
+## 🚩 트러블 슈팅
+<details>
+<summary><h3>✨ 인기 조회수 TOP 10 조회 시 발생한 N+1 문제</h3></summary>
+
+<h3>⚠️ 문제 상황</h3>
+![img_6.png](img_6.png)
+
+- 인기 조회수 TOP 10 상품을 조회할 때, 상품 정보를 조회하는 쿼리는 한 번만 날아갔는데 타임딜 정보를 조회하는 쿼리가 10개가 추가로 날아가는 문제 발생
+
+<h3>🙋‍♀️ 문제 발생 원인</h3>
+![img_7.png](img_7.png)
+
+- `for` 문에서 상품 id 개수만큼 반복문을 돌면서 `TimeDealRepository`의 `findByProductId(productId)`를 호출
+
+- Redis에서 인기 조회수 상품 ID를 10개를 획득한 후, 반복문을 돌며 각 상품에 대한 타임딜 정보를 DB에서 조회
+
+- 결과적으로 로직 상의 문제로 ID 목록 1번 + 타임딜 정보 N번의 문제가 발생
+
+<h3>✨ 해결 과정</h3>
+
+- **해결 방법**
+  1. Redis가 정렬해준 데이터를 이용해 조회수 TOP 10 상품 id 목록을 가져옵니다.
+  2. N+1 문제를 방지하기 위해, 10개의 상품 id를 한 번에 넘겨 상품 정보와 타임딜 정보를 통째로 가져옵니다.
+  3. 가져온 데이터들을 상품 id를 Key로 하는 Map 구조로 변환하여, `for` 문 안에서 반복적인 `TimeDealRepository` 접근 없이 타임딜 정보를 즉시 가져왔습니다.
+
+- **해결 후**
+![img_8.png](img_8.png)
+
+</details>
+
+<details>
+<summary><h3>✨ 로깅 시 USER ID가 null로 찍히는 문제</h3></summary>
+
+<h3>⚠️ 문제 상황</h3>
+![img_9.png](img_9.png)
+
+- LoggingFilter에서 인증된 사용자의 요청임에도 불구하고 USER_ID가 계속 null로 찍히는 문제가 발생했습니다.
+
+<h3>🙋‍♀️ 문제 발생 원인</h3>
+<details>
+<summary>LoggingFilter.java</summary>
+
+```java
+
+package com.example.ssak3.common.filter;
+
+import com.example.ssak3.common.model.AuthUser;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+import java.util.UUID;
+
+/**
+* HTTP 요청에 대한 로그 담당
+  */
+  @Slf4j
+  @Component
+  @Order(Ordered.HIGHEST_PRECEDENCE)
+  public class LoggingFilter extends OncePerRequestFilter {
+
+  @Override
+  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
+       // 실행 시작 시간
+       long startTime = System.currentTimeMillis();
+
+       // API 요청 정보
+       String url = request.getRequestURI();
+       String method = request.getMethod();
+       String queryParams = request.getQueryString();
+
+       // 인증 정보 꺼내기
+       Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+       Long userId = null;
+
+       if (auth != null && auth.isAuthenticated()) {
+           AuthUser user = (AuthUser) auth.getPrincipal();
+           userId = user.getId();
+       }
+
+       // TraceId 생성
+       String traceId = UUID.randomUUID().toString().substring(0, 8);
+       
+       // MDC에 저장: 이 스레드에서 찍히는 모든 로그에 traceId가 붙음
+       MDC.put("traceId", traceId);
+
+       try {
+           filterChain.doFilter(request, response);
+       } finally {
+           int statusCode = response.getStatus();
+
+           long endTime = System.currentTimeMillis();
+
+           if (statusCode >= 500) {
+               log.error("USER_ID: {} | STATUS_CODE: {} | URL: {} | METHOD: {} | QUERY_PARAMS: {} | EXECUTION_TIME: {} ms",
+                       userId, statusCode, url, method, queryParams, endTime - startTime);
+           } else if (statusCode >= 400) {
+               log.warn("USER_ID: {} | STATUS_CODE: {} | URL: {} | METHOD: {} | QUERY_PARAMS: {} | EXECUTION_TIME: {} ms",
+                       userId, statusCode, url, method, queryParams, endTime - startTime);
+           }
+
+           // 스레드 풀을 재사용하기 때문에 작업이 끝나면 MDC를 반드시 비워야 함
+           MDC.clear();
+       }
+  }
+  }
+
+```
+
+</details>
+
+![img_10.png](img_10.png)
+
+원인은 Filter Chain의 우선 순위 문제였습니다.
+
+`@Order(Ordered.HIGHEST_PRECEDENCE)` 어노테이션으로 인해 해당 로깅 필터가 최앞단에 위치하게 되었고, 사용자의 인증 정보를 확인하여 `SecurityContextHolder`에 넣어주는 `JwtFilter`보다 `LoggingFilter` 가 먼저 실행되었습니다.
+
+그 결과, 인증 객체가 생성되기 전에 로그를 찍으려고 시도하다 보니 `SecurityContext` 에서 USER 정보를 가져오지 못해 `USER_ID`가 항상 null이 되었습니다.
+
+<h3>✨ 해결 과정</h3>
+
+![img_11.png](img_11.png)
+- LoggingFilter를 JwtFilter와 UsernamePasswordAuthenticationFilter 사이에 두어 인증 정보가 담긴 후에 처리 되게 하면서 인증 정보가 지워지기 전에 로그를 찍을 수 있도록 설정해서 해결
+
+</details>
+
+<details>
+<summary><h3>🐛 분산 서버 환경에서 스케줄러 중복 실행 문제</h3></summary>
+
+<h3>⚠️ 문제 상황</h3>
+![img_6.png](img_6.png)
+
+- 분산 서버 환경에서 스케줄러 동작 중 이슈가 발생했습니다.
+- 동일한 스케줄러가 **서버별로 동시에 실행**되는 현상을 확인했습니다.
+- 한 번만 실행되어야 하는 배치 작업이 **중복 수행**되고 있었습니다.
+
+<h3>🙋‍♀️ 문제 발생 원인</h3>
+- 서버를 수평 확장하면서 애플리케이션이 **각 서버에 독립적으로 실행**되고 있었습니다.
+- 이로 인해 스케줄러 또한 서버마다 각각 등록되어 동작했습니다.
+- 스케줄러 실행 시 **다른 서버의 실행 여부를 제어하거나 확인하는 로직이 부재**한 상태였습니다.
+- 분산 환경에 대한 고려 없이 단일 서버 기준으로 스케줄러를 설계한 것이 원인이었습니다.
+
+아래 로그를 통해 동일한 시각에 여러 서버에서 스케줄러가 동시에 실행되고 있음을 확인할 수 있었습니다.
+![img_12.png](img_12.png)
+![img_13.png](img_13.png)
+동일한 실행 시각에 각 서버 인스턴스에서 TimeDeal Scheduler START 로그가 출력되며, 스케줄러가 서버 수만큼 중복 실행되고 있음을 확인할 수 있습니다.
+
+<h3>💡 고려한 대안</h3>
+
+문제 해결을 위해 다음과 같은 방안을 검토했습니다.
+
+1. **특정 서버에서만 스케줄러 실행**
+    - 설정을 통해 한 서버에만 스케줄러를 활성화
+    - 서버 장애 시 스케줄러가 동작하지 않을 위험이 있습니다.
+
+2. **DB Lock 활용**
+    - 스케줄러 실행 시 DB Row Lock 또는 플래그를 사용
+    - 트랜잭션 관리 부담 증가 및 DB 부하 우려가 있습니다.
+
+3. **분산 락(Distributed Lock) 적용 — ShedLock 라이브러리 활용**
+    - `@SchedulerLock` 어노테이션을 사용해 분산 락을 손쉽게 구현
+    - 스케줄러 실행 시 공용 저장소에 락을 획득하도록 처리
+    - `lockAtMostFor`, `lockAtLeastFor` 옵션으로 락 지속 시간 제어 가능
+    - 서버 장애 시에도 락 해제 가능하며, 분산 환경에 적합하고 확장성 있는 방식입니다.
+
+여러 대안 중 **ShedLock 기반 분산 락 방식을 선택했습니다.**
+
+<h3>✨ 해결 과정</h3>
+스케줄러 메서드에 @SchedulerLock 어노테이션을 적용하여 분산 락을 획득하는 구조로 구현했습니다.
+![img_14.png](img_14.png)
+- `name` 속성으로 락 이름을 지정하여 여러 스케줄러 간 락 충돌을 방지했습니다.
+- `lockAtMostFor`는 락을 최대 유지하는 시간으로, 락이 장시간 해제되지 않는 상황을 방지합니다.
+- `lockAtLeastFor`는 락을 최소 유지하는 시간으로, 너무 잦은 락 획득과 해제를 방지합니다.
+- 락 획득에 성공한 인스턴스에서만 스케줄러 로직을 실행하며, 락 획득에 실패한 다른 인스턴스는 실행하지 않습니다.
+
+이로써 **분산 서버 환경에서도 스케줄러가 한 번만 실행됨을 보장**할 수 있었습니다.
+
+아래 로그는 여러 인스턴스가 동시에 기동된 환경에서, **락을 획득한 1개의 인스턴스만 스케줄러를 실행한 예시**입니다
+![img_15.png](img_15.png)
+![img_16.png](img_16.png)
+
+<h3>📝 향후 고도화 방안</h3>
+- 락 획득 실패시 재시도 로직 추가
+- 트랜잭션 실패 또는 서버 장애 시 **스케줄러 작업 복구 전략 마련**
+
+</details>
+
+<details>
+<summary><h3>✨ 동시 요청 환경에서 데드락 및 정합성 문제 해결</h3></summary>
+
+<h3>⚠️ 문제 상황</h3>
+JMeter를 사용하여 상품 구매 기능에 대한 동시성 테스트 진행 중 데드락 발생
+![img_17.png](img_17.png)
+
+<h3>🙋‍♀️ 문제 발생 원인</h3>
+- 원인 분석
+    - 작성한 코드와 실제 실행되는 쿼리의 순서가 다르다는 것을 발견
+        - 작성한 코드 : select → update → insert
+        - 실제 실행 순서 : select → insert → update
+        ![img_18.png](img_18.png)
+    - 영속성 컨텍스트의 쓰기 지연 때문에 순서의 변화가 생긴다
+        - JPA에서는 쓰기 작업을 DB에 효율적으로 반영하기 위해 트랜잭션에서 발생한 모든 쓰기 작업을 기록해두고 한꺼번에 실행
+
+      ⇒ 이 과정에서 삽입 쿼리가 업데이트 쿼리보다 먼저 실행
+
+- 핵심 원인
+    - MySQL의 기본 격리 수준인 Repeatable Read에서는 단순 조회는 s-lock을 사용하지 않고 MVCC를 사용 → 초기 단계에서 여러 트랜잭션이 동시 진입
+    - OrderProduct 삽입 시 정합성 보장을 위해 DB는 외래키 관계에 있는 부모테이블(Product)에 s-lock을 건다
+    - 이후 상품의 재고를 차감하기 위한 update 쿼리가 실행되면서 s-lock에서 x-lock으로 승격 시도
+        - Transaction(1)에서 s-lock을 잡고 x-lock으로 승격 시도 -> Transaction(2)의 s-lock이 풀리기를 대기
+        - Transaction(2)에서도 s-lock을 잡고 x-lock으로 승격 시도 -> Transaction(1)의 s-lock이 풀리기를 대기
+      ![img_19.png](img_19.png)
+      ![img_20.png](img_20.png)
+      ===> Deadlock 발생
+
+<h3>💡 고려한 대안</h3>
+
+#### update 이후 insert가 실행되도록 락 획득 순서 보장
+
+- update 이후 insert가 실행되도록 락 획득 순서update 후 바로 flush()를 실행시켜 x-lock을 선점
+  ![img_21.png](img_21.png)
+- 결과
+    - 기존(insert 후 update) → 현재(update 후 insert)
+  ![img_22.png](img_22.png)
+
+
+- 데드락은 해결되었으나 동시성 문제 발생
+    - 재고가 100인 상품에 대해 100건의 구매 동시성 테스트 시 주문 수와 재고 차감 수가 맞지 않는 문제 발생
+        - 주문 생성 수 : 100
+        - 재고 차감 수 : 39  (100→61)
+      
+    ![img_23.png](img_23.png)
+    ![img_24.png](img_24.png)
+
+<h3>✨ 해결 과정</h3>
+#### 비관락 적용
+
+- product 조회 시 비관락 적용
+- 장점 : 데이터 조회 시점부터 x-lock을 획득하여 다른 트랜잭션의 접근을 차단 ⇒ 데이터 정합성 보장
+- 단점 : 순차적 처리를 하게 되어 병목 현상 발생 가능
+![img_25.png](img_25.png)
+![img_26.png](img_26.png)
+
+비관적 락은 성능은 떨어지지만, 주문 도메인에서는 정합성이 최우선이므로 성능 손실을 감수하더라도 무결성을 보장하는 비관락을 선정
+
+<h3>📝 향후 고도화 방안</h3>
+- 비관락 사용 시 동시 처리 성능이 저하되는 문제가 발생할 수 있으므로 향후 트래픽 증가 시 성능에 미치는 영향을 지속적으로 관찰하고 필요하다면 분산락 등 다른 동시성 제어 방식도 고려해 볼 필요가 있다.
+
+</details>

@@ -75,9 +75,7 @@
 ## 👊 주요 기능
 
 <details>
-<summary><h3>🎖️ 인기 TOP 10 상품 조회</h3></summary>
-
-<br>
+<summary><h4>🎖️ 인기 TOP 10 상품 조회</h4></summary>
 
 - **조회 수 기반 주간 인기 TOP 10 상품 조회 기능**
 - **실시간 랭킹 정렬**
@@ -95,9 +93,7 @@
 </details>
 
 <details>
-<summary><h3>🔎 상품 통합 검색</h3></summary>
-
-<br>
+<summary><h4>🔎 상품 통합 검색</h4></summary>
 
 - **상품 통합 검색 기능**
 
@@ -108,9 +104,7 @@
 </details>
 
 <details>
-<summary><h3>🕛 타임딜</h3></summary>
-
-<br>
+<summary><h4>🕛 타임딜</h4></summary>
 
 - **정해진 시간에만 열리고 닫히는 한정 상품 판매 이벤트**
 - **사용자에게 실시간 최신 오픈 정보 제공**
@@ -123,9 +117,7 @@
 </details>
 
 <details>
-<summary><h3>💵 주문 / 결제</h3></summary>
-
-<br>
+<summary><h4>💵 주문 / 결제</h4></summary>
 
 - **주문/결제 기능**
 - **주문 시 상품 재고 차감**
@@ -145,9 +137,7 @@
 </details>
 
 <details>
-<summary><h3>🤳 실시간 문의 채팅</h3></summary>
-
-<br>
+<summary><h4>🤳 실시간 문의 채팅</h4></summary>
 
 - **웹소켓을 이용한 실시간 채팅 기능**
 - **관리자와 1:1 매칭 문의 채팅 지원**

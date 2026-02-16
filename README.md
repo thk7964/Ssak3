@@ -937,14 +937,14 @@ import java.util.UUID;
 - 한 번만 실행되어야 하는 배치 작업이 **중복 수행**되고 있었습니다.
 
 <h3>🙋‍♀️ 문제 발생 원인</h3>
+
 - 서버를 수평 확장하면서 애플리케이션이 **각 서버에 독립적으로 실행**되고 있었습니다.
 - 이로 인해 스케줄러 또한 서버마다 각각 등록되어 동작했습니다.
 - 스케줄러 실행 시 **다른 서버의 실행 여부를 제어하거나 확인하는 로직이 부재**한 상태였습니다.
 - 분산 환경에 대한 고려 없이 단일 서버 기준으로 스케줄러를 설계한 것이 원인이었습니다.
 
 아래 로그를 통해 동일한 시각에 여러 서버에서 스케줄러가 동시에 실행되고 있음을 확인할 수 있었습니다.
-<img width="1024" height="184" alt="image" src="https://github.com/user-attachments/assets/1802dc56-2dd5-4532-b660-7895d9ba510d" />
-<img width="1024" height="184" alt="image" src="https://github.com/user-attachments/assets/5846b3ed-f648-43b1-9ba9-3a93255de5fe" />
+<img width="1024" height="184" alt="image" src="https://github.com/user-attachments/assets/06741ea8-08b4-4df6-a519-2733607b92d8" />
 
 동일한 실행 시각에 각 서버 인스턴스에서 TimeDeal Scheduler START 로그가 출력되며, 스케줄러가 서버 수만큼 중복 실행되고 있음을 확인할 수 있습니다.
 
@@ -969,9 +969,10 @@ import java.util.UUID;
 여러 대안 중 **ShedLock 기반 분산 락 방식을 선택했습니다.**
 
 <h3>✨ 해결 과정</h3>
-스케줄러 메서드에 @SchedulerLock 어노테이션을 적용하여 분산 락을 획득하는 구조로 구현했습니다.
 
-<img width="550" height="457" alt="image" src="https://github.com/user-attachments/assets/cecf8c22-ace0-4a1f-91cf-1553b5a8ce75" />
+- 스케줄러 메서드에 @SchedulerLock 어노테이션을 적용하여 분산 락을 획득하는 구조로 구현했습니다.
+
+<img width="550" height="457" alt="image" src="https://github.com/user-attachments/assets/29b598fd-05d8-4895-a814-56d1322a4c40" />
 
 - `name` 속성으로 락 이름을 지정하여 여러 스케줄러 간 락 충돌을 방지했습니다.
 - `lockAtMostFor`는 락을 최대 유지하는 시간으로, 락이 장시간 해제되지 않는 상황을 방지합니다.
@@ -981,8 +982,11 @@ import java.util.UUID;
 이로써 **분산 서버 환경에서도 스케줄러가 한 번만 실행됨을 보장**할 수 있었습니다.
 
 아래 로그는 여러 인스턴스가 동시에 기동된 환경에서, **락을 획득한 1개의 인스턴스만 스케줄러를 실행한 예시**입니다
+<img width="1024" height="190" alt="image" src="https://github.com/user-attachments/assets/031fcbae-e5bd-4c03-8010-e9d5daf0a011" />
+
 
 <h3>📝 향후 고도화 방안</h3>
+
 - 락 획득 실패시 재시도 로직 추가
 - 트랜잭션 실패 또는 서버 장애 시 **스케줄러 작업 복구 전략 마련**
 
@@ -993,9 +997,10 @@ import java.util.UUID;
 
 <h3>⚠️ 문제 상황</h3>
 JMeter를 사용하여 상품 구매 기능에 대한 동시성 테스트 진행 중 데드락 발생
-![img_17.png](img_17.png)
+<img width="1280" height="227" alt="image" src="https://github.com/user-attachments/assets/db542c03-136a-4dc0-914f-b502d584e1e1" />
 
 <h3>🙋‍♀️ 문제 발생 원인</h3>
+
 - 원인 분석
     - 작성한 코드와 실제 실행되는 쿼리의 순서가 다르다는 것을 발견
         - 작성한 코드 : select → update → insert
@@ -1005,7 +1010,7 @@ JMeter를 사용하여 상품 구매 기능에 대한 동시성 테스트 진행
     - 영속성 컨텍스트의 쓰기 지연 때문에 순서의 변화가 생긴다
         - JPA에서는 쓰기 작업을 DB에 효율적으로 반영하기 위해 트랜잭션에서 발생한 모든 쓰기 작업을 기록해두고 한꺼번에 실행
 
-      ⇒ 이 과정에서 삽입 쿼리가 업데이트 쿼리보다 먼저 실행
+      -> 이 과정에서 삽입 쿼리가 업데이트 쿼리보다 먼저 실행
 
 - 핵심 원인
     - MySQL의 기본 격리 수준인 Repeatable Read에서는 단순 조회는 s-lock을 사용하지 않고 MVCC를 사용 → 초기 단계에서 여러 트랜잭션이 동시 진입
@@ -1043,6 +1048,7 @@ JMeter를 사용하여 상품 구매 기능에 대한 동시성 테스트 진행
 
 
 <h3>✨ 해결 과정</h3>
+
 #### 비관락 적용
 
 - product 조회 시 비관락 적용
@@ -1055,6 +1061,7 @@ JMeter를 사용하여 상품 구매 기능에 대한 동시성 테스트 진행
 비관적 락은 성능은 떨어지지만, 주문 도메인에서는 정합성이 최우선이므로 성능 손실을 감수하더라도 무결성을 보장하는 비관락을 선정
 
 <h3>📝 향후 고도화 방안</h3>
+
 - 비관락 사용 시 동시 처리 성능이 저하되는 문제가 발생할 수 있으므로 향후 트래픽 증가 시 성능에 미치는 영향을 지속적으로 관찰하고 필요하다면 분산락 등 다른 동시성 제어 방식도 고려해 볼 필요가 있다.
 
 </details>

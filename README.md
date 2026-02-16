@@ -1814,3 +1814,21 @@ p90 / p95 구간 모두 초 단위에서 밀리초 단위로 감소하여, 트�
   ④ 꼬리 지연 시간(p95**):** 상위 5%의 느린 응답조차 **21.69ms**에서 **13.24ms**로 크게 개선되었습니다.
   
 </details>
+
+
+---
+<h2>👨‍👩‍👧‍👦 팀원 소개</h2>
+
+<table>
+  <tr>
+    <td align="center">1번 카드</td>
+    <td align="center">2번 카드</td>
+    <td align="center">3번 카드</td>
+  </tr>
+  <tr>
+    <td align="center">4번 카드</td>
+    <td align="center">5번 카드</td>
+    <td align="center">6번 카드</td>
+  </tr>
+</table>
+

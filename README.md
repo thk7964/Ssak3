@@ -1065,3 +1065,183 @@ JMeter를 사용하여 상품 구매 기능에 대한 동시성 테스트 진행
 - 비관락 사용 시 동시 처리 성능이 저하되는 문제가 발생할 수 있으므로 향후 트래픽 증가 시 성능에 미치는 영향을 지속적으로 관찰하고 필요하다면 분산락 등 다른 동시성 제어 방식도 고려해 볼 필요가 있다.
 
 </details>
+
+---
+## 📈 성능 개선
+<details>
+  <summary><h3>✨ 인기 조회수 TOP 10 성능 개선</h3></summary>
+
+  <h3>⁉️  성능 개선 포인트</h3>
+
+  현재 서비스 구조 상 메인 페이지에 인기 조회수 TOP 10 상품이 보여지기 때문에, 상품이 늘어날수록 메인 페이지 로딩 속도가 느려지는 문제가 있었습니다.
+
+해당 문제를 방치할 경우, 타임딜 이벤트나 마케팅 효과로 인한 트래픽 급증 시 DB 점유율이 100%에 도달하여 전체 서비스 장애로 이어질 위험이 있었습니다.
+
+상품 조회 시점마다 모든 데이터를 `ORDER BY DESC` 로 정렬하는 것과 `UPDATE` 쿼리를 DB에 직접 날리는 것이 좋지 못한 성능의 원인이었습니다.
+
+<h3>🙋‍♀️ 해결 방법</h3>
+
+Redis의 ZSet 자료구조를 활용하여 조회 UPDATE 뿐만 아니라 ORDER BY 정렬 연산 자체를 Redis에 위임함으로써 DB 부하를 근본적으로 제거했습니다.
+
+<h3>✨ 구현 내용</h3>
+
+<details>
+  <summary>ProductRankingService.java</summary>
+
+  ```java
+@Service
+@RequiredArgsConstructor
+public class ProductRankingService {
+
+    private final StringRedisTemplate redisTemplate;
+    private static final String PRODUCT_DAILY_RANKING_PREFIX = "product:ranking:";
+    private static final String PRODUCT_WEEKLY_RANKING_KEY = "product:ranking:weekly";
+    private static final String PRODUCT_VIEW_CHECK_PREFIX = "product:view:check:ip:";
+    private final ProductRepository productRepository;
+    private final TimeDealRepository timeDealRepository;
+
+    /**
+     * 조회수 증가 메소드
+     */
+    public void increaseViewCount(Long productId, String ip) {
+
+        LocalDateTime now = LocalDateTime.now();
+
+        String key = PRODUCT_VIEW_CHECK_PREFIX + ip + ":productId:" + productId; // 오늘 조회 했는지 체크할 Key
+        LocalDateTime midnight = LocalDate.now().plusDays(1).atStartOfDay(); // 다음 날 자정 만료
+        Boolean isFirstView = redisTemplate.opsForValue().setIfAbsent(key, "1", Duration.between(now, midnight).getSeconds(), TimeUnit.SECONDS);
+
+        // 오늘 첫 조회가 아니면 조회수 증가 x
+        if (Boolean.FALSE.equals(isFirstView)) {
+            return;
+        }
+
+        LocalDate nowDay =  LocalDate.now();
+
+        Double score = redisTemplate.opsForZSet().incrementScore(PRODUCT_DAILY_RANKING_PREFIX + nowDay, productId.toString(), 1);
+
+        // 최초 한 번만 TTL 설정
+        if (score != null && score == 1.0) {
+
+            // 오늘로부터 10일 뒤 자정 시점 구하기
+            LocalDateTime dayViewCountExp = nowDay.plusDays(10).atStartOfDay();
+
+            // TTL 설정: Redis에서 오늘로부터 10일 뒤 데이터 만료
+            redisTemplate.expireAt(PRODUCT_DAILY_RANKING_PREFIX + nowDay, dayViewCountExp.atZone(ZoneId.systemDefault()).toInstant());
+        }
+
+    }
+
+    /**
+     * 조회수 TOP 10 상품 조회
+     */
+    public List<ProductGetPopularResponse> getPopularProductTop10() {
+
+        // 랭킹으로 조회
+        Set<ZSetOperations.TypedTuple<String>> result = redisTemplate.opsForZSet().reverseRangeWithScores(PRODUCT_WEEKLY_RANKING_KEY, 0, 9);
+
+        if (result == null || result.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // DB에서 TOP 10 상품 id 리스트 가져오기: Redis가 정렬해준 순서 보장함
+        List<Long> productIdList = result.stream().map(id -> Long.parseLong(id.getValue())).toList();
+
+        // DB에서 Product 가져오기: in 연산은 Redis가 정렬해준 순서를 보장해주지 않음
+        List<Product> productList = productRepository.findAllByIdInAndStatusAndIsDeletedFalse(productIdList, ProductStatus.FOR_SALE);
+
+        // DB에서 TimeDeal 중인 상품 있으면 가져오기
+        List<TimeDeal> timeDealList = timeDealRepository.findAllByProductIdInAndStatusAndIsDeletedFalse(productIdList, TimeDealStatus.OPEN);
+
+        Map<Long, Product> productMap = productList.stream()
+                .collect(Collectors.toMap(Product::getId, product -> product));
+
+        Map<Long, TimeDeal> timeDealMap = timeDealList.stream()
+                .collect(Collectors.toMap(timeDeal -> timeDeal.getProduct().getId(), timeDeal -> timeDeal));
+
+        // 랭킹에 따라 조립
+        return productIdList.stream()
+                .map(id -> {
+                    Product product = productMap.get(id);
+                    return product != null ? ProductGetPopularResponse.from(product, timeDealMap.get(id)) : null;
+                })
+                .filter(Objects::nonNull) // null인 애들은 걸러냄
+                .toList();
+    }
+
+    /**
+     * 주간 인기 집계
+     */
+    public void updateWeeklyRanking() {
+        LocalDate now = LocalDate.now();
+
+        List<String> otherKeys = new ArrayList<>();
+
+        // 현재 시점으로부터 일주일치 키 리스트 생성 (오늘은 제외)
+        for (int i = 0; i < 6; i++) {
+            otherKeys.add(PRODUCT_DAILY_RANKING_PREFIX + now.minusDays(i + 1));
+        }
+
+        // 일주일치 결과 집계
+        redisTemplate.opsForZSet().unionAndStore(
+                PRODUCT_DAILY_RANKING_PREFIX + now,
+                otherKeys,
+                PRODUCT_WEEKLY_RANKING_KEY);
+    }
+
+}
+```
+
+</details>
+1. ZSET: 조회수를 스코어로 활용하여 실시간 랭킹을 유지했습니다.
+2. Sliding Window: “주간 인기 상품”을 구현하기 위해 날짜별 키를 생성하고, 여유기간을 두고 10일 후 만료 되도록 TTL을 설정했습니다.
+
+<h3>💡 결과 및 효과</h3>
+<details>
+  <summary>EC2 사양(t3.small)에 비례하는 로컬 테스트 환경 구축</summary>
+
+  - JVM 메모리 제한 : `-Xms1024m -Xmx1024m`
+- t3.small에 맞게 도커 메모리 제한해서 실행
+  ```
+  docker build -t zset-v1 .
+  ```
+
+  ```
+  docker run -d --name zset-v1  --cpus="2.0"  --memory="2048m"  -e JAVA_OPTS="-Xms1024m -Xmx1024m" -e DB_URL="jdbc:mysql://host.docker.internal:3306/ssak3?rewriteBatchedStatements=true" -e DB_USERNAME="root"  -e DB_PASSWORD="" -e DDL="update" -e SECRET_KEY="" -e CLIENT_ID="" -e REDIRECT_URI="http://host.docker.internal:8080/ssak3/auth/login/kakao/callback" -e CLIENT_SECRET="" -e REDIS_HOST="host.docker.internal" -e REDIS_PORT="6379" -p 8080:8080 zset-v1
+  ```
+
+  ```
+  server:
+    tomcat:
+      threads:
+        max: 50
+  ```  
+</details>
+
+<details>
+  <summary>ZSet 도입 전</summary>
+ vus 50
+ <img width="833" height="340" alt="image" src="https://github.com/user-attachments/assets/0dcced1b-3323-448f-b0f6-df9e5f15af5a" />
+
+  
+</details>
+
+<details>
+  <summary>ZSet 도입 </summary>
+ vus 50
+ <img width="993" height="336" alt="image" src="https://github.com/user-attachments/assets/c52b6a23-9213-48f7-be2d-5ed785f591a6" />
+
+</details>
+
+**결과 비교**
+| **지표** | **기존 방식** | **현재 방식** | **개선 수치** |
+| --- | --- | --- | --- |
+| **처리량 (TPS)** | 약 32.7 req/s | 약 329.6 req/s | **약 10배 향상** |
+| **평균 응답 시간** | 1,500ms (1.5s) | 103.6ms | **약 14.5배 단축** |
+| **p95 응답 시간** | 2,510ms (2.5s) | 304.5ms | **약 8.2배 단축** |
+| **총 처리 건수** | 1,954건 | 28,107건 | **약 14.4배 증가** |
+
+<h3>📝 향후 고도화 방안</h3>
+
+- 모니터링 체계 구축: CPU, Memory, JVM Heap 등을 실시간 대시보드로 시각화하여, 부하 발생 시 어느 지점에서 병목이 생기는지 즉시 파악할 수 있는 환경 구축하기
+</details>

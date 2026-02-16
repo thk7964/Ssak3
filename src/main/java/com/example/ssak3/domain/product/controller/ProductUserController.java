@@ -21,7 +21,7 @@ public class ProductUserController {
     /**
      * 상품 상세 조회(사용자) API
      */
-    @GetMapping("/products/{productId}")
+    @GetMapping("/{productId}")
     public ResponseEntity<ApiResponse> getProductApi(@PathVariable Long productId, HttpServletRequest request) {
 
         ApiResponse response = ApiResponse.success("상품 조회에 성공했습니다.", productUserService.getProduct(productId, request.getRemoteAddr()));

@@ -104,20 +104,25 @@ public class TimeDealAdminService {
             throw new CustomException(ErrorCode.TIME_DEAL_CANNOT_UPDATE);
         }
 
-        if (request.getDealPrice() != null && timeDeal.getDealPrice() <= request.getDealPrice()) {
-            throw new CustomException(ErrorCode.UPDATED_SALE_PRICE_MUST_BE_LOWER_THAN_CURRENT_SALE_PRICE);
+        if (request.getDealPrice() != null && request.getDealPrice() >= timeDeal.getProduct().getPrice()) {
+            throw new CustomException(ErrorCode.SALE_PRICE_MUST_BE_LOWER_THAN_ORIGINAL_PRICE);
         }
 
         LocalDateTime now = LocalDateTime.now();
+
+        if (request.getStartAt() != null) {
+            if (!request.getStartAt().isAfter(now)) {
+                throw new CustomException(ErrorCode.TIME_DEAL_START_TIME_MUST_BE_IN_FUTURE);
+            }
+        }
+
         LocalDateTime startAt = request.getStartAt() != null ? request.getStartAt() : timeDeal.getStartAt();
         LocalDateTime endAt = request.getEndAt() != null ? request.getEndAt() : timeDeal.getEndAt();
 
-        if (!startAt.isAfter(now)) {
-            throw new CustomException(ErrorCode.TIME_DEAL_START_TIME_MUST_BE_IN_FUTURE);
-        }
-
-        if (!endAt.isAfter(startAt)) {
-            throw new CustomException(ErrorCode.INVALID_TIME_RANGE);
+        if (request.getStartAt() != null || request.getEndAt() != null) {
+            if (!endAt.isAfter(startAt)) {
+                throw new CustomException(ErrorCode.INVALID_TIME_RANGE);
+            }
         }
 
         if (request.getImage() != null && timeDeal.getImage() != null) {

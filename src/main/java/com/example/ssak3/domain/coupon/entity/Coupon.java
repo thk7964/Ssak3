@@ -23,7 +23,7 @@ public class Coupon extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String name;
 
     @Column(nullable = false, name = "discount_value")
@@ -63,9 +63,9 @@ public class Coupon extends BaseEntity {
 
     public void update(CouponUpdateRequest request) {
 
-        this.totalQuantity = request.getTotalQuantity();
-        this.issueEndDate = request.getIssueEndDate();
-        this.validDays = request.getValidDays();
+        if (request.getTotalQuantity() != null) this.totalQuantity = request.getTotalQuantity();
+        if (request.getIssueEndDate() != null) this.issueEndDate = request.getIssueEndDate();
+        if (request.getValidDays() != null) this.validDays = request.getValidDays();
     }
 
     public void softDelete() {

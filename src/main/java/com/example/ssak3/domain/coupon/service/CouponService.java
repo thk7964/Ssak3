@@ -64,7 +64,7 @@ public class CouponService {
     @Transactional(readOnly = true)
     public PageResponse<CouponListGetResponse> getCouponList(Pageable pageable) {
 
-        Page<CouponListGetResponse> couponListPage = couponRepository.findAllAvailableCoupons(LocalDateTime.now(), pageable)
+        Page<CouponListGetResponse> couponListPage = couponRepository.findAllByIsDeletedFalse(pageable)
                 .map(CouponListGetResponse::from);
 
         return PageResponse.from(couponListPage);

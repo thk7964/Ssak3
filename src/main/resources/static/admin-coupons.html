@@ -598,6 +598,12 @@
         </button>
     </div>
 
+    <div class="filter-controls" style="margin-bottom: 20px; display: flex; gap: 10px;">
+        <button class="btn filter-btn" data-status="NOT_STARTED" style="border:1px solid #ddd; padding:5px 15px; border-radius:20px; cursor:pointer;">오픈전</button>
+        <button class="btn filter-btn" data-status="ACTIVE" style="border:1px solid #ddd; padding:5px 15px; border-radius:20px; cursor:pointer;">진행중</button>
+        <button class="btn filter-btn" data-status="EXPIRED" style="border:1px solid #ddd; padding:5px 15px; border-radius:20px; cursor:pointer;">만료됨</button>
+    </div>
+
     <div class="table-controls">
         <div class="table-info" id="tableInfo">쿠폰을 불러오는 중...</div>
         <div class="size-selector">
@@ -746,13 +752,55 @@
 </footer>
 
 <script>
-    const API_BASE_URL = 'http://localhost:8080/ssak3/admin/coupons';
+    // API URL 설정
+    const API_URL = (() => {
+        const hostname = window.location.hostname;
+
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return 'http://localhost:8080';
+        }
+
+        if (hostname === 'admin.ssak3.store') {
+            return 'https://admin.ssak3.store';
+        }
+
+        return 'https://ssak3.store';
+    })();
 
     let currentPage = 0;
     let pageSize = 10;
 
     // 쿠폰 목록을 저장할 전역 변수
     let couponsList = [];
+    // 기본값으로 'ACTIVE'(진행중)만 켜져 있게 설정
+    const selectedStatuses = new Set(['ACTIVE']);
+
+    // 필터 버튼 UI를 새로고침하는 함수 (버튼 색상 변경 등)
+    function syncFilterUI() {
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            const status = btn.dataset.status;
+            if (selectedStatuses.has(status)) {
+                btn.classList.add('active');
+                btn.style.backgroundColor = '#74b9ff'; // 활성화 색상
+                btn.style.color = 'white';
+            } else {
+                btn.classList.remove('active');
+                btn.style.backgroundColor = '';
+                btn.style.color = '';
+            }
+        });
+    }
+
+    // 버튼 클릭 시 상태를 넣었다 뺐다 하는 함수
+    function toggleStatus(status) {
+        if (selectedStatuses.has(status)) {
+            selectedStatuses.delete(status);
+        } else {
+            selectedStatuses.add(status);
+        }
+        syncFilterUI();
+        renderCoupons(couponsList); // 필터링해서 다시 그리기
+    }
 
     // 토큰 가져오기
     function getAuthToken() {
@@ -841,7 +889,7 @@
         currentPage = page;
 
         try {
-            const response = await fetch(`${API_BASE_URL}?page=${page}&size=${pageSize}&sort=issueEndDate,asc`, {
+            const response = await fetch(`${API_URL}/ssak3/admin/coupons?page=${page}&size=${pageSize}&sort=issueEndDate,asc`, {
                 headers: getHeaders(),
                 credentials: 'include'
             });
@@ -890,6 +938,24 @@
         // 쿠폰 목록을 전역 변수에 저장
         couponsList = coupons || [];
 
+        // --- 필터링 로직 추가 시작 ---
+        const filteredCoupons = couponsList.filter(coupon => {
+            const now = new Date();
+            const startDate = new Date(coupon.issueStartDate);
+            const endDate = new Date(coupon.issueEndDate);
+
+            // 상태 판별 로직 (Badge 표시 로직과 동일하게 맞춤)
+            let status = 'ACTIVE'; // 기본: 진행중
+            if (endDate < now) {
+                status = 'EXPIRED'; // 만료됨
+            } else if (startDate > now) {
+                status = 'NOT_STARTED'; // 오픈전
+            }
+
+            // 현재 선택된 필터(Set)에 해당 상태가 포함되어 있는지 확인
+            return selectedStatuses.has(status);
+        });
+
         if (!coupons || coupons.length === 0) {
             tbody.innerHTML = `
                 <tr>
@@ -904,7 +970,7 @@
             return;
         }
 
-        tbody.innerHTML = coupons.map(coupon => {
+        tbody.innerHTML = filteredCoupons.map(coupon => {
             const now = new Date();
             const startDate = new Date(coupon.issueStartDate);
             const endDate = new Date(coupon.issueEndDate);
@@ -924,22 +990,22 @@
             }
 
             return `
-                <tr>
-                    <td>${coupon.id}</td>
-                    <td>${coupon.name}</td>
-                    <td>${coupon.discountValue.toLocaleString()}원</td>
-                    <td>${coupon.totalQuantity.toLocaleString()}개</td>
-                    <td>${coupon.issuedQuantity.toLocaleString()}개</td>
-                    <td>${formatDateTime(coupon.issueStartDate)} ~ ${formatDateTime(coupon.issueEndDate)}</td>
-                    <td>${statusBadge}</td>
-                    <td>
-                        <div class="action-buttons">
-                            <button class="btn btn-secondary btn-small" onclick="openEditModal(${coupon.id})">수정</button>
-                            <button class="btn btn-danger btn-small" onclick="deleteCoupon(${coupon.id})">삭제</button>
-                        </div>
-                    </td>
-                </tr>
-            `;
+            <tr>
+                <td>${coupon.id}</td>
+                <td>${coupon.name}</td>
+                <td>${coupon.discountValue.toLocaleString()}원</td>
+                <td>${coupon.totalQuantity.toLocaleString()}개</td>
+                <td>${coupon.issuedQuantity.toLocaleString()}개</td>
+                <td>${formatDateTime(coupon.issueStartDate)} ~ ${formatDateTime(coupon.issueEndDate)}</td>
+                <td>${statusBadge}</td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary btn-small" onclick="openEditModal(${coupon.id})">수정</button>
+                        <button class="btn btn-danger btn-small" onclick="deleteCoupon(${coupon.id})">삭제</button>
+                    </div>
+                </td>
+            </tr>
+        `;
         }).join('');
     }
 
@@ -1016,7 +1082,7 @@
         };
 
         try {
-            const response = await fetch(API_BASE_URL, {
+            const response = await fetch(`${API_URL}/ssak3/admin/coupons`, {
                 method: 'POST',
                 headers: getHeaders(),
                 credentials: 'include',
@@ -1054,12 +1120,14 @@
         };
 
         try {
-            const response = await fetch(`${API_BASE_URL}/${couponId}`, {
+            const response = await fetch(`${API_URL}/ssak3/admin/coupons/${couponId}`, {
                 method: 'PATCH',
                 headers: getHeaders(),
                 credentials: 'include',
                 body: JSON.stringify(requestData)
             });
+
+            const result = await response.json(); // 서버에서 보낸 에러 객체를 먼저 읽음
 
             if (!response.ok) {
                 if (response.status === 401 || response.status === 403) {
@@ -1067,7 +1135,8 @@
                     window.location.href = 'login.html';
                     return;
                 }
-                throw new Error('쿠폰 수정 실패');
+                // 서버(CouponService.java)에서 던진 에러 메시지(result.message)를 사용함
+                throw new Error(result.message || '쿠폰 수정 실패');
             }
 
             alert('쿠폰이 수정되었습니다! ✨');
@@ -1075,7 +1144,7 @@
             loadCoupons();
         } catch (error) {
             console.error('쿠폰 수정 오류:', error);
-            alert('쿠폰 수정에 실패했습니다.');
+            alert(error.message); // 여기서 "종료일이 시작일보다..." 메시지가 출력됨
         }
     });
 
@@ -1086,7 +1155,7 @@
         }
 
         try {
-            const response = await fetch(`${API_BASE_URL}/${couponId}`, {
+            const response = await fetch(`${API_URL}/ssak3/admin/coupons/${couponId}`, {
                 method: 'DELETE',
                 headers: getHeaders(),
                 credentials: 'include'
@@ -1118,13 +1187,13 @@
         try {
             let response;
             if (token) {
-                response = await fetch('http://localhost:8080/ssak3/users/me', {
+                response = await fetch(`${API_URL}/ssak3/users/me`, {
                     method: 'GET',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
             }
             if (!token || response.status === 401) {
-                response = await fetch('http://localhost:8080/ssak3/users/me', {
+                response = await fetch(`${API_URL}/ssak3/users/me`, {
                     method: 'GET',
                     credentials: 'include'
                 });
@@ -1151,7 +1220,7 @@
             const logoutRequest = { method: 'POST', credentials: 'include' };
             if (token) logoutRequest.headers = { 'Authorization': `Bearer ${token}` };
 
-            await fetch('http://localhost:8080/ssak3/auth/logout', logoutRequest);
+            await fetch(`${API_URL}/ssak3/auth/logout`, logoutRequest);
             localStorage.removeItem('accessToken');
             alert('로그아웃 되었습니다.');
             window.location.href = 'home.html';
@@ -1185,6 +1254,11 @@
     // });
 
     // 초기 실행
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.onclick = () => toggleStatus(btn.dataset.status);
+    });
+
+    syncFilterUI(); // 페이지 켜질 때 '진행중'에 불 들어오게 함
     checkLoginStatus();
     loadCoupons();
 

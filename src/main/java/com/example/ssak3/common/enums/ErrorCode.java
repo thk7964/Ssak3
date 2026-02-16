@@ -34,7 +34,7 @@ public enum ErrorCode {
     // Category 에러
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "카테고리를 찾을 수 없습니다."),
     CATEGORY_HAS_PRODUCTS(HttpStatus.BAD_REQUEST, "카테고리에 포함된 상품이 있습니다."),
-    CATEGORY_DUPLICATED(HttpStatus.CONFLICT,"중복된 카테고리 이름입니다."),
+    CATEGORY_DUPLICATED(HttpStatus.CONFLICT, "중복된 카테고리 이름입니다."),
 
     // Cart 에러
     CART_PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "장바구니에서 상품을 찾을 수 없습니다."),
@@ -51,7 +51,6 @@ public enum ErrorCode {
     // TimeDeal 에러
     TIME_DEAL_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 세일 상품을 찾을 수 없습니다."),
     SALE_PRICE_MUST_BE_LOWER_THAN_ORIGINAL_PRICE(HttpStatus.BAD_REQUEST, "할인가는 정가보다 낮아야 합니다."),
-    UPDATED_SALE_PRICE_MUST_BE_LOWER_THAN_CURRENT_SALE_PRICE(HttpStatus.BAD_REQUEST, "변경된 할인가는 기존 할인보다 낮아야 합니다."),
     INVALID_TIME_RANGE(HttpStatus.BAD_REQUEST, "시작 시간은 종료 시간보다 늦을 수 없습니다."),
     ACTIVE_TIME_DEAL_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "현재 진행중인 타임딜 상품입니다."),
     TIME_DEAL_CANNOT_DELETE(HttpStatus.BAD_REQUEST, "현재 진행중이거나 삭제할 수 없는 상태의 타임딜 상품입니다."),

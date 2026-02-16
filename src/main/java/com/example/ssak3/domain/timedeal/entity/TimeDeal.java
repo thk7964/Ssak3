@@ -87,14 +87,15 @@ public class TimeDeal extends BaseEntity {
 
     public void update(TimeDealUpdateRequest request) {
 
+        boolean startAtChanged = false;
+
         if (request.getDealPrice() != null) {
             this.dealPrice = request.getDealPrice();
         }
 
-        if (request.getStartAt() != null && product.getQuantity() > 0) {
+        if (request.getStartAt() != null && !request.getStartAt().equals(this.startAt)) {
             this.startAt = request.getStartAt();
-            setStatus(TimeDealStatus.READY);
-            openNormalProduct();
+            startAtChanged = true;
         }
 
         if (request.getEndAt() != null) {
@@ -108,6 +109,24 @@ public class TimeDeal extends BaseEntity {
         if (request.getDetailImage() != null) {
             this.detailImage = request.getDetailImage();
         }
+
+        if (startAtChanged) {
+            prepareIfPossible();
+        }
+    }
+
+    public void prepareIfPossible() {
+
+        if (this.product.getQuantity() <= 0) {
+            return;
+        }
+
+        if (this.status == TimeDealStatus.READY) {
+            return;
+        }
+
+        this.status = TimeDealStatus.READY;
+        openNormalProduct();
     }
 
     public boolean isDeletable() {

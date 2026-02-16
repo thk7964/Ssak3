@@ -476,8 +476,7 @@
   <summary><b>STOMP를 적용한 코드</b></summary>
 
 - WebSocketConfig
-    
-```java
+    ```java
 
         @Override
         public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -496,11 +495,12 @@
             // 클라이언트가 /sub 주소를 구독하고 있으면 서버가 메시지를 해당 주소로 보내줌
             registry.enableSimpleBroker("/sub");  // 추후에 Redis로 확장
         }
-```       
+    ```
 
+- InquiryChatStompController
 
-- InquiryChatStompController   
-```java
+  
+    ```java
 
         /**
          * 채팅 메시지 전송 API InquiryChatStompController
@@ -542,7 +542,7 @@
     
             redisTemplate.convertAndSend(chatTopic.getTopic(), response);  //
         }
-```
+    ```
 </details>
    
     
@@ -552,6 +552,152 @@
 <img width="971" height="152" alt="image" src="https://github.com/user-attachments/assets/c05d59b4-91ad-4bc5-92be-5df118938778" />
 
 - 대신 @MessageMapping을 도입하여, 마치 REST API의 Controller처럼 경로(Path)를 기반으로 비즈니스 로직을 분리하여 코드 가독성과 유지보수성을 확보했습니다.
+</details>
+
+<details>
+<summary><h3>📩 Redis pub/sub</h3></summary>
+  
+<h3>⁉️ 의사 결정 발생 배경</h3>
+
+<details>
+  <summary>1차 배포 아키텍쳐 설계도</summary>
+
+  <img width="492" height="517" alt="image" src="https://github.com/user-attachments/assets/549f13fb-03ac-4c2f-892e-411dda91d54c" />
+</details>
+
+*위 설계도는 ssak3 프로젝트의 1차 배포 아키텍처 설계도입니다.* 
+
+해당 아키텍처를 보면 애플리케이션 서버 안에 Redis를 함께 구동하고 있음을 알 수 있습니다.
+
+프로젝트 고도화 과정에서 User 서버와 Admin 서버로 분할하기로 결정했습니다.
+
+- 분할 이유
+    - 사용자 트래픽 폭증 시 관리자 서비스는 정상 운영되어야 함
+    - 각 서버의 독립적인 스케일링 및 장애 격리
+
+#### 발생한 문제
+
+기존의 단일 서버 환경에서는 Spring의 **SimpleBroker**만으로 충분했습니다. 
+
+하지만 서버가 분할될 경우 User 서버에 연결된 사용자 A와 Admin 서버에 연결된 관리자 B는 서로 다른 메모리 공간에 세션이 존재합니다. SimpleBroker는 자신의 서버 내부에만 메시지를 전달하므로 **서버 간 메시지 공유가 불가합니다.**
+
+따라서 채팅방에서 한쪽이 보낸 메시지를 상대방이 받지 못하는 문제가 발생하게 되었고 이를 해결할 새로운 방안이 필요하게 되었습니다.
+
+<h3>🙋‍♀️ 의사 결정 과정</h3>
+
+- **메시지 브로커 도입**
+    - 서버가 여러 대일 경우, A 서버에 접속한 사용자가 보낸 메시지를 B 서버에 접속한 사용자가 받지 못하는 '**데이터 파편화**' 문제를 해결하기 위해 서버 간 메시지를 공유할 매개체가 필요했습니다.
+
+<h3>💡 고려한 대안</h3>
+
+#### 전문 메시지 브로커 vs  Redis Pub/Sub
+
+- **전문 메시지 브로커 (RabbitMQ, Kafka)**
+    
+    **장점**
+    
+    - 메시지 영속성 보장 (디스크 저장)
+    - 복잡한 메시지 라우팅 및 큐 관리 기능
+    - 대규모 메시지 처리 및 순서 보장
+    
+    **단점**
+    
+    - 별도 서버 구축 및 운영 비용
+    - 과도한 기능으로 인한 복잡도 증가
+    - 문의 채팅과 같은 간단한 Pub/Sub에 사용되기에는 오버스펙으로 볼 수 있음
+    - 프로젝트 규모 대비 러닝 커브 높음
+    
+- **Redis Pub/Sub**
+    
+    **장점**
+    
+    - 이미 캐시 용도로 Redis 사용 중 (추가 인프라 불필요)
+    - 극도로 빠른 메시지 전달 속도 (in-memory)
+    - 간단한 Pub/Sub 구조로 학습 비용 최소화
+    - Spring STOMP와 즉시 연동 가능 (설정만으로 완료)
+    
+    **단점**
+    
+    - **메시지 비영속성**: 전달 후 즉시 소멸 (브로커가 아닌 메시지 버스)
+    - 구독자가 없으면 메시지 유실
+    - 복잡한 라우팅이나 재처리 불가
+
+<h3>✨ 해결 과정</h3>
+
+#### Redis pub/sub으로 결정한 이유
+
+- **실시간성 우선**
+    - 채팅은 즉시성이 가장 중요하며, Redis의 in-memory 처리는 밀리초 단위 응답 보장
+- **인프라 효율**
+    - 기존 Redis 활용으로 추가 서버 불필요
+- **프로젝트 적합성**
+    - 1:1 채팅은 복잡한 메시지 큐 기능이 필요 없음
+- **간단한 연동**
+    - Spring 설정에서 `SimpleBroker` → `RedisMessageBroker`로 변경만으로 완료
+
+#### 해결 과정
+
+- **RedisMessageBroker 연동**
+    - Spring의 `SimpleBroker`를 Redis 전용 브로커로 확장하여, 메시지 발행 시 Redis의 Topic을 거쳐 모든 서버로 전파되는 구조를 구축했습니다.
+- **성능 최적화**
+  <img width="977" height="188" alt="image" src="https://github.com/user-attachments/assets/d84ae974-f369-4006-8d01-e1f4b1a58211" />
+    - 메시지 수신 시 Redis 발행을 우선 처리하여 실시간성을 확보하고, 상대적으로 무거운 DB 저장은 비동기(saveMessageAsync)로 처리하여 사용자 응답 지연을 최소화했습니다.
+ 
+<details> 
+<summary>Redis 적용한 코드</summary>
+
+  - RedisConfig
+    ```java
+        // Redis로부터 오는 메시지를 구독하는 컨테이너
+    @Bean
+    public RedisMessageListenerContainer redisMessageListenerContainer(
+            RedisConnectionFactory connectionFactory,
+            MessageListenerAdapter listenerAdapter) {
+        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
+        container.setConnectionFactory(connectionFactory);
+        container.addMessageListener(listenerAdapter, new ChannelTopic("chat"));   // "chat"을 구독하도록 설정
+        return container;
+    }
+
+    // 실제 메시지를 처리할 구독 설정
+    @Bean
+    public MessageListenerAdapter listenerAdapter(RedisSubscriber subscriber) {
+        return new MessageListenerAdapter(subscriber, "onMessage");  // Redis에서 응답이 오면 onMessage 실행
+    }
+    ```
+
+- InquiryChatStompController
+```java
+      
+    /**
+     * 채팅 메시지 전송 API 
+     */
+    @MessageMapping("/chat/message")
+    public void sendMessage(@Payload ChatMessageRequest request, StompHeaderAccessor accessor) {
+        // StompHeaderAccessor: 웹소켓 메시지 안에 숨겨진 세션 정보, 인증 정보, 헤더 값들을 읽거나 수정
+
+        // 핸들러의 세션에서 인증된 유저 정보 꺼내기
+        Map<String, Object> sessionAttributes = accessor.getSessionAttributes();
+        Long userId = (Long) sessionAttributes.get("userId");
+        String role = (String) sessionAttributes.get("role");
+
+        // Redis 먼저 발행
+        ChatMessageResponse tempResponse = ChatMessageResponse.fromRequest(request, userId, role);
+
+        redisTemplate.convertAndSend(chatTopic.getTopic(), tempResponse);
+
+        // DB 저장은 비동기로 처리
+        inquiryChatService.saveMessageAsync(request, userId, role);
+    }
+    
+```
+
+</details>
+
+<h3>📝 향후 고도화 방안</h3>
+
+- **분산 세션 관리 통합**: 현재 각 서버가 개별적으로 관리하는 웹소켓 세션 정보를 Redis로 통합 관리하여, 어떤 서버에 접속하더라도 사용자의 실시간 접속 상태를 정확히 파악할 수 있는 Presence 관리 서버 기능을 추가하고 싶습니다..
+
 </details>
 
 <details>
@@ -667,7 +813,8 @@ Public Subnet에 있는 서버는 Public IP를 가지는데 이는 인터넷 어
 <summary><h3>✨ 로깅 시 USER ID가 null로 찍히는 문제</h3></summary>
 
 <h3>⚠️ 문제 상황</h3>
-![img_9.png](img_9.png)
+<img width="1024" height="45" alt="image" src="https://github.com/user-attachments/assets/7b93482a-5d03-42ee-830c-02c4d9a41bf4" />
+
 
 - LoggingFilter에서 인증된 사용자의 요청임에도 불구하고 USER_ID가 계속 null로 찍히는 문제가 발생했습니다.
 
@@ -755,7 +902,8 @@ import java.util.UUID;
 
 </details>
 
-![img_10.png](img_10.png)
+<img width="467" height="85" alt="image" src="https://github.com/user-attachments/assets/933d4c42-2b8e-43f4-bcab-7acb29d35d69" />
+
 
 원인은 Filter Chain의 우선 순위 문제였습니다.
 
@@ -765,7 +913,8 @@ import java.util.UUID;
 
 <h3>✨ 해결 과정</h3>
 
-![img_11.png](img_11.png)
+<img width="1024" height="440" alt="image" src="https://github.com/user-attachments/assets/bd1bbdb4-159d-48b3-a175-4e4d5e0ec8e1" />
+
 - LoggingFilter를 JwtFilter와 UsernamePasswordAuthenticationFilter 사이에 두어 인증 정보가 담긴 후에 처리 되게 하면서 인증 정보가 지워지기 전에 로그를 찍을 수 있도록 설정해서 해결
 
 </details>
@@ -787,8 +936,9 @@ import java.util.UUID;
 - 분산 환경에 대한 고려 없이 단일 서버 기준으로 스케줄러를 설계한 것이 원인이었습니다.
 
 아래 로그를 통해 동일한 시각에 여러 서버에서 스케줄러가 동시에 실행되고 있음을 확인할 수 있었습니다.
-![img_12.png](img_12.png)
-![img_13.png](img_13.png)
+<img width="1024" height="184" alt="image" src="https://github.com/user-attachments/assets/5599d169-5e36-4d82-9752-1938a678b853" />
+<img width="1024" height="184" alt="image" src="https://github.com/user-attachments/assets/cdc60b8f-5162-43db-b168-750daf9c7a45" />
+
 동일한 실행 시각에 각 서버 인스턴스에서 TimeDeal Scheduler START 로그가 출력되며, 스케줄러가 서버 수만큼 중복 실행되고 있음을 확인할 수 있습니다.
 
 <h3>💡 고려한 대안</h3>
@@ -813,7 +963,8 @@ import java.util.UUID;
 
 <h3>✨ 해결 과정</h3>
 스케줄러 메서드에 @SchedulerLock 어노테이션을 적용하여 분산 락을 획득하는 구조로 구현했습니다.
-![img_14.png](img_14.png)
+<img width="550" height="457" alt="image" src="https://github.com/user-attachments/assets/cecf8c22-ace0-4a1f-91cf-1553b5a8ce75" />
+
 - `name` 속성으로 락 이름을 지정하여 여러 스케줄러 간 락 충돌을 방지했습니다.
 - `lockAtMostFor`는 락을 최대 유지하는 시간으로, 락이 장시간 해제되지 않는 상황을 방지합니다.
 - `lockAtLeastFor`는 락을 최소 유지하는 시간으로, 너무 잦은 락 획득과 해제를 방지합니다.
@@ -822,8 +973,9 @@ import java.util.UUID;
 이로써 **분산 서버 환경에서도 스케줄러가 한 번만 실행됨을 보장**할 수 있었습니다.
 
 아래 로그는 여러 인스턴스가 동시에 기동된 환경에서, **락을 획득한 1개의 인스턴스만 스케줄러를 실행한 예시**입니다
-![img_15.png](img_15.png)
-![img_16.png](img_16.png)
+<img width="1024" height="190" alt="image" src="https://github.com/user-attachments/assets/28163489-71f9-4b52-917f-3e92faaec113" />
+<img width="1024" height="190" alt="image" src="https://github.com/user-attachments/assets/384d9c94-903c-4b22-b906-e29b2afcf321" />
+
 
 <h3>📝 향후 고도화 방안</h3>
 - 락 획득 실패시 재시도 로직 추가
@@ -843,7 +995,8 @@ JMeter를 사용하여 상품 구매 기능에 대한 동시성 테스트 진행
     - 작성한 코드와 실제 실행되는 쿼리의 순서가 다르다는 것을 발견
         - 작성한 코드 : select → update → insert
         - 실제 실행 순서 : select → insert → update
-        ![img_18.png](img_18.png)
+        <img width="1024" height="106" alt="image" src="https://github.com/user-attachments/assets/e54751ac-4ecf-4455-b352-4a816e8a5632" />
+
     - 영속성 컨텍스트의 쓰기 지연 때문에 순서의 변화가 생긴다
         - JPA에서는 쓰기 작업을 DB에 효율적으로 반영하기 위해 트랜잭션에서 발생한 모든 쓰기 작업을 기록해두고 한꺼번에 실행
 
@@ -855,8 +1008,10 @@ JMeter를 사용하여 상품 구매 기능에 대한 동시성 테스트 진행
     - 이후 상품의 재고를 차감하기 위한 update 쿼리가 실행되면서 s-lock에서 x-lock으로 승격 시도
         - Transaction(1)에서 s-lock을 잡고 x-lock으로 승격 시도 -> Transaction(2)의 s-lock이 풀리기를 대기
         - Transaction(2)에서도 s-lock을 잡고 x-lock으로 승격 시도 -> Transaction(1)의 s-lock이 풀리기를 대기
-      ![img_19.png](img_19.png)
-      ![img_20.png](img_20.png)
+      <img width="1024" height="464" alt="image" src="https://github.com/user-attachments/assets/92ec2ea2-d73b-4be8-b4d0-6fc2069631c5" />
+
+      <img width="1024" height="478" alt="image" src="https://github.com/user-attachments/assets/3f28ef25-5491-44ad-a14d-a29d518a90c8" />
+
       ===> Deadlock 발생
 
 <h3>💡 고려한 대안</h3>
@@ -864,10 +1019,12 @@ JMeter를 사용하여 상품 구매 기능에 대한 동시성 테스트 진행
 #### update 이후 insert가 실행되도록 락 획득 순서 보장
 
 - update 이후 insert가 실행되도록 락 획득 순서update 후 바로 flush()를 실행시켜 x-lock을 선점
-  ![img_21.png](img_21.png)
+  <img width="579" height="94" alt="image" src="https://github.com/user-attachments/assets/7619387d-2741-4fae-9c17-764b8216b35a" />
+
 - 결과
     - 기존(insert 후 update) → 현재(update 후 insert)
-  ![img_22.png](img_22.png)
+  <img width="1024" height="107" alt="image" src="https://github.com/user-attachments/assets/d58f7c9f-8b87-4918-99ba-449b0721c092" />
+
 
 
 - 데드락은 해결되었으나 동시성 문제 발생
@@ -875,8 +1032,10 @@ JMeter를 사용하여 상품 구매 기능에 대한 동시성 테스트 진행
         - 주문 생성 수 : 100
         - 재고 차감 수 : 39  (100→61)
       
-    ![img_23.png](img_23.png)
-    ![img_24.png](img_24.png)
+    <img width="1024" height="62" alt="image" src="https://github.com/user-attachments/assets/63621e29-eabb-44ae-aef1-d458c441086c" />
+
+    <img width="1024" height="202" alt="image" src="https://github.com/user-attachments/assets/0e2ec6bf-dcad-4274-b3b9-b2371e49eb7f" />
+
 
 <h3>✨ 해결 과정</h3>
 #### 비관락 적용
@@ -884,8 +1043,9 @@ JMeter를 사용하여 상품 구매 기능에 대한 동시성 테스트 진행
 - product 조회 시 비관락 적용
 - 장점 : 데이터 조회 시점부터 x-lock을 획득하여 다른 트랜잭션의 접근을 차단 ⇒ 데이터 정합성 보장
 - 단점 : 순차적 처리를 하게 되어 병목 현상 발생 가능
-![img_25.png](img_25.png)
-![img_26.png](img_26.png)
+<img width="1024" height="66" alt="image" src="https://github.com/user-attachments/assets/38b2d174-9269-49d2-9271-f355cddab427" />
+<img width="1024" height="217" alt="image" src="https://github.com/user-attachments/assets/57ccb24d-17cf-47d9-9e56-1e55c82adaa7" />
+
 
 비관적 락은 성능은 떨어지지만, 주문 도메인에서는 정합성이 최우선이므로 성능 손실을 감수하더라도 무결성을 보장하는 비관락을 선정
 

@@ -1,3 +1,7 @@
+![img.png](img.png)
+
+# “굿즈 커머스 플랫폼 - 싹쓰리”
+
 ## **📄** 프로젝트 소개
 
 **“팬의 마음을 담은 굿즈를 가장 편하게 만나는 굿즈 커머스 플랫폼”**
@@ -21,3 +25,39 @@
 싹쓰리 스토어는 다양한 팀(그룹)을 테마로 한 공식 굿즈를 한 곳에서 만나고,
 
 상품 조회부터 주문·결제까지의 과정을 직관적으로 제공하는 커머스 서비스입니다.
+
+
+---
+## 🔧 기술 스택 
+
+<!--여기에 넣기-->
+
+---
+## ⚙️ 시스템 아키텍쳐
+<details>
+<summary>v1</summary>
+
+![img_2.png](img_2.png)
+
+</details>
+<details>
+<summary>v2</summary>
+
+![img_1.png](img_1.png)
+
+</details>
+<details open>
+<summary>v3</summary>
+
+![img_3.png](img_3.png)
+
+</details>
+
+---
+## 💻 와이어프레임
+
+<!-- 수정 후 최종본 넣기 -->
+
+---
+## 📑 ERD
+![img_4.png](img_4.png)

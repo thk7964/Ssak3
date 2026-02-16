@@ -242,6 +242,7 @@
 - 스케줄러 기반 준비 → 사전 준비를 통해 트래픽 집중에도 안정적 운영 가능
 
 <h3>✨ 실행 및 결과</h3>
+
 - 타임딜 오픈 시간에 맞춰 데이터를 미리 준비
 - 준비된 데이터를 시스템에 저장 → 사용자 요청 시 즉시 제공
 - 덕분에 사용자 트래픽이 집중되어도 안정적인 서비스 제공 가능
@@ -553,6 +554,12 @@
 <img width="971" height="152" alt="image" src="https://github.com/user-attachments/assets/c05d59b4-91ad-4bc5-92be-5df118938778" />
 
 - 대신 @MessageMapping을 도입하여, 마치 REST API의 Controller처럼 경로(Path)를 기반으로 비즈니스 로직을 분리하여 코드 가독성과 유지보수성을 확보했습니다.
+
+<h3>📝 향후 고도화 방안</h3>
+
+- **에러 핸들링**
+    - `@MessageExceptionHandler`를 도입하여 STOMP 통신 중 발생하는 에러를 클라이언트에게 규격화된 형태로 전달하는 기능을 추가하고 싶습니다.
+- 채팅 읽음 처리, 알림 기능을 추가하고 싶습니다.
 </details>
 
 <details>
@@ -697,7 +704,7 @@
 
 <h3>📝 향후 고도화 방안</h3>
 
-- **분산 세션 관리 통합**: 현재 각 서버가 개별적으로 관리하는 웹소켓 세션 정보를 Redis로 통합 관리하여, 어떤 서버에 접속하더라도 사용자의 실시간 접속 상태를 정확히 파악할 수 있는 Presence 관리 서버 기능을 추가하고 싶습니다..
+- **분산 세션 관리 통합**: 현재 각 서버가 개별적으로 관리하는 웹소켓 세션 정보를 Redis로 통합 관리하여, 어떤 서버에 접속하더라도 사용자의 실시간 접속 상태를 정확히 파악할 수 있는 Presence 관리 서버 기능을 추가하고 싶습니다.
 
 </details>
 
@@ -924,7 +931,6 @@ import java.util.UUID;
 <summary><h3>🐛 분산 서버 환경에서 스케줄러 중복 실행 문제</h3></summary>
 
 <h3>⚠️ 문제 상황</h3>
-![img_6.png](img_6.png)
 
 - 분산 서버 환경에서 스케줄러 동작 중 이슈가 발생했습니다.
 - 동일한 스케줄러가 **서버별로 동시에 실행**되는 현상을 확인했습니다.
@@ -937,8 +943,8 @@ import java.util.UUID;
 - 분산 환경에 대한 고려 없이 단일 서버 기준으로 스케줄러를 설계한 것이 원인이었습니다.
 
 아래 로그를 통해 동일한 시각에 여러 서버에서 스케줄러가 동시에 실행되고 있음을 확인할 수 있었습니다.
-<img width="1024" height="184" alt="image" src="https://github.com/user-attachments/assets/5599d169-5e36-4d82-9752-1938a678b853" />
-<img width="1024" height="184" alt="image" src="https://github.com/user-attachments/assets/cdc60b8f-5162-43db-b168-750daf9c7a45" />
+<img width="1024" height="184" alt="image" src="https://github.com/user-attachments/assets/1802dc56-2dd5-4532-b660-7895d9ba510d" />
+<img width="1024" height="184" alt="image" src="https://github.com/user-attachments/assets/5846b3ed-f648-43b1-9ba9-3a93255de5fe" />
 
 동일한 실행 시각에 각 서버 인스턴스에서 TimeDeal Scheduler START 로그가 출력되며, 스케줄러가 서버 수만큼 중복 실행되고 있음을 확인할 수 있습니다.
 
@@ -964,6 +970,7 @@ import java.util.UUID;
 
 <h3>✨ 해결 과정</h3>
 스케줄러 메서드에 @SchedulerLock 어노테이션을 적용하여 분산 락을 획득하는 구조로 구현했습니다.
+
 <img width="550" height="457" alt="image" src="https://github.com/user-attachments/assets/cecf8c22-ace0-4a1f-91cf-1553b5a8ce75" />
 
 - `name` 속성으로 락 이름을 지정하여 여러 스케줄러 간 락 충돌을 방지했습니다.

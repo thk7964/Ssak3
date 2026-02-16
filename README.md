@@ -1821,7 +1821,17 @@ p90 / p95 구간 모두 초 단위에서 밀리초 단위로 감소하여, 트�
 
 <table>
   <tr>
-    <td align="center">1번 카드</td>
+    <td align="center" width="33%">
+  <img src="assets/profile1.png" width="180"/><br/><br/>
+  <b>👑 팀장</b><br/>
+  <a href="#">백은서</a><br/><br/>
+  <sub>
+  ✔ 1:1 문의 게시판<br/>
+  ✔ 1:1 채팅<br/>
+  ✔ CI/CD
+  </sub>
+</td>
+
     <td align="center">2번 카드</td>
     <td align="center">3번 카드</td>
   </tr>

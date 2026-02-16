@@ -40,19 +40,19 @@
 ---
 ## ⚙️ 시스템 아키텍쳐
 <details>
-<summary>v1</summary>
+<summary><b>v1</b></summary>
 
 ![img_2.png](img_2.png)
 
 </details>
 <details>
-<summary>v2</summary>
+<summary><b>v2</b></summary>
 
 ![img_1.png](img_1.png)
 
 </details>
 <details open>
-<summary>v3</summary>
+<summary><b>v3</b></summary>
 
 ![img_3.png](img_3.png)
 

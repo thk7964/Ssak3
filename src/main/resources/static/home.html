@@ -579,6 +579,18 @@
 
 
 <script>
+    // 다른 도메인에서 넘어온 토큰을 내 도메인 저장소에 기록
+    // 무조건 토큰부터 챙기기 (함수 없이 즉시 실행)
+    const urlParams = new URLSearchParams(window.location.search);
+    const tokenFromUrl = urlParams.get('token');
+
+    if (tokenFromUrl && tokenFromUrl !== 'null') {
+        // 로컬 스토리지에 먼저 저장
+        localStorage.setItem('accessToken', tokenFromUrl);
+        // 주소창 세탁 (토큰 노출 방지)
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
     // API URL 설정
     const API_URL = (() => {
         const hostname = window.location.hostname;

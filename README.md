@@ -1,4 +1,5 @@
-<img width="771" height="337" alt="image" src="https://github.com/user-attachments/assets/29b6d538-4ad6-47db-b134-2d2a73c601b8" />
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/a24bab17-4e27-4eda-90fb-591422aa2503" />
+
 
 
 # “굿즈 커머스 플랫폼 - 싹쓰리”
@@ -240,7 +241,7 @@
 - 요청 시점 조회 → 구현은 간단하지만 트래픽 집중 시 성능 저하 위험
 - 스케줄러 기반 준비 → 사전 준비를 통해 트래픽 집중에도 안정적 운영 가능
 
-<b>✨ 실행 및 결과</b>
+<h3>✨ 실행 및 결과</h3>
 - 타임딜 오픈 시간에 맞춰 데이터를 미리 준비
 - 준비된 데이터를 시스템에 저장 → 사용자 요청 시 즉시 제공
 - 덕분에 사용자 트래픽이 집중되어도 안정적인 서비스 제공 가능

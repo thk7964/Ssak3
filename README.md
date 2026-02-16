@@ -100,20 +100,20 @@
 <details>
 <summary><b>v1</b></summary>
 
-<img width="489" height="514" alt="image" src="https://github.com/user-attachments/assets/a6a17ad2-15dc-4fbc-adc0-759ddf606477" />
+<img width="350" height="400" alt="image" src="https://github.com/user-attachments/assets/a6a17ad2-15dc-4fbc-adc0-759ddf606477" />
 
 </details>
 <details>
 <summary><b>v2</b></summary>
 
-<img width="599" height="708" alt="image" src="https://github.com/user-attachments/assets/bfc7ac4f-c387-4fb5-9590-28f8b8cd8d0e" />
+<img width="400" height="450" alt="image" src="https://github.com/user-attachments/assets/bfc7ac4f-c387-4fb5-9590-28f8b8cd8d0e" />
 
 
 </details>
 <details open>
 <summary><b>v3</b></summary>
 
-<img width="661" height="960" alt="image" src="https://github.com/user-attachments/assets/1495326c-29e3-4c51-83a1-9d533bf1ccf5" />
+<img width="500" height="800" alt="image" src="https://github.com/user-attachments/assets/1495326c-29e3-4c51-83a1-9d533bf1ccf5" />
 
 
 </details>

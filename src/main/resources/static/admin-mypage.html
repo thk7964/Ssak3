@@ -241,6 +241,17 @@
     })();
 
     document.addEventListener('DOMContentLoaded', () => {
+        // 1. URL에서 토큰 추출
+        const urlParams = new URLSearchParams(window.location.search);
+        const tokenFromUrl = urlParams.get('token');
+
+        // 2. 토큰이 있다면 로컬 스토리지에 저장하고 URL 깔끔하게 정리
+        if (tokenFromUrl) {
+            localStorage.setItem('accessToken', tokenFromUrl);
+            // 주소창에서 토큰 노출을 없애기 위해 히스토리 정리
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
         const token = localStorage.getItem('accessToken');
 
         const headers = {};

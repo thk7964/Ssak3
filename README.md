@@ -60,6 +60,13 @@
 ![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)
 
 
+#### 📊 Monitoring & Logging
+[![Elasticsearch](https://img.shields.io/badge/Elasticsearch-005571?style=for-the-badge&logo=elasticsearch&logoColor=white)](https://www.elastic.co/elasticsearch/)
+[![Logstash](https://img.shields.io/badge/Logstash-005571?style=for-the-badge&logo=logstash&logoColor=white)](https://www.elastic.co/logstash/)
+[![Kibana](https://img.shields.io/badge/Kibana-005571?style=for-the-badge&logo=kibana&logoColor=white)](https://www.elastic.co/kibana/)
+[![Grafana](https://img.shields.io/badge/Grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white)](https://grafana.com/)
+
+
 #### 🔄 CI/CD
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
@@ -79,6 +86,7 @@
 
 #### 🧪 Test
 ![JUnit5](https://img.shields.io/badge/JUnit5-25A162?style=for-the-badge&logo=junit5&logoColor=white)
+[![JMeter](https://img.shields.io/badge/Apache_JMeter-D22128?style=for-the-badge&logo=apachejmeter&logoColor=white)](https://jmeter.apache.org/)
 ![Spring REST Docs](https://img.shields.io/badge/Spring_REST_Docs-6DB33F?style=for-the-badge)
 ![Postman](https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white)
 ![K6](https://img.shields.io/badge/K6-7D64FF?style=for-the-badge&logo=k6&logoColor=white)
@@ -137,7 +145,7 @@
 ---
 ## 👊 주요 기능
 
-<details>
+<details open>
 <summary><h4>🎖️ 인기 TOP 10 상품 조회</h4></summary>
 
 - **조회 수 기반 주간 인기 TOP 10 상품 조회 기능**
@@ -155,7 +163,7 @@
 
 </details>
 
-<details>
+<details open>
 <summary><h4>🔎 상품 통합 검색</h4></summary>
 
 - **상품 통합 검색 기능**
@@ -166,7 +174,7 @@
 
 </details>
 
-<details>
+<details open>
 <summary><h4>🕛 타임딜</h4></summary>
 
 - **정해진 시간에만 열리고 닫히는 한정 상품 판매 이벤트**
@@ -179,7 +187,7 @@
 
 </details>
 
-<details>
+<details open>
 <summary><h4>💵 주문 / 결제</h4></summary>
 
 - **주문/결제 기능**
@@ -199,7 +207,7 @@
 
 </details>
 
-<details>
+<details open>
 <summary><h4>🤳 실시간 문의 채팅</h4></summary>
 
 - **웹소켓을 이용한 실시간 채팅 기능**

@@ -981,9 +981,6 @@ import java.util.UUID;
 이로써 **분산 서버 환경에서도 스케줄러가 한 번만 실행됨을 보장**할 수 있었습니다.
 
 아래 로그는 여러 인스턴스가 동시에 기동된 환경에서, **락을 획득한 1개의 인스턴스만 스케줄러를 실행한 예시**입니다
-<img width="1024" height="190" alt="image" src="https://github.com/user-attachments/assets/28163489-71f9-4b52-917f-3e92faaec113" />
-<img width="1024" height="190" alt="image" src="https://github.com/user-attachments/assets/384d9c94-903c-4b22-b906-e29b2afcf321" />
-
 
 <h3>📝 향후 고도화 방안</h3>
 - 락 획득 실패시 재시도 로직 추가

@@ -1,4 +1,4 @@
-<img width="727" height="670" alt="image" src="https://github.com/user-attachments/assets/dfdc2428-9b61-413c-8690-b57401585ed2" /><img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/a24bab17-4e27-4eda-90fb-591422aa2503" />
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/a24bab17-4e27-4eda-90fb-591422aa2503" />
 
 
 
@@ -1822,8 +1822,8 @@ p90 / p95 구간 모두 초 단위에서 밀리초 단위로 감소하여, 트�
 <table>
   <tr>
     <td align="center" width="33%">
-  <img src=<img width="727" height="670" alt="image" src="https://github.com/user-attachments/assets/773607dd-3eb1-4cc7-9624-a6568fd0e4b8" />
- width="180"/><br/><br/>
+    <img width="180" height="180" alt="image" src="https://github.com/user-attachments/assets/e061c527-ff74-48ef-acd4-915228cfee02" />
+<br/><br/>
   <b>👑 팀장</b><br/>
   <a href="#">백은서</a><br/><br/>
   <sub>

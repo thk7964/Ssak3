@@ -26,6 +26,7 @@ public class MyProfileGetResponse {
     private final LocalDateTime updatedAt;
 
     public static MyProfileGetResponse from(User user) {
+
         return new MyProfileGetResponse(
                 user.getId(),
                 user.getName(),

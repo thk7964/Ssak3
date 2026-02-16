@@ -28,7 +28,7 @@ public class InquiryChatMessage extends BaseEntity {
     private User sender;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, name = "sender_role")
     private UserRole senderRole;
 
     @Enumerated(EnumType.STRING)
@@ -38,7 +38,7 @@ public class InquiryChatMessage extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "is_deleted")
     private boolean isDeleted = false;
 
     public InquiryChatMessage(InquiryChatRoom room, User sender, UserRole senderRole, ChatMessageType type, String content) {

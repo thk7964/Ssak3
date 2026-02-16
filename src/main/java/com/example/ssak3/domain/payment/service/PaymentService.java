@@ -32,6 +32,7 @@ public class PaymentService {
 
     @Transactional
     public void confirmPayment(PaymentConfirmRequest request) {
+
         Order order = orderRepository.findByOrderNo(request.getOrderId())
                 .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
 
@@ -61,7 +62,6 @@ public class PaymentService {
                         )));
 
         try {
-            //결제 승인 요청
             tossPaymentClient.confirm(
                     request.getPaymentKey(),
                     request.getOrderId(),
@@ -81,7 +81,7 @@ public class PaymentService {
             order.updateStatus(OrderStatus.DONE);
 
         } catch (Exception e) {
-            log.error("결제 승인 후 처리 실패. orderId={}, paymentKey={}", request.getOrderId(), request.getPaymentKey(), e);
+            log.error("결제 승인 후 처리 실패: orderId = {}, paymentKey = {}", request.getOrderId(), request.getPaymentKey(), e);
             paymentFailedService.paymentFailed(request.getOrderId(), request.getPaymentKey());
 
             throw e;

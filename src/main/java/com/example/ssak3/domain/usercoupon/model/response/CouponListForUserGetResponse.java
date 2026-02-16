@@ -23,6 +23,7 @@ public class CouponListForUserGetResponse {
     private final LocalDateTime updatedAt;
 
     public static CouponListForUserGetResponse from(Coupon coupon) {
+
         return new CouponListForUserGetResponse(
                 coupon.getId(),
                 coupon.getName(),

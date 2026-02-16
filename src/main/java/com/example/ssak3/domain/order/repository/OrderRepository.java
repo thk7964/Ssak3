@@ -12,7 +12,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     Optional<Order> findByIdAndUserId(Long id, Long userId);
 
-    Page<Order> findAllByUserIdAndStatusNotOrderByCreatedAtDesc(Long userId, Pageable pageable,  OrderStatus status);
+    Page<Order> findAllByUserIdAndStatusNotOrderByCreatedAtDesc(Long userId, Pageable pageable, OrderStatus status);
 
     Optional<Order> findByOrderNo(String orderId);
 

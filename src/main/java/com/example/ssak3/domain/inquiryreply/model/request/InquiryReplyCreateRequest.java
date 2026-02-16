@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class InquiryReplyCreateRequest {
+
     private Long inquiryId;
+
     @NotBlank(message = "문의 답변 내용은 필수입니다.")
     private String content;
 }

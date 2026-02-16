@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/ssak3/admin/chat")
+@RequestMapping("/ssak3/admin/chat/rooms")
 public class InquiryChatAdminController {
 
     private final InquiryChatAdminService inquiryChatAdminService;
@@ -23,25 +23,24 @@ public class InquiryChatAdminController {
      * 관리자 문의 채팅방 참여 API
      */
     @PreAuthorize("hasRole('ADMIN')")
-    @PatchMapping("/rooms/{roomId}/accept")
+    @PatchMapping("/{roomId}/accept")
     public ResponseEntity<ApiResponse> acceptChatApi(@AuthenticationPrincipal AuthUser admin, @PathVariable Long roomId) {
 
-        ApiResponse response = ApiResponse.success("문의 배정 성공", inquiryChatAdminService.acceptChat(admin.getId(), roomId));
+        ApiResponse response = ApiResponse.success("문의 배정에 성공했습니다.", inquiryChatAdminService.acceptChat(admin.getId(), roomId));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
-
 
     /**
      * 관리자 문의 채팅방 목록 조회 API
      */
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/rooms")
-    public ResponseEntity<ApiResponse> getChatRoomsApi(@AuthenticationPrincipal AuthUser admin, @PageableDefault(size = 10) Pageable pageable){
+    @GetMapping
+    public ResponseEntity<ApiResponse> getChatRoomsApi(@AuthenticationPrincipal AuthUser admin, @PageableDefault Pageable pageable) {
 
-       ApiResponse response = ApiResponse.success("문의채팅 목록 조회 성공", inquiryChatAdminService.getChatRoom(admin.getId(), pageable));
+        ApiResponse response = ApiResponse.success("문의채팅 목록 조회에 성공했습니다.", inquiryChatAdminService.getChatRoom(admin.getId(), pageable));
 
-       return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
 }

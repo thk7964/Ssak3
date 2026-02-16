@@ -26,7 +26,7 @@ public class ProductUserService {
     private final S3Uploader s3Uploader;
 
     /**
-     * 상품 상세조회(사용자)
+     * 상품 상세 조회 (사용자)
      */
     @Transactional
     public ProductGetResponse getProduct(Long productId, String ip) {
@@ -34,11 +34,7 @@ public class ProductUserService {
         Product foundProduct = productRepository.findByIdAndIsDeletedFalse(productId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
-        if (foundProduct.getStatus().equals(ProductStatus.STOP_SALE)) {
-            throw new CustomException(ErrorCode.PRODUCT_NOT_VIEWABLE);
-        }
-
-        if (foundProduct.getStatus().equals(ProductStatus.BEFORE_SALE)) {
+        if (foundProduct.getStatus().equals(ProductStatus.STOP_SALE) || foundProduct.getStatus().equals(ProductStatus.BEFORE_SALE)) {
             throw new CustomException(ErrorCode.PRODUCT_NOT_VIEWABLE);
         }
 
@@ -55,7 +51,7 @@ public class ProductUserService {
     }
 
     /**
-     * 상품 목록조회(사용자)
+     * 상품 목록 조회 (사용자)
      */
     @Transactional(readOnly = true)
     public PageResponse<ProductListGetResponse> getProductList(Long categoryId, Pageable pageable) {

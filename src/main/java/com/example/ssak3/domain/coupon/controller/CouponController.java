@@ -22,7 +22,19 @@ public class CouponController {
     private final CouponService couponService;
 
     /**
-     * 쿠폰 생성
+     * 쿠폰 목록 조회 API
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping
+    public ResponseEntity<ApiResponse> getCouponListApi(@PageableDefault(sort = "issueEndDate", direction = Sort.Direction.ASC) Pageable pageable) {
+
+        ApiResponse response = ApiResponse.success("쿠폰 목록 조회 완료", couponService.getCouponList(pageable));
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    /**
+     * 쿠폰 생성 API
      */
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
@@ -34,19 +46,7 @@ public class CouponController {
     }
 
     /**
-     * 쿠폰 목록 조회
-     */
-    @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse> getCouponListApi(@PageableDefault(size = 10, sort = "issueEndDate", direction = Sort.Direction.ASC) Pageable pageable) {
-
-        ApiResponse response = ApiResponse.success("쿠폰 목록 조회 완료", couponService.getCouponList(pageable));
-
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
-    /**
-     * 쿠폰 수정
+     * 쿠폰 수정 API
      */
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{couponId}")
@@ -58,7 +58,7 @@ public class CouponController {
     }
 
     /**
-     * 쿠폰 삭제
+     * 쿠폰 삭제 API
      */
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{couponId}")

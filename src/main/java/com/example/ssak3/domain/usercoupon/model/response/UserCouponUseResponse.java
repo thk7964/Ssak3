@@ -14,6 +14,7 @@ public class UserCouponUseResponse {
     private final UserCouponStatus status;
 
     public static UserCouponUseResponse from(UserCoupon userCoupon) {
+
         return new UserCouponUseResponse(
                 userCoupon.getId(),
                 userCoupon.getCoupon().getName(),

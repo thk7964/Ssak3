@@ -24,16 +24,19 @@ public class Category extends BaseEntity {
     private boolean isDeleted = false;
 
     public Category(String name) {
+
         this.name = name;
     }
 
     public void update(CategoryUpdateRequest request) {
+
         if (request.getName() != null) {
-            this.name = request.getName();
+            this.name = request.getName().trim();
         }
     }
 
     public void softDelete() {
+
         this.isDeleted = true;
     }
 }

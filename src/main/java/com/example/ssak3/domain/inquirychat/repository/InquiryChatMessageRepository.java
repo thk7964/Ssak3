@@ -14,5 +14,4 @@ public interface InquiryChatMessageRepository extends JpaRepository<InquiryChatM
             "JOIN FETCH m.sender WHERE m.room.id = :roomId " +
             "ORDER BY m.createdAt ASC")
     List<InquiryChatMessage> findAllByRoomId(@Param("roomId") Long roomId);
-
 }

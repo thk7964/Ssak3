@@ -43,16 +43,14 @@ public class UserCoupon extends BaseEntity {
         this.status = status;
     }
 
-    // 상태 : 사용 완료
     public void use() {
         this.status = UserCouponStatus.USED;
     }
 
-    public void rollback(){
-        this.status=UserCouponStatus.AVAILABLE;
+    public void rollback() {
+        this.status = UserCouponStatus.AVAILABLE;
     }
 
-    // 상태 변경
     public void changeStatus(UserCouponStatus targetStatus) {
         this.status = targetStatus;
     }

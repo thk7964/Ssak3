@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @RequiredArgsConstructor
 public class InquiryChatMessageListGetResponse {
+
     private final String content;
     private final Long senderId;
     private final UserRole senderRole;
@@ -17,6 +18,7 @@ public class InquiryChatMessageListGetResponse {
     private final LocalDateTime updatedAt;
 
     public static InquiryChatMessageListGetResponse from(InquiryChatMessage message) {
+
         return new InquiryChatMessageListGetResponse(
                 message.getContent(),
                 message.getSender().getId(),

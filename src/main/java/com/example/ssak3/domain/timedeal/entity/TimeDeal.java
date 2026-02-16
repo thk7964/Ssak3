@@ -66,23 +66,23 @@ public class TimeDeal extends BaseEntity {
 
         if (newStatus == TimeDealStatus.OPEN) {
             closeNormalProduct();
-        }else {
+        } else {
             openNormalProduct();
         }
-
     }
 
     public void softDelete() {
+
         this.isDeleted = true;
         this.status = TimeDealStatus.DELETED;
 
-        if (this.image!=null) {
-            this.image=this.image;
-        }
-        if (this.detailImage!=null) {
-            this.detailImage=this.detailImage;
+        if (this.image != null) {
+            this.image = null;
         }
 
+        if (this.detailImage != null) {
+            this.detailImage = null;
+        }
     }
 
     public void update(TimeDealUpdateRequest request) {
@@ -90,16 +90,21 @@ public class TimeDeal extends BaseEntity {
         if (request.getDealPrice() != null) {
             this.dealPrice = request.getDealPrice();
         }
-        if (request.getStartAt() != null) {
+
+        if (request.getStartAt() != null && product.getQuantity() > 0) {
             this.startAt = request.getStartAt();
             setStatus(TimeDealStatus.READY);
+            openNormalProduct();
         }
+
         if (request.getEndAt() != null) {
             this.endAt = request.getEndAt();
         }
+
         if (request.getImage() != null) {
             this.image = request.getImage();
         }
+
         if (request.getDetailImage() != null) {
             this.detailImage = request.getDetailImage();
         }
@@ -110,14 +115,16 @@ public class TimeDeal extends BaseEntity {
     }
 
     private void openNormalProduct() {
+
         if (isDeleted) return;
 
         product.restoreStatusAfterTimeDeal();
     }
 
     private void closeNormalProduct() {
+
         if (isDeleted) return;
+
         product.stopSaleForTimeDeal();
     }
-
 }

@@ -51,6 +51,7 @@ public class Coupon extends BaseEntity {
     private boolean isDeleted = false;
 
     public Coupon(String name, Integer discountValue, Integer totalQuantity, LocalDateTime issueStartDate, LocalDateTime issueEndDate, Integer minOrderPrice, Integer validDays) {
+
         this.name = name;
         this.discountValue = discountValue;
         this.totalQuantity = totalQuantity;
@@ -60,28 +61,29 @@ public class Coupon extends BaseEntity {
         this.validDays = validDays;
     }
 
-    // Update
     public void update(CouponUpdateRequest request) {
+
         this.totalQuantity = request.getTotalQuantity();
         this.issueEndDate = request.getIssueEndDate();
         this.validDays = request.getValidDays();
     }
 
-    // SoftDelete
-    public void delete() {
+    public void softDelete() {
+
         this.isDeleted = true;
     }
 
-    // IssuedQuantity (현재까지 발급된 수량) 증가 메소드
     public void increaseIssuedQuantity() {
+
         if (this.totalQuantity != null && this.issuedQuantity >= this.totalQuantity) {
             throw new CustomException(ErrorCode.COUPON_OUT_OF_STOCK);
         }
+
         this.issuedQuantity++;
     }
 
-    // IssuedQuantity (현재까지 발급된 수량) 감소 메소드
     public void decreaseIssuedQuantity() {
+
         if (this.issuedQuantity > 0) {
             this.issuedQuantity--;
         }

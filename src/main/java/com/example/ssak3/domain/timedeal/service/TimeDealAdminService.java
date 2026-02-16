@@ -77,7 +77,6 @@ public class TimeDealAdminService {
         TimeDeal saved = timeDealRepository.save(timeDeal);
 
         return TimeDealCreateResponse.from(saved);
-
     }
 
     /**
@@ -121,15 +120,11 @@ public class TimeDealAdminService {
             throw new CustomException(ErrorCode.INVALID_TIME_RANGE);
         }
 
-        // 저장되어 있는 이미지 파일이 있는지 확인
-        if (request.getImage()!=null && timeDeal.getImage()!=null) {
-            // 기존 파일 먼저 삭제
+        if (request.getImage() != null && timeDeal.getImage() != null) {
             s3Uploader.deleteImage(timeDeal.getImage());
         }
 
-        // 저장되어 있는 상세 이미지 파일이 있는지 확인
-        if (request.getDetailImage()!=null && timeDeal.getDetailImage()!=null) {
-            // 기존 파일 먼저 삭제
+        if (request.getDetailImage() != null && timeDeal.getDetailImage() != null) {
             s3Uploader.deleteImage(timeDeal.getDetailImage());
         }
 
@@ -143,6 +138,7 @@ public class TimeDealAdminService {
      */
     @Transactional
     public TimeDealDeleteResponse deleteTimeDeal(Long timeDealId) {
+
         TimeDeal timeDeal = timeDealRepository.findByIdAndIsDeletedFalse(timeDealId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TIME_DEAL_NOT_FOUND));
 
@@ -162,5 +158,4 @@ public class TimeDealAdminService {
 
         return TimeDealDeleteResponse.from(timeDeal);
     }
-
 }

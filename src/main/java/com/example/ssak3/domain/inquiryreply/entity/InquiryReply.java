@@ -41,19 +41,13 @@ public class InquiryReply extends BaseEntity {
     }
 
     public void update(User newAdmin, String newContent) {
+
         this.admin = newAdmin;
         this.content = newContent;
     }
 
     public void softDelete() {
+
         this.isDeleted = true;
     }
-
-    // 삭제된 문의 답변 검증
-    public void validateDeleted() {
-        if (this.isDeleted) {
-            throw new CustomException(ErrorCode.INQUIRY_REPLY_ALREADY_DELETED);
-        }
-    }
-
 }

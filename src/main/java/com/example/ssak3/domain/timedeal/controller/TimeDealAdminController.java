@@ -22,52 +22,49 @@ public class TimeDealAdminController {
     private final TimeDealAdminService timeDealAdminService;
 
     /**
-     * 타임딜 생성
+     * 타임딜 생성 API
      */
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<ApiResponse> createTimeDealApi(
-            @Valid @RequestBody TimeDealCreateRequest request) {
+    public ResponseEntity<ApiResponse> createTimeDealApi(@Valid @RequestBody TimeDealCreateRequest request) {
 
-        ApiResponse response = ApiResponse.success("타임딜 상품 생성", timeDealAdminService.createTimeDeal(request));
+        ApiResponse response = ApiResponse.success("타임딜 상품 생성에 성공했습니다.", timeDealAdminService.createTimeDeal(request));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     /**
-     * 타임딜 목록 조회
+     * 타임딜 목록 조회 API
      */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<ApiResponse> getTimeDealListApi(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        ApiResponse response = ApiResponse.success("타임딜 목록 조회", timeDealAdminService.getTimeDealList(pageable));
+        ApiResponse response = ApiResponse.success("타임딜 목록 조회에 성공했습니다.", timeDealAdminService.getTimeDealList(pageable));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     /**
-     * 타임딜 수정
+     * 타임딜 수정 API
      */
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{timeDealId}")
-    public ResponseEntity<ApiResponse> updateTimeDealApi(
-            @PathVariable Long timeDealId,
-            @RequestBody TimeDealUpdateRequest request) {
+    public ResponseEntity<ApiResponse> updateTimeDealApi(@PathVariable Long timeDealId, @RequestBody TimeDealUpdateRequest request) {
 
-        ApiResponse response = ApiResponse.success("타임딜 상품 수정", timeDealAdminService.updateTimeDeal(timeDealId, request));
+        ApiResponse response = ApiResponse.success("타임딜 상품 수정에 성공했습니다.", timeDealAdminService.updateTimeDeal(timeDealId, request));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     /**
-     * 타임딜 삭제
+     * 타임딜 삭제 API
      */
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{timeDealId}")
     public ResponseEntity<ApiResponse> deleteTimeDealApi(@PathVariable Long timeDealId) {
 
-        ApiResponse response = ApiResponse.success("타임딜 상품 삭제", timeDealAdminService.deleteTimeDeal(timeDealId));
+        ApiResponse response = ApiResponse.success("타임딜 상품 삭제에 성공했습니다.", timeDealAdminService.deleteTimeDeal(timeDealId));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

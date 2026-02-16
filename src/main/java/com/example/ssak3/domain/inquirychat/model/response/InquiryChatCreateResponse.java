@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @RequiredArgsConstructor
 public class InquiryChatCreateResponse {
+
     private final Long id;
     private final Long userId;
     private final Long adminId;
@@ -18,6 +19,7 @@ public class InquiryChatCreateResponse {
     private final LocalDateTime updatedAt;
 
     public static InquiryChatCreateResponse from(InquiryChatRoom room) {
+
         return new InquiryChatCreateResponse(
                 room.getId(),
                 room.getUser().getId(),

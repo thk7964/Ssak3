@@ -21,5 +21,4 @@ public class OrderCreateFromProductRequest {
     private String address;
 
     private Long userCouponId;
-
 }

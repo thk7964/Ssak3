@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @RequiredArgsConstructor
 public class InquiryListGetResponse {
+
     private final Long id;
     private final Long userId;
     private final String title;
@@ -18,6 +19,7 @@ public class InquiryListGetResponse {
     private final LocalDateTime updatedAt;
 
     public static InquiryListGetResponse from(Inquiry inquiry) {
+
         return new InquiryListGetResponse(
                 inquiry.getId(),
                 inquiry.getUser().getId(),

@@ -17,25 +17,24 @@ public class TimeDealController {
     private final TimeDealService timeDealService;
 
     /**
-     * 타임딜 상세 조회
+     * 타임딜 상세 조회 API
      */
     @GetMapping("/{timeDealId}")
     public ResponseEntity<ApiResponse> getTimeDealApi(@PathVariable Long timeDealId) {
 
-        ApiResponse response = ApiResponse.success("타임딜 상세 조회", timeDealService.getTimeDeal(timeDealId));
+        ApiResponse response = ApiResponse.success("타임딜 상세 조회에 성공했습니다.", timeDealService.getTimeDeal(timeDealId));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     /**
-     * 타임딜 상태별 목록 조회
+     * 타임딜 상태별 목록 조회 API
      */
     @GetMapping
     public ResponseEntity<ApiResponse> getTimeDealStatusListApi(@RequestParam(required = false) String status, @PageableDefault Pageable pageable) {
 
-        ApiResponse response = ApiResponse.success("타임딜 상태별 목록 조회", timeDealService.getTimeDealStatusList(status, pageable));
+        ApiResponse response = ApiResponse.success("타임딜 상태별 목록 조회에 성공했습니다.", timeDealService.getTimeDealStatusList(status, pageable));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
-
 }

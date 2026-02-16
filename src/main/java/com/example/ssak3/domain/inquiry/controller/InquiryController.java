@@ -30,8 +30,7 @@ public class InquiryController {
     @PostMapping
     public ResponseEntity<ApiResponse> createInquiryApi(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody InquiryCreateRequest request) {
 
-        Long userId = authUser.getId();
-        ApiResponse response = ApiResponse.success("문의가 정상적으로 등록되었습니다.", inquiryService.createInquiry(userId, request));
+        ApiResponse response = ApiResponse.success("문의가 정상적으로 등록되었습니다.", inquiryService.createInquiry(authUser.getId(), request));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -40,10 +39,9 @@ public class InquiryController {
      * 문의 전체 조회 API
      */
     @GetMapping
-    public ResponseEntity<ApiResponse> getInquiryListApi(@AuthenticationPrincipal AuthUser authUser, @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+    public ResponseEntity<ApiResponse> getInquiryListApi(@AuthenticationPrincipal AuthUser authUser, @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        Long userId = authUser.getId();
-        PageResponse<InquiryListGetResponse> pageResponse = inquiryService.getInquiryList(userId, pageable);
+        PageResponse<InquiryListGetResponse> pageResponse = inquiryService.getInquiryList(authUser.getId(), pageable);
 
         ApiResponse response = ApiResponse.success("전체 문의가 정상적으로 조회되었습니다.", pageResponse);
 
@@ -56,8 +54,7 @@ public class InquiryController {
     @GetMapping("/{inquiryId}")
     public ResponseEntity<ApiResponse> getInquiryApi(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long inquiryId) {
 
-        Long userId = authUser.getId();
-        ApiResponse response = ApiResponse.success("선택하신 문의가 정상적으로 조회 완료되었습니다.", inquiryService.getInquiry(userId, inquiryId));
+        ApiResponse response = ApiResponse.success("선택하신 문의가 정상적으로 조회 완료되었습니다.", inquiryService.getInquiry(authUser.getId(), inquiryId));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -66,22 +63,20 @@ public class InquiryController {
      * 문의 수정 API
      */
     @PatchMapping("/{inquiryId}")
-    public ResponseEntity<ApiResponse> updateInquiryApi(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long inquiryId, @RequestBody InquiryUpdateRequest request) {
+    public ResponseEntity<ApiResponse> updateInquiryApi(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long inquiryId, @Valid @RequestBody InquiryUpdateRequest request) {
 
-        Long userId = authUser.getId();
-        ApiResponse response = ApiResponse.success("문의가 수정 완료되었습니다.", inquiryService.updateInquiry(userId, inquiryId, request));
+        ApiResponse response = ApiResponse.success("문의가 수정 완료되었습니다.", inquiryService.updateInquiry(authUser.getId(), inquiryId, request));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     /**
      * 문의 삭제 API
-     **/
+     */
     @DeleteMapping("/{inquiryId}")
     public ResponseEntity<ApiResponse> deleteInquiryApi(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long inquiryId) {
 
-        Long userId = authUser.getId();
-        ApiResponse response = ApiResponse.success("문의가 삭제되었습니다.", inquiryService.deleteInquiry(userId, inquiryId));
+        ApiResponse response = ApiResponse.success("문의가 삭제되었습니다.", inquiryService.deleteInquiry(authUser.getId(), inquiryId));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

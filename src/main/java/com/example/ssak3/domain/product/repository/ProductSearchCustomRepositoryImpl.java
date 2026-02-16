@@ -69,10 +69,8 @@ public class ProductSearchCustomRepositoryImpl implements ProductSearchCustomRep
                         timeDeal.status.eq(TimeDealStatus.OPEN),
                         timeDeal.startAt.before(LocalDateTime.now()),
                         timeDeal.endAt.after(LocalDateTime.now())
-                        )
+                )
                 .where(
-                        // LEFT JOIN은 왼쪽 테이블에 어떤 조건을 걸어도 조인 실패 시 오른쪽 테이블 행에 매핑을 실패할 뿐, 왼쪽 테이블 행이 필터링 되지 않음
-                        // LEFT JOIN에서 ON 절은 오른쪽 테이블을 갖다 붙일 자격만 따짐 -> 따라서 Product 조건은 WHERE 절에 걸어줌
                         product.isDeleted.eq(false),
                         product.status.eq(ProductStatus.FOR_SALE),
                         nameContains(keyword),
@@ -83,12 +81,13 @@ public class ProductSearchCustomRepositoryImpl implements ProductSearchCustomRep
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch(),
-        pageable,
-        totalCount);
+                pageable,
+                totalCount);
 
     }
 
     private BooleanExpression nameContains(String keyword) {
+
         return (keyword != null && !keyword.isBlank()) ? product.name.contains(keyword) : null;
     }
 

@@ -1,6 +1,5 @@
 package com.example.ssak3.domain.timedeal.model.response;
 
-
 import com.example.ssak3.common.enums.TimeDealStatus;
 import com.example.ssak3.domain.timedeal.entity.TimeDeal;
 import lombok.Getter;
@@ -11,6 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @RequiredArgsConstructor
 public class TimeDealCreateResponse {
+
     private final Long id;
     private final String productName;
     private final String productInformation;
@@ -24,6 +24,7 @@ public class TimeDealCreateResponse {
     private final LocalDateTime updatedAt;
 
     public static TimeDealCreateResponse from(TimeDeal timeDeal) {
+
         return new TimeDealCreateResponse(
                 timeDeal.getId(),
                 timeDeal.getProduct().getName(),

@@ -21,7 +21,9 @@ public class CategoryUserController {
      */
     @GetMapping
     public ResponseEntity<ApiResponse> getCategoryListApi() {
-        ApiResponse response = ApiResponse.success("카테고리목록을 조회했습니다.", categoryUserService.getCategoryList());
+
+        ApiResponse response = ApiResponse.success("카테고리 목록을 조회했습니다.", categoryUserService.getCategoryList());
+
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

@@ -1,5 +1,6 @@
 package com.example.ssak3.domain.coupon.model.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,9 +24,11 @@ public class CouponCreateRequest {
     private Integer totalQuantity;
 
     @NotNull(message = "발급 시작일은 필수입니다.")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime issueStartDate;
 
     @NotNull(message = "발급 종료일은 필수입니다.")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime issueEndDate;
 
     @NotNull(message = "최소 주문 금액은 필수입니다.")

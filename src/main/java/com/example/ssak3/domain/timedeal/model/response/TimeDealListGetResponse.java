@@ -9,12 +9,11 @@ import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 
-import static com.example.ssak3.domain.timedeal.utils.TimeDealUtils.formatRemainingTime;
-
 @Getter
 @RequiredArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PRIVATE, force = true)
 public class TimeDealListGetResponse {
+
     private final Long id;
     private final String productName;
     private final Integer originalPrice;
@@ -23,28 +22,18 @@ public class TimeDealListGetResponse {
     private final LocalDateTime startAt;
     private final LocalDateTime endAt;
     private final String imageUrl;
-    private final String remainingTime;
 
     public static TimeDealListGetResponse from(TimeDeal timeDeal) {
-
-        LocalDateTime now = LocalDateTime.now();
-        TimeDealStatus status = timeDeal.getStatus();
-        String remainingTime = null;
-
-        if (status == TimeDealStatus.READY || status == TimeDealStatus.OPEN) {
-            remainingTime = formatRemainingTime(now, timeDeal.getStartAt(), timeDeal.getEndAt());
-        }
 
         return new TimeDealListGetResponse(
                 timeDeal.getId(),
                 timeDeal.getProduct().getName(),
                 timeDeal.getProduct().getPrice(),
                 timeDeal.getDealPrice(),
-                status,
+                timeDeal.getStatus(),
                 timeDeal.getStartAt(),
                 timeDeal.getEndAt(),
-                timeDeal.getImage(),
-                remainingTime
+                timeDeal.getImage()
         );
     }
 }

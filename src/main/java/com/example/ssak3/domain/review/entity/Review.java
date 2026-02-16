@@ -43,16 +43,14 @@ public class Review extends BaseEntity {
     }
 
     public void update(ReviewUpdateRequest request) {
-        if (request.getContent() != null) {
-            this.content = request.getContent();
-        }
-        if (request.getScore() != null) {
-            this.score = request.getScore();
-        }
+
+        if (request.getContent() != null) this.content = request.getContent();
+
+        if (request.getScore() != null) this.score = request.getScore();
     }
 
     public void softDelete() {
+
         this.isDeleted = true;
     }
-
 }

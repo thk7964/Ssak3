@@ -30,31 +30,16 @@ import java.util.UUID;
 public class S3Uploader {
 
     private final S3Client s3Client;
-
     private final S3Presigner s3Presigner;
 
     @Value("${spring.cloud.aws.s3.bucket}")
     private String bucket;
 
     /**
-     * 이미지 업로드
-     */
-    public String uploadImage(MultipartFile multipartFile, String dirName) {
-        validateMultipartFile(multipartFile);
-
-        String key = buildS3Key(dirName, multipartFile.getOriginalFilename());
-
-        try {
-            return putS3(multipartFile, key);
-        } catch (IOException e) {
-            throw new CustomException(ErrorCode.IMAGE_UPLOAD_ERROR);
-        }
-    }
-
-    /**
      * put presigned url 생성
      */
     public ImagePutUrlResponse createPresignedPutUrl(String dirName, String originalFilename, int expireMinutes) {
+
         if (originalFilename == null || originalFilename.isBlank()) {
             throw new CustomException(ErrorCode.INVALID_FILE);
         }
@@ -83,6 +68,7 @@ public class S3Uploader {
      * get presigned url 생성
      */
     public String createPresignedGetUrl(String fileUrl, int expireMinutes) {
+
         if (fileUrl == null) {
             return null;
         }
@@ -103,6 +89,7 @@ public class S3Uploader {
      * url에서 key 추출
      */
     public String extractKey(String fileUrl) {
+
         if (fileUrl == null || fileUrl.isBlank()) {
             throw new CustomException(ErrorCode.INVALID_URL);
         }
@@ -120,6 +107,7 @@ public class S3Uploader {
      * 이미지 삭제
      */
     public void deleteImage(String fileUrl) {
+
         if (fileUrl == null || fileUrl.isBlank()) return;
 
         String key = extractKey(fileUrl);
@@ -131,35 +119,10 @@ public class S3Uploader {
     }
 
     /**
-     * S3 업로드
-     */
-    private String putS3(MultipartFile multipartFile, String key) throws IOException {
-        PutObjectRequest putReq = PutObjectRequest.builder()
-                .bucket(bucket)
-                .key(key)
-                .contentType(multipartFile.getContentType())
-                .contentLength(multipartFile.getSize())
-                .build();
-
-        s3Client.putObject(
-                putReq,
-                RequestBody.fromInputStream(multipartFile.getInputStream(), multipartFile.getSize())
-        );
-
-        return getPublicUrl(bucket, key).toString();
-    }
-
-    /**
      * S3 key 생성
      */
     private String buildS3Key(String dirName, String fileName) {
         return dirName + "/" + UUID.randomUUID() + "_" + fileName;
-    }
-
-    private void validateMultipartFile(MultipartFile multipartFile) {
-        if (multipartFile == null || multipartFile.isEmpty()) {
-            throw new CustomException(ErrorCode.INVALID_FILE);
-        }
     }
 
     private URL getPublicUrl(String bucket, String key) {

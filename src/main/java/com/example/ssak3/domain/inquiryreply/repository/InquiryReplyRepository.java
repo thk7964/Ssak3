@@ -9,4 +9,5 @@ public interface InquiryReplyRepository extends JpaRepository<InquiryReply, Long
 
     Optional<InquiryReply> findByInquiryIdAndIsDeletedFalse(Long inquiryId);
 
+    Optional<InquiryReply> findByIdAndIsDeletedFalse(Long inquiryReplyId);
 }

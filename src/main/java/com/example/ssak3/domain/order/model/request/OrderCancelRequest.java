@@ -14,5 +14,4 @@ public class OrderCancelRequest {
 
     @NotBlank
     private String cancelReason;
-
 }

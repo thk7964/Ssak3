@@ -49,8 +49,8 @@ public class User extends BaseEntity {
     @Column(nullable = false, name = "is_deleted")
     private boolean isDeleted;
 
-    // 일반 유저 생성자
     public User(String name, String nickname, String email, String password, LocalDate birth, String phone, String address) {
+
         this.name = name;
         this.nickname = nickname;
         this.email = email;
@@ -70,7 +70,16 @@ public class User extends BaseEntity {
         this.provider = provider;
     }
 
+    public void updatePhone() {
+        this.phone = null;
+    }
+
+    public void updatePassword(String newPassword) {
+        this.password = (newPassword != null) ? newPassword.replaceAll("\\s", "") : this.password;
+    }
+
     public void update(UserUpdateRequest request) {
+
         this.name = (request.getName() != null) ? request.getName().replaceAll("\\s", "") : this.name;
         this.nickname = (request.getNickname() != null) ? request.getNickname().replaceAll("\\s", "") : this.nickname;
         this.birth = (request.getBirth() != null) ? request.getBirth() : this.birth;
@@ -78,15 +87,7 @@ public class User extends BaseEntity {
         this.address = (request.getAddress() != null) ? request.getAddress() : this.address;
     }
 
-    public void updatePassword(String newPassword) {
-        this.password = (newPassword != null) ? newPassword.replaceAll("\\s", "") : this.password;
-    }
-
     public void softDelete() {
         this.isDeleted = true;
-    }
-
-    public void updatePhone() {
-        this.phone = null;
     }
 }

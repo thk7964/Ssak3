@@ -1,6 +1,8 @@
 package com.example.ssak3.domain.timedeal.model.request;
 
+import com.example.ssak3.common.serializer.LocalDateTimeHourDeserializer;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Getter;
@@ -21,13 +23,11 @@ public class TimeDealCreateRequest {
     private Integer dealPrice;
 
     @NotNull(message = "startAt은 필수 입력 값이고 yyyy-MM-dd'T'HH 형식으로 입력해야 합니다.")
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH")
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH")
+    @JsonDeserialize(using = LocalDateTimeHourDeserializer.class)
     private LocalDateTime startAt;
 
     @NotNull(message = "endAt은 필수 입력 값이고 yyyy-MM-dd'T'HH 형식으로 입력해야 합니다.")
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH")
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH")
+    @JsonDeserialize(using = LocalDateTimeHourDeserializer.class)
     private LocalDateTime endAt;
 
     private String image;

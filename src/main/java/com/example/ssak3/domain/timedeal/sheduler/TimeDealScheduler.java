@@ -21,7 +21,7 @@ public class TimeDealScheduler {
 
     private final TimeDealRepository timeDealRepository;
 
-    @Scheduled(cron = "0 0 * * * *")
+    @Scheduled(cron = "0 0/5 * * * *")
     @SchedulerLock(
             name = "timeDealScheduler",
             lockAtMostFor = "PT1M",
@@ -30,9 +30,11 @@ public class TimeDealScheduler {
     @Transactional
     @CacheEvict(value = "timeDealsOpen", allEntries = true)
     public void updateTimeDealStatus() {
+
         LocalDateTime now = LocalDateTime.now();
 
         List<TimeDeal> open = timeDealRepository.findReadyToOpen(now);
+
         for (TimeDeal timeDeal : open) {
             timeDeal.setStatus(TimeDealStatus.OPEN);
         }

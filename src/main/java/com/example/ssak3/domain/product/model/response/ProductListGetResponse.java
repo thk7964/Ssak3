@@ -24,6 +24,7 @@ public class ProductListGetResponse {
     private final LocalDateTime updatedAt;
 
     public static ProductListGetResponse from(Product product, String imageUrl) {
+
         return new ProductListGetResponse(
                 product.getId(),
                 product.getCategory().getId(),

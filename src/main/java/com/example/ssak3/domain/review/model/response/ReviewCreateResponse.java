@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 
-
 @Getter
 @RequiredArgsConstructor
 public class ReviewCreateResponse {
@@ -21,6 +20,7 @@ public class ReviewCreateResponse {
     private final LocalDateTime updatedAt;
 
     public static ReviewCreateResponse from(Review review) {
+
         return new ReviewCreateResponse(
                 review.getId(),
                 review.getUser().getId(),

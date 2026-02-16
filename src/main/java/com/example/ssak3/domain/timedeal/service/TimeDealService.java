@@ -30,8 +30,7 @@ public class TimeDealService {
     public TimeDealGetResponse getTimeDeal(Long timeDealId) {
 
         TimeDeal response = timeDealRepository.findByIdAndIsDeletedFalse(timeDealId)
-                .orElseThrow(() -> new CustomException(ErrorCode.TIME_DEAL_NOT_FOUND)
-                );
+                .orElseThrow(() -> new CustomException(ErrorCode.TIME_DEAL_NOT_FOUND));
 
         String imageUrl = s3Uploader.createPresignedGetUrl(response.getImage(), 5);
         String detailImageUrl = s3Uploader.createPresignedGetUrl(response.getDetailImage(), 5);
@@ -50,6 +49,7 @@ public class TimeDealService {
     )
     @Transactional(readOnly = true)
     public PageResponse<TimeDealListGetResponse> getTimeDealStatusList(String status, Pageable pageable) {
+
         TimeDealStatus timeDealStatus = parseStatus(status);
 
         Page<TimeDealListGetResponse> responsePage = timeDealRepository.findTimeDeals(timeDealStatus, pageable);
@@ -58,9 +58,11 @@ public class TimeDealService {
     }
 
     private TimeDealStatus parseStatus(String status) {
+
         if (status == null) {
             return null;
         }
+
         try {
             TimeDealStatus parsed = TimeDealStatus.valueOf(status.toUpperCase());
 
@@ -73,5 +75,4 @@ public class TimeDealService {
             throw new CustomException(ErrorCode.TIME_DEAL_INVALID_STATUS);
         }
     }
-
 }

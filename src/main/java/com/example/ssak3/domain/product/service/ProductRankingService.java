@@ -40,26 +40,22 @@ public class ProductRankingService {
 
         LocalDateTime now = LocalDateTime.now();
 
-        String key = PRODUCT_VIEW_CHECK_PREFIX + ip + ":productId:" + productId; // 오늘 조회 했는지 체크할 Key
-        LocalDateTime midnight = LocalDate.now().plusDays(1).atStartOfDay(); // 다음 날 자정 만료
+        String key = PRODUCT_VIEW_CHECK_PREFIX + ip + ":productId:" + productId;
+        LocalDateTime midnight = LocalDate.now().plusDays(1).atStartOfDay();
         Boolean isFirstView = redisTemplate.opsForValue().setIfAbsent(key, "1", Duration.between(now, midnight).getSeconds(), TimeUnit.SECONDS);
 
-        // 오늘 첫 조회가 아니면 조회수 증가 x
         if (Boolean.FALSE.equals(isFirstView)) {
             return;
         }
 
-        LocalDate nowDay =  LocalDate.now();
+        LocalDate nowDay = LocalDate.now();
 
         Double score = redisTemplate.opsForZSet().incrementScore(PRODUCT_DAILY_RANKING_PREFIX + nowDay, productId.toString(), 1);
 
-        // 최초 한 번만 TTL 설정
         if (score != null && score == 1.0) {
 
-            // 오늘로부터 10일 뒤 자정 시점 구하기
             LocalDateTime dayViewCountExp = nowDay.plusDays(10).atStartOfDay();
 
-            // TTL 설정: Redis에서 오늘로부터 10일 뒤 데이터 만료
             redisTemplate.expireAt(PRODUCT_DAILY_RANKING_PREFIX + nowDay, dayViewCountExp.atZone(ZoneId.systemDefault()).toInstant());
         }
 
@@ -70,20 +66,16 @@ public class ProductRankingService {
      */
     public List<ProductGetPopularResponse> getPopularProductTop10() {
 
-        // 랭킹으로 조회
         Set<ZSetOperations.TypedTuple<String>> result = redisTemplate.opsForZSet().reverseRangeWithScores(PRODUCT_WEEKLY_RANKING_KEY, 0, 9);
 
         if (result == null || result.isEmpty()) {
             return Collections.emptyList();
         }
 
-        // DB에서 TOP 10 상품 id 리스트 가져오기: Redis가 정렬해준 순서 보장함
         List<Long> productIdList = result.stream().map(id -> Long.parseLong(id.getValue())).toList();
 
-        // DB에서 Product 가져오기: in 연산은 Redis가 정렬해준 순서를 보장해주지 않음
         List<Product> productList = productRepository.findAllByIdInAndStatusAndIsDeletedFalse(productIdList, ProductStatus.FOR_SALE);
 
-        // DB에서 TimeDeal 중인 상품 있으면 가져오기
         List<TimeDeal> timeDealList = timeDealRepository.findAllByProductIdInAndStatusAndIsDeletedFalse(productIdList, TimeDealStatus.OPEN);
 
         Map<Long, Product> productMap = productList.stream()
@@ -92,7 +84,6 @@ public class ProductRankingService {
         Map<Long, TimeDeal> timeDealMap = timeDealList.stream()
                 .collect(Collectors.toMap(timeDeal -> timeDeal.getProduct().getId(), timeDeal -> timeDeal));
 
-        // 랭킹에 따라 조립
         return productIdList.stream()
                 .map(id -> {
                     Product product = productMap.get(id);
@@ -114,7 +105,7 @@ public class ProductRankingService {
 
                     return ProductGetPopularResponse.from(product, timeDeal, productImageUrl, timeDealImageUrl);
                 })
-                .filter(Objects::nonNull) // null인 애들은 걸러냄
+                .filter(Objects::nonNull)
                 .toList();
     }
 
@@ -126,16 +117,13 @@ public class ProductRankingService {
 
         List<String> otherKeys = new ArrayList<>();
 
-        // 현재 시점으로부터 일주일치 키 리스트 생성 (오늘은 제외)
         for (int i = 0; i < 6; i++) {
             otherKeys.add(PRODUCT_DAILY_RANKING_PREFIX + now.minusDays(i + 1));
         }
 
-        // 일주일치 결과 집계
         redisTemplate.opsForZSet().unionAndStore(
                 PRODUCT_DAILY_RANKING_PREFIX + now,
                 otherKeys,
                 PRODUCT_WEEKLY_RANKING_KEY);
     }
-
 }

@@ -25,7 +25,7 @@ public class OrderProduct {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "unit_price")
     private Integer unitPrice;
 
     @Column(nullable = false)

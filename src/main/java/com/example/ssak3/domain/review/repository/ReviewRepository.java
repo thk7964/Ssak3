@@ -1,6 +1,8 @@
 package com.example.ssak3.domain.review.repository;
 
 import com.example.ssak3.domain.review.entity.Review;
+import com.example.ssak3.domain.user.entity.User;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,13 +21,12 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     Page<Review> findByUserIdAndIsDeletedFalse(Long id, Pageable pageable);
 
     @Query("""
-    select avg(r.score)
-    from Review r
-    where r.isDeleted = false
-    and r.product.id = :productId
-""")
+                select avg(r.score)
+                from Review r
+                where r.isDeleted = false
+                and r.product.id = :productId
+            """)
     Double findAverageScoreByProductId(Long productId);
 
-    Optional<Review> findByUserIdAndProductId(Long id, Long productId);
-
+    boolean existsByUserIdAndProductIdAndIsDeletedFalse(Long id,  Long productId);
 }

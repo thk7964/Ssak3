@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserCouponIssueRequest {
 
-    @NotNull(message = "발급받을 쿠폰 ID는 필수입니다.")
+    @NotNull(message = "발급 받을 쿠폰 ID는 필수입니다.")
     private Long couponId;
 }

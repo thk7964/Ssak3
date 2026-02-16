@@ -19,16 +19,20 @@ public class CategoryUserService {
     private final CategoryRepository categoryRepository;
 
     /**
-     * 카테고리 목록조회 비즈니스 로직
+     * 카테고리 목록 조회
      */
-    @Cacheable(cacheManager = "categoryCacheManager",
+    @Cacheable(
+            cacheManager = "categoryCacheManager",
             value = "categoryRedisCache",
-            key = "'all'")
+            key = "'all'"
+    )
     @Transactional(readOnly = true)
     public List<CategoryListGetResponse> getCategoryList() {
+
         List<Category> categoryList = categoryRepository.findByIsDeletedFalse();
-        List<CategoryListGetResponse> listGetResponse = categoryList.stream().map(CategoryListGetResponse::from).toList();
-        log.info("service DB에서 조회된 결과: {}", listGetResponse);
-        return listGetResponse;
+
+        return categoryList.stream()
+                .map(CategoryListGetResponse::from)
+                .toList();
     }
 }

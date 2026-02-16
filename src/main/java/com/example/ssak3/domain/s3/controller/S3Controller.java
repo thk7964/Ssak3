@@ -23,11 +23,9 @@ public class S3Controller {
      */
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/presigned")
-    public ResponseEntity<ApiResponse> createPresignedPutUrl(
-            @RequestParam String dirName,
-            @RequestParam String fileName
-    ) {
-        ApiResponse response = ApiResponse.success("presigned url 발급 성공했습니다.", s3Uploader.createPresignedPutUrl(dirName, fileName, 5));
+    public ResponseEntity<ApiResponse> createPresignedPutUrl(@RequestParam String dirName, @RequestParam String fileName) {
+
+        ApiResponse response = ApiResponse.success("presigned url 발급에 성공했습니다.", s3Uploader.createPresignedPutUrl(dirName, fileName, 5));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

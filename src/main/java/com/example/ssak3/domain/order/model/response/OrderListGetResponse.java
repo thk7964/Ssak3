@@ -19,6 +19,7 @@ public class OrderListGetResponse {
     private final LocalDateTime updatedAt;
 
     public static OrderListGetResponse from(Order order) {
+
         return new OrderListGetResponse(
                 order.getId(),
                 order.getOrderNo(),
@@ -27,6 +28,5 @@ public class OrderListGetResponse {
                 order.getCreatedAt(),
                 order.getUpdatedAt()
         );
-
     }
 }

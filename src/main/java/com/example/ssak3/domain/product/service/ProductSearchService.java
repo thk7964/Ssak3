@@ -38,6 +38,5 @@ public class ProductSearchService {
         );
 
         return PageResponse.from(mapped);
-
     }
 }

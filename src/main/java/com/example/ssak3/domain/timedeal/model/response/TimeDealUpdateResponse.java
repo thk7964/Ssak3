@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @RequiredArgsConstructor
 public class TimeDealUpdateResponse {
+
     private final Long id;
     private final String productName;
     private final String productInformation;
@@ -23,6 +24,7 @@ public class TimeDealUpdateResponse {
     private final LocalDateTime updatedAt;
 
     public static TimeDealUpdateResponse from(TimeDeal timeDeal) {
+
         return new TimeDealUpdateResponse(
                 timeDeal.getId(),
                 timeDeal.getProduct().getName(),

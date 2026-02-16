@@ -14,33 +14,31 @@ import com.example.ssak3.domain.product.model.response.*;
 import com.example.ssak3.domain.product.repository.ProductRepository;
 import com.example.ssak3.domain.s3.service.S3Uploader;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
+
 @Service
 @RequiredArgsConstructor
 public class ProductAdminService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
-    private final ProductRankingService productRankingService;
     private final S3Uploader s3Uploader;
 
     /**
-     * 상품생성
+     * 상품 생성
      */
     @Transactional
     public ProductCreateResponse createProduct(ProductCreateRequest request) {
-        // 카테고리 존재여부 확인 및 객체 가져오기
-        Category findCategory = categoryRepository.findByIdAndIsDeletedFalse(request.getCategoryId())
+
+        Category category = categoryRepository.findByIdAndIsDeletedFalse(request.getCategoryId())
                 .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
 
         Product product = new Product(
-                findCategory,
+                category,
                 request.getName(),
                 request.getPrice(),
                 ProductStatus.BEFORE_SALE,
@@ -50,30 +48,31 @@ public class ProductAdminService {
                 request.getDetailImage()
         );
 
-        Product createdProduct = productRepository.save(product);
-        return ProductCreateResponse.from(createdProduct);
+        Product savedProduct = productRepository.save(product);
+
+        return ProductCreateResponse.from(savedProduct);
     }
 
     /**
-     * 상품 상세조회(관리자)
+     * 상품 상세 조회(관리자)
      */
     @Transactional(readOnly = true)
     public ProductGetResponse getProductAdmin(Long productId) {
-        log.info("product service 조회 전: {}", productId);
-        Product foundProduct = productRepository.findByIdAndIsDeletedFalse(productId)
-                .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
-        String viewImageUrl = s3Uploader.createPresignedGetUrl(foundProduct.getImage(), 5);
-        String viewDetailImageUrl = s3Uploader.createPresignedGetUrl(foundProduct.getDetailImage(), 5);
+        Product product = findProduct(productId);
 
-        return ProductGetResponse.from(foundProduct, viewImageUrl, viewDetailImageUrl);
+        String viewImageUrl = s3Uploader.createPresignedGetUrl(product.getImage(), 5);
+        String viewDetailImageUrl = s3Uploader.createPresignedGetUrl(product.getDetailImage(), 5);
+
+        return ProductGetResponse.from(product, viewImageUrl, viewDetailImageUrl);
     }
 
     /**
-     * 상품 목록조회(관리자)
+     * 상품 목록 조회(관리자)
      */
     @Transactional(readOnly = true)
     public PageResponse<ProductListGetResponse> getProductListAdmin(Long categoryId, Pageable pageable) {
+
         Page<Product> productList = productRepository.findProductListByCategoryIdForAdmin(categoryId, pageable);
 
         Page<ProductListGetResponse> mapped = productList.map(p -> {
@@ -85,26 +84,21 @@ public class ProductAdminService {
     }
 
     /**
-     * 상품수정
+     * 상품 수정
      */
     @Transactional
     public ProductUpdateResponse updateProduct(Long productId, ProductUpdateRequest request) {
+
         Category category = categoryRepository.findByIdAndIsDeletedFalse(request.getCategoryId())
                 .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
 
+        Product foundProduct = findProduct(productId);
 
-        Product foundProduct = productRepository.findByIdAndIsDeletedFalse(productId)
-                .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
-
-        // 저장되어 있는 이미지 파일이 있는지 확인
-        if (request.getImage()!=null && foundProduct.getImage() != null) {
-            // 기존 파일 먼저 삭제
+        if (request.getImage() != null && foundProduct.getImage() != null) {
             s3Uploader.deleteImage(foundProduct.getImage());
         }
 
-        // 저장되어 있는 이미지 파일이 있는지 확인
-        if (request.getDetailImage()!=null && foundProduct.getDetailImage() != null) {
-            // 기존 파일 먼저 삭제
+        if (request.getDetailImage() != null && foundProduct.getDetailImage() != null) {
             s3Uploader.deleteImage(foundProduct.getDetailImage());
         }
 
@@ -114,12 +108,12 @@ public class ProductAdminService {
     }
 
     /**
-     * 상품삭제
+     * 상품 삭제
      */
     @Transactional
     public ProductDeleteResponse deleteProduct(Long productId) {
-        Product foundProduct = productRepository.findByIdAndIsDeletedFalse(productId)
-                .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
+        
+        Product foundProduct = findProduct(productId);
 
         if (foundProduct.getImage() != null) {
             s3Uploader.deleteImage(foundProduct.getImage());
@@ -130,20 +124,26 @@ public class ProductAdminService {
         }
 
         foundProduct.softDelete();
+
         return ProductDeleteResponse.from(foundProduct);
     }
 
     /**
-     * 상품 상태변경
+     * 상품 상태 변경
      */
     @Transactional
     public ProductUpdateStatusResponse updateProductStatus(ProductUpdateStatusRequest request) {
-        log.info("productService 상태변경 전: {}", request.getStatus());
-        Product foundProduct = productRepository.findByIdAndIsDeletedFalse(request.getProductId())
-                .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        Product foundProduct = findProduct(request.getProductId());
+
         foundProduct.updateStatus(request.getStatus());
-        log.info("productService 상태변경 후: {}", foundProduct.getStatus());
+
         return ProductUpdateStatusResponse.from(foundProduct);
+    }
+
+    private Product findProduct(Long productId) {
+        return productRepository.findByIdAndIsDeletedFalse(productId)
+                .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
     }
 
 }

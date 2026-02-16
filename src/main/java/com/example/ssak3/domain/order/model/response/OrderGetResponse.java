@@ -20,11 +20,12 @@ public class OrderGetResponse {
     private final Long totalPrice;
     private final Long userCouponId;
     private final List<OrderProductGetResponse> orderProductList;
-    private final String orderNo; //결제시 사용
+    private final String orderNo;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
     public static OrderGetResponse from(Order order, List<OrderProduct> orderProductList) {
+
         List<OrderProductGetResponse> list = orderProductList
                 .stream()
                 .map(OrderProductGetResponse::from)

@@ -10,12 +10,13 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class UserCouponIssueResponse {
 
-    private final Long userCouponId;    // 발급된 회원 쿠폰의 아이디
+    private final Long userCouponId;
     private final String couponName;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
     public static UserCouponIssueResponse from(UserCoupon userCoupon) {
+
         return new UserCouponIssueResponse(
                 userCoupon.getId(),
                 userCoupon.getCoupon().getName(),

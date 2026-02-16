@@ -23,11 +23,12 @@ public class CategoryListGetResponse {
     }
 
     public static CategoryListGetResponse from(Category category) {
-       return new CategoryListGetResponse(
-               category.getId(),
-               category.getName(),
-               category.getCreatedAt(),
-               category.getUpdatedAt()
-       );
+
+        return new CategoryListGetResponse(
+                category.getId(),
+                category.getName(),
+                category.getCreatedAt(),
+                category.getUpdatedAt()
+        );
     }
 }

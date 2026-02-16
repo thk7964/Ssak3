@@ -30,25 +30,22 @@ public class InquiryReplyController {
     @PostMapping
     public ResponseEntity<ApiResponse> createInquiryReplyApi(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody InquiryReplyCreateRequest request) {
 
-        Long adminId = authUser.getId();
-        ApiResponse response = ApiResponse.success("문의 답변 생성 성공", inquiryReplyService.createInquiryReply(adminId, request));
+        ApiResponse response = ApiResponse.success("문의 답변 생성에 성공했습니다.", inquiryReplyService.createInquiryReply(authUser.getId(), request));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
-
 
     /**
      * 문의 목록 조회 API
      */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/inquiries")
-    public ResponseEntity<ApiResponse> getInquiryListApi(@PageableDefault(size = 10, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable) {
+    public ResponseEntity<ApiResponse> getInquiryListApi(@PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        ApiResponse response = ApiResponse.success("문의 목록 조회 성공", inquiryReplyService.getInquiryList(pageable));
+        ApiResponse response = ApiResponse.success("문의 목록 조회에 성공했습니다.", inquiryReplyService.getInquiryList(pageable));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
-
 
     /**
      * 관리자용 문의 상세 조회 API
@@ -57,7 +54,7 @@ public class InquiryReplyController {
     @GetMapping("/inquiries/{inquiryId}")
     public ResponseEntity<ApiResponse> getInquiryForAdminApi(@PathVariable Long inquiryId) {
 
-        ApiResponse response = ApiResponse.success("문의 상세 조회 성공", inquiryReplyService.getInquiryForAdmin(inquiryId));
+        ApiResponse response = ApiResponse.success("문의 상세 조회에 성공했습니다.", inquiryReplyService.getInquiryForAdmin(inquiryId));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -70,7 +67,7 @@ public class InquiryReplyController {
     @GetMapping("/{inquiryReplyId}")
     public ResponseEntity<ApiResponse> getInquiryReplyApi(@PathVariable Long inquiryReplyId) {
 
-        ApiResponse response = ApiResponse.success("문의 답변 조회 성공", inquiryReplyService.getInquiryReply(inquiryReplyId));
+        ApiResponse response = ApiResponse.success("문의 답변 조회에 성공했습니다.", inquiryReplyService.getInquiryReply(inquiryReplyId));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -82,9 +79,7 @@ public class InquiryReplyController {
     @PatchMapping("/inquiries/{inquiryId}")
     public ResponseEntity<ApiResponse> updateInquiryReplyApi(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long inquiryId, @Valid @RequestBody InquiryReplyUpdateRequest request) {
 
-        Long adminId = authUser.getId();
-
-        ApiResponse response = ApiResponse.success("문의 답변 수정 성공", inquiryReplyService.updateInquiryReply(adminId, inquiryId, request));
+        ApiResponse response = ApiResponse.success("문의 답변 수정에 성공했습니다.", inquiryReplyService.updateInquiryReply(authUser.getId(), inquiryId, request));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -95,8 +90,8 @@ public class InquiryReplyController {
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/inquiries/{inquiryId}")
     public ResponseEntity<ApiResponse> deleteInquiryReplyApi(@PathVariable Long inquiryId) {
-        
-        ApiResponse response = ApiResponse.success("문의 답변 삭제 성공", inquiryReplyService.deleteInquiryReply(inquiryId));
+
+        ApiResponse response = ApiResponse.success("문의 답변 삭제에 성공했습니다.", inquiryReplyService.deleteInquiryReply(inquiryId));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

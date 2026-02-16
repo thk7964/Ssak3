@@ -33,8 +33,7 @@ public class ProductViewBackUpService {
         Set<ZSetOperations.TypedTuple<String>> redisData = null;
 
         try {
-            // Redis에서 값 가져오기
-             redisData = redisTemplate.opsForZSet().rangeWithScores(key, 0, -1);
+            redisData = redisTemplate.opsForZSet().rangeWithScores(key, 0, -1);
         } catch (Exception e) {
             throw new CustomException(ErrorCode.REDIS_CONNECTION_ERROR);
         }
@@ -43,7 +42,6 @@ public class ProductViewBackUpService {
             return;
         }
 
-        // 변환
         List<ProductViewHistory> histories = redisData.stream()
                 .map(tuple -> {
                     Long productId = Long.parseLong(tuple.getValue());
@@ -56,7 +54,6 @@ public class ProductViewBackUpService {
                 .filter(history -> history != null)
                 .toList();
 
-        // DB에 저장하기
         productViewHistoryRepository.saveAll(histories);
     }
 }

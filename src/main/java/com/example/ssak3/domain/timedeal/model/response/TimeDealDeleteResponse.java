@@ -9,11 +9,13 @@ import java.time.LocalDateTime;
 @Getter
 @RequiredArgsConstructor
 public class TimeDealDeleteResponse {
+
     private final Long id;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
     public static TimeDealDeleteResponse from(TimeDeal timeDeal) {
+        
         return new TimeDealDeleteResponse(
                 timeDeal.getId(),
                 timeDeal.getCreatedAt(),

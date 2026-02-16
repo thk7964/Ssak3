@@ -3,7 +3,6 @@ package com.example.ssak3.domain.review.service;
 import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.enums.OrderStatus;
 import com.example.ssak3.common.exception.CustomException;
-import com.example.ssak3.common.model.AuthUser;
 import com.example.ssak3.common.model.PageResponse;
 import com.example.ssak3.domain.orderProduct.repository.OrderProductRepository;
 import com.example.ssak3.domain.product.entity.Product;
@@ -24,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -40,82 +38,78 @@ public class ReviewService {
      * 후기 생성
      */
     @Transactional
-    public ReviewCreateResponse createReview(AuthUser user, ReviewCreateRequest request) {
+    public ReviewCreateResponse createReview(Long userId, ReviewCreateRequest request) {
 
-        User foundUser = userRepository.findByIdAndIsDeletedFalse(user.getId())
+        User user = userRepository.findByIdAndIsDeletedFalse(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        if (!orderProductRepository.existsByOrderUserIdAndProductIdAndOrderStatus(foundUser.getId(), request.getProductId(), OrderStatus.DONE)) {
+        if (!orderProductRepository.existsByOrderUserIdAndProductIdAndOrderStatus(user.getId(), request.getProductId(), OrderStatus.DONE)) {
             throw new CustomException(ErrorCode.USER_NOT_PURCHASED_PRODUCT);
         }
 
-        Optional<Review> review = reviewRepository.findByUserIdAndProductId(foundUser.getId(), request.getProductId());
-
-        if (review.isPresent()) {
+        if (reviewRepository.existsByUserIdAndProductIdAndIsDeletedFalse(user.getId(), request.getProductId())) {
             throw new CustomException(ErrorCode.ALREADY_REVIEWED);
         }
 
-        Product foundProduct = productRepository.findByIdAndIsDeletedFalse(request.getProductId())
+        Product product = productRepository.findByIdAndIsDeletedFalse(request.getProductId())
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
-
         Review createReview = new Review(
-                foundUser,
-                foundProduct,
+                user,
+                product,
                 request.getContent(),
                 request.getScore()
         );
+
         Review savedReview = reviewRepository.save(createReview);
 
-        Double averageScoreByProductId = reviewRepository.findAverageScoreByProductId(foundProduct.getId());
+        Double averageScoreByProductId = reviewRepository.findAverageScoreByProductId(product.getId());
 
         Double roundedAvgScore = BigDecimal.valueOf(averageScoreByProductId)
-                // 소수점 자릿수(scale)를 1자리로 설정, 반올림 규칙은 HALF_UP(5 이상 올림)
                 .setScale(1, RoundingMode.HALF_UP)
-                // 다시 double 타입으로 변환 why? JSON 직렬화(객체를 전송 가능한 형태로 바꾸는 과정)
                 .doubleValue();
 
-        foundProduct.updateAverageScore(roundedAvgScore);
+        product.updateAverageScore(roundedAvgScore);
 
         return ReviewCreateResponse.from(savedReview);
     }
 
     /**
-     * 후기 상세조회
+     * 후기 상세 조회 (삭제 가능?)
      */
     @Transactional(readOnly = true)
     public ReviewGetResponse getReview(Long reviewId) {
-        Review foundReview = reviewRepository.findByIdAndIsDeletedFalse(reviewId)
-                .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
 
-       return ReviewGetResponse.from(foundReview);
+        Review review = findReview(reviewId);
+
+        return ReviewGetResponse.from(review);
     }
 
     /**
-     * 후기 목록조회
+     * 후기 목록 조회
      */
     @Transactional(readOnly = true)
-    public ReviewPageResponse getReviewList(Long productId, Pageable pageable) {
+    public ReviewPageResponse<ReviewListGetResponse> getReviewList(Long productId, Pageable pageable) {
+
         Page<ReviewListGetResponse> reviewPage = reviewRepository.findByProductIdAndIsDeletedFalse(productId, pageable)
                 .map(ReviewListGetResponse::from);
+
         Double averageScore = reviewRepository.findAverageScoreByProductId(productId);
 
-        // double은 2진수 기반이기 때문에 정확히 표현불가 -> BigDecimal은 10진수 기반
         Double roundedAvgScore = BigDecimal.valueOf(averageScore)
-                // 소수점 자릿수(scale)를 1자리로 설정, 반올림 규칙은 HALF_UP(5 이상 올림)
                 .setScale(1, RoundingMode.HALF_UP)
-                // 다시 double 타입으로 변환 why? JSON 직렬화(객체를 전송 가능한 형태로 바꾸는 과정)
                 .doubleValue();
+
         return ReviewPageResponse.from(reviewPage, roundedAvgScore);
     }
 
     /**
-     * 내가 쓴 후기 목록조회
+     * 내가 쓴 후기 목록 조회
      */
     @Transactional(readOnly = true)
-    public PageResponse getMyReviewList(AuthUser user, Pageable pageable) {
+    public PageResponse<ReviewListGetResponse> getMyReviewList(Long userId, Pageable pageable) {
 
-        Page<ReviewListGetResponse> reviewPage = reviewRepository.findByUserIdAndIsDeletedFalse(user.getId(), pageable)
+        Page<ReviewListGetResponse> reviewPage = reviewRepository.findByUserIdAndIsDeletedFalse(userId, pageable)
                 .map(ReviewListGetResponse::from);
 
         return PageResponse.from(reviewPage);
@@ -125,34 +119,39 @@ public class ReviewService {
      * 후기 수정
      */
     @Transactional
-    public ReviewUpdateResponse updateReview(AuthUser user, Long reviewId, ReviewUpdateRequest request) {
+    public ReviewUpdateResponse updateReview(Long userId, Long reviewId, ReviewUpdateRequest request) {
 
-        Review foundReview = reviewRepository.findByIdAndIsDeletedFalse(reviewId)
-                .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
+        Review review = findReview(reviewId);
 
-        // 사용자와 댓글 작성자가 일치하는지 확인
-        if(!user.getId().equals(foundReview.getUser().getId())) {
+        if (!userId.equals(review.getUser().getId())) {
             throw new CustomException(ErrorCode.REVIEW_AUTHOR_MISMATCH);
         }
-        foundReview.update(request);
-        return ReviewUpdateResponse.from(foundReview);
+
+        review.update(request);
+
+        return ReviewUpdateResponse.from(review);
     }
 
     /**
      * 후기 삭제
      */
     @Transactional
-    public ReviewDeleteResponse deleteReview(AuthUser user, Long reviewId) {
+    public ReviewDeleteResponse deleteReview(Long userId, Long reviewId) {
 
-        Review foundReview = reviewRepository.findByIdAndIsDeletedFalse(reviewId)
-                .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
-        log.info("service foundReview: {}", foundReview.getId());
-        // 사용자와 댓글 작성자가 일치하는지 확인
-        if (!user.getId().equals(foundReview.getUser().getId())) {
+        Review review = findReview(reviewId);
+
+        if (!userId.equals(review.getUser().getId())) {
             throw new CustomException(ErrorCode.REVIEW_AUTHOR_MISMATCH);
         }
-        log.info("service filter foundReview: {}", foundReview.getId());
-        foundReview.softDelete();
-        return ReviewDeleteResponse.from(foundReview);
+
+        review.softDelete();
+
+        return ReviewDeleteResponse.from(review);
+    }
+
+    private Review findReview(Long reviewId) {
+
+        return reviewRepository.findByIdAndIsDeletedFalse(reviewId)
+                .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
     }
 }

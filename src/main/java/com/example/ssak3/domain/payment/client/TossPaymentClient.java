@@ -24,6 +24,7 @@ public class TossPaymentClient {
             .build();
 
     public void confirm(String paymentKey, String orderId, Long amount) {
+
         String auth = Base64.getEncoder()
                 .encodeToString((secretKey + ":").getBytes());
 
@@ -39,11 +40,10 @@ public class TossPaymentClient {
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
-
-
     }
 
     public void cancel(String paymentKey, String cancelReason) {
+
         String auth = Base64.getEncoder()
                 .encodeToString((secretKey + ":").getBytes());
 

@@ -467,12 +467,13 @@
     
 </details>
     
+<details>
+  <summary><b>STOMP를 적용한 코드</b></summary>
 
+- WebSocketConfig
     
-- **STOMP를 적용한 코드**
-    - WebSocketConfig
-    
-    ```java
+```java
+
         @Override
         public void registerStompEndpoints(StompEndpointRegistry registry) {
             // 1. 처음 소켓 연결할 엔드포인트 설정
@@ -490,11 +491,12 @@
             // 클라이언트가 /sub 주소를 구독하고 있으면 서버가 메시지를 해당 주소로 보내줌
             registry.enableSimpleBroker("/sub");  // 추후에 Redis로 확장
         }
-    ```
-    
-    - InquiryChatStompController
-    
-    ```java
+```       
+
+
+- InquiryChatStompController   
+```java
+
         /**
          * 채팅 메시지 전송 API InquiryChatStompController
          */
@@ -535,7 +537,9 @@
     
             redisTemplate.convertAndSend(chatTopic.getTopic(), response);  //
         }
-    ```
+```
+</details>
+   
     
 - **STOMP 도입을 통한 채팅의 REST화:** 기존 `TextWebSocketHandler`에서 수동으로 `switch-case`문을 통해 메시지 타입을 구분하던 로직을 없앴습니다.
 </details>

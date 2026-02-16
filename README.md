@@ -127,6 +127,8 @@
 ## 📑 ERD
 <img width="1024" height="640" alt="image" src="https://github.com/user-attachments/assets/3aa914dd-52d3-4a34-a982-dd75397e6ce5" />
 
+[ERD 링크](https://www.erdcloud.com/d/733xaDF6icfwc8eJY) 
+
 
 ---
 ## 📝 API 명세서

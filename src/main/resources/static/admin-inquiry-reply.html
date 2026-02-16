@@ -365,6 +365,20 @@
 </div>
 
 <script>
+    // API URL 설정
+    const API_URL = (() => {
+        const hostname = window.location.hostname;
+
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return 'http://localhost:8080';
+        }
+
+        if (hostname === 'admin.ssak3.store') {
+            return 'https://admin.ssak3.store';
+        }
+
+        return 'https://ssak3.store';
+    })();
     let currentInquiry = null;
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -392,7 +406,7 @@
         }
 
         try {
-            const response = await fetch('http://localhost:8080/ssak3/users/me', {
+            const response = await fetch(`${API_URL}/ssak3/users/me`, {
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + token
@@ -420,7 +434,7 @@
 
         try {
             // 🆕 관리자용 문의 상세 조회 API 사용
-            const response = await fetch(`http://localhost:8080/ssak3/admin/inquiry-replies/inquiries/${inquiryId}`, {
+            const response = await fetch(`${API_URL}/ssak3/admin/inquiry-replies/inquiries/${inquiryId}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + token
@@ -493,7 +507,7 @@
         submitBtn.textContent = '등록 중...';
 
         try {
-            const response = await fetch('http://localhost:8080/ssak3/admin/inquiry-replies', {
+            const response = await fetch(`${API_URL}/ssak3/admin/inquiry-replies`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

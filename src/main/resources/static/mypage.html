@@ -300,6 +300,21 @@
 </div>
 
 <script>
+    // API URL 설정
+    const API_URL = (() => {
+        const hostname = window.location.hostname;
+
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return 'http://localhost:8080';
+        }
+
+        if (hostname === 'admin.ssak3.store') {
+            return 'https://admin.ssak3.store';
+        }
+
+        return 'https://ssak3.store';
+    })();
+
     let currentUser = null;
     let currentAction = null;
 
@@ -310,7 +325,7 @@
         const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
 
         try {
-            const res = await fetch('http://localhost:8080/ssak3/users/me', {
+            const res = await fetch(`${API_URL}/ssak3/users/me`, {
                 method: 'GET',
                 headers: headers,
                 credentials: 'include'
@@ -412,7 +427,7 @@
 
         try {
 
-            const res = await fetch('http://localhost:8080/ssak3/users/me/password', {
+            const res = await fetch(`${API_URL}/ssak3/users/me/password`, {
                 method: 'PATCH',
                 headers: headers,
                 credentials: 'include',
@@ -438,7 +453,7 @@
         const token = localStorage.getItem('accessToken');
 
         try {
-            const response = await fetch('http://localhost:8080/ssak3/users/me/password-verification', {
+            const response = await fetch(`${API_URL}/ssak3/users/me/password-verification`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -515,7 +530,7 @@
         if (token && token !== 'null') headers['Authorization'] = `Bearer ${token}`;
 
         try {
-            const res = await fetch('http://localhost:8080/ssak3/users/me', {
+            const res = await fetch(`${API_URL}/ssak3/users/me`, {
                 method: 'PATCH',
                 headers: headers,
                 credentials: 'include',
@@ -553,7 +568,7 @@
         if (token && token !== 'null') headers['Authorization'] = `Bearer ${token}`;
 
         try {
-            const res = await fetch('http://localhost:8080/ssak3/users/me', {
+            const res = await fetch(`${API_URL}/ssak3/users/me`, {
                 method: 'DELETE',
                 headers: headers,
                 credentials: 'include'
@@ -577,7 +592,7 @@
     async function handleLogout() {
         const token = localStorage.getItem('accessToken');
         try {
-            await fetch('http://localhost:8080/ssak3/auth/logout', {
+            await fetch(`${API_URL}/ssak3/auth/logout`, {
                 method: 'POST',
                 headers: token ? { 'Authorization': 'Bearer ' + token } : {},
                 credentials: 'include'

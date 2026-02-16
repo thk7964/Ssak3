@@ -487,6 +487,21 @@
     </footer>
 
     <script>
+        // API URL 설정
+        const API_URL = (() => {
+            const hostname = window.location.hostname;
+
+            if (hostname === 'localhost' || hostname === '127.0.0.1') {
+                return 'http://localhost:8080';
+            }
+
+            if (hostname === 'admin.ssak3.store') {
+                return 'https://admin.ssak3.store';
+            }
+
+            return 'https://ssak3.store';
+        })();
+
         async function checkLoginStatus() {
             const token = localStorage.getItem('accessToken');
             const loginBtn = document.getElementById('loginBtn');
@@ -496,7 +511,7 @@
                 const headers = {};
                 if (token) headers.Authorization = 'Bearer ' + token;
 
-                const response = await fetch('http://localhost:8080/ssak3/users/me', {
+                const response = await fetch(`${API_URL}/ssak3/users/me`, {
                     method: 'GET',
                     headers: headers,
                     credentials: 'include'
@@ -592,7 +607,7 @@
 
         async function searchProducts() {
             try {
-                let url = `http://localhost:8080/ssak3/products?`;
+                let url = `${API_URL}/ssak3/products?`;
                 const params = [];
 
                 if (currentKeyword.trim() !== '') {

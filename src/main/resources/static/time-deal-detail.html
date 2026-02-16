@@ -578,6 +578,21 @@
 </footer>
 
 <script>
+    // API URL 설정
+    const API_URL = (() => {
+        const hostname = window.location.hostname;
+
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return 'http://localhost:8080';
+        }
+
+        if (hostname === 'admin.ssak3.store') {
+            return 'https://admin.ssak3.store';
+        }
+
+        return 'https://ssak3.store';
+    })();
+
     const urlParams = new URLSearchParams(window.location.search);
     const timeDealId = urlParams.get('id');
 
@@ -587,8 +602,6 @@
     let quantity = 1;
     let timeDealData = null;
     let countdownInterval = null;
-
-    const API_BASE = 'http://localhost:8080/ssak3';
 
     function getToken() {
         // localStorage 먼저 확인 (자체 로그인 + 카카오 로그인에서 JS용으로 저장한 token)
@@ -774,7 +787,7 @@
         if (token) headers['Authorization'] = `Bearer ${token}`;
 
         try {
-            const res = await fetch(`${API_BASE}/carts`, {
+            const res = await fetch(`${API_URL}/ssak3/carts`, {
                 method: 'POST',
                 headers,
                 credentials: 'include', // 카카오 로그인 쿠키 포함
@@ -843,10 +856,10 @@
         try {
             let response;
             if (token) {
-                response = await fetch('http://localhost:8080/ssak3/users/me', {headers: {'Authorization': `Bearer ${token}`}});
+                response = await fetch(`${API_URL}/ssak3/users/me`, {headers: {'Authorization': `Bearer ${token}`}});
             }
             if (!token || response.status === 401) {
-                response = await fetch('http://localhost:8080/ssak3/users/me', {credentials: 'include'});
+                response = await fetch(`${API_URL}/ssak3/users/me`, {credentials: 'include'});
             }
             if (response.ok) {
                 loginBtn.style.display = 'none';
@@ -866,7 +879,7 @@
         try {
             const req = {method: 'POST', credentials: 'include'};
             if (token) req.headers = {'Authorization': `Bearer ${token}`};
-            await fetch('http://localhost:8080/ssak3/auth/logout', req);
+            await fetch(`${API_URL}/ssak3/auth/logout`, req);
             localStorage.removeItem('accessToken');
             alert('로그아웃 되었습니다.');
             window.location.href = 'home.html';
@@ -888,7 +901,7 @@
             return;
         }
         try {
-            const res = await fetch(`http://localhost:8080/ssak3/time-deals/${timeDealId}`);
+            const res = await fetch(`${API_URL}/ssak3/time-deals/${timeDealId}`);
             if (!res.ok) throw new Error('타임딜 정보를 불러올 수 없습니다.');
             const result = await res.json();
             if (!result.success) throw new Error(result.message || '타임딜 정보를 불러올 수 없습니다.');

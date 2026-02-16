@@ -378,6 +378,21 @@
 </div>
 
 <script>
+    // API URL 설정
+    const API_URL = (() => {
+        const hostname = window.location.hostname;
+
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return 'http://localhost:8080';
+        }
+
+        if (hostname === 'admin.ssak3.store') {
+            return 'https://admin.ssak3.store';
+        }
+
+        return 'https://ssak3.store';
+    })();
+
     let currentUser = null;
     let currentPage = 0;
     let totalPages = 0;
@@ -412,7 +427,7 @@
         }
 
         try {
-            const response = await fetch('http://localhost:8080/ssak3/users/me', {
+            const response = await fetch(`${API_URL}/ssak3/users/me`, {
                 headers: {'Authorization': `Bearer ${token}`},
                 credentials: 'include'
             });
@@ -435,7 +450,7 @@
     async function loadChatRooms(page = 0) {
         try {
             const response = await fetch(
-                `http://localhost:8080/ssak3/admin/chat/rooms?page=${page}&size=10`,
+                `${API_URL}/ssak3/admin/chat/rooms?page=${page}&size=10`,
                 {
                     headers: {
                         'Authorization': `Bearer ${currentUser.token}`
@@ -587,7 +602,7 @@
 
         try {
             const response = await fetch(
-                `http://localhost:8080/ssak3/admin/chat/rooms/${roomId}/accept`,
+                `${API_URL}/ssak3/admin/chat/rooms/${roomId}/accept`,
                 {
                     method: 'PATCH',
                     headers: {

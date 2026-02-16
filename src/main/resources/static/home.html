@@ -577,10 +577,38 @@
     <p>개인정보처리방침 | 이용약관 | 배송정책</p>
 </footer>
 
+
 <script>
+    // 다른 도메인에서 넘어온 토큰을 내 도메인 저장소에 기록
+    // 무조건 토큰부터 챙기기 (함수 없이 즉시 실행)
+    const urlParams = new URLSearchParams(window.location.search);
+    const tokenFromUrl = urlParams.get('token');
+
+    if (tokenFromUrl && tokenFromUrl !== 'null') {
+        // 로컬 스토리지에 먼저 저장
+        localStorage.setItem('accessToken', tokenFromUrl);
+        // 주소창 세탁 (토큰 노출 방지)
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    // API URL 설정
+    const API_URL = (() => {
+        const hostname = window.location.hostname;
+
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return 'http://localhost:8080';
+        }
+
+        if (hostname === 'admin.ssak3.store') {
+            return 'https://admin.ssak3.store';
+        }
+
+        return 'https://ssak3.store';
+    })();
+
     async function loadCategories() {
         try {
-            const res = await fetch('http://localhost:8080/ssak3/categories');
+            const res = await fetch(`${API_URL}/ssak3/categories`);
             const result = await res.json();
             if (!result.success) return;
 
@@ -606,7 +634,7 @@
 
     async function loadPopularProducts() {
         try {
-            const response = await fetch('http://localhost:8080/ssak3/products/popular');
+            const response = await fetch(`${API_URL}/ssak3/products/popular`);
             const result = await response.json();
 
             if (!result.success) {
@@ -690,7 +718,7 @@
             let response;
             // 1. 일반 로그인(JWT) 우선 확인
             if (token) {
-                response = await fetch('http://localhost:8080/ssak3/users/me', {
+                response = await fetch(`${API_URL}/ssak3/users/me`, {
                     method: 'GET',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -698,7 +726,7 @@
 
             // 2. 토큰이 없거나 만료된 경우 카카오(쿠키) 확인
             if (!token || response.status === 401) {
-                response = await fetch('http://localhost:8080/ssak3/users/me', {
+                response = await fetch(`${API_URL}/ssak3/users/me`, {
                     method: 'GET',
                     credentials: 'include' // 쿠키 포함
                 });
@@ -731,7 +759,7 @@
             };
             if (token) logoutRequest.headers = { 'Authorization': `Bearer ${token}` };
 
-            const response = await fetch('http://localhost:8080/ssak3/auth/logout', logoutRequest);
+            const response = await fetch(`${API_URL}/ssak3/auth/logout`, logoutRequest);
 
             // 서버 응답과 상관없이 클라이언트 데이터는 무조건 삭제 (유저 경험 우선)
             localStorage.removeItem('accessToken');

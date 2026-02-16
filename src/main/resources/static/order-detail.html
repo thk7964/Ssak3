@@ -270,7 +270,20 @@
 </div>
 
 <script>
-    const API_BASE = 'http://localhost:8080/ssak3';
+    // API URL 설정
+    const API_URL = (() => {
+        const hostname = window.location.hostname;
+
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return 'http://localhost:8080';
+        }
+
+        if (hostname === 'admin.ssak3.store') {
+            return 'https://admin.ssak3.store';
+        }
+
+        return 'https://ssak3.store';
+    })();
 
     // 배송비 정책(프로젝트에서 쓰던 값)
     const FREE_SHIPPING_THRESHOLD = 30000;
@@ -281,7 +294,7 @@
         const userInfo = document.getElementById('userInfo');
         const token = localStorage.getItem('accessToken');
         try {
-            const res = await fetch('http://localhost:8080/ssak3/users/me', {
+            const res = await fetch(`${API_URL}/ssak3/users/me`, {
                 method: 'GET',
                 credentials: 'include',
                 headers: {
@@ -317,7 +330,7 @@
     }
 
     async function apiFetch(path, options = {}) {
-        const url = API_BASE + path;
+        const url = `${API_URL}/ssak3` + path;
         const token = localStorage.getItem('accessToken');
 
         if (token) {

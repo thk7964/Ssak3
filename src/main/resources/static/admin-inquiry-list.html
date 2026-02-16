@@ -404,6 +404,21 @@
 </div>
 
 <script>
+    // API URL 설정
+    const API_URL = (() => {
+        const hostname = window.location.hostname;
+
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return 'http://localhost:8080';
+        }
+
+        if (hostname === 'admin.ssak3.store') {
+            return 'https://admin.ssak3.store';
+        }
+
+        return 'https://ssak3.store';
+    })();
+
     let allInquiries = [];
     let filteredInquiries = [];
     let currentFilter = 'ALL';
@@ -426,7 +441,7 @@
         }
 
         try {
-            const response = await fetch('http://localhost:8080/ssak3/users/me', {
+            const response = await fetch(`${API_URL}/ssak3/users/me`, {
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + token
@@ -453,7 +468,7 @@
         const token = localStorage.getItem('accessToken');
 
         try {
-            const response = await fetch(`http://localhost:8080/ssak3/admin/inquiry-replies/inquiries?page=${page}&size=10&sort=createdAt,desc`, {
+            const response = await fetch(`${API_URL}/ssak3/admin/inquiry-replies/inquiries?page=${page}&size=10&sort=createdAt,desc`, {
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + token

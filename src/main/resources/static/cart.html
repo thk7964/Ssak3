@@ -579,6 +579,21 @@
 </div>
 
 <script>
+    // API URL 설정
+    const API_URL = (() => {
+        const hostname = window.location.hostname;
+
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return 'http://localhost:8080';
+        }
+
+        if (hostname === 'admin.ssak3.store') {
+            return 'https://admin.ssak3.store';
+        }
+
+        return 'https://ssak3.store';
+    })();
+
     async function checkLogin() {
         try {
             const res = await apiFetch('/users/me', { method: 'GET' });
@@ -595,8 +610,6 @@
             document.getElementById('userInfo').style.display = 'none';
         }
     }
-
-    const API_BASE = 'http://localhost:8080/ssak3';
 
     // 상태
     let cartData = null;
@@ -695,7 +708,7 @@
 
     // ------- API fetch: 토큰 우선, 401이면 쿠키 시도 -------
     async function apiFetch(path, options = {}) {
-        const url = API_BASE + path;
+        const url = `${API_URL}/ssak3` + path;
         const token = localStorage.getItem('accessToken');
 
         if (token) {

@@ -746,7 +746,20 @@
 </footer>
 
 <script>
-    const API_BASE_URL = 'http://localhost:8080/ssak3/admin/coupons';
+    // API URL 설정
+    const API_URL = (() => {
+        const hostname = window.location.hostname;
+
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return 'http://localhost:8080';
+        }
+
+        if (hostname === 'admin.ssak3.store') {
+            return 'https://admin.ssak3.store';
+        }
+
+        return 'https://ssak3.store';
+    })();
 
     let currentPage = 0;
     let pageSize = 10;
@@ -841,7 +854,7 @@
         currentPage = page;
 
         try {
-            const response = await fetch(`${API_BASE_URL}?page=${page}&size=${pageSize}&sort=issueEndDate,asc`, {
+            const response = await fetch(`${API_URL}/ssak3/admin/coupons?page=${page}&size=${pageSize}&sort=issueEndDate,asc`, {
                 headers: getHeaders(),
                 credentials: 'include'
             });
@@ -1016,7 +1029,7 @@
         };
 
         try {
-            const response = await fetch(API_BASE_URL, {
+            const response = await fetch(`${API_URL}/ssak3/admin/coupons`, {
                 method: 'POST',
                 headers: getHeaders(),
                 credentials: 'include',
@@ -1054,7 +1067,7 @@
         };
 
         try {
-            const response = await fetch(`${API_BASE_URL}/${couponId}`, {
+            const response = await fetch(`${API_URL}/ssak3/admin/coupons/${couponId}`, {
                 method: 'PATCH',
                 headers: getHeaders(),
                 credentials: 'include',
@@ -1086,7 +1099,7 @@
         }
 
         try {
-            const response = await fetch(`${API_BASE_URL}/${couponId}`, {
+            const response = await fetch(`${API_URL}/ssak3/admin/coupons/${couponId}`, {
                 method: 'DELETE',
                 headers: getHeaders(),
                 credentials: 'include'
@@ -1118,13 +1131,13 @@
         try {
             let response;
             if (token) {
-                response = await fetch('http://localhost:8080/ssak3/users/me', {
+                response = await fetch(`${API_URL}/ssak3/users/me`, {
                     method: 'GET',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
             }
             if (!token || response.status === 401) {
-                response = await fetch('http://localhost:8080/ssak3/users/me', {
+                response = await fetch(`${API_URL}/ssak3/users/me`, {
                     method: 'GET',
                     credentials: 'include'
                 });
@@ -1151,7 +1164,7 @@
             const logoutRequest = { method: 'POST', credentials: 'include' };
             if (token) logoutRequest.headers = { 'Authorization': `Bearer ${token}` };
 
-            await fetch('http://localhost:8080/ssak3/auth/logout', logoutRequest);
+            await fetch(`${API_URL}/ssak3/auth/logout`, logoutRequest);
             localStorage.removeItem('accessToken');
             alert('로그아웃 되었습니다.');
             window.location.href = 'home.html';

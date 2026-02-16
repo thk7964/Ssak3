@@ -75,7 +75,7 @@
 ## 👊 주요 기능
 
 <details>
-<summary>🎖️ 인기 TOP 10 상품 조회</summary>
+<summary><h3>🎖️ 인기 TOP 10 상품 조회</h3></summary>
 
 <br>
 
@@ -95,7 +95,7 @@
 </details>
 
 <details>
-<summary>🔎 상품 통합 검색</summary>
+<summary><h3>🔎 상품 통합 검색</h3></summary>
 
 <br>
 
@@ -108,7 +108,7 @@
 </details>
 
 <details>
-<summary>🕛 타임딜</summary>
+<summary><h3>🕛 타임딜</h3></summary>
 
 <br>
 
@@ -123,7 +123,7 @@
 </details>
 
 <details>
-<summary>💵 주문 / 결제</summary>
+<summary><h3>💵 주문 / 결제</h3></summary>
 
 <br>
 
@@ -145,7 +145,7 @@
 </details>
 
 <details>
-<summary>🤳 실시간 문의 채팅</summary>
+<summary><h3>🤳 실시간 문의 채팅</h3></summary>
 
 <br>
 

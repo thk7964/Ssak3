@@ -1,4 +1,5 @@
-![img.png](img.png)
+<img width="771" height="337" alt="image" src="https://github.com/user-attachments/assets/29b6d538-4ad6-47db-b134-2d2a73c601b8" />
+
 
 # “굿즈 커머스 플랫폼 - 싹쓰리”
 
@@ -35,26 +36,29 @@
 ## 🔧 기술 스택 
 
 <!--여기에 넣기-->
-![img_5.png](img_5.png)
+<img width="1024" height="1024" alt="image" src="https://github.com/user-attachments/assets/f65a442d-11fd-4192-b30e-b0c54c821442" />
+
 
 ---
 ## ⚙️ 시스템 아키텍쳐
 <details>
 <summary><b>v1</b></summary>
 
-![img_2.png](img_2.png)
+<img width="489" height="514" alt="image" src="https://github.com/user-attachments/assets/a6a17ad2-15dc-4fbc-adc0-759ddf606477" />
 
 </details>
 <details>
 <summary><b>v2</b></summary>
 
-![img_1.png](img_1.png)
+<img width="599" height="708" alt="image" src="https://github.com/user-attachments/assets/bfc7ac4f-c387-4fb5-9590-28f8b8cd8d0e" />
+
 
 </details>
 <details open>
 <summary><b>v3</b></summary>
 
-![img_3.png](img_3.png)
+<img width="661" height="960" alt="image" src="https://github.com/user-attachments/assets/1495326c-29e3-4c51-83a1-9d533bf1ccf5" />
+
 
 </details>
 
@@ -65,7 +69,8 @@
 
 ---
 ## 📑 ERD
-![img_4.png](img_4.png)
+<img width="1024" height="640" alt="image" src="https://github.com/user-attachments/assets/3aa914dd-52d3-4a34-a982-dd75397e6ce5" />
+
 
 ---
 ## 📝 API 명세서
@@ -627,12 +632,14 @@ Public Subnet에 있는 서버는 Public IP를 가지는데 이는 인터넷 어
 <summary><h3>✨ 인기 조회수 TOP 10 조회 시 발생한 N+1 문제</h3></summary>
 
 <h3>⚠️ 문제 상황</h3>
-![img_6.png](img_6.png)
+<img width="1024" height="141" alt="image" src="https://github.com/user-attachments/assets/8d1ea9ab-b4b0-41a5-bc4a-81bbf8c690b2" />
+
 
 - 인기 조회수 TOP 10 상품을 조회할 때, 상품 정보를 조회하는 쿼리는 한 번만 날아갔는데 타임딜 정보를 조회하는 쿼리가 10개가 추가로 날아가는 문제 발생
 
 <h3>🙋‍♀️ 문제 발생 원인</h3>
-![img_7.png](img_7.png)
+<img width="758" height="246" alt="image" src="https://github.com/user-attachments/assets/90f86a22-291b-4e72-9ef8-ae1129b43e5d" />
+
 
 - `for` 문에서 상품 id 개수만큼 반복문을 돌면서 `TimeDealRepository`의 `findByProductId(productId)`를 호출
 
@@ -643,12 +650,16 @@ Public Subnet에 있는 서버는 Public IP를 가지는데 이는 인터넷 어
 <h3>✨ 해결 과정</h3>
 
 - **해결 방법**
+  <img width="1024" height="517" alt="image" src="https://github.com/user-attachments/assets/dbc05113-c8c1-4f8b-ae5a-84eec59db8db" />
+
   1. Redis가 정렬해준 데이터를 이용해 조회수 TOP 10 상품 id 목록을 가져옵니다.
   2. N+1 문제를 방지하기 위해, 10개의 상품 id를 한 번에 넘겨 상품 정보와 타임딜 정보를 통째로 가져옵니다.
   3. 가져온 데이터들을 상품 id를 Key로 하는 Map 구조로 변환하여, `for` 문 안에서 반복적인 `TimeDealRepository` 접근 없이 타임딜 정보를 즉시 가져왔습니다.
 
 - **해결 후**
-![img_8.png](img_8.png)
+<img width="1024" height="29" alt="image" src="https://github.com/user-attachments/assets/c7164006-2065-470d-b140-41e8ba258ce5" />
+
+
 
 </details>
 

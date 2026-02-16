@@ -1637,3 +1637,148 @@ p90 / p95 구간 모두 초 단위에서 밀리초 단위로 감소하여, 트�
 
   
 </details>
+
+<details>
+  <summary><h3>👍 카테고리 조회 시 RedisCacheManager로 관리</h3></summary>
+
+  <h3>⁉️  성능개선 포인트</h3>
+  
+  - 현재 로컬캐시(Caffeine)는 관리자(admin)가 카테고리를 수정 혹은 삭제하는 즉시 관리자 로컬캐시 내부 데이터는 삭제되는 반면, 사용자(user) 서버 내에 있는 캐시메모리에는 여전히 과거의 카테고리 데이터가 남아있음
+
+  - 로컬 캐시를 쓰면서 모든 서버의 상태를 맞추기 위해 서버 A가 수정될 때마다 서버 B, C에게 수정된 내용을 신호로 보내야 함→캐시 일관성(Cache Coherency)
+
+  - 서버 수가 많아질수록 로직을 처리하는 트래픽보다 변경된 내용을 전달하면서 발생하는 트래픽의 규모가 훨씬 커질 수 있음. 이는 저장공간의 부하와 더불어 네트워크 비용도 커지는 문제 발생
+
+  <h3>🙋‍♀️ 해결 방법</h3>
+
+  1. 모든 서버가 하나의 외부 캐시 저장소를 바라보는 구조인 분산캐시를 채택
+
+  2. 분산캐시 Redis와 Memcached 중 Redis를 선택 → 데이터 타입 선택시 유리
+
+      - Redis : Memcached는 데이터 타입을 문자열만 지원. 반면 Redis는 String, List, Set, Hashe, Sorted Set 등 다양한 데이터 타입 지원
+
+  3. 단순 카테고리 목록조회 API 구현이기 때문에 Redistemplate으로 세부적인 데이터 조율❌
+     ➡ @Cacheable을 사용하여 하나의 key값으로 value값을 제어⭕
+
+  <h3>✨ 구현 내용 </h3>
+
+  <details>
+  <summary>CategoryRedisConfig.java</summary>
+
+  ```java
+    
+    @Configuration
+    public class CategoryRedisConfig {
+    
+        @Bean
+        public CacheManager categoryCacheManager(RedisConnectionFactory connectionFactory) {
+    
+            // Serializer 에게 줄 규칙 정의
+            ObjectMapper objectMapper = new ObjectMapper();
+    
+            // 날짜/시간 모듈 등록 및 타임스탬프 형식 비활성화
+            objectMapper.registerModule(new JavaTimeModule());
+            objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    
+            // 1. Jackson의 ObjectMapper에게 "이건 List인데 안에 CategoryGetResponse가 들어있어" 라고 말해줌
+            JavaType categoryListType = objectMapper.getTypeFactory()
+                    .constructCollectionType(List.class, CategoryGetResponse.class);
+    
+            // 2. 그 정보를 시리얼라이저에 넘겨줌
+            Jackson2JsonRedisSerializer<List<CategoryGetResponse>> serializer =
+                    new Jackson2JsonRedisSerializer<>(objectMapper, categoryListType);
+    
+            // 3. Redis 캐시 설정 구성
+            RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
+                    // null 값은 캐싱하지 않음
+                    .disableCachingNullValues()
+                    // 캐시 유효 기간 설정 (30분)
+                    .entryTtl(Duration.ofMinutes(30))
+                    // 키와 값의 직렬화 방식 설정 (아까 배운 JSON 방식 적용!)
+                    .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
+                    .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(serializer));
+    
+            return RedisCacheManager.RedisCacheManagerBuilder
+                    .fromConnectionFactory(connectionFactory)
+                    .cacheDefaults(config)
+                    .build();
+        }
+    
+    }
+    
+  ```
+    
+  </details>
+  <details>
+  <summary>CategoryServcie.java</summary>
+
+  ```java
+
+  @Service
+  @RequiredArgsConstructor
+  public class CategoryService {
+  
+      private final CategoryRepository categoryRepository;
+      private final ProductRepository productRepository;
+  
+      /**
+       * 카테고리 생성 비즈니스 로직
+       */
+      @Transactional
+      public CategoryCreateResponse createCategory(CategoryCreateRequest request) {
+  
+          Category category = new Category(request.getName());
+          Category savedCategory = categoryRepository.save(category);
+          return CategoryCreateResponse.from(savedCategory);
+      }
+  
+      /**
+       * 카테고리 목록조회 비즈니스 로직
+       */
+      @Cacheable(value = "categoryRedisCache", key = "'all'")
+      @Transactional(readOnly = true)
+      public List<CategoryGetResponse> getCategoryList() {
+          List<Category> categoryList = categoryRepository.findByIsDeletedFalse();
+          List<CategoryGetResponse> listGetResponse = categoryList.stream().map(CategoryGetResponse::from).toList();
+          log.info("service DB에서 조회된 결과: {}", listGetResponse);
+          return listGetResponse;
+      }
+  
+      /**
+       * 카테고리 수정 비즈니스 로직
+       */
+      @CacheEvict(value = "categoryRedisCache", allEntries = true)
+      @Transactional
+      public CategoryUpdateResponse updateCategory(Long categoryId, CategoryUpdateRequest request) {
+          Category findCategory = categoryRepository.findByIdAndIsDeletedFalse(categoryId)
+                  .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
+          findCategory.update(request);
+         return CategoryUpdateResponse.from(findCategory);
+      }
+  
+      /**
+       * 카테고리 삭제 비즈니스 로직
+       */
+      @CacheEvict(value = "categoryRedisCache", allEntries = true)
+      @Transactional
+      public CategoryDeleteResponse deleteCategory(Long categoryId) {
+          // 카테고리 존재여부 확인
+          Category findCategory = categoryRepository.findByIdAndIsDeletedFalse(categoryId)
+                  .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
+  
+          // 카테고리에 상품이 있다면 삭제 불가능 예외처리
+          if (productRepository.existsByCategoryId(categoryId)) {
+              throw new CustomException(ErrorCode.CATEGORY_HAS_PRODUCTS);
+          }
+          findCategory.softDelete();
+          return CategoryDeleteResponse.from(findCategory);
+      }
+  }
+    
+  ```
+    
+  </details>
+
+   DAU(일간 활성 사용자 수)를 10,000명, CCU(동시접속자)는 5%인 500명이라 예상했을 때 피크타임을 고려하여 redis적용 전 후로 테스트를 진행
+  
+</details>

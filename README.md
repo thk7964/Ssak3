@@ -542,4 +542,80 @@
    
     
 - **STOMP 도입을 통한 채팅의 REST화:** 기존 `TextWebSocketHandler`에서 수동으로 `switch-case`문을 통해 메시지 타입을 구분하던 로직을 없앴습니다.
+
+
+<img width="971" height="152" alt="image" src="https://github.com/user-attachments/assets/c05d59b4-91ad-4bc5-92be-5df118938778" />
+
+- 대신 @MessageMapping을 도입하여, 마치 REST API의 Controller처럼 경로(Path)를 기반으로 비즈니스 로직을 분리하여 코드 가독성과 유지보수성을 확보했습니다.
+</details>
+
+<details>
+<summary><h3>👷 BastionHost</h3></summary>
+  
+<h3>⁉️ 의사 결정 발생 배경</h3>
+
+<details>
+  <summary>1차 배포 아키텍쳐 설계도</summary>
+
+  <img width="492" height="517" alt="image" src="https://github.com/user-attachments/assets/2e05a706-6bc2-4b9c-a2d9-b08dd6d6f397" />
+</details>
+
+*위 설계도는 ssak3 프로젝트의 1차 배포 아키텍처 설계도입니다.* 
+
+- 해당 아키텍처를 보면 데이터베이스와 애플리케이션 서버가 **public subnet에 위치하고 있어 보안 위협에 그대로 노출**되고 있다는 문제가 있었습니다. 
+
+- 서비스의 안전성을 위해 **내부 자원들을 격리하면서도 개발자가 안전하게 서버를 관리할 수 있는 전용 통로가 필요**했습니다.
+
+<h3>🙋‍♀️ 의사 결정 과정</h3>
+
+- **공격 표면의 최소화**
+    - 모든 인스턴스에 공인 IP를 할당하면 관리 포인트가 늘어나고 공격 노출 범위가 넓어지므로, 외부 노출 창구를 하나로 제한한다는 원칙을 세웠습니다.
+- **네트워크 계층화**
+    - 서비스 로직이 돌아가는 애플리케이션 서버와 중요한 데이터가 담긴 DB 서버는 Private Subnet에 위치시키는 것으로 설계 방향성을 정했습니다.
+- **접근 통제**
+    - 서버를 직접적으로 제어하는 관리자만 특정 경로로 접근하도록 설계하고자 하였습니다.
+
+<h3>💡 고려한 대안</h3>
+
+#### 외부 포트 개방 vs Bastion Host
+
+- **외부 포트 개방(v1)**
+    - 보안 그룹 설정만으로 소프트웨어적 접근 제어는 가능하지만 보안 위협에 노출됨.
+- **Bastion Host(v2 이후)**
+    - 모든 priavate 서버 접근을 Bastion을 통과해야만 접속 가능하도록 통제하여 보안성을 높일 수 있음.
+
+#### 보안그룹 설정만으로 부족한 이유?
+
+Public Subnet에 있는 서버는 Public IP를 가지는데 이는 인터넷 어디서든 그 서버의 주소로 패킷을 보낼 수 있다는 것을 의미합니다. 보안그룹 설정을 잘못 할 경우 즉시 해킹 위험에 노출됩니다.
+
+반면에 Private Subnet에 있는 서버는 Public IP 자체가 없으므로 이러한 위험에서 벗어날 수 있습니다. 설정에 문제가 생기더라도 물리적으로 2중 보안이 가능합니다.
+
+<h3>✨ 해결 과정</h3>
+<details>
+  <summary>2차 배포 아키텍처 설계도</summary>
+  
+  <img width="632" height="711" alt="image" src="https://github.com/user-attachments/assets/1a9bded5-32ac-41d3-944a-a786a95b8289" />
+
+</details>
+
+*위 설계도는 ssak3 프로젝트의 2차 배포 아키텍처 설계도입니다.*  
+
+- v1에서 public subnet만 있었던 것과 달리 public subnet과 private subnet으로 분리되었습니다.
+
+- 서버 관리자의 경우 Ec2나 RDS에 직접적으로 접속해야하므로 Bastion Host를 이용해 접근 제어를 하도록 하였습니다.
+
+#### 개선 내용
+
+- **Bastion Host 구축**
+    - AWS EC2를 활용해 퍼블릭 서브넷에 Bastion Host를 배치했습니다.
+- **SSH 터널링 적용**
+    - 실제 서비스 서버는 프라이빗 서브넷에 위치시키고, 오직 Bastion Host의 특정 IP로부터 오는 SSH 요청만 수용하도록 보안 그룹을 강화했습니다.
+
+<h3>📝 향후 고도화 방안</h3>
+
+- **Audit Log 관리**
+    - 현재는 Bastion Host를 통해 접속이 가능하지만, 향후 관리자가 늘어날 것에 대비하여 접속 후 실행한 명령어를 기록하는 로깅 시스템을 구축해보고 싶습니다.
+- **AWS Systems Manager(SSM) 도입**
+    - 현재는 SSH 키를 사용한 방식을 사용하고 있지만 이 방식도 키가 유출 및 분실 될 경우의 위험성을 인지하고 있습니다. 이러한 위험을 없애기 위해, 포트 개방 없이 브라우저 기반으로 안전하게 인스턴스에 접속할 수 있는 SSM Session Manager로 전환하는 고도화 방안을 고려하고 있습니다.
+
 </details>

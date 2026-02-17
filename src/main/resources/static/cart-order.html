@@ -860,7 +860,7 @@
 
             const json = await res.json();
 
-            if (!json.data || !json.data.url) {
+            if (!json.data || !json.data.paymentUrl) {
                 throw new Error('결제 URL이 없습니다.');
             }
 
@@ -873,7 +873,7 @@
             const top = (window.screen.height / 2) - (height / 2);
 
             const popup = window.open(
-                json.data.url,
+                json.data.paymentUrl,
                 'paymentPopup',
                 `width=${width},height=${height},top=${top},left=${left},resizable=no,scrollbars=yes`
             );

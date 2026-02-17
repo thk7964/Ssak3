@@ -581,6 +581,7 @@
     const urlParams = new URLSearchParams(window.location.search);
     const timeDealId = urlParams.get('id');
 
+
     const productEmojis = {1: '🏍️', 2: '✨', 3: '⚔️', 4: '🎮', 5: '🎵', 6: '⚡', 7: '🌈', 8: '💎', 9: '🎨', 10: '🧸'};
     const statusText = {'READY': '오픈 예정', 'OPEN': '진행중', 'CLOSED': '종료'};
 
@@ -749,6 +750,11 @@
         countdownInterval = setInterval(updateRemainingTime, 1000);
     }
 
+    function requireLoginAndRedirect() {
+        alert('로그인이 필요한 서비스입니다.');
+        location.href = 'login.html';
+    }
+
     function increaseQuantity() {
         quantity++;
         document.getElementById('quantityValue').textContent = quantity;
@@ -804,14 +810,27 @@
         }
     }
 
-    function buyNow() {
-        const quantity = parseInt(document.getElementById('quantityValue')?.textContent || '1', 10);
-        const productId = Number(timeDealData?.productId);
+    async function buyNow() {
 
-        if (!productId) return alert('상품 정보를 불러오는 중입니다.');
+        const token = getToken();
 
-        window.location.href =
-            `single-product-order.html?productId=${productId}&quantity=${quantity}&timeDealId=${encodeURIComponent(timeDealId)}`;
+        const res = await fetch(`${API_BASE}/users/me`, {
+            headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+            credentials: 'include'
+        });
+
+        if (!res.ok) {
+            requireLoginAndRedirect();
+            return;
+        }
+
+        if (!timeDealData) return;
+
+        const productId = Number(timeDealData.productId);
+        const qty = Number(quantity);
+
+        // 단건구매 페이지로 이동 (타임딜에서 왔다는 표시로 timeDealId도 같이 넘김)
+        window.location.href =`single-product-order.html?productId=${productId}&quantity=${qty}&timeDealId=${encodeURIComponent(timeDealId)}`;
     }
 
 

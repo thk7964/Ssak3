@@ -1007,6 +1007,8 @@
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('id');
 
+    const API_BASE = 'http://localhost:8080/ssak3';
+
     const productEmojis = {
         1: '🏍️', 2: '✨', 3: '⚔️', 4: '🎮', 5: '🎵',
         6: '⚡', 7: '🌈', 8: '💎', 9: '🎨', 10: '🧸'
@@ -1015,27 +1017,19 @@
     // 상품 상태 한글 변환
     const statusText = {
         'FOR_SALE': '판매중',
-        'SOLDOUT': '품절',
-        'DISCONTINUED': '단종'
+        'SOLD_OUT': '품절'
     };
 
-    const getToken = () => localStorage.getItem('accessToken');
-    const isLoggedIn = async () => {
-        const token = getToken();
-        // 자체 로그인 토큰 있으면 바로 로그인 상태
-        if (token) return true;
+    function getToken() {
+        const tokenFromLS = localStorage.getItem('accessToken');
+        if (tokenFromLS) return tokenFromLS;
 
-        // 카카오 로그인은 서버 호출로 확인
-        try {
-            const res = await fetch('http://localhost:8080/ssak3/users/me', {
-                headers: token ? { 'Authorization': 'Bearer ' + token } : {},
-                credentials: 'include', // 쿠키 인증 포함
-            });
-            return res.ok; // 200이면 로그인 상태
-        } catch {
-            return false;
-        }
-    };
+        const match = document.cookie.match(/(^|;\s*)accessToken=([^;]+)/);
+        if (match) return match[2];
+
+        return null;
+    }
+
 
     function requireLoginAndRedirect() {
         alert('로그인이 필요한 서비스입니다.');
@@ -1200,7 +1194,20 @@
         }
     }
 
-    function buyNow() {
+   async function buyNow() {
+
+       const token = getToken();
+
+        const res = await fetch(`${API_BASE}/users/me`, {
+            headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+            credentials: 'include'
+        });
+
+        if (!res.ok) {
+            requireLoginAndRedirect();
+            return;
+        }
+
         const quantity = document.getElementById('quantityValue')?.textContent || '1';
         window.location.href = `single-product-order.html?productId=${productId}&quantity=${quantity}`;
     }

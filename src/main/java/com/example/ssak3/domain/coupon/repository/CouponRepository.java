@@ -25,4 +25,6 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
     Optional<Coupon> findByIdWithLock(@Param("id") Long id);
 
     Page<Coupon> findAllByIsDeletedFalse(Pageable pageable);
+
+    boolean existsByNameAndIsDeletedFalse(String name);
 }

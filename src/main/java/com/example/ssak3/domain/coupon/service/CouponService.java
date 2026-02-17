@@ -33,6 +33,14 @@ public class CouponService {
     @Transactional
     public CouponCreateResponse createCoupon(CouponCreateRequest request) {
 
+        if (couponRepository.existsByNameAndIsDeletedFalse(request.getName().trim())) {
+            throw new CustomException(ErrorCode.COUPON_NAME_ALREADY_EXISTS);
+        }
+
+        if (request.getDiscountValue() > request.getMinOrderPrice()) {
+            throw new CustomException(ErrorCode.DISCOUNT_EXCEEDS_MIN_ORDER_PRICE);
+        }
+
         if (request.getIssueStartDate().isBefore(LocalDateTime.now().minusMinutes(1))) {
             throw new CustomException(ErrorCode.COUPON_INVALID_START_TIME);
         }
@@ -42,7 +50,7 @@ public class CouponService {
         }
 
         Coupon coupon = new Coupon(
-                request.getName(),
+                request.getName().trim(),
                 request.getDiscountValue(),
                 request.getTotalQuantity(),
                 request.getIssueStartDate(),

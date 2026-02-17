@@ -1212,10 +1212,10 @@
 
        const token = getToken();
 
-        const res = await fetch(`${API_URL}/users/me`, {
-            headers: token ? { 'Authorization': `Bearer ${token}` } : {},
-            credentials: 'include'
-        });
+       const res = await fetch(`${API_URL}/ssak3/users/me`, {   // ✅ 여기 수정
+           headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+           credentials: 'include'
+       });
 
         if (!res.ok) {
             requireLoginAndRedirect();

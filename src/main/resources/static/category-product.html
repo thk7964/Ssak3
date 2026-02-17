@@ -18,24 +18,32 @@
             color: #222;
         }
 
-        /* ── HEADER ── */
+        /* ── HEADER (home.html 스타일) ── */
         header {
-            background: #ffffff;
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            width: 100%;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.5);
+            box-shadow: 0 2px 16px rgba(116, 185, 255, 0.15);
             position: sticky;
             top: 0;
             z-index: 100;
-            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 28px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
         }
 
         .logo {
-            font-size: 26px;
-            font-weight: 700;
+            font-size: 22px;
+            font-weight: 800;
             background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -43,125 +51,142 @@
             letter-spacing: -0.5px;
             cursor: pointer;
             flex-shrink: 0;
+            text-decoration: none;
         }
 
-        .search-container {
+        .header-search {
             flex: 1;
-            max-width: 500px;
-            position: relative;
-        }
-
-        .search-wrapper {
+            max-width: 400px;
+            margin: 0 20px;
             display: flex;
-            gap: 8px;
-            background: #f8f9fa;
-            padding: 8px 16px;
-            border-radius: 24px;
-            border: 2px solid transparent;
-            transition: all 0.3s ease;
+            align-items: center;
+            background: #f3f4f6;
+            border-radius: 10px;
+            border: 1.5px solid transparent;
+            overflow: hidden;
+            transition: all 0.15s ease;
         }
 
-        .search-wrapper:focus-within {
+        .header-search:focus-within {
             background: white;
-            border-color: #74b9ff;
-            box-shadow: 0 0 0 4px rgba(116,185,255,0.1);
+            border-color: #a29bfe;
+            box-shadow: 0 0 0 3px rgba(162, 155, 254, 0.12);
         }
 
-        .search-input {
+        .header-search input {
             flex: 1;
             border: none;
             background: transparent;
+            padding: 9px 14px;
             font-size: 14px;
+            color: #374151;
             outline: none;
-            color: #495057;
         }
 
-        .search-input::placeholder {
-            color: #adb5bd;
+        .header-search input::placeholder {
+            color: #9ca3af;
         }
 
-        .search-btn {
-            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+        .header-search-btn {
             border: none;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
+            background: transparent;
+            padding: 9px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #a29bfe;
             cursor: pointer;
-            font-size: 16px;
-            transition: all 0.2s ease;
+            white-space: nowrap;
+            transition: color 0.15s ease;
+            border-left: 1.5px solid #e5e7eb;
+        }
+
+        .header-search-btn:hover {
+            color: #74b9ff;
+        }
+
+        .header-nav {
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 8px;
             flex-shrink: 0;
         }
 
-        .search-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 4px 12px rgba(116,185,255,0.35);
-        }
-
-        .header-icons {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .icon-btn {
-            background: #f8f9fa;
-            border: none;
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
+        .navbar-link {
+            padding: 8px 16px;
+            color: #4b5563;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 18px;
-            transition: all 0.2s ease;
-            color: #495057;
+            text-decoration: none;
+            transition: all 0.15s ease;
+            border: none;
+            background: transparent;
+            white-space: nowrap;
         }
 
-        .icon-btn:hover {
-            background: #e9ecef;
-            transform: translateY(-2px);
+        .navbar-link:hover {
+            color: #74b9ff;
+            background: rgba(116, 185, 255, 0.08);
+        }
+
+        .navbar-link.active {
+            color: #a29bfe;
+            font-weight: 700;
+        }
+
+        .navbar-divider {
+            width: 1px;
+            height: 18px;
+            background: #e5e7eb;
+            margin: 0 4px;
         }
 
         .auth-btn {
-            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 12px;
-            cursor: pointer;
+            padding: 8px 16px;
+            color: #4b5563;
             font-size: 14px;
-            font-weight: 600;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(116,185,255,0.35);
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s ease;
+            border: none;
+            background: transparent;
             white-space: nowrap;
         }
 
         .auth-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(116,185,255,0.45);
+            color: #74b9ff;
+            background: rgba(116, 185, 255, 0.08);
         }
 
         .user-info {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
+        }
+
+        .user-info .navbar-link {
+            color: #000000;
         }
 
         .logout-btn {
-            background: #f8f9fa;
-            border: none;
             padding: 8px 16px;
-            border-radius: 10px;
+            color: #ef4444;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            color: #495057;
-            transition: all 0.2s ease;
+            text-decoration: none;
+            transition: all 0.15s ease;
+            border: none;
+            background: transparent;
+            white-space: nowrap;
         }
 
         .logout-btn:hover {
-            background: #e9ecef;
+            background: rgba(239, 68, 68, 0.08);
         }
 
         /* ── PAGE HERO ── */
@@ -536,30 +561,39 @@
 </head>
 <body>
 
-<!-- ───────── HEADER ───────── -->
+<!-- ───────── HEADER (home.html 스타일) ───────── -->
 <header>
-    <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
+    <div class="header-inner">
+        <a class="logo" onclick="location.href='home.html'">SSAK3</a>
 
-    <div class="search-container">
-        <div class="search-wrapper">
-            <input type="text" class="search-input" id="searchInput"
-                   placeholder="상품을 검색해보세요 🔍"
-                   onkeypress="handleSearchEnter(event)">
-            <button class="search-btn" onclick="handleSearch()">🔍</button>
+        <div class="header-search">
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="상품을 검색해보세요"
+                onkeypress="handleSearchEnter(event)"
+            >
+            <button class="header-search-btn" onclick="handleSearch()">검색</button>
         </div>
-    </div>
 
-    <div class="header-icons">
-        <button class="icon-btn">🛒</button>
-        <button class="auth-btn" id="loginBtn" style="display:none;">로그인 / 회원가입</button>
-        <div class="user-info" id="userInfo" style="display:none;">
-            <button class="icon-btn" id="myPageBtn" title="마이페이지">👤</button>
-            <button class="logout-btn" id="logoutBtn">로그아웃</button>
+        <div class="header-nav">
+            <a class="navbar-link" onclick="location.href='product-search.html'">전체 상품</a>
+            <a class="navbar-link" onclick="location.href='time-deals.html'">타임딜</a>
+            <a class="navbar-link" onclick="location.href='cart.html'">장바구니</a>
+            <div class="navbar-divider"></div>
+
+            <button class="auth-btn" id="loginBtn" style="display: none;">로그인 / 회원가입</button>
+
+            <div class="user-info" id="userInfo" style="display: none;">
+                <a class="navbar-link active" id="myPageBtn">마이페이지</a>
+                <a class="navbar-link" id="logoutBtn" style="color:#ef4444;">로그아웃</a>
+            </div>
         </div>
     </div>
 </header>
 
 <!-- ───────── CATEGORY NAV ───────── -->
+<nav id="categoryNav"></nav>
 
 
 <!-- ───────── PAGE HERO ───────── -->
@@ -596,7 +630,7 @@
 
 <!-- ───────── FOOTER ───────── -->
 <footer>
-    <p>© 2025 싹쓰리 - 모두를 위한 귀여운 굿즈</p>
+    <p>© 2026 싹쓰리 - 모두를 위한 귀여운 굿즈</p>
     <p>고객센터: 010-1234-5678 | <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="adcec2c3d9ccced9eddedeccc69e83cec2c0">[email&#160;protected]</a></p>
     <p>개인정보처리방침 | 이용약관 | 배송정책</p>
 </footer>
@@ -636,7 +670,7 @@
             categories.forEach(cat => {
                 const a = document.createElement('a');
                 a.textContent = cat.name;
-                a.href = `category-products.html?categoryId=${cat.id}`;
+                a.href = `category-product.html?categoryId=${cat.id}`;
 
                 // 현재 페이지와 같은 카테고리면 active
                 if (String(cat.id) === String(categoryId)) {

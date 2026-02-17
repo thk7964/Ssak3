@@ -1696,7 +1696,7 @@ p90 / p95 구간 모두 초 단위에서 밀리초 단위로 감소하여, 트�
       | 최대 응답 시간 | 237.94ms | 74.94ms | 약 68.5% 안정화 |
 - **DB 리소스 보호:** 반복적인 `SELECT` 쿼리를 차단하여 데이터베이스의 CPU 및 I/O 부하를 감소시켰고, 이는 서비스 전체의 안정성 향상으로 이어짐
 
-<b>📝 향후 고도화 방</b>
+<b>📝 향후 고도화 방안</b>
 
 - 현재는 페이지별로 캐싱하고 있으나, 향후 유저별 맞춤형 쿠폰이나 카테고리별 필터링이 추가될 경우 Redis의 Hash 구조나 Sorted Set을 활용하여 더 세분화된 캐싱 전략을 구축해보고자 함
 
@@ -1890,7 +1890,7 @@ p90 / p95 구간 모두 초 단위에서 밀리초 단위로 감소하여, 트�
     <img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/15b0a1da-cca6-498b-92c7-4d29af6652ab" />
 <br/><br/>
   <b>👑 팀장</b><br/>
-  <a href="#">백은서</a><br/><br/>
+  <a href="https://github.com/LemonCoding99">백은서</a><br/><br/>
   <sub>
   ✔ 1:1 문의 게시판<br/>
   ✔ 1:1 채팅<br/>
@@ -1900,7 +1900,6 @@ p90 / p95 구간 모두 초 단위에서 밀리초 단위로 감소하여, 트�
 
 <td align="center" width="33%">
     <img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/15b0a1da-cca6-498b-92c7-4d29af6652ab" />
-
 <br/><br/>
   <b>부팀장</b><br/>
   <a href="#">정지원</a><br/><br/>
@@ -1913,20 +1912,18 @@ p90 / p95 구간 모두 초 단위에서 밀리초 단위로 감소하여, 트�
 
 <td align="center" width="33%">
     <img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/15b0a1da-cca6-498b-92c7-4d29af6652ab" />
-
 <br/><br/>
   <b>팀원</b><br/>
   <a href="#">김태호</a><br/><br/>
   <sub>
   ✔ 타임딜<br/>
-  ✔ 결제<br/>
+  ✔ 결제<br/><br/>
   </sub>
 </td>
   </tr>
   <tr>
     <td align="center" width="33%">
     <img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/15b0a1da-cca6-498b-92c7-4d29af6652ab" />
-
 <br/><br/>
   <b>팀원</b><br/>
   <a href="#">백재현</a><br/><br/>
@@ -1938,19 +1935,17 @@ p90 / p95 구간 모두 초 단위에서 밀리초 단위로 감소하여, 트�
 </td>
     <td align="center" width="33%">
     <img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/15b0a1da-cca6-498b-92c7-4d29af6652ab" />
-
 <br/><br/>
   <b>팀원</b><br/>
   <a href="#">임정하</a><br/><br/>
   <sub>
-  ✔ 쿠폰<br/>
+  ✔ 쿠폰<br/><br/>
 <br/>
 
   </sub>
 </td>
     <td align="center" width="33%">
     <img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/15b0a1da-cca6-498b-92c7-4d29af6652ab" />
-
 <br/><br/>
   <b>팀원</b><br/>
   <a href="#">장서연</a><br/><br/>

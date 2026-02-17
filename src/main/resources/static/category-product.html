@@ -775,15 +775,9 @@
 <div class="product-date">${formattedDate}</div>
 <div class="product-footer">
 <div class="product-price">${displayPrice}원</div>
-<button class="add-btn" data-id="${product.id}">담기</button>
+
 </div>
 </div>`;
-
-        // 담기 버튼 (버블 방지)
-        card.querySelector('.add-btn').addEventListener('click', e => {
-            e.stopPropagation();
-            alert('장바구니에 추가되었습니다!');
-        });
 
         // 카드 클릭 → 상세 페이지
         card.addEventListener('click', () => {

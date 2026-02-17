@@ -52,7 +52,7 @@ toss:
 
 app:
   frontend:
-    base-url: https://ssak3.store
+    base-url: http://localhost:8080
 
 server:
   forward-headers-strategy: native

@@ -5,7 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-import org.springframework.web.socket.config.annotation.*;
+import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
+import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
+import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
 @Configuration
 @EnableWebSocketMessageBroker
@@ -16,8 +18,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // 처음 소켓 연결할 엔드포인트 설정
-        registry.addEndpoint("/ssak3/stomp/chat")  // STOMP 전용 주소 사용
+
+        registry.addEndpoint("/ssak3/stomp/chat")
                 .setAllowedOrigins(
                         "http://localhost:8080",
                         "http://localhost:63342",

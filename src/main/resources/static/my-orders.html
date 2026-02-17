@@ -11,25 +11,35 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
             background: #fafafa;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         header {
-            background: #ffffff;
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 24px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.5);
+            box-shadow: 0 2px 16px rgba(116, 185, 255, 0.15);
             position: sticky;
             top: 0;
             z-index: 100;
-            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 28px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
         }
 
         .logo {
-            font-size: 26px;
-            font-weight: 700;
+            font-size: 22px;
+            font-weight: 800;
             background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -37,56 +47,78 @@
             letter-spacing: -0.5px;
             cursor: pointer;
             flex-shrink: 0;
+            text-decoration: none;
         }
 
-        .header-icons { display: flex; gap: 12px; align-items: center; }
-
-        .icon-btn {
-            background: #f8f9fa;
-            border: none;
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 18px;
-            transition: all 0.2s ease;
-            color: #495057;
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
         }
-        .icon-btn:hover { background: #e9ecef; transform: translateY(-2px); }
 
-        .auth-btn {
-            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 12px;
-            cursor: pointer;
+        .navbar-link {
+            padding: 8px 16px;
+            color: #4b5563;
             font-size: 14px;
-            font-weight: 700;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s ease;
+            border: none;
+            background: transparent;
             white-space: nowrap;
         }
-        .auth-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(116, 185, 255, 0.45); }
+        .navbar-link:hover { color: #74b9ff; background: rgba(116, 185, 255, 0.08); }
+        .navbar-link.active { color: #a29bfe; font-weight: 700; }
 
-        .user-info { display: flex; align-items: center; gap: 12px; }
-        .logout-btn {
-            background: #f8f9fa;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 700;
-            color: #495057;
-            transition: all 0.2s ease;
+        .navbar-divider {
+            width: 1px;
+            height: 18px;
+            background: #e5e7eb;
+            margin: 0 4px;
         }
-        .logout-btn:hover { background: #e9ecef; }
+
+        .auth-btn {
+            padding: 8px 16px;
+            color: #4b5563;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s ease;
+            border: none;
+            background: transparent;
+            white-space: nowrap;
+        }
+        .auth-btn:hover { color: #74b9ff; background: rgba(116, 185, 255, 0.08); }
+
+        .user-info { display: flex; align-items: center; gap: 8px; }
+        .user-info .navbar-link { color: #000000; }
+
+        .logout-btn {
+            padding: 8px 16px;
+            color: #ef4444;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s ease;
+            border: none;
+            background: transparent;
+            white-space: nowrap;
+        }
+        .logout-btn:hover { background: rgba(239, 68, 68, 0.08); }
 
         .page {
+            flex: 1;
             max-width: 980px;
             margin: 0 auto;
             padding: 28px 20px 60px;
+            width: 100%;
         }
 
         .page-title {
@@ -268,8 +300,25 @@
         .more-btn:hover { background: #e9ecef; transform: translateY(-1px); }
         .more-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
 
+        footer {
+            background: #212529;
+            color: #adb5bd;
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+        }
+        footer p {
+            margin: 10px 0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        footer p:first-child {
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
         @media (max-width: 768px) {
-            header { padding: 16px 20px; }
             .right { min-width: 0; align-items: flex-start; }
             .order-item { grid-template-columns: 1fr; }
             .btn-row { justify-content: flex-start; }
@@ -367,21 +416,24 @@
 </head>
 <body>
 <header>
-    <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
-    <div class="header-icons">
-        <button class="icon-btn" id="cartIconBtn" title="장바구니" onclick="location.href='cart.html'">🛒</button>
-
-        <button class="auth-btn" id="loginBtn" style="display:none;">로그인 / 회원가입</button>
-
-        <div class="user-info" id="userInfo" style="display:none;">
-            <button class="icon-btn" id="myPageBtn" title="마이페이지">👤</button>
-            <button class="logout-btn" id="logoutBtn">로그아웃</button>
+    <div class="header-inner">
+        <a class="logo" onclick="location.href='home.html'">SSAK3</a>
+        <div class="header-nav">
+            <a class="navbar-link" onclick="location.href='product-search.html'">전체 상품</a>
+            <a class="navbar-link" onclick="location.href='time-deals.html'">타임딜</a>
+            <a class="navbar-link" onclick="location.href='cart.html'">장바구니</a>
+            <div class="navbar-divider"></div>
+            <button class="auth-btn" id="loginBtn" style="display:none;">로그인 / 회원가입</button>
+            <div class="user-info" id="userInfo" style="display:none;">
+                <a class="navbar-link active" id="myPageBtn">마이페이지</a>
+                <a class="navbar-link" id="logoutBtn" style="color:#ef4444;">로그아웃</a>
+            </div>
         </div>
     </div>
 </header>
 
 <div class="page">
-    <h1 class="page-title">전체 주문 내역</h1>
+    <h1 class="page-title" id="pageTitle">전체 주문 내역</h1>
 
     <!-- 세그먼트 버튼 -->
     <div class="segment-wrap">
@@ -436,7 +488,13 @@
 </div>
 <div id="payment-overlay" style=" display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; "></div>
 
-<script>
+<footer>
+    <p>© 2025 싹쓰리 - 모두를 위한 귀여운 굿즈</p>
+    <p>고객센터: 010-1234-5678 | <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="55262025253a2721152626343e667b26213a2730">[email&#160;protected]</a></p>
+    <p>개인정보처리방침 | 이용약관 | 배송정책</p>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
     // API URL 설정
     const API_URL = (() => {
         const hostname = window.location.hostname;
@@ -491,7 +549,6 @@
     }
 
     function initHeaderActions() {
-        document.getElementById('cartIconBtn').onclick = () => location.href = 'cart.html';
         document.getElementById('myPageBtn').onclick = () => location.href = 'mypage.html';
         document.getElementById('loginBtn').onclick = () => location.href = 'login.html';
         document.getElementById('logoutBtn').onclick = () => {
@@ -812,6 +869,7 @@
         document.getElementById('segReviews').classList.toggle('active', !isOrders);
         document.getElementById('sectionOrders').style.display = isOrders ? '' : 'none';
         document.getElementById('sectionReviews').style.display = isOrders ? 'none' : '';
+        document.getElementById('pageTitle').textContent = isOrders ? '전체 주문 내역' : '내가 쓴 리뷰';
 
         if (!isOrders && !reviewLoaded) {
             loadNextReviewPage();

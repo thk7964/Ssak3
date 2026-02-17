@@ -1926,7 +1926,7 @@ p90 / p95 구간 모두 초 단위에서 밀리초 단위로 감소하여, 트�
     <img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/15b0a1da-cca6-498b-92c7-4d29af6652ab" />
 <br/><br/>
   <b>팀원</b><br/>
-  <a href="#">백재현</a><br/><br/>
+  <a href="https://github.com/bjh8130">백재현</a><br/><br/>
   <sub>
   ✔ 상품    <br/>
   ✔ 카테고리<br/>

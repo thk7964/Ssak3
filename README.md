@@ -1902,7 +1902,7 @@ p90 / p95 구간 모두 초 단위에서 밀리초 단위로 감소하여, 트�
     <img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/15b0a1da-cca6-498b-92c7-4d29af6652ab" />
 <br/><br/>
   <b>부팀장</b><br/>
-  <a href="#">정지원</a><br/><br/>
+  <a href="https://github.com/jionnie">정지원</a><br/><br/>
   <sub>
   ✔ 인증/인가<br/>
   ✔ 검색<br/>
@@ -1914,7 +1914,7 @@ p90 / p95 구간 모두 초 단위에서 밀리초 단위로 감소하여, 트�
     <img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/15b0a1da-cca6-498b-92c7-4d29af6652ab" />
 <br/><br/>
   <b>팀원</b><br/>
-  <a href="#">김태호</a><br/><br/>
+  <a href="https://github.com/thk7964">김태호</a><br/><br/>
   <sub>
   ✔ 타임딜<br/>
   ✔ 결제<br/><br/>
@@ -1928,16 +1928,16 @@ p90 / p95 구간 모두 초 단위에서 밀리초 단위로 감소하여, 트�
   <b>팀원</b><br/>
   <a href="#">백재현</a><br/><br/>
   <sub>
-  ✔ 상품<br/>
+  ✔ 상품    <br/>
   ✔ 카테고리<br/>
-  ✔ 리뷰
+  ✔ 리뷰   
   </sub>
 </td>
     <td align="center" width="33%">
     <img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/15b0a1da-cca6-498b-92c7-4d29af6652ab" />
 <br/><br/>
   <b>팀원</b><br/>
-  <a href="#">임정하</a><br/><br/>
+  <a href="https://github.com/JH319">임정하</a><br/><br/>
   <sub>
   ✔ 쿠폰<br/><br/>
 <br/>
@@ -1948,7 +1948,7 @@ p90 / p95 구간 모두 초 단위에서 밀리초 단위로 감소하여, 트�
     <img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/15b0a1da-cca6-498b-92c7-4d29af6652ab" />
 <br/><br/>
   <b>팀원</b><br/>
-  <a href="#">장서연</a><br/><br/>
+  <a href="https://github.com/jangse0">장서연</a><br/><br/>
   <sub>
   ✔ 장바구니<br/>
   ✔ 주문<br/>

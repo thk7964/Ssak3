@@ -14,7 +14,6 @@ import com.example.ssak3.domain.payment.client.TossPaymentClient;
 import com.example.ssak3.domain.payment.entity.Payment;
 import com.example.ssak3.domain.payment.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -16,7 +16,6 @@ import com.example.ssak3.domain.usercoupon.model.response.UserCouponIssueRespons
 import com.example.ssak3.domain.usercoupon.model.response.UserCouponListGetResponse;
 import com.example.ssak3.domain.usercoupon.repository.UserCouponRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

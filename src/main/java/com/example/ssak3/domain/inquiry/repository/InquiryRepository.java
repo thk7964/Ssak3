@@ -1,6 +1,5 @@
 package com.example.ssak3.domain.inquiry.repository;
 
-import com.example.ssak3.domain.category.entity.Category;
 import com.example.ssak3.domain.inquiry.entity.Inquiry;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

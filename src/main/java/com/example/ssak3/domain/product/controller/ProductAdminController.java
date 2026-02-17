@@ -7,7 +7,6 @@ import com.example.ssak3.domain.product.model.request.ProductUpdateStatusRequest
 import com.example.ssak3.domain.product.service.ProductAdminService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;

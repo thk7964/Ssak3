@@ -511,7 +511,21 @@
 </div>
 
 <script>
-    const BASE_URL = 'http://localhost:8080/ssak3';
+    // API URL 설정
+    const API_URL = (() => {
+        const hostname = window.location.hostname;
+
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return 'http://localhost:8080';
+        }
+
+        if (hostname === 'admin.ssak3.store') {
+            return 'https://admin.ssak3.store';
+        }
+
+        return 'https://ssak3.store';
+    })();
+
     let deleteTargetId = null;
     let deleteTargetName = '';
     let categories = [];
@@ -592,7 +606,7 @@
     async function loadCategories() {
         const container = document.getElementById('categoryList');
         try {
-            const res = await fetch(`${BASE_URL}/categories`, {
+            const res = await fetch(`${API_URL}/ssak3/categories`, {
                 method: 'GET',
                 headers: getAuthHeaders(),
                 credentials: 'include'
@@ -623,7 +637,7 @@
         }
 
         try {
-            const res = await fetch(`${BASE_URL}/admin/categories`, {
+            const res = await fetch(`${API_URL}/ssak3/admin/categories`, {
                 method: 'POST',
                 headers: getAuthHeaders(),
                 credentials: 'include',
@@ -701,7 +715,7 @@
         }
 
         try {
-            const res = await fetch(`${BASE_URL}/admin/categories/${id}`, {
+            const res = await fetch(`${API_URL}/ssak3/admin/categories/${id}`, {
                 method: 'PATCH',
                 headers: getAuthHeaders(),
                 credentials: 'include',
@@ -746,7 +760,7 @@
         closeDeleteModal();
 
         try {
-            const res = await fetch(`${BASE_URL}/admin/categories/${id}`, {
+            const res = await fetch(`${API_URL}/ssak3/admin/categories/${id}`, {
                 method: 'DELETE',
                 headers: getAuthHeaders(),
                 credentials: 'include'
@@ -777,7 +791,7 @@
 
         // 권한 체크
         try {
-            const res = await fetch(`${BASE_URL}/users/me`, {
+            const res = await fetch(`${API_URL}/ssak3/users/me`, {
                 method: 'GET',
                 headers,
                 credentials: 'include'

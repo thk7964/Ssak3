@@ -461,7 +461,20 @@
 </footer>
 
 <script>
-    const API_BASE = 'http://localhost:8080';
+    // API URL 설정
+    const API_URL = (() => {
+        const hostname = window.location.hostname;
+
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return 'http://localhost:8080';
+        }
+
+        if (hostname === 'admin.ssak3.store') {
+            return 'https://admin.ssak3.store';
+        }
+
+        return 'https://ssak3.store';
+    })();
 
     const SHIPPING_FEE = 3000;
     const FREE_SHIPPING_THRESHOLD = 30000;
@@ -547,7 +560,7 @@
     async function loadUserCoupons() {
         try {
             // ✅ [수정] 내 쿠폰 조회 API로 변경
-            const res = await fetch(API_BASE + '/ssak3/user-coupons/me', {
+            const res = await fetch(API_URL + '/ssak3/user-coupons/me', {
                 method: 'GET',
                 headers: buildAuthHeaders(),
                 credentials: 'include'
@@ -584,7 +597,7 @@
 
 
     async function loadCartAndFilterSelected() {
-        const res = await fetch(API_BASE + '/ssak3/carts/me', {
+        const res = await fetch(API_URL + '/ssak3/carts/me', {
             method: 'GET',
             headers: buildAuthHeaders(),
             credentials: 'include'
@@ -809,7 +822,7 @@
         btn.textContent = '주문 생성 중...';
 
         try {
-            const res = await fetch(API_BASE + '/ssak3/orders/carts', {
+            const res = await fetch(API_URL + '/ssak3/orders/carts', {
                 method: 'POST',
                 headers: buildAuthHeaders(),
                 credentials: 'include',

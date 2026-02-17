@@ -345,6 +345,39 @@
 </div>
 
 <script>
+    // API URL 설정
+    const API_URL = (() => {
+        const hostname = window.location.hostname;
+
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return 'http://localhost:8080';
+        }
+
+        if (hostname === 'admin.ssak3.store') {
+            return 'https://admin.ssak3.store';
+        }
+
+        return 'https://ssak3.store';
+    })();
+
+    // WebSocket URL 생성 함수
+    function getWebSocketUrl(endpoint) {
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const hostname = window.location.hostname;
+
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return `ws://localhost:8080${endpoint}`;
+        }
+
+        // HTTPS 환경에서는 WSS 사용
+        const wsProtocol = API_URL.startsWith('https') ? 'wss' : 'ws';
+        const baseUrl = API_URL.replace('https://', '').replace('http://', '');
+
+        return `${wsProtocol}://${baseUrl}${endpoint}`;
+    }
+
+    const WS_URL = getWebSocketUrl('/ssak3/stomp/chat');
+
     let stompClient = null;
     let currentUser = null;
     let roomId = null;
@@ -395,7 +428,7 @@
         }
 
         try {
-            const response = await fetch('http://localhost:8080/ssak3/users/me', {
+            const response = await fetch(`${API_URL}/ssak3/users/me`, {
                 headers: { 'Authorization': `Bearer ${token}` },
                 credentials: 'include'
             });
@@ -409,7 +442,7 @@
     }
 
     async function createOrGetChatRoom() {
-        const response = await fetch('http://localhost:8080/ssak3/chat/rooms', {
+        const response = await fetch(`${API_URL}/ssak3/chat/rooms`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${currentUser.token}`,
@@ -422,7 +455,7 @@
     }
 
     async function loadChatHistory() {
-        const response = await fetch(`http://localhost:8080/ssak3/chat/rooms/${roomId}/messages`, {
+        const response = await fetch(`${API_URL}/ssak3/chat/rooms/${roomId}/messages`, {
             headers: { 'Authorization': `Bearer ${currentUser.token}` },
             credentials: 'include'
         });
@@ -438,7 +471,7 @@
 
     function connectWebSocket() {
         stompClient = new StompJs.Client({
-            brokerURL: 'ws://localhost:8080/ssak3/stomp/chat',
+            brokerURL: WS_URL,
             connectHeaders: { 'Authorization': `Bearer ${currentUser.token}` }
         });
 
@@ -558,7 +591,7 @@
         if (!confirm('문의를 종료하시겠습니까?')) return;
         try {
             sendNotice('QUIT');
-            await fetch(`http://localhost:8080/ssak3/chat/rooms/${roomId}`, {
+            await fetch(`${API_URL}/ssak3/chat/rooms/${roomId}`, {
                 method: 'PATCH',
                 headers: { 'Authorization': `Bearer ${currentUser.token}` },
                 credentials: 'include'

@@ -283,6 +283,21 @@
 </div>
 
 <script>
+    // API URL 설정
+    const API_URL = (() => {
+        const hostname = window.location.hostname;
+
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return 'http://localhost:8080';
+        }
+
+        if (hostname === 'admin.ssak3.store') {
+            return 'https://admin.ssak3.store';
+        }
+
+        return 'https://ssak3.store';
+    })();
+
     const titleInput = document.getElementById('title');
     const contentInput = document.getElementById('content');
     const titleCount = document.getElementById('titleCount');
@@ -333,7 +348,7 @@
         submitBtn.textContent = '등록 중...';
 
         try {
-            const response = await fetch('http://localhost:8080/ssak3/inquiries', {
+            const response = await fetch(`${API_URL}/ssak3/inquiries`, {
                 method: 'POST',
                 headers: headers,
                 credentials: 'include', // 👈 쿠키를 실어 보내는 핵심!

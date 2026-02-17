@@ -1003,11 +1003,24 @@
 </footer>
 
 <script>
+    // API URL 설정
+    const API_URL = (() => {
+        const hostname = window.location.hostname;
+
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return 'http://localhost:8080';
+        }
+
+        if (hostname === 'admin.ssak3.store') {
+            return 'https://admin.ssak3.store';
+        }
+
+        return 'https://ssak3.store';
+    })();
+
     // URL에서 상품 ID 가져오기
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('id');
-
-    const API_BASE = 'http://localhost:8080/ssak3';
 
     const productEmojis = {
         1: '🏍️', 2: '✨', 3: '⚔️', 4: '🎮', 5: '🎵',
@@ -1027,9 +1040,17 @@
         const match = document.cookie.match(/(^|;\s*)accessToken=([^;]+)/);
         if (match) return match[2];
 
-        return null;
-    }
-
+        // 카카오 로그인은 서버 호출로 확인
+        try {
+            const res = await fetch(`${API_URL}/ssak3/users/me`, {
+                headers: token ? { 'Authorization': 'Bearer ' + token } : {},
+                credentials: 'include', // 쿠키 인증 포함
+            });
+            return res.ok; // 200이면 로그인 상태
+        } catch {
+            return false;
+        }
+    };
 
     function requireLoginAndRedirect() {
         alert('로그인이 필요한 서비스입니다.');
@@ -1043,7 +1064,7 @@
             return;
         }
         try {
-            const response = await fetch(`http://localhost:8080/ssak3/products/${productId}`);
+            const response = await fetch(`${API_URL}/ssak3/products/${productId}`);
             if (!response.ok) throw new Error('상품을 불러올 수 없습니다.');
             const result = await response.json();
             const product = result.data;
@@ -1154,7 +1175,7 @@
         );
 
         const token = getToken();
-        const url = 'http://localhost:8080/ssak3/carts';
+        const url = `${API_URL}/ssak3/carts`;
 
         const headers = {
             'Content-Type': 'application/json'
@@ -1198,7 +1219,7 @@
 
        const token = getToken();
 
-        const res = await fetch(`${API_BASE}/users/me`, {
+        const res = await fetch(`${API_URL}/users/me`, {
             headers: token ? { 'Authorization': `Bearer ${token}` } : {},
             credentials: 'include'
         });
@@ -1227,14 +1248,14 @@
             const params = new URLSearchParams({
                 productId: productId, page: page, size: 5, sort: 'id,desc'
             });
-            const r = await fetch(`http://localhost:8080/ssak3/reviews?${params}`, {
+            const r = await fetch(`${API_URL}/ssak3/reviews?${params}`, {
                 headers: authHeaders(), credentials: 'include'
             });
             if (!r.ok) throw new Error(`HTTP ${r.status}`);
             return (await r.json()).data;
         },
         create: async (content, score) => {
-            const r = await fetch('http://localhost:8080/ssak3/reviews', {
+            const r = await fetch(`${API_URL}/ssak3/reviews`, {
                 method: 'POST',
                 headers: authHeaders(),
                 credentials: 'include',
@@ -1244,7 +1265,7 @@
             return (await r.json()).data;
         },
         update: async (reviewId, content, score) => {
-            const r = await fetch(`http://localhost:8080/ssak3/reviews/${reviewId}`, {
+            const r = await fetch(`${API_URL}/ssak3/reviews/${reviewId}`, {
                 method: 'PATCH',
                 headers: authHeaders(),
                 credentials: 'include',
@@ -1254,7 +1275,7 @@
             return (await r.json()).data;
         },
         delete: async (reviewId) => {
-            const r = await fetch(`http://localhost:8080/ssak3/reviews/${reviewId}`, {
+            const r = await fetch(`${API_URL}/ssak3/reviews/${reviewId}`, {
                 method: 'DELETE',
                 headers: authHeaders(),
                 credentials: 'include'
@@ -1644,7 +1665,7 @@
                 headers['Authorization'] = 'Bearer ' + token;
             }
 
-            const res = await fetch('http://localhost:8080/ssak3/users/me', {
+            const res = await fetch(`${API_URL}/ssak3/users/me`, {
                 headers: headers,
                 credentials: 'include'
             });

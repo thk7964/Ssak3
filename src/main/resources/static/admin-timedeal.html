@@ -765,10 +765,24 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 <script>
+    // API URL 설정
+    const API_URL = (() => {
+        const hostname = window.location.hostname;
+
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return 'http://localhost:8080';
+        }
+
+        if (hostname === 'admin.ssak3.store') {
+            return 'https://admin.ssak3.store';
+        }
+
+        return 'https://ssak3.store';
+    })();
+
     // ─────────────────────────────────────────
     // 전역 상태
     // ─────────────────────────────────────────
-    const BASE_URL = 'http://localhost:8080/ssak3';
     const PAGE_GROUP = 10;
     let currentId = null;
     let currentPage = 0;
@@ -784,7 +798,7 @@
 
 
     async function issuePresignedPut({ dirName, file }) {
-        const url = `${BASE_URL}/admin/images/presigned?dirName=${dirName}&fileName=${encodeURIComponent(file.name)}`;
+        const url = `${API_URL}/ssak3/admin/images/presigned?dirName=${dirName}&fileName=${encodeURIComponent(file.name)}`;
 
         const res = await fetch(url, getRequestOptions('POST'));
         const result = await res.json();
@@ -844,7 +858,7 @@
     // GET /ssak3/admin/time-deals
     // ─────────────────────────────────────────
     async function loadTimeDealList(page = 0) {
-        const url = `${BASE_URL}/admin/time-deals?page=${page}&size=10`;
+        const url = `${API_URL}/ssak3/admin/time-deals?page=${page}&size=10`;
 
         try {
             const res = await fetch(url, getRequestOptions());
@@ -999,7 +1013,7 @@
 
         searchTimer = setTimeout(async () => {
             try {
-                const url = `${BASE_URL}/admin/products?page=0&size=20&name=${encodeURIComponent(keyword.trim())}`;
+                const url = `${API_URL}/ssak3/admin/products?page=0&size=20&name=${encodeURIComponent(keyword.trim())}`;
                 const res = await fetch(url, getRequestOptions());
                 const result = await res.json();
                 const items = result?.data?.content ?? [];
@@ -1180,7 +1194,7 @@
         console.log('⚡ 타임딜 등록 요청:', data);
 
         try {
-            const res = await fetch(`${BASE_URL}/admin/time-deals`, getRequestOptions('POST', data));
+            const res = await fetch(`${API_URL}/ssak3/admin/time-deals`, getRequestOptions('POST', data));
 
             if (res.status === 201) {
                 alert('타임딜이 성공적으로 등록되었습니다! ⚡');
@@ -1209,7 +1223,7 @@
         // 캐시에 없으면 개별 조회 시도 (API가 있을 경우)
         if (!d) {
             try {
-                const res = await fetch(`${BASE_URL}/admin/time-deals/${id}`, getRequestOptions());
+                const res = await fetch(`${API_URL}/ssak3/admin/time-deals/${id}`, getRequestOptions());
                 const result = await res.json();
                 d = result?.data;
             } catch (e) {
@@ -1293,7 +1307,7 @@
         console.log('✏️ 타임딜 수정 요청:', data);
 
         try {
-            const res = await fetch(`${BASE_URL}/admin/time-deals/${currentId}`,
+            const res = await fetch(`${API_URL}/ssak3/admin/time-deals/${currentId}`,
                 getRequestOptions('PATCH', data));
 
             if (res.ok) {
@@ -1319,7 +1333,7 @@
         if (!confirm('정말로 이 타임딜을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) return;
 
         try {
-            const res = await fetch(`${BASE_URL}/admin/time-deals/${currentId}`,
+            const res = await fetch(`${API_URL}/ssak3/admin/time-deals/${currentId}`,
                 getRequestOptions('DELETE'));
 
             if (res.ok) {

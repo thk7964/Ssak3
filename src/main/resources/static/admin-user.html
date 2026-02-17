@@ -643,6 +643,21 @@
 </div>
 
 <script>
+    // API URL 설정
+    const API_URL = (() => {
+        const hostname = window.location.hostname;
+
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return 'http://localhost:8080';
+        }
+
+        if (hostname === 'admin.ssak3.store') {
+            return 'https://admin.ssak3.store';
+        }
+
+        return 'https://ssak3.store';
+    })();
+
     let currentPage = 0;
     let totalPages = 0;
     let currentUserId = null;
@@ -667,7 +682,7 @@
         }
 
         try {
-            const response = await fetch('http://localhost:8080/ssak3/users/me', {
+            const response = await fetch(`${API_URL}/ssak3/users/me`, {
                 headers: headers,
                 // 💡 핵심: 카카오 로그인 사용자를 위해 쿠키를 포함합니다.
                 credentials: 'include'
@@ -700,7 +715,7 @@
         const role = document.getElementById('roleFilter').value;
         const nickname = document.getElementById('nicknameFilter').value.trim();
 
-        let url = `http://localhost:8080/ssak3/admin/users?page=${page}&size=${pageSize}`;
+        let url = `${API_URL}/ssak3/admin/users?page=${page}&size=${pageSize}`;
         if (role) url += `&role=${role}`;
         if (nickname) url += `&nickname=${encodeURIComponent(nickname)}`;
 
@@ -869,7 +884,7 @@
         if (!confirm('유저의 권한을 변경하시겠습니까?')) return;
 
         try {
-            const response = await fetch(`http://localhost:8080/ssak3/admin/users/${currentUserId}`, {
+            const response = await fetch(`${API_URL}/ssak3/admin/users/${currentUserId}`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -920,7 +935,7 @@
 
         const token = localStorage.getItem('accessToken');
         try {
-            await fetch('http://localhost:8080/ssak3/auth/logout', {
+            await fetch(`${API_URL}/ssak3/auth/logout`, {
                 method: 'POST',
                 headers: token ? { 'Authorization': `Bearer ${token}` } : {},
                 credentials: 'include'

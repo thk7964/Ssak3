@@ -433,7 +433,21 @@
 </footer>
 
 <script>
-    const API_BASE = 'http://localhost:8080'; // [추가] loadUserCoupons에서 사용하던 값 누락되어 있어서 추가
+    // API URL 설정
+    const API_URL = (() => {
+        const hostname = window.location.hostname;
+
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return 'http://localhost:8080';
+        }
+
+        if (hostname === 'admin.ssak3.store') {
+            return 'https://admin.ssak3.store';
+        }
+
+        return 'https://ssak3.store';
+    })();
+
     let userCoupons = [];                      // [추가] userCoupons 전역 누락되어 있어서 추가
 
     function buildAuthHeaders() {              // [추가] loadUserCoupons에서 사용하던 함수 누락되어 있어서 추가
@@ -472,7 +486,7 @@
 
         try {
             if (timeDealId) {
-                const url = `http://localhost:8080/ssak3/time-deals/${timeDealId}`;
+                const url = `${API_URL}/ssak3/time-deals/${timeDealId}`;
                 console.log('[TimeDeal] request url =', url);
 
                 const response = await fetch(url);
@@ -512,7 +526,7 @@
                 productData.viewImageUrl = td.imageUrl || td.detailImageUrl || null;
 
             } else {
-                const response = await fetch(`http://localhost:8080/ssak3/products/${productId}`);
+                const response = await fetch(`${API_URL}/ssak3/products/${productId}`);
                 if (!response.ok) throw new Error('상품 정보를 불러올 수 없습니다.');
                 const result = await response.json();
                 if (!result.success) throw new Error(result.message || '상품 정보를 불러올 수 없습니다.');
@@ -542,7 +556,7 @@
     async function loadUserCoupons() {
         try {
             // ✅ [수정] 내 쿠폰 조회 API로 변경
-            const res = await fetch(API_BASE + '/ssak3/user-coupons/me', {
+            const res = await fetch(API_URL + '/ssak3/user-coupons/me', {
                 method: 'GET',
                 headers: buildAuthHeaders(),
                 credentials: 'include'
@@ -747,7 +761,7 @@
             headers.Authorization = 'Bearer ' + token;
         }
 
-        fetch('http://localhost:8080/ssak3/orders/products', {
+        fetch(`${API_URL}/ssak3/orders/products`, {
             method: 'POST',
             headers: headers,
             credentials: 'include',

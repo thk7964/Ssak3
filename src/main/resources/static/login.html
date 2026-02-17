@@ -277,10 +277,25 @@
 </div>
 
 <script>
+    // API URL 설정
+    const API_URL = (() => {
+        const hostname = window.location.hostname;
+
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return 'http://localhost:8080';
+        }
+
+        if (hostname === 'admin.ssak3.store') {
+            return 'https://admin.ssak3.store';
+        }
+
+        return 'https://ssak3.store';
+    })();
+
     // 카카오 로그인
     async function kakaoLogin() {
         try {
-            const rawResponse = await fetch('http://localhost:8080/ssak3/auth/login/kakao');
+            const rawResponse = await fetch(`${API_URL}/ssak3/auth/login/kakao`);
 
             if (rawResponse.ok) {
                 const response = await rawResponse.json();
@@ -298,11 +313,13 @@
     document.getElementById('loginForm').addEventListener('submit', async function(e) {
         e.preventDefault();
 
+        localStorage.clear();
+
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
 
         try {
-            const response = await fetch('http://localhost:8080/ssak3/auth/login', {
+            const response = await fetch(`${API_URL}/ssak3/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -320,7 +337,7 @@
                 localStorage.setItem('accessToken', token);
 
                 // 사용자 정보 가져와서 role 확인 후 페이지 분기
-                const userResponse = await fetch('http://localhost:8080/ssak3/users/me', {
+                const userResponse = await fetch(`${API_URL}/ssak3/users/me`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     },
@@ -330,10 +347,22 @@
                 if (userResponse.ok) {
                     const userResult = await userResponse.json();
                     const user = userResult.data;
+                    const token = localStorage.getItem('accessToken'); // 저장된 토큰 가져오기
 
-                    alert('로그인 되었습니다.');
-                    window.location.href = 'home.html';
+                    alert(`${user.name}님, 환영합니다!`);
 
+                    // 로컬/운영 환경에 따른 도메인 설정
+                    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+                    if (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') {
+                        // 관리자 도메인으로 이동 (토큰을 쿼리 스트링으로 전달)
+                        const adminBase = isLocal ? 'home.html' : 'https://admin.ssak3.store/home.html';
+                        window.location.href = `${adminBase}?token=${token}`;
+                    } else {
+                        // 일반 유저는 홈으로
+                        const userBase = isLocal ? 'home.html' : 'https://ssak3.store/home.html';
+                        window.location.href = userBase;
+                    }
                 } else {
                     // 사용자 정보 가져오기 실패 시 기본으로 home으로
                     window.location.href = 'home.html';

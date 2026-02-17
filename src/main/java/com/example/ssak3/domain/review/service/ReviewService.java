@@ -10,7 +10,10 @@ import com.example.ssak3.domain.product.repository.ProductRepository;
 import com.example.ssak3.domain.review.entity.Review;
 import com.example.ssak3.domain.review.model.request.ReviewCreateRequest;
 import com.example.ssak3.domain.review.model.request.ReviewUpdateRequest;
-import com.example.ssak3.domain.review.model.response.*;
+import com.example.ssak3.domain.review.model.response.ReviewCreateResponse;
+import com.example.ssak3.domain.review.model.response.ReviewDeleteResponse;
+import com.example.ssak3.domain.review.model.response.ReviewListGetResponse;
+import com.example.ssak3.domain.review.model.response.ReviewUpdateResponse;
 import com.example.ssak3.domain.review.repository.ReviewRepository;
 import com.example.ssak3.domain.user.entity.User;
 import com.example.ssak3.domain.user.repository.UserRepository;
@@ -63,44 +66,22 @@ public class ReviewService {
 
         Review savedReview = reviewRepository.save(createReview);
 
-        Double averageScoreByProductId = reviewRepository.findAverageScoreByProductId(product.getId());
+        updateProductAverageScore(product.getId());
 
-        Double roundedAvgScore = BigDecimal.valueOf(averageScoreByProductId)
-                .setScale(1, RoundingMode.HALF_UP)
-                .doubleValue();
-
-        product.updateAverageScore(roundedAvgScore);
 
         return ReviewCreateResponse.from(savedReview);
-    }
-
-    /**
-     * 후기 상세 조회 (삭제 가능?)
-     */
-    @Transactional(readOnly = true)
-    public ReviewGetResponse getReview(Long reviewId) {
-
-        Review review = findReview(reviewId);
-
-        return ReviewGetResponse.from(review);
     }
 
     /**
      * 후기 목록 조회
      */
     @Transactional(readOnly = true)
-    public ReviewPageResponse<ReviewListGetResponse> getReviewList(Long productId, Pageable pageable) {
+    public PageResponse<ReviewListGetResponse> getReviewList(Long productId, Pageable pageable) {
 
         Page<ReviewListGetResponse> reviewPage = reviewRepository.findByProductIdAndIsDeletedFalse(productId, pageable)
                 .map(ReviewListGetResponse::from);
 
-        Double averageScore = reviewRepository.findAverageScoreByProductId(productId);
-
-        Double roundedAvgScore = BigDecimal.valueOf(averageScore)
-                .setScale(1, RoundingMode.HALF_UP)
-                .doubleValue();
-
-        return ReviewPageResponse.from(reviewPage, roundedAvgScore);
+        return PageResponse.from(reviewPage);
     }
 
     /**
@@ -129,6 +110,8 @@ public class ReviewService {
 
         review.update(request);
 
+        updateProductAverageScore(review.getProduct().getId());
+
         return ReviewUpdateResponse.from(review);
     }
 
@@ -146,6 +129,8 @@ public class ReviewService {
 
         review.softDelete();
 
+        updateProductAverageScore(review.getProduct().getId());
+
         return ReviewDeleteResponse.from(review);
     }
 
@@ -153,5 +138,19 @@ public class ReviewService {
 
         return reviewRepository.findByIdAndIsDeletedFalse(reviewId)
                 .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
+    }
+
+    private void updateProductAverageScore(Long productId) {
+
+        double averageScore = reviewRepository.findAverageScoreByProductId(productId);
+
+        Double roundedAvgScore = BigDecimal.valueOf(averageScore)
+                .setScale(1, RoundingMode.HALF_UP)
+                .doubleValue();
+
+        Product product = productRepository.findByIdAndIsDeletedFalse(productId)
+                .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        product.updateAverageScore(roundedAvgScore);
     }
 }

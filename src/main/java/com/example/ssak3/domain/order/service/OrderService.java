@@ -225,9 +225,9 @@ public class OrderService {
         }
 
         savedOrder.updateStatus(OrderStatus.PAYMENT_PENDING);
-        String url = frontendBaseUrl + "/checkout.html?orderId=" + savedOrder.getId() + "&orderName=" + orderName;
+        String paymentUrl = frontendBaseUrl + "/checkout.html?orderId=" + savedOrder.getId() + "&orderName=" + orderName;
 
-        return OrderCreateResponse.from(savedOrder, subtotal, discount, url, deliveryFee);
+        return OrderCreateResponse.from(savedOrder, subtotal, discount, paymentUrl, deliveryFee);
 
     }
 
@@ -370,9 +370,9 @@ public class OrderService {
         long discount = subtotal - (total - deliveryFee);
         if (discount < 0) discount = 0;
 
-        String url = frontendBaseUrl + "/checkout.html?orderId=" + order.getId() + "&orderName=" + orderName;
+        String paymentUrl = frontendBaseUrl + "/checkout.html?orderId=" + order.getId() + "&orderName=" + orderName;
 
-        return OrderCreateResponse.from(order, subtotal, discount, url, deliveryFee);
+        return OrderCreateResponse.from(order, subtotal, discount, paymentUrl, deliveryFee);
     }
 
     @Transactional

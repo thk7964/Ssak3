@@ -42,7 +42,7 @@ public class Product extends BaseEntity {
     private Integer quantity;
 
     @Column
-    private Double averageScore;
+    private Double averageScore = 0.0;
 
     @Column(columnDefinition = "TEXT")
     private String image;
@@ -125,15 +125,15 @@ public class Product extends BaseEntity {
 
     public void stopSaleForTimeDeal() {
 
-        if (status!= ProductStatus.STOP_SALE){
-            status= ProductStatus.STOP_SALE;
+        if (status != ProductStatus.STOP_SALE) {
+            status = ProductStatus.STOP_SALE;
         }
     }
 
     public void restoreStatusAfterTimeDeal() {
 
-        if (status!= ProductStatus.FOR_SALE){
-            status=ProductStatus.FOR_SALE;
+        if (status != ProductStatus.FOR_SALE) {
+            status = ProductStatus.FOR_SALE;
         }
     }
 

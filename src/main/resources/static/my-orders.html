@@ -600,14 +600,14 @@
             }
 
             const json = await res.json();
-            const url = json?.data?.url;
+            const url = json?.data?.paymentUrl;
             if (!url) throw new Error('결제 URL이 없습니다.');
 
             // ✅ 오버레이 표시
             overlay.style.display = 'block';
 
             // ✅ 결제용 팝업 띄우기
-            const width = 500;
+            const width = 1100;
             const height = 700;
             const left = (window.innerWidth - width) / 2;
             const top = (window.innerHeight - height) / 2;

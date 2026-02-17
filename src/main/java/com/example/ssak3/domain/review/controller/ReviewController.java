@@ -34,17 +34,6 @@ public class ReviewController {
     }
 
     /**
-     * 후기 상세 조회 API
-     */
-    @GetMapping("/{reviewId}")
-    public ResponseEntity<ApiResponse> getReviewApi(@PathVariable Long reviewId) {
-
-        ApiResponse response = ApiResponse.success("후기 상세 조회에 성공했습니다.", reviewService.getReview(reviewId));
-
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
-    /**
      * 후기 목록 조회 API
      */
     @GetMapping

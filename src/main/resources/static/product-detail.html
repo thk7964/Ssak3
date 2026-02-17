@@ -1034,23 +1034,16 @@
     };
 
     function getToken() {
+        // localStorage 먼저 확인 (자체 로그인 + 카카오 로그인에서 JS용으로 저장한 token)
         const tokenFromLS = localStorage.getItem('accessToken');
         if (tokenFromLS) return tokenFromLS;
 
+        // 쿠키에서 token 확인 (카카오 로그인 전용, HttpOnly가 아니어야 JS 접근 가능)
         const match = document.cookie.match(/(^|;\s*)accessToken=([^;]+)/);
-        if (match) return match[2];
+        if (match) return 'Bearer ' + match[2];
 
-        // 카카오 로그인은 서버 호출로 확인
-        try {
-            const res = await fetch(`${API_URL}/ssak3/users/me`, {
-                headers: token ? { 'Authorization': 'Bearer ' + token } : {},
-                credentials: 'include', // 쿠키 인증 포함
-            });
-            return res.ok; // 200이면 로그인 상태
-        } catch {
-            return false;
-        }
-    };
+        return null;
+    }
 
     function requireLoginAndRedirect() {
         alert('로그인이 필요한 서비스입니다.');

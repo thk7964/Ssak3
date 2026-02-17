@@ -274,6 +274,95 @@
             .order-item { grid-template-columns: 1fr; }
             .btn-row { justify-content: flex-start; }
         }
+
+        /* ===== 세그먼트 버튼 ===== */
+        .segment-wrap {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 22px;
+        }
+        .segment {
+            display: inline-flex;
+            background: #f0f0f0;
+            border-radius: 16px;
+            padding: 4px;
+            gap: 4px;
+        }
+        .seg-btn {
+            border: none;
+            background: transparent;
+            padding: 10px 28px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 900;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all .2s ease;
+            user-select: none;
+        }
+        .seg-btn.active {
+            background: #ffffff;
+            color: #212529;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+        }
+
+        /* ===== 리뷰 아이템 ===== */
+        .review-item {
+            border: 1px solid #f0f0f0;
+            border-radius: 18px;
+            padding: 18px;
+            transition: all .2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .review-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(0,0,0,0.06);
+            border-color: #e9ecef;
+        }
+        .review-topline {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .review-product-name {
+            font-weight: 900;
+            color: #212529;
+            font-size: 14px;
+        }
+        .review-stars { font-size: 15px; }
+        .review-content {
+            color: #374151;
+            font-size: 14px;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+        .review-date {
+            color: #6b7280;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .review-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .review-delete-btn {
+            border: none;
+            background: #ffeded;
+            color: #ff6b6b;
+            padding: 7px 14px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 900;
+            cursor: pointer;
+            transition: all .15s ease;
+            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.12);
+        }
+        .review-delete-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255, 107, 107, 0.22); }
+        .review-delete-btn:disabled { opacity: .55; cursor: not-allowed; transform: none; box-shadow: none; }
     </style>
 </head>
 <body>
@@ -294,6 +383,17 @@
 <div class="page">
     <h1 class="page-title">전체 주문 내역</h1>
 
+    <!-- 세그먼트 버튼 -->
+    <div class="segment-wrap">
+        <div class="segment">
+            <button class="seg-btn active" id="segOrders" onclick="switchTab('orders')">주문 내역</button>
+            <button class="seg-btn" id="segReviews" onclick="switchTab('reviews')">내가 쓴 리뷰</button>
+        </div>
+    </div>
+
+    <!-- 주문 내역 섹션 -->
+    <div id="sectionOrders">
+
     <!-- ✅ 전체 버튼 없음 / ✅ 누르면 토글되는 필터 3개 -->
     <div class="filters">
         <button class="filter-btn" data-status="PAYMENT_PENDING">결제 대기</button>
@@ -313,6 +413,24 @@
 
     <div class="footer-actions">
         <button class="more-btn" id="moreBtn" style="display:none;">더 보기</button>
+    </div>
+
+    </div><!-- /sectionOrders -->
+
+    <!-- 리뷰 섹션 -->
+    <div id="sectionReviews" style="display:none;">
+        <div class="card">
+            <div class="list" id="reviewList">
+                <div class="empty">
+                    <div class="emoji">💬</div>
+                    <div class="msg">리뷰를 불러오는 중...</div>
+                    <div class="submsg">잠시만 기다려주세요</div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-actions">
+            <button class="more-btn" id="reviewMoreBtn" style="display:none;">더 보기</button>
+        </div>
     </div>
 
 </div>
@@ -687,6 +805,158 @@
         });
     }
 
+    /* ===== 탭 전환 ===== */
+    function switchTab(tab) {
+        const isOrders = tab === 'orders';
+        document.getElementById('segOrders').classList.toggle('active', isOrders);
+        document.getElementById('segReviews').classList.toggle('active', !isOrders);
+        document.getElementById('sectionOrders').style.display = isOrders ? '' : 'none';
+        document.getElementById('sectionReviews').style.display = isOrders ? 'none' : '';
+
+        if (!isOrders && !reviewLoaded) {
+            loadNextReviewPage();
+        }
+    }
+
+    /* ===== 리뷰 관련 변수 ===== */
+    let reviewPage = 0;
+    const reviewSize = 10;
+    let reviewHasNext = true;
+    let reviewIsLoading = false;
+    let reviewLoaded = false;
+
+    // 상품명 캐시 (productId → productName)
+    const productNameCache = {};
+
+    async function fetchProductName(productId) {
+        if (productNameCache[productId] !== undefined) return productNameCache[productId];
+        try {
+            const res = await apiFetch(`/products/${productId}`, { method: 'GET' });
+            if (!res.ok) throw new Error();
+            const json = await res.json();
+            const name = json?.data?.name || json?.data?.productName || `상품 #${productId}`;
+            productNameCache[productId] = name;
+            return name;
+        } catch {
+            productNameCache[productId] = `상품 #${productId}`;
+            return productNameCache[productId];
+        }
+    }
+
+    function renderStars(score) {
+        const n = Math.max(0, Math.min(5, Number(score) || 0));
+        return '⭐'.repeat(n);
+    }
+
+    function renderEmptyReview(emoji, msg, submsg) {
+        document.getElementById('reviewList').innerHTML = `
+          <div class="empty">
+            <div class="emoji">${emoji}</div>
+            <div class="msg">${msg}</div>
+            <div class="submsg">${submsg}</div>
+          </div>`;
+    }
+
+    async function buildReviewItem(r) {
+        const productName = await fetchProductName(r.productId);
+        const div = document.createElement('div');
+        div.className = 'review-item';
+        div.innerHTML = `
+          <div class="review-topline">
+            <span class="review-product-name">${productName}</span>
+            <span class="review-stars">${renderStars(r.score)}</span>
+          </div>
+          <div class="review-content">${r.content || ''}</div>
+          <div class="review-footer">
+            <span class="review-date">작성일: ${formatDateTime(r.createdAt)}</span>
+            <button class="review-delete-btn" data-review-id="${r.id}">삭제</button>
+          </div>`;
+
+        div.querySelector('.review-delete-btn').addEventListener('click', async (e) => {
+            await deleteReview(r.id, e.currentTarget, div);
+        });
+
+        return div;
+    }
+
+    async function deleteReview(reviewId, btn, itemEl) {
+        if (!confirm('리뷰를 삭제할까요?')) return;
+
+        btn.disabled = true;
+        try {
+            const res = await apiFetch(`/reviews/${reviewId}`, { method: 'DELETE' });
+            if (!res.ok) {
+                const txt = await res.text().catch(() => '');
+                throw new Error(txt || `삭제 실패 (${res.status})`);
+            }
+            itemEl.remove();
+
+            // 리뷰가 모두 삭제됐으면 빈 상태 표시
+            const listEl = document.getElementById('reviewList');
+            if (listEl.querySelectorAll('.review-item').length === 0) {
+                renderEmptyReview('💬', '작성한 리뷰가 없습니다', '상품을 구매하고 리뷰를 남겨보세요!');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('리뷰 삭제에 실패했습니다.');
+            btn.disabled = false;
+        }
+    }
+
+    async function loadNextReviewPage() {
+        if (reviewIsLoading) return;
+        if (!reviewHasNext && reviewPage !== 0) return;
+
+        reviewIsLoading = true;
+        const moreBtn = document.getElementById('reviewMoreBtn');
+        moreBtn.disabled = true;
+
+        try {
+            const res = await apiFetch(`/reviews/me?page=${reviewPage}&size=${reviewSize}`, { method: 'GET' });
+            if (!res.ok) {
+                if (res.status === 401 || res.status === 403) {
+                    alert('로그인이 필요합니다.');
+                    location.href = 'login.html';
+                    return;
+                }
+                const txt = await res.text().catch(() => '');
+                throw new Error(txt || `리뷰 목록 조회 실패 (${res.status})`);
+            }
+
+            const json = await res.json();
+            const data = json.data || {};
+            const list = Array.isArray(data.content) ? data.content : [];
+
+            const listEl = document.getElementById('reviewList');
+            if (reviewPage === 0) listEl.innerHTML = '';
+
+            if (list.length === 0 && reviewPage === 0) {
+                renderEmptyReview('💬', '작성한 리뷰가 없습니다', '상품을 구매하고 리뷰를 남겨보세요!');
+            } else {
+                for (const r of list) {
+                    const item = await buildReviewItem(r);
+                    listEl.appendChild(item);
+                }
+            }
+
+            const currentPage = Number(data.page ?? data.number ?? reviewPage);
+            const totalPages = Number(data.totalPages);
+            reviewHasNext = (Number.isFinite(currentPage) && Number.isFinite(totalPages))
+                ? (currentPage + 1 < totalPages)
+                : false;
+            reviewPage = currentPage + 1;
+            reviewLoaded = true;
+
+            moreBtn.style.display = reviewHasNext ? 'inline-flex' : 'none';
+        } catch (err) {
+            console.error(err);
+            renderEmptyReview('⚠️', '리뷰를 불러오지 못했습니다', '다시 시도해주세요.');
+        } finally {
+            reviewIsLoading = false;
+            moreBtn.disabled = false;
+        }
+    }
+
     (async function init() {
         applyHeaderAuthUI();
         initHeaderActions();
@@ -699,6 +969,7 @@
         await loadNextPage();
 
         document.getElementById('moreBtn').addEventListener('click', loadNextPage);
+        document.getElementById('reviewMoreBtn').addEventListener('click', loadNextReviewPage);
     })();
 </script>
 </body>

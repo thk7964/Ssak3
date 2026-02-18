@@ -982,11 +982,19 @@
             .then(responseData => {
                 console.log('서버 응답:', responseData);
 
-                if (!responseData.data || !responseData.data.paymentUrl) {
+                const data = responseData?.data;
+
+                if (data && data.orderStatus === 'DONE' && Number(data.totalPrice) === 0) {
+                    window.location.href = 'my-orders.html';
+                    return;
+                }
+
+                // 기존 로직 유지: 결제 URL 없으면 에러
+                if (!data || !data.paymentUrl) {
                     throw new Error('결제 URL이 없습니다.');
                 }
 
-                const paymentUrl = responseData.data.paymentUrl;
+                const paymentUrl = data.paymentUrl;
 
                 document.getElementById("payment-overlay").style.display = "block";
 
@@ -1035,7 +1043,7 @@
                     }
                 });
             })
-            .catch(error => {
+                .catch(error => {
                 console.error('주문 실패:', error);
 
                 if (error.message === 'Unauthorized' || error.message === 'Redirected') return;

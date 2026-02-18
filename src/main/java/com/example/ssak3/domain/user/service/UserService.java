@@ -41,11 +41,14 @@ public class UserService {
 
         User user = getUser(userId);
 
-        if (userRepository.existsByNickname(request.getNickname()) && !user.getNickname().equals(request.getNickname())) {
+        String nickname = request.getNickname().replaceAll("\\s", "");
+        String phone = request.getPhone().replaceAll("\\s", "");
+
+        if (userRepository.existsByNickname(nickname) && !user.getNickname().equals(nickname)) {
             throw new CustomException(ErrorCode.NICKNAME_ALREADY_EXISTS);
         }
 
-        if (userRepository.existsByPhone(request.getPhone()) && !user.getPhone().equals(request.getPhone())) {
+        if (userRepository.existsByPhone(phone) && !user.getPhone().equals(phone)) {
             throw new CustomException(ErrorCode.PHONE_ALREADY_EXISTS);
         }
 

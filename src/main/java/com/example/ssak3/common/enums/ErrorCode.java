@@ -18,6 +18,7 @@ public enum ErrorCode {
     PASSWORD_MISMATCH(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
     INVALID_BIRTH(HttpStatus.BAD_REQUEST, "생일은 현재 시점보다 과거여야 합니다."),
     FORBIDDEN_USER(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
+    OAUTH_USER_CANNOT_BE_ADMIN(HttpStatus.FORBIDDEN, "소셜 로그인 유저는 관리자가 될 수 없습니다."),
 
     // Product 에러
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다."),

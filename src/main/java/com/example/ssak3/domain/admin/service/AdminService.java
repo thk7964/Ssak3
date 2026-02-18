@@ -1,6 +1,7 @@
 package com.example.ssak3.domain.admin.service;
 
 import com.example.ssak3.common.enums.ErrorCode;
+import com.example.ssak3.common.enums.OAuthProvider;
 import com.example.ssak3.common.enums.UserRole;
 import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.common.model.PageResponse;
@@ -34,6 +35,10 @@ public class AdminService {
 
         User user = userRepository.findByIdAndIsDeletedFalse(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        if (user.getProvider().equals(OAuthProvider.KAKAO)) {
+            throw new CustomException(ErrorCode.OAUTH_USER_CANNOT_BE_ADMIN);
+        }
 
         user.updateRole(request.getRole());
 

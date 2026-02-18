@@ -421,28 +421,23 @@
 
     async function getCurrentUser() {
         try {
-            const token = localStorage.getItem('accessToken');
-
-            const headers = {};
-            if (token) {
-                headers['Authorization'] = `Bearer ${token}`;
-            }
-
             const response = await fetch(`${API_URL}/ssak3/users/me`, {
-                headers: headers,
-                credentials: 'include'   // ⭐ 쿠키도 같이 전송
+                headers: {
+                    'Authorization': localStorage.getItem('accessToken')
+                        ? `Bearer ${localStorage.getItem('accessToken')}`
+                        : undefined
+                },
+                credentials: 'include'
             });
 
             if (!response.ok) throw new Error('인증 실패');
 
             const result = await response.json();
-
             return {
                 userId: result.data.id,
                 role: result.data.role,
-                token: token
+                token: localStorage.getItem('accessToken')
             };
-
         } catch (e) {
             alert('로그인이 필요한 서비스입니다.');
             window.location.href = 'login.html';
@@ -451,25 +446,49 @@
     }
 
     async function createOrGetChatRoom() {
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+
+        if (currentUser.token) {
+            headers['Authorization'] = `Bearer ${currentUser.token}`;
+        }
+
         const response = await fetch(`${API_URL}/ssak3/chat/rooms`, {
             method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${currentUser.token}`,
-                'Content-Type': 'application/json'
-            },
+            headers: headers,
             credentials: 'include'
         });
+
+        if (!response.ok) {
+            throw new Error('채팅방 생성 실패');
+        }
+
         const result = await response.json();
         return result.data;
     }
 
     async function loadChatHistory() {
-        const response = await fetch(`${API_URL}/ssak3/chat/rooms/${roomId}/messages`, {
-            headers: { 'Authorization': `Bearer ${currentUser.token}` },
-            credentials: 'include'
-        });
+        const headers = {};
+
+        if (currentUser.token) {
+            headers['Authorization'] = `Bearer ${currentUser.token}`;
+        }
+
+        const response = await fetch(
+            `${API_URL}/ssak3/chat/rooms/${roomId}/messages`,
+            {
+                headers: headers,
+                credentials: 'include'
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(`HTTP error: ${response.status}`);
+        }
+
         const result = await response.json();
-        const messages = result.data;
+        const messages = result.data || [];
 
         let hasAdminMessage = messages.some(msg => msg.senderRole === 'ADMIN');
         if (hasAdminMessage) updateStatus('ONGOING');
@@ -479,16 +498,24 @@
     }
 
     function connectWebSocket() {
+
         stompClient = new StompJs.Client({
-            brokerURL: WS_URL,
+
+            webSocketFactory: () => {
+                return new WebSocket(WS_URL);
+            },
+
+            // connectHeaders는 이제 굳이 안 써도 됨 (쿠키 기반이면)
             connectHeaders: currentUser.token
                 ? { 'Authorization': `Bearer ${currentUser.token}` }
-                : {},   // ⭐ 쿠키 로그인일 경우 빈값
+                : {},
+
+            reconnectDelay: 5000
         });
 
         stompClient.onConnect = function(frame) {
             isConnected = true;
-            // 연결 성공 시 안내 섹션 노출
+
             document.getElementById('guideSection').style.display = 'block';
 
             stompClient.subscribe(`/sub/chat/room/${roomId}`, (message) => {

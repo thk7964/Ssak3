@@ -595,15 +595,32 @@
     function handleSearchEnter(event) { if (event.key === 'Enter') handleSearch(); }
 
     // ------- 헤더(로그인 UI) -------
-    function applyHeaderAuthUI() {
-        const token = localStorage.getItem('accessToken');
+    async function applyHeaderAuthUI() {
         const loginBtn = document.getElementById('loginBtn');
         const userInfo = document.getElementById('userInfo');
 
-        if (token) {
+        const token = localStorage.getItem('accessToken');
+
+        const headers = {};
+        if (token && token !== 'null' && token !== 'undefined') {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        try {
+            const res = await fetch(`${API_BASE}/users/me`, {
+                method: 'GET',
+                headers,
+                credentials: 'include' // ✅ 쿠키 로그인 지원
+            });
+
+            if (!res.ok) throw new Error('Unauthorized');
+
+            // 로그인 상태
             loginBtn.style.display = 'none';
             userInfo.style.display = 'flex';
-        } else {
+
+        } catch (e) {
+            // 비로그인 상태
             loginBtn.style.display = 'inline-block';
             userInfo.style.display = 'none';
         }
@@ -613,12 +630,36 @@
         document.getElementById('cartIconBtn').onclick = () => location.href = 'cart.html';
         document.getElementById('myPageBtn').onclick = () => location.href = 'mypage.html';
         document.getElementById('loginBtn').onclick = () => location.href = 'login.html';
-        document.getElementById('logoutBtn').onclick = () => {
-            localStorage.removeItem('accessToken');
-            applyHeaderAuthUI();
-            alert('로그아웃 되었습니다.');
-            location.href = 'home.html';
+        document.getElementById('logoutBtn').onclick = async () => {
+            if (!confirm('로그아웃 하시겠습니까?')) return;
+
+            const token = localStorage.getItem('accessToken');
+
+            const headers = {};
+            if (token && token !== 'null' && token !== 'undefined') {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            try {
+                // ✅ 쿠키 세션 로그아웃(카카오) + 토큰 로그아웃(일반) 둘 다 처리
+                await fetch(`${API_BASE}/auth/logout`, {
+                    method: 'POST',
+                    headers,
+                    credentials: 'include' // ✅ 핵심: 쿠키 포함
+                });
+            } catch (e) {
+                console.error('logout api error:', e);
+                // 네트워크 에러여도 일단 로컬 정리는 진행
+            } finally {
+                localStorage.removeItem('accessToken');
+                // (선택) 장바구니 주문 전달값 등도 같이 정리하고 싶으면:
+                // sessionStorage.clear();
+
+                alert('로그아웃 되었습니다.');
+                location.href = 'home.html';
+            }
         };
+
     }
 
     // ------- 유틸 -------
@@ -1074,7 +1115,7 @@
     }
 
     (async function init() {
-        applyHeaderAuthUI();
+        await applyHeaderAuthUI();
         initHeaderActions();
         initEvents();
         await loadCart();

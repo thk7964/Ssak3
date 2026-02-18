@@ -598,6 +598,34 @@
         return headers;
     }
 
+
+    async function ensureAuthenticatedOrRedirect() {
+        const token = localStorage.getItem('accessToken');
+
+        // 토큰이 없어도 쿠키가 있을 수 있으므로 일단 호출
+        const headers = {};
+        if (token && token !== 'null' && token !== 'undefined') {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE}/users/me`, {
+                method: 'GET',
+                headers,
+                credentials: 'include' // 💡 핵심: 쿠키 포함
+            });
+
+            if (!response.ok) throw new Error('Unauthenticated');
+            return true;
+        } catch (e) {
+            alert('로그인이 필요한 서비스입니다.');
+            window.location.href = 'login.html';
+            return false;
+        }
+    }
+
+
+
     function formatPrice(price) {
         return price.toLocaleString('ko-KR') + '원';
     }
@@ -750,13 +778,9 @@
     }
 
     async function addToCart() {
-
-        const token = localStorage.getItem('accessToken');
-        if (!token) {
-            alert('로그인이 필요한 서비스입니다.');
-            window.location.href = 'login.html';
-            return;
-        }
+        // 토큰 없더라도 쿠키 세션이면 통과
+        const ok = await ensureAuthenticatedOrRedirect();
+        if (!ok) return;
 
         if (!timeDealData) return;
 
@@ -769,12 +793,13 @@
         try {
             const res = await fetch(`${API_BASE}/carts`, {
                 method: 'POST',
-                headers: buildAuthHeaders(true),
-                credentials: 'include',
+                headers: buildAuthHeaders(true), // 토큰 있으면 Authorization 포함
+                credentials: 'include',          // 쿠키 포함
                 body: JSON.stringify(payload)
             });
 
             if (!res.ok) {
+                // (선택) 혹시 세션 만료/토큰 만료면 동일 처리
                 if (res.status === 401) {
                     alert('로그인이 필요한 서비스입니다.');
                     window.location.href = 'login.html';
@@ -793,21 +818,16 @@
             if (!result.success) throw new Error(result.message || '장바구니 담기에 실패했습니다.');
 
             alert('장바구니에 담았습니다!');
-
         } catch (e) {
             console.error(e);
             alert(e.message || '장바구니 담기 중 오류가 발생했습니다.');
         }
     }
 
-    function buyNow() {
-
-        const token = localStorage.getItem('accessToken');
-        if (!token) {
-            alert('로그인이 필요한 서비스입니다.');
-            window.location.href = 'login.html';
-            return;
-        }
+    async function buyNow() {
+        // 토큰 없더라도 쿠키 세션이면 통과
+        const ok = await ensureAuthenticatedOrRedirect();
+        if (!ok) return;
 
         if (!timeDealData) return;
 

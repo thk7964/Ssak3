@@ -276,15 +276,33 @@
     const FREE_SHIPPING_THRESHOLD = 30000;
     const SHIPPING_FEE = 3000;
 
-    function applyHeaderAuthUI() {
-        const token = localStorage.getItem('accessToken');
+    // ✅ 토큰 + 쿠키(카카오) 모두 지원해서 헤더 상태 결정 (mypage 방식)
+    async function applyHeaderAuthUI() {
         const loginBtn = document.getElementById('loginBtn');
         const userInfo = document.getElementById('userInfo');
 
-        if (token) {
+        const token = localStorage.getItem('accessToken');
+
+        const headers = {};
+        if (token && token !== 'null' && token !== 'undefined') {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        try {
+            const res = await fetch(`${API_BASE}/users/me`, {
+                method: 'GET',
+                headers,
+                credentials: 'include' // ✅ 쿠키 포함
+            });
+
+            if (!res.ok) throw new Error('Unauthorized');
+
             loginBtn.style.display = 'none';
             userInfo.style.display = 'flex';
-        } else {
+        } catch (e) {
+            // (선택) 토큰이 꼬여있을 수 있으니 정리
+            localStorage.removeItem('accessToken');
+
             loginBtn.style.display = 'inline-block';
             userInfo.style.display = 'none';
         }
@@ -294,12 +312,31 @@
         document.getElementById('cartIconBtn').onclick = () => location.href = 'cart.html';
         document.getElementById('myPageBtn').onclick = () => location.href = 'mypage.html';
         document.getElementById('loginBtn').onclick = () => location.href = 'login.html';
-        document.getElementById('logoutBtn').onclick = () => {
-            localStorage.removeItem('accessToken');
-            applyHeaderAuthUI();
-            alert('로그아웃 되었습니다.');
-            location.href = 'home.html';
+        document.getElementById('logoutBtn').onclick = async () => {
+            if (!confirm('로그아웃 하시겠습니까?')) return;
+
+            const token = localStorage.getItem('accessToken');
+            const headers = {};
+            if (token && token !== 'null' && token !== 'undefined') {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            try {
+                // ✅ 쿠키 세션(카카오) 로그아웃까지 포함
+                await fetch(`${API_BASE}/auth/logout`, {
+                    method: 'POST',
+                    headers,
+                    credentials: 'include'
+                });
+            } catch (e) {
+                console.error('logout api error:', e);
+            } finally {
+                localStorage.removeItem('accessToken');
+                alert('로그아웃 되었습니다.');
+                location.href = 'home.html';
+            }
         };
+
     }
 
     async function apiFetch(path, options = {}) {
@@ -587,7 +624,7 @@
     }
 
     (async function init() {
-        applyHeaderAuthUI();
+        await applyHeaderAuthUI();
         initHeaderActions();
 
         const orderId = getOrderIdFromQuery();
@@ -597,6 +634,7 @@
         }
         await loadOrder(orderId);
     })();
+
 </script>
 </body>
 </html>

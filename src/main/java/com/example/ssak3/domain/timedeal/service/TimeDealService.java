@@ -35,8 +35,10 @@ public class TimeDealService {
 
         String imageUrl = s3Uploader.createPresignedGetUrl(response.getImage(), 5);
         String detailImageUrl = s3Uploader.createPresignedGetUrl(response.getDetailImage(), 5);
+        String productImageUrl = s3Uploader.createPresignedGetUrl(response.getProduct().getImage(), 5);
+        String productDetailImageUrl = s3Uploader.createPresignedGetUrl(response.getProduct().getDetailImage(), 5);
 
-        return TimeDealGetResponse.from(response, imageUrl, detailImageUrl);
+        return TimeDealGetResponse.from(response, imageUrl, detailImageUrl, productImageUrl, productDetailImageUrl);
     }
 
     /**

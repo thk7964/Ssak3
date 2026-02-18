@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>타임딜 상세 - 싹쓰리</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
@@ -43,11 +39,7 @@
             flex-shrink: 0;
         }
 
-        .search-container {
-            flex: 1;
-            max-width: 500px;
-            position: relative;
-        }
+        .search-container { flex: 1; max-width: 500px; position: relative; }
 
         .search-wrapper {
             display: flex;
@@ -74,9 +66,7 @@
             color: #495057;
         }
 
-        .search-input::placeholder {
-            color: #adb5bd;
-        }
+        .search-input::placeholder { color: #adb5bd; }
 
         .search-btn {
             background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
@@ -98,11 +88,7 @@
             box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
         }
 
-        .header-icons {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
+        .header-icons { display: flex; gap: 12px; align-items: center; }
 
         .icon-btn {
             background: #f8f9fa;
@@ -116,10 +102,7 @@
             color: #495057;
         }
 
-        .icon-btn:hover {
-            background: #e9ecef;
-            transform: translateY(-2px);
-        }
+        .icon-btn:hover { background: #e9ecef; transform: translateY(-2px); }
 
         .auth-btn {
             background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
@@ -140,11 +123,7 @@
             box-shadow: 0 6px 20px rgba(116, 185, 255, 0.45);
         }
 
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        .user-info { display: flex; align-items: center; gap: 12px; }
 
         .logout-btn {
             background: #f8f9fa;
@@ -158,9 +137,7 @@
             transition: all 0.2s ease;
         }
 
-        .logout-btn:hover {
-            background: #e9ecef;
-        }
+        .logout-btn:hover { background: #e9ecef; }
 
         .back-btn {
             background: #f8f9fa;
@@ -178,15 +155,9 @@
             gap: 8px;
         }
 
-        .back-btn:hover {
-            background: #e9ecef;
-        }
+        .back-btn:hover { background: #e9ecef; }
 
-        .product-detail-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
+        .product-detail-container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
 
         .product-main {
             display: grid;
@@ -196,6 +167,7 @@
         }
 
         .product-image-section {
+            position: relative;
             background: white;
             border-radius: 20px;
             padding: 40px;
@@ -212,19 +184,11 @@
         }
 
         @keyframes float {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-20px);
-            }
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
         }
 
-        .product-info-section {
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
+        .product-info-section { display: flex; flex-direction: column; gap: 24px; }
 
         .product-category {
             display: inline-block;
@@ -266,20 +230,9 @@
             width: fit-content;
         }
 
-        .product-status.READY {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .product-status.OPEN {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .product-status.CLOSED {
-            background: #fee2e2;
-            color: #991b1b;
-        }
+        .product-status.READY { background: #fef3c7; color: #92400e; }
+        .product-status.OPEN { background: #dcfce7; color: #166534; }
+        .product-status.CLOSED { background: #fee2e2; color: #991b1b; }
 
         .time-info-box {
             background: linear-gradient(135deg, #fff5f5 0%, #ffe4e6 100%);
@@ -288,30 +241,11 @@
             border-left: 4px solid #ff6b6b;
         }
 
-        .time-info-label {
-            font-size: 13px;
-            color: #6b7280;
-            margin-bottom: 8px;
-        }
+        .time-info-label { font-size: 13px; color: #6b7280; margin-bottom: 8px; }
+        .time-info-value { font-size: 16px; font-weight: 700; color: #212529; }
+        .remaining-time { font-size: 18px; font-weight: 700; color: #ff6b6b; margin-top: 12px; }
 
-        .time-info-value {
-            font-size: 16px;
-            font-weight: 700;
-            color: #212529;
-        }
-
-        .remaining-time {
-            font-size: 18px;
-            font-weight: 700;
-            color: #ff6b6b;
-            margin-top: 12px;
-        }
-
-        .divider {
-            height: 1px;
-            background: #e5e7eb;
-            margin: 20px 0;
-        }
+        .divider { height: 1px; background: #e5e7eb; margin: 20px 0; }
 
         .product-description {
             background: white;
@@ -320,19 +254,8 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
 
-        .description-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #212529;
-            margin-bottom: 16px;
-        }
-
-        .description-text {
-            font-size: 15px;
-            color: #6b7280;
-            line-height: 1.8;
-            white-space: pre-wrap;
-        }
+        .description-title { font-size: 18px; font-weight: 600; color: #212529; margin-bottom: 16px; }
+        .description-text { font-size: 15px; color: #6b7280; line-height: 1.8; white-space: pre-wrap; }
 
         .quantity-selector {
             display: flex;
@@ -344,17 +267,9 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
 
-        .quantity-label {
-            font-size: 15px;
-            font-weight: 600;
-            color: #374151;
-        }
+        .quantity-label { font-size: 15px; font-weight: 600; color: #374151; }
 
-        .quantity-controls {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        .quantity-controls { display: flex; align-items: center; gap: 12px; }
 
         .quantity-btn {
             width: 36px;
@@ -369,24 +284,11 @@
             transition: all 0.2s ease;
         }
 
-        .quantity-btn:hover {
-            border-color: #ff6b6b;
-            color: #ff6b6b;
-        }
+        .quantity-btn:hover { border-color: #ff6b6b; color: #ff6b6b; }
 
-        .quantity-value {
-            font-size: 18px;
-            font-weight: 600;
-            color: #212529;
-            min-width: 40px;
-            text-align: center;
-        }
+        .quantity-value { font-size: 18px; font-weight: 600; color: #212529; min-width: 40px; text-align: center; }
 
-        .action-buttons {
-            display: flex;
-            gap: 16px;
-            margin-top: 24px;
-        }
+        .action-buttons { display: flex; gap: 16px; margin-top: 24px; }
 
         .cart-btn, .buy-btn {
             flex: 1;
@@ -402,17 +304,8 @@
             gap: 8px;
         }
 
-        .cart-btn {
-            background: white;
-            border: 2px solid #ff6b6b;
-            color: #ff6b6b;
-        }
-
-        .cart-btn:hover {
-            background: #ff6b6b;
-            color: white;
-            transform: translateY(-2px);
-        }
+        .cart-btn { background: white; border: 2px solid #ff6b6b; color: #ff6b6b; }
+        .cart-btn:hover { background: #ff6b6b; color: white; transform: translateY(-2px); }
 
         .buy-btn {
             background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
@@ -421,48 +314,17 @@
             box-shadow: 0 4px 16px rgba(255, 107, 107, 0.3);
         }
 
-        .buy-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(255, 107, 107, 0.4);
-        }
+        .buy-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255, 107, 107, 0.4); }
 
-        .cart-btn:disabled, .buy-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+        .cart-btn:disabled, .buy-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .cart-btn:disabled:hover, .buy-btn:disabled:hover { transform: none; }
 
-        .cart-btn:disabled:hover, .buy-btn:disabled:hover {
-            transform: none;
-        }
+        .loading { text-align: center; padding: 100px 20px; font-size: 18px; color: #6b7280; }
 
-        .loading {
-            text-align: center;
-            padding: 100px 20px;
-            font-size: 18px;
-            color: #6b7280;
-        }
-
-        .error-state {
-            text-align: center;
-            padding: 100px 20px;
-        }
-
-        .error-icon {
-            font-size: 80px;
-            margin-bottom: 20px;
-        }
-
-        .error-title {
-            font-size: 24px;
-            font-weight: 700;
-            color: #212529;
-            margin-bottom: 10px;
-        }
-
-        .error-message {
-            font-size: 16px;
-            color: #6b7280;
-        }
+        .error-state { text-align: center; padding: 100px 20px; }
+        .error-icon { font-size: 80px; margin-bottom: 20px; }
+        .error-title { font-size: 24px; font-weight: 700; color: #212529; margin-bottom: 10px; }
+        .error-message { font-size: 16px; color: #6b7280; }
 
         footer {
             background: #212529;
@@ -472,17 +334,9 @@
             margin-top: 60px;
         }
 
-        footer p {
-            margin: 10px 0;
-            font-size: 14px;
-            line-height: 1.6;
-        }
+        footer p { margin: 10px 0; font-size: 14px; line-height: 1.6; }
+        footer p:first-child { color: white; font-weight: 600; font-size: 15px; }
 
-        footer p:first-child {
-            color: white;
-            font-weight: 600;
-            font-size: 15px;
-        }
         .product-main-image {
             width: 100%;
             max-height: 420px;
@@ -490,53 +344,75 @@
             border-radius: 16px;
         }
 
-        .product-detail-image {
+        .product-detail-image { width: 100%; margin-top: 24px; border-radius: 12px; }
+        .no-image { font-size: 120px; }
+
+        .outside-thumbs {
+            position: absolute;
+            left: -92px;
+            top: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 2;
+        }
+
+        .thumb-btn {
+            width: 78px;
+            height: 78px;
+            border: 2px solid #e5e7eb;
+            background: #ffffff;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            padding: 8px;
+        }
+
+        .thumb-btn:hover {
+            border-color: #ff6b6b;
+            transform: translateY(-1px);
+        }
+
+        .thumb-btn.active {
+            border-color: #ff6b6b;
+            box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12), 0 10px 30px rgba(0,0,0,0.10);
+        }
+
+        .thumb-img {
             width: 100%;
-            margin-top: 24px;
+            height: 100%;
+            object-fit: cover;
             border-radius: 12px;
         }
 
-        .no-image {
-            font-size: 120px;
+        .thumb-fallback { font-size: 28px; }
+
+        @media (min-width: 769px) {
+            .product-main { gap: 80px; }
         }
 
         @media (max-width: 768px) {
-            .product-main {
-                grid-template-columns: 1fr;
-                gap: 30px;
-            }
+            .product-main { grid-template-columns: 1fr; gap: 30px; }
+            .product-image { font-size: 120px; }
+            .product-name { font-size: 28px; }
+            .product-price { font-size: 26px; }
+            .action-buttons { flex-direction: column; }
+            .back-btn { margin: 20px; }
+            header { padding: 16px 20px; flex-wrap: wrap; }
+            .search-container { order: 3; width: 100%; max-width: 100%; margin-top: 12px; }
 
-            .product-image {
-                font-size: 120px;
+            .outside-thumbs {
+                position: static;
+                flex-direction: row;
+                margin-top: 14px;
+                justify-content: center;
             }
-
-            .product-name {
-                font-size: 28px;
-            }
-
-            .product-price {
-                font-size: 26px;
-            }
-
-            .action-buttons {
-                flex-direction: column;
-            }
-
-            .back-btn {
-                margin: 20px;
-            }
-
-            header {
-                padding: 16px 20px;
-                flex-wrap: wrap;
-            }
-
-            .search-container {
-                order: 3;
-                width: 100%;
-                max-width: 100%;
-                margin-top: 12px;
-            }
+            .thumb-btn { width: 86px; height: 76px; box-shadow: 0 6px 18px rgba(0,0,0,0.08); }
+            .product-image-section { padding: 28px; flex-direction: column; }
         }
     </style>
 </head>
@@ -590,6 +466,8 @@
 
     const API_BASE = 'http://localhost:8080/ssak3';
 
+    let selectedMainImageUrl = null;
+
     function buildAuthHeaders(withJson = false) {
         const token = localStorage.getItem('accessToken');
         const headers = {};
@@ -598,11 +476,9 @@
         return headers;
     }
 
-
     async function ensureAuthenticatedOrRedirect() {
         const token = localStorage.getItem('accessToken');
 
-        // 토큰이 없어도 쿠키가 있을 수 있으므로 일단 호출
         const headers = {};
         if (token && token !== 'null' && token !== 'undefined') {
             headers['Authorization'] = `Bearer ${token}`;
@@ -612,7 +488,7 @@
             const response = await fetch(`${API_BASE}/users/me`, {
                 method: 'GET',
                 headers,
-                credentials: 'include' // 쿠키 포함
+                credentials: 'include'
             });
 
             if (!response.ok) throw new Error('Unauthenticated');
@@ -623,8 +499,6 @@
             return false;
         }
     }
-
-
 
     function formatPrice(price) {
         return price.toLocaleString('ko-KR') + '원';
@@ -640,28 +514,15 @@
         return `${y}년 ${m}월 ${d}일 ${h}:${min}`;
     }
 
-    function getTimeDealStatus(startAt, endAt) {
-        const now = new Date();
-        const start = new Date(startAt);
-        const end = new Date(endAt);
-        if (now < start) return 'READY';
-        if (now < end) return 'OPEN';
-        return 'CLOSED';
-    }
-
     function calculateRemainingTime(startAt, endAt) {
         const now = new Date();
         const start = new Date(startAt);
         const end = new Date(endAt);
 
         let target, prefix;
-        if (now < start) {
-            target = start;
-            prefix = '시작까지';
-        } else if (now < end) {
-            target = end;
-            prefix = '종료까지';
-        } else return '종료됨';
+        if (now < start) { target = start; prefix = '시작까지'; }
+        else if (now < end) { target = end; prefix = '종료까지'; }
+        else return '종료됨';
 
         const diff = target - now;
         if (diff <= 0) return '종료됨';
@@ -690,6 +551,31 @@
         }
     }
 
+    function selectMainImage(url) {
+        if (!url) return;
+        selectedMainImageUrl = url;
+
+        const mainImg = document.getElementById('mainImage');
+        if (mainImg) mainImg.src = url;
+
+        document.querySelectorAll('.thumb-btn').forEach(btn => {
+            const btnUrl = btn.getAttribute('data-url');
+            btn.classList.toggle('active', btnUrl === url);
+        });
+    }
+
+    function buildThumb(url, fallbackEmoji) {
+        if (!url) return '';
+        const safeUrl = url.replace(/'/g, "\\'");
+        return `
+            <button class="thumb-btn" type="button" data-url="${url}"
+                    onclick="selectMainImage('${safeUrl}')">
+                <img class="thumb-img" src="${url}" alt="썸네일"
+                     onerror="this.outerHTML='<div class=&quot;thumb-fallback&quot;>${fallbackEmoji}</div>'">
+            </button>
+        `;
+    }
+
     function displayTimeDeal(timeDeal) {
         if (countdownInterval) clearInterval(countdownInterval);
 
@@ -698,14 +584,23 @@
         const emoji = productEmojis[timeDeal.id % 10 + 1] || '🎁';
         const isOpen = timeDeal.status === 'OPEN';
 
+        selectedMainImageUrl = timeDeal.imageUrl || timeDeal.productImageUrl || null;
+
         container.innerHTML = `
         <div class="product-main">
             <div class="product-image-section">
                 ${
-                    timeDeal.imageUrl
-                        ? `<img src="${timeDeal.imageUrl}" alt="대표 이미지" class="product-main-image">`
-                        : `<div class="product-image no-image">${emoji}</div>`
-                }
+            selectedMainImageUrl
+                ? `
+                            <div class="outside-thumbs">
+                                ${buildThumb(timeDeal.imageUrl, '⏰')}
+                                ${buildThumb(timeDeal.productImageUrl, '📦')}
+                            </div>
+
+                            <img id="mainImage" src="${selectedMainImageUrl}" alt="대표 이미지" class="product-main-image">
+                        `
+                : `<div class="product-image no-image">${emoji}</div>`
+        }
             </div>
 
             <div class="product-info-section">
@@ -742,24 +637,21 @@
             </div>
         </div>
 
-        ${timeDeal.productInformation || timeDeal.detailImageUrl ? `
+        ${timeDeal.productInformation || timeDeal.detailImageUrl || timeDeal.productDetailImageUrl ? `
             <div class="product-description" style="margin-top:60px;">
                 <h3 class="description-title">상품 상세 설명</h3>
 
-                ${
-                    timeDeal.productInformation
-                        ? `<p class="description-text">${timeDeal.productInformation}</p>`
-                        : ''
-                }
+                ${timeDeal.productInformation ? `<p class="description-text">${timeDeal.productInformation}</p>` : ''}
 
-                ${
-                    timeDeal.detailImageUrl
-                        ? `<img src="${timeDeal.detailImageUrl}" alt="상세 이미지" class="product-detail-image">`
-                        : ''
-                }
+                ${timeDeal.detailImageUrl ? `<img src="${timeDeal.detailImageUrl}" alt="상세 이미지" class="product-detail-image">` : ''}
+
+                <!-- ✅ 수정: productDetailImageUrl 추가 (detailImageUrl 밑에 출력) -->
+                ${timeDeal.productDetailImageUrl ? `<img src="${timeDeal.productDetailImageUrl}" alt="상품 상세 이미지" class="product-detail-image">` : ''}
             </div>
         ` : ''}
-    `;
+        `;
+
+        if (selectedMainImageUrl) selectMainImage(selectedMainImageUrl);
 
         updateRemainingTime();
         countdownInterval = setInterval(updateRemainingTime, 1000);
@@ -778,10 +670,8 @@
     }
 
     async function addToCart() {
-        // 토큰 없더라도 쿠키 세션이면 통과
         const ok = await ensureAuthenticatedOrRedirect();
         if (!ok) return;
-
         if (!timeDealData) return;
 
         const payload = {
@@ -793,13 +683,12 @@
         try {
             const res = await fetch(`${API_BASE}/carts`, {
                 method: 'POST',
-                headers: buildAuthHeaders(true), // 토큰 있으면 Authorization 포함
-                credentials: 'include',          // 쿠키 포함
+                headers: buildAuthHeaders(true),
+                credentials: 'include',
                 body: JSON.stringify(payload)
             });
 
             if (!res.ok) {
-                // (선택) 혹시 세션 만료/토큰 만료면 동일 처리
                 if (res.status === 401) {
                     alert('로그인이 필요한 서비스입니다.');
                     window.location.href = 'login.html';
@@ -825,10 +714,8 @@
     }
 
     async function buyNow() {
-        // 토큰 없더라도 쿠키 세션이면 통과
         const ok = await ensureAuthenticatedOrRedirect();
         if (!ok) return;
-
         if (!timeDealData) return;
 
         const productId = Number(timeDealData.productId);
@@ -858,7 +745,6 @@
         if (e.key === 'Enter') handleSearch();
     }
 
-    // 로그인 상태 확인
     async function checkLoginStatus() {
         const loginBtn = document.getElementById('loginBtn');
         const userInfo = document.getElementById('userInfo');
@@ -882,7 +768,6 @@
         }
     }
 
-    // 로그아웃
     document.getElementById('logoutBtn').addEventListener('click', async function () {
         if (!confirm('로그아웃 하시겠습니까?')) return;
         const token = localStorage.getItem('accessToken');
@@ -904,7 +789,6 @@
     document.getElementById('loginBtn').addEventListener('click', () => location.href = 'login.html');
     document.getElementById('myPageBtn').addEventListener('click', () => location.href = 'mypage.html');
 
-    // 타임딜 상세 호출
     async function loadTimeDealDetail() {
         if (!timeDealId) {
             showError('타임딜을 찾을 수 없습니다.');
@@ -922,7 +806,6 @@
         }
     }
 
-    // 초기 실행
     checkLoginStatus();
     loadTimeDealDetail();
 </script>

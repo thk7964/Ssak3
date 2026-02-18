@@ -322,10 +322,9 @@
 </head>
 <body>
 <header>
-    <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
-    <div class="header-title">📞 문의 채팅 관리 시스템</div>
+    <a class="logo" onclick="location.href='home.html'">SSAK3</a>
     <div class="header-icons">
-        <button class="btn-common home-btn" onclick="location.href='home.html'">홈으로</button>
+        <button class="btn-common home-btn" id="myPageBtn">마이페이지</button>
         <button class="btn-common logout-btn" id="logoutBtn">로그아웃</button>
     </div>
 </header>
@@ -627,6 +626,8 @@
     function enterChat(roomId) {
         window.location.href = `admin-inquiry-chat.html?roomId=${roomId}`;
     }
+
+    document.getElementById('myPageBtn').addEventListener('click', () => location.href = 'admin-mypage.html');
 
     document.getElementById('logoutBtn')?.addEventListener('click', () => {
         localStorage.removeItem('accessToken');

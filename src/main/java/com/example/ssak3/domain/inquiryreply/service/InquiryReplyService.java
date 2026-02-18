@@ -13,7 +13,6 @@ import com.example.ssak3.domain.inquiryreply.model.request.InquiryReplyCreateReq
 import com.example.ssak3.domain.inquiryreply.model.request.InquiryReplyUpdateRequest;
 import com.example.ssak3.domain.inquiryreply.model.response.InquiryReplyCreateResponse;
 import com.example.ssak3.domain.inquiryreply.model.response.InquiryReplyDeleteResponse;
-import com.example.ssak3.domain.inquiryreply.model.response.InquiryReplyGetResponse;
 import com.example.ssak3.domain.inquiryreply.model.response.InquiryReplyUpdateResponse;
 import com.example.ssak3.domain.inquiryreply.repository.InquiryReplyRepository;
 import com.example.ssak3.domain.user.entity.User;
@@ -58,7 +57,7 @@ public class InquiryReplyService {
     }
 
     /**
-     * 문의 답변 목록 조회 삭제 예정
+     * 관리자용 문의 목록 조회
      */
     @Transactional(readOnly = true)
     public PageResponse<InquiryListGetResponse> getInquiryList(Pageable pageable) {
@@ -83,18 +82,6 @@ public class InquiryReplyService {
                 .orElse(null);
 
         return InquiryGetResponse.from(foundInquiry, inquiryReply);
-    }
-
-    /**
-     * 문의 답변 상세 조회
-     */
-    @Transactional(readOnly = true)
-    public InquiryReplyGetResponse getInquiryReply(Long inquiryReplyId) {
-
-        InquiryReply inquiryReply = inquiryReplyRepository.findByIdAndIsDeletedFalse(inquiryReplyId)
-                .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_REPLY_NOT_FOUND));
-
-        return InquiryReplyGetResponse.from(inquiryReply);
     }
 
     /**

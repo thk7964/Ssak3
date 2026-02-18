@@ -36,7 +36,7 @@ public class InquiryReplyController {
     }
 
     /**
-     * 문의 목록 조회 API
+     * 관리자용 문의 목록 조회 API
      */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/inquiries")
@@ -55,19 +55,6 @@ public class InquiryReplyController {
     public ResponseEntity<ApiResponse> getInquiryForAdminApi(@PathVariable Long inquiryId) {
 
         ApiResponse response = ApiResponse.success("문의 상세 조회에 성공했습니다.", inquiryReplyService.getInquiryForAdmin(inquiryId));
-
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
-
-    /**
-     * 문의 답변 상세 조회 API
-     */
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/{inquiryReplyId}")
-    public ResponseEntity<ApiResponse> getInquiryReplyApi(@PathVariable Long inquiryReplyId) {
-
-        ApiResponse response = ApiResponse.success("문의 답변 조회에 성공했습니다.", inquiryReplyService.getInquiryReply(inquiryReplyId));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

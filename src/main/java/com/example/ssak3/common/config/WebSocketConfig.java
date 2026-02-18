@@ -8,6 +8,7 @@ import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
 
 @Configuration
 @EnableWebSocketMessageBroker
@@ -26,7 +27,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                         "https://ssak3.store",
                         "https://www.ssak3.store",
                         "https://admin.ssak3.store"
-                );
+                )
+                .addInterceptors(new HttpSessionHandshakeInterceptor());
     }
 
     @Override
@@ -42,4 +44,3 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registration.interceptors(stompHandler);
     }
 }
-

@@ -570,6 +570,73 @@
                 margin: 20px;
             }
         }
+
+        .product-image-section {
+            position: relative; /* 중요: outside-thumbs absolute 기준 */
+        }
+
+        .outside-thumbs {
+            position: absolute;
+            left: -92px;
+            top: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 2;
+        }
+
+        .thumb-btn {
+            width: 78px;
+            height: 78px;
+            border: 2px solid #e5e7eb;
+            background: #ffffff;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            padding: 8px;
+        }
+
+        .thumb-btn:hover {
+            border-color: #ff6b6b;
+            transform: translateY(-1px);
+        }
+
+        .thumb-btn.active {
+            border-color: #ff6b6b;
+            box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12), 0 10px 30px rgba(0,0,0,0.10);
+        }
+
+        .thumb-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        .thumb-fallback { font-size: 28px; }
+
+        /* 모바일: 썸네일을 위쪽 가로로 */
+        @media (max-width: 768px) {
+            .outside-thumbs {
+                position: static;
+                flex-direction: row;
+                margin-top: 14px;
+                justify-content: center;
+            }
+            .thumb-btn {
+                width: 86px;
+                height: 76px;
+                box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+            }
+            .product-image-section {
+                padding: 28px;
+                flex-direction: column;
+            }
+        }
     </style>
 </head>
 <body>
@@ -724,6 +791,33 @@
         }
     }
 
+    let selectedMainImageUrl = null;
+
+    function selectMainImage(url) {
+        if (!url) return;
+        selectedMainImageUrl = url;
+
+        const mainImg = document.getElementById('mainImage');
+        if (mainImg) mainImg.src = url;
+
+        document.querySelectorAll('.thumb-btn').forEach(btn => {
+            const btnUrl = btn.getAttribute('data-url');
+            btn.classList.toggle('active', btnUrl === url);
+        });
+    }
+
+    function buildThumb(url, fallbackEmoji) {
+        if (!url) return '';
+        const safeUrl = url.replace(/'/g, "\\'");
+        return `
+        <button class="thumb-btn" type="button" data-url="${url}"
+                onclick="selectMainImage('${safeUrl}')">
+            <img class="thumb-img" src="${url}" alt="썸네일"
+                 onerror="this.outerHTML='<div class=&quot;thumb-fallback&quot;>${fallbackEmoji}</div>'">
+        </button>
+    `;
+    }
+
     function displayTimeDeal(timeDeal) {
         if (countdownInterval) clearInterval(countdownInterval);
 
@@ -732,68 +826,75 @@
         const emoji = productEmojis[timeDeal.id % 10 + 1] || '🎁';
         const isOpen = timeDeal.status === 'OPEN';
 
+        // ✅ 기본 선택: imageUrl 우선, 없으면 productImageUrl
+        selectedMainImageUrl = timeDeal.imageUrl || timeDeal.productImageUrl || null;
+
         container.innerHTML = `
-        <div class="product-main">
-            <div class="product-image-section">
-                ${
-                    timeDeal.imageUrl
-                        ? `<img src="${timeDeal.imageUrl}" alt="대표 이미지" class="product-main-image">`
-                        : `<div class="product-image no-image">${emoji}</div>`
-                }
-            </div>
+    <div class="product-main">
+        <div class="product-image-section">
+            ${
+            selectedMainImageUrl
+                ? `
+                        <div class="outside-thumbs">
+                            ${buildThumb(timeDeal.imageUrl, '⏰')}
+                            ${buildThumb(timeDeal.productImageUrl, '📦')}
+                        </div>
 
-            <div class="product-info-section">
-                <span class="product-category">⏰ 타임딜 특가</span>
-                <h1 class="product-name">${timeDeal.productName}</h1>
-                <div class="product-price">${formatPrice(timeDeal.dealPrice)}</div>
-                <span class="product-status ${timeDeal.status}">
-                    ${timeDeal.status === 'OPEN' ? '✓' : timeDeal.status === 'READY' ? '⏰' : '✕'} ${statusText[timeDeal.status]}
-                </span>
-
-                <div class="divider"></div>
-
-                <div class="time-info-box">
-                    <div class="time-info-label">시작 시간</div>
-                    <div class="time-info-value">${formatDateTime(timeDeal.startAt)}</div>
-                    <div class="time-info-label" style="margin-top:12px;">종료 시간</div>
-                    <div class="time-info-value">${formatDateTime(timeDeal.endAt)}</div>
-                    <div class="remaining-time" id="remainingTime">⏱️ 계산 중...</div>
-                </div>
-
-                <div class="quantity-selector">
-                    <span class="quantity-label">수량</span>
-                    <div class="quantity-controls">
-                        <button class="quantity-btn" onclick="decreaseQuantity()">-</button>
-                        <span class="quantity-value" id="quantityValue">${quantity}</span>
-                        <button class="quantity-btn" onclick="increaseQuantity()">+</button>
-                    </div>
-                </div>
-
-                <div class="action-buttons">
-                    <button class="cart-btn" onclick="addToCart(${timeDeal.productId})" ${!isOpen ? 'disabled' : ''} id="cartBtn">🛒 장바구니</button>
-                    <button class="buy-btn" onclick="buyNow(${timeDeal.productId})" ${!isOpen ? 'disabled' : ''} id="buyBtn">💳 바로구매</button>
-                </div>
-            </div>
+                        <img id="mainImage" src="${selectedMainImageUrl}" alt="대표 이미지" class="product-main-image">
+                    `
+                : `<div class="product-image no-image">${emoji}</div>`
+        }
         </div>
 
-        ${timeDeal.productInformation || timeDeal.detailImageUrl ? `
-            <div class="product-description" style="margin-top:60px;">
-                <h3 class="description-title">상품 상세 설명</h3>
+        <div class="product-info-section">
+            <span class="product-category">⏰ 타임딜 특가</span>
+            <h1 class="product-name">${timeDeal.productName}</h1>
+            <div class="product-price">${formatPrice(timeDeal.dealPrice)}</div>
+            <span class="product-status ${timeDeal.status}">
+                ${timeDeal.status === 'OPEN' ? '✓' : timeDeal.status === 'READY' ? '⏰' : '✕'} ${statusText[timeDeal.status]}
+            </span>
 
-                ${
-                    timeDeal.productInformation
-                        ? `<p class="description-text">${timeDeal.productInformation}</p>`
-                        : ''
-                }
+            <div class="divider"></div>
 
-                ${
-                    timeDeal.detailImageUrl
-                        ? `<img src="${timeDeal.detailImageUrl}" alt="상세 이미지" class="product-detail-image">`
-                        : ''
-                }
+            <div class="time-info-box">
+                <div class="time-info-label">시작 시간</div>
+                <div class="time-info-value">${formatDateTime(timeDeal.startAt)}</div>
+                <div class="time-info-label" style="margin-top:12px;">종료 시간</div>
+                <div class="time-info-value">${formatDateTime(timeDeal.endAt)}</div>
+                <div class="remaining-time" id="remainingTime">⏱️ 계산 중...</div>
             </div>
-        ` : ''}
+
+            <div class="quantity-selector">
+                <span class="quantity-label">수량</span>
+                <div class="quantity-controls">
+                    <button class="quantity-btn" onclick="decreaseQuantity()">-</button>
+                    <span class="quantity-value" id="quantityValue">${quantity}</span>
+                    <button class="quantity-btn" onclick="increaseQuantity()">+</button>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="cart-btn" onclick="addToCart(${timeDeal.productId})" ${!isOpen ? 'disabled' : ''} id="cartBtn">🛒 장바구니</button>
+                <button class="buy-btn" onclick="buyNow(${timeDeal.productId})" ${!isOpen ? 'disabled' : ''} id="buyBtn">💳 바로구매</button>
+            </div>
+        </div>
+    </div>
+
+    ${timeDeal.productInformation || timeDeal.detailImageUrl || timeDeal.productDetailImageUrl ? `
+        <div class="product-description" style="margin-top:60px;">
+            <h3 class="description-title">상품 상세 설명</h3>
+
+            ${timeDeal.productInformation ? `<p class="description-text">${timeDeal.productInformation}</p>` : ''}
+
+            ${timeDeal.detailImageUrl ? `<img src="${timeDeal.detailImageUrl}" alt="상세 이미지" class="product-detail-image">` : ''}
+
+            ${timeDeal.productDetailImageUrl ? `<img src="${timeDeal.productDetailImageUrl}" alt="상품 상세 이미지" class="product-detail-image">` : ''}
+        </div>
+    ` : ''}
     `;
+
+        // ✅ 썸네일 active 처리
+        if (selectedMainImageUrl) selectMainImage(selectedMainImageUrl);
 
         updateRemainingTime();
         countdownInterval = setInterval(updateRemainingTime, 1000);

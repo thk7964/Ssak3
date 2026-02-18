@@ -18,6 +18,7 @@ public enum ErrorCode {
     PASSWORD_MISMATCH(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
     INVALID_BIRTH(HttpStatus.BAD_REQUEST, "생일은 현재 시점보다 과거여야 합니다."),
     FORBIDDEN_USER(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
+    OAUTH_USER_CANNOT_BE_ADMIN(HttpStatus.FORBIDDEN, "소셜 로그인 유저는 관리자가 될 수 없습니다."),
 
     // Product 에러
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다."),
@@ -47,6 +48,7 @@ public enum ErrorCode {
     ORDER_CAN_NOT_BE_CANCELED(HttpStatus.BAD_REQUEST, "주문을 취소할 수 없습니다."),
     ORDER_PAYMENT_PENDING_EXISTS(HttpStatus.BAD_REQUEST, "결제 대기 중인 주문이 있습니다."),
     USER_NOT_PURCHASED_PRODUCT(HttpStatus.FORBIDDEN, "해당 상품을 구매한 사용자만 이용할 수 있습니다."),
+    ORDER_PRICE_CHANGED(HttpStatus.BAD_REQUEST, "가격이 변경된 상품이 있습니다"),
 
     // TimeDeal 에러
     TIME_DEAL_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 세일 상품을 찾을 수 없습니다."),

@@ -1,7 +1,9 @@
 package com.example.ssak3.domain.inquirychat.handler;
 
 import com.example.ssak3.common.enums.ErrorCode;
+import com.example.ssak3.common.enums.UserRole;
 import com.example.ssak3.common.exception.CustomException;
+import com.example.ssak3.common.model.AuthUser;
 import com.example.ssak3.common.utils.JwtUtil;
 import com.example.ssak3.domain.inquirychat.entity.InquiryChatRoom;
 import com.example.ssak3.domain.inquirychat.repository.InquiryChatRoomRepository;
@@ -13,8 +15,15 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import java.security.Principal;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -35,69 +44,96 @@ public class InquiryChatStompHandler implements ChannelInterceptor {
         StompCommand command = accessor.getCommand();
 
         if (StompCommand.CONNECT.equals(command)) {
+            String authHeader = accessor.getFirstNativeHeader("Authorization");
 
-            String authHeader = accessor.getFirstNativeHeader(JwtUtil.HEADER);
-
-            if (authHeader == null || !authHeader.startsWith(JwtUtil.BEARER_PREFIX)) {
-                throw new CustomException(ErrorCode.INVALID_TOKEN);
-            }
-
-            try {
-                String token = jwtUtil.substringToken(authHeader);
-
-                Claims claims = jwtUtil.extractClaims(token);
-
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                String token = authHeader.substring(7);
+                setAuthenticationToAccessor(accessor, token);
+            } else {
                 Map<String, Object> sessionAttributes = accessor.getSessionAttributes();
 
-                if (sessionAttributes != null) {
-                    sessionAttributes.put("userId", Long.parseLong(claims.getSubject()));
-                    sessionAttributes.put("role", claims.get("role", String.class));
+                if (sessionAttributes != null && sessionAttributes.containsKey("accessToken")) {
+                    String token = (String) sessionAttributes.get("accessToken");
+                    setAuthenticationToAccessor(accessor, token);
                 }
-
-            } catch (Exception e) {
-                throw new CustomException(ErrorCode.STOMP_MESSAGE_ACCESS_FAILED);
             }
-        } else if (StompCommand.SUBSCRIBE.equals(command)) {
+        }
+
+        if (accessor.getUser() == null) {
+            Map<String, Object> sessionAttributes = accessor.getSessionAttributes();
+
+            if (sessionAttributes != null) {
+                Authentication auth = (Authentication) sessionAttributes.get("userPrincipal");
+
+                if (auth != null) {
+                    accessor.setUser(auth);
+                }
+            }
+        }
+
+        if (StompCommand.SUBSCRIBE.equals(command)) {
 
             String destination = accessor.getDestination();
 
             if (destination != null && destination.startsWith("/sub/chat/room/")) {
 
-                Map<String, Object> sessionAttributes = accessor.getSessionAttributes();
+                Principal principal = accessor.getUser();
 
-                if (sessionAttributes == null || sessionAttributes.get("userId") == null) {
+                if (principal == null) {
+                    Map<String, Object> sessionAttributes = accessor.getSessionAttributes();
+
+                    if (sessionAttributes != null) {
+                        principal = (Authentication) sessionAttributes.get("userPrincipal");
+
+                        if (principal != null) {
+                            accessor.setUser(principal);
+                        }
+                    }
+                }
+
+                if (principal == null) {
                     throw new CustomException(ErrorCode.USER_NOT_FOUND);
                 }
 
-                Long userId = (Long) sessionAttributes.get("userId");
-                String role = (String) sessionAttributes.get("role");
+                AuthUser authUser = (AuthUser) ((Authentication) principal).getPrincipal();
 
+                Long userId = authUser.getId();
                 Long roomId = Long.parseLong(destination.substring(destination.lastIndexOf("/") + 1));
 
                 InquiryChatRoom foundRoom = roomRepository.findById(roomId)
                         .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
 
-                boolean isAuthorized = false;
-
-                if ("USER".equals(role)) {
-                    isAuthorized = foundRoom.getUser().getId().equals(userId);
-                } else if ("ADMIN".equals(role)) {
-
-                    if (foundRoom.getAdmin() == null) {
-                        log.warn("{}번 채팅방은 아직 관리자가 배정되지 않았습니다. (접근 유저: {})", roomId, userId);
-                        throw new CustomException(ErrorCode.CHAT_ROOM_ACCESS_DENIED);
-                    }
-
-                    isAuthorized = (foundRoom.getAdmin().getId().equals(userId));
-                }
+                boolean isAuthorized = foundRoom.getUser().getId().equals(userId) || (foundRoom.getAdmin() != null && foundRoom.getAdmin().getId().equals(userId));
 
                 if (!isAuthorized) {
-                    log.warn("{} (Role: {})가 {}번 채팅방에 접근 시도", userId, role, roomId);
+                    log.warn("{}가 {}번 채팅방 접근 시도", userId, roomId);
                     throw new CustomException(ErrorCode.CHAT_ROOM_ACCESS_DENIED);
                 }
-                log.info("{} (Role: {})가 {}번 채팅방에 연결 성공!!", userId, role, roomId);
+
+                log.info("{}가 {}번 채팅방 연결 성공", userId, roomId);
             }
+
         }
-        return message;
+
+        return MessageBuilder.createMessage(message.getPayload(), accessor.getMessageHeaders());
+    }
+
+    private void setAuthenticationToAccessor(StompHeaderAccessor accessor, String token) {
+        Claims claims = jwtUtil.extractClaims(token);
+        Long userId = Long.parseLong(claims.getSubject());
+        String role = claims.get("role", String.class);
+
+        AuthUser authUser = new AuthUser(userId, null, UserRole.valueOf(role));
+        Authentication auth = new UsernamePasswordAuthenticationToken(
+                authUser, null, List.of(new SimpleGrantedAuthority("ROLE_" + role)));
+
+        SecurityContextHolder.getContext().setAuthentication(auth);
+        accessor.setUser(auth);
+
+        if (accessor.getSessionAttributes() != null) {
+            accessor.getSessionAttributes().put("userPrincipal", auth);
+        }
+
+        log.info("인증 설정 완료 : userId={} role={}", userId, role);
     }
 }

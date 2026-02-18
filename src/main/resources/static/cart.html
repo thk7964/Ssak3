@@ -692,16 +692,39 @@
     }
     function handleSearchEnter(event) { if (event.key === 'Enter') handleSearch(); }
 
-    // ------- 헤더(로그인 UI) -------
-    function applyHeaderAuthUI() {
-        const token = localStorage.getItem('accessToken');
+    async function checkHeaderLoginStatus() {
         const loginBtn = document.getElementById('loginBtn');
         const userInfo = document.getElementById('userInfo');
+        const token = localStorage.getItem('accessToken'); // 헤더 검사에서는 localStorage token만 헤더에 붙이고
+                                                           // 실패/없으면 쿠키(credentials)로 재시도
 
-        if (token) {
-            loginBtn.style.display = 'none';
-            userInfo.style.display = 'flex';
-        } else {
+        try {
+            let response;
+
+            if (token) {
+                response = await fetch(`${API_URL}/ssak3/users/me`, {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+            }
+
+            // 토큰이 없거나, 토큰이 401이면 쿠키 인증으로 재시도
+            if (!token || response.status === 401) {
+                response = await fetch(`${API_URL}/ssak3/users/me`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+            }
+
+            if (response.ok) {
+                loginBtn.style.display = 'none';
+                userInfo.style.display = 'flex';
+            } else {
+                throw new Error('Not Authenticated');
+            }
+        } catch (e) {
+            // ✅ 실패 시 localStorage 토큰 정리하고 로그인 UI
+            localStorage.removeItem('accessToken');
             loginBtn.style.display = 'inline-block';
             userInfo.style.display = 'none';
         }
@@ -710,11 +733,23 @@
     function initHeaderActions() {
         document.getElementById('myPageBtn').onclick = () => location.href = 'mypage.html';
         document.getElementById('loginBtn').onclick = () => location.href = 'login.html';
-        document.getElementById('logoutBtn').onclick = () => {
-            localStorage.removeItem('accessToken');
-            applyHeaderAuthUI();
-            alert('로그아웃 되었습니다.');
-            location.href = 'home.html';
+
+        document.getElementById('logoutBtn').onclick = async () => {
+            if (!confirm('로그아웃 하시겠습니까?')) return;
+
+            const token = localStorage.getItem('accessToken');
+
+            try {
+                const req = { method: 'POST', credentials: 'include' };
+                if (token) req.headers = { 'Authorization': `Bearer ${token}` };
+                await fetch(`${API_URL}/ssak3/auth/logout`, req);
+            } catch (e) {
+                console.error('logout error:', e);
+            } finally {
+                localStorage.removeItem('accessToken');
+                alert('로그아웃 되었습니다.');
+                location.href = 'home.html';
+            }
         };
     }
 
@@ -1171,7 +1206,7 @@
     }
 
     (async function init() {
-        await checkLogin();
+        await checkHeaderLoginStatus();
         initHeaderActions();
         initEvents();
         await loadCart();

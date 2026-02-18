@@ -20,11 +20,13 @@ public class TimeDealGetResponse {
     private final LocalDateTime startAt;
     private final LocalDateTime endAt;
     private final String imageUrl;
+    private final String productImageUrl;
     private final String detailImageUrl;
+    private final String productDetailImageUrl;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
-    public static TimeDealGetResponse from(TimeDeal timeDeal, String imageUrl, String detailImageUrl) {
+    public static TimeDealGetResponse from(TimeDeal timeDeal, String imageUrl, String detailImageUrl, String productImageUrl, String productDetailImageUrl) {
 
         return new TimeDealGetResponse(
                 timeDeal.getId(),
@@ -36,7 +38,9 @@ public class TimeDealGetResponse {
                 timeDeal.getStartAt(),
                 timeDeal.getEndAt(),
                 imageUrl,
+                productImageUrl,
                 detailImageUrl,
+                productDetailImageUrl,
                 timeDeal.getCreatedAt(),
                 timeDeal.getUpdatedAt()
         );

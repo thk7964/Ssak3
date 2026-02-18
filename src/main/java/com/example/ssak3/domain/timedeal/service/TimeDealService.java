@@ -30,8 +30,7 @@ public class TimeDealService {
     public TimeDealGetResponse getTimeDeal(Long timeDealId) {
 
         TimeDeal response = timeDealRepository.findByIdAndIsDeletedFalse(timeDealId)
-                .orElseThrow(() -> new CustomException(ErrorCode.TIME_DEAL_NOT_FOUND)
-                );
+                .orElseThrow(() -> new CustomException(ErrorCode.TIME_DEAL_NOT_FOUND));
 
         String imageUrl = s3Uploader.createPresignedGetUrl(response.getImage(), 5);
         String detailImageUrl = s3Uploader.createPresignedGetUrl(response.getDetailImage(), 5);
@@ -43,15 +42,14 @@ public class TimeDealService {
      * 타임딜 상태별 목록 조회
      */
     @Cacheable(
-            // 어노테이션 - 자동 캐시처리이기 때문에 명시적으로 사용하는 캐시 지정
             cacheManager = "redisCacheManager",
             value = "timeDealsOpen",
             key = "#pageable.pageNumber + ':' + #pageable.pageSize",
             condition = "#status != null && #status.equalsIgnoreCase('OPEN') && #pageable.pageNumber <= 1"
     )
-
     @Transactional(readOnly = true)
     public PageResponse<TimeDealListGetResponse> getTimeDealStatusList(String status, Pageable pageable) {
+
         TimeDealStatus timeDealStatus = parseStatus(status);
 
         Page<TimeDealListGetResponse> responsePage = timeDealRepository.findTimeDeals(timeDealStatus, pageable);
@@ -60,9 +58,11 @@ public class TimeDealService {
     }
 
     private TimeDealStatus parseStatus(String status) {
+
         if (status == null) {
             return null;
         }
+
         try {
             TimeDealStatus parsed = TimeDealStatus.valueOf(status.toUpperCase());
 
@@ -75,5 +75,4 @@ public class TimeDealService {
             throw new CustomException(ErrorCode.TIME_DEAL_INVALID_STATUS);
         }
     }
-
 }

@@ -4,11 +4,13 @@ import com.example.ssak3.common.enums.ChatRoomStatus;
 import com.example.ssak3.domain.inquirychat.entity.InquiryChatRoom;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
 import java.time.LocalDateTime;
 
 @Getter
 @RequiredArgsConstructor
 public class InquiryChatListGetResponse {
+
     private final Long id;
     private final Long userId;
     private final String userName;
@@ -18,6 +20,7 @@ public class InquiryChatListGetResponse {
     private final LocalDateTime updatedAt;
 
     public static InquiryChatListGetResponse from(InquiryChatRoom room) {
+
         return new InquiryChatListGetResponse(
                 room.getId(),
                 room.getUser().getId(),

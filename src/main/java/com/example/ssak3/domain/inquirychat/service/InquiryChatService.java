@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -31,7 +32,6 @@ public class InquiryChatService {
     private final InquiryChatMessageRepository messageRepository;
     private final UserRepository userRepository;
 
-
     /**
      * 문의 채팅방 생성
      */
@@ -40,7 +40,6 @@ public class InquiryChatService {
 
         Optional<InquiryChatRoom> activeRoom = roomRepository.findActiveRoomByUserId(userId);
 
-        // 활성화된 채팅방이 있다면 기존 채팅방으로 연결
         if (activeRoom.isPresent()) {
             return InquiryChatCreateResponse.from(activeRoom.get());
         }
@@ -66,17 +65,15 @@ public class InquiryChatService {
     @Transactional(readOnly = true)
     public List<InquiryChatMessageListGetResponse> getChatHistory(Long roomId, Long senderId, UserRole senderRole) {
 
-        InquiryChatRoom foundRoom= roomRepository.findById(roomId)
+        InquiryChatRoom foundRoom = roomRepository.findById(roomId)
                 .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
 
-        // 회원일 경우 본인의 채팅방만 조회 가능
         if (senderRole == UserRole.USER) {
             if (!foundRoom.isDeleted() && !foundRoom.getUser().getId().equals(senderId)) {
                 throw new CustomException(ErrorCode.CHAT_ROOM_ACCESS_DENIED);
             }
-        // 관리자일 경우 자신에게 배정된 채팅이 아닐 경우 조회 불가
         } else if (senderRole == UserRole.ADMIN) {
-            if(!foundRoom.isDeleted() && foundRoom.getAdmin() != null && !foundRoom.getAdmin().getId().equals(senderId)) {
+            if (!foundRoom.isDeleted() && foundRoom.getAdmin() != null && !foundRoom.getAdmin().getId().equals(senderId)) {
                 throw new CustomException(ErrorCode.CHAT_ROOM_ACCESS_DENIED);
             }
         }
@@ -87,7 +84,6 @@ public class InquiryChatService {
                 .toList();
     }
 
-
     /**
      * 문의 채팅방 종료
      */
@@ -97,7 +93,6 @@ public class InquiryChatService {
         InquiryChatRoom foundRoom = roomRepository.findById(roomId)
                 .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
 
-        // 이미 종료된 채팅방인지 확인
         if (foundRoom.getStatus() == ChatRoomStatus.COMPLETED) {
             throw new CustomException(ErrorCode.INQUIRY_CHAT_ALREADY_COMPLETED);
         }
@@ -105,12 +100,9 @@ public class InquiryChatService {
         User foundUser = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        // 관리자일 경우 어떤 채팅방이든 종료 가능
         if (foundUser.getRole() == UserRole.ADMIN) {
             foundRoom.chatComplete();
-        }
-        // 회원일 경우 본인의 채팅방만 종료 가능
-        else {
+        } else {
             if (foundRoom.getUser().getId().equals(userId)) {
                 foundRoom.chatComplete();
             } else {
@@ -124,14 +116,14 @@ public class InquiryChatService {
     /**
      * 문의 채팅 메시지 비동기 저장
      */
-    @Async("chatExecutor")  // 별도 스레드에서 실행
+    @Async("chatExecutor")
     @Transactional
-    public void saveMessageAsync(ChatMessageRequest request, Long userId, String role) {  // 비동기 작업 결과를 나타냄
+    public void saveMessageAsync(ChatMessageRequest request, Long userId, String role) {
+
         try {
             InquiryChatRoom foundRoom = roomRepository.findById(request.getRoomId())
                     .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
 
-            // 이미 종료된 채팅방인지 확인
             if (foundRoom.getStatus() == ChatRoomStatus.COMPLETED) {
                 log.warn("종료된 채팅방에 메시지 저장 시도 - roomId: {}, userId: {}", request.getRoomId(), userId);
                 throw new CustomException(ErrorCode.INQUIRY_CHAT_ALREADY_COMPLETED);

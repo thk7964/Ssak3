@@ -17,23 +17,32 @@
             min-height: 100vh;
         }
 
+        /* ───────────── 상단바 (home.html 동일) ───────────── */
         header {
-            background: #ffffff;
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 24px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.5);
+            box-shadow: 0 2px 16px rgba(116, 185, 255, 0.15);
             position: sticky;
             top: 0;
             z-index: 100;
-            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 28px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
         }
 
         .logo {
-            font-size: 26px;
-            font-weight: 700;
+            font-size: 22px;
+            font-weight: 800;
             background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -41,125 +50,202 @@
             letter-spacing: -0.5px;
             cursor: pointer;
             flex-shrink: 0;
+            text-decoration: none;
         }
 
-        .search-container {
+        /* 가운데 검색창 */
+        .header-search {
             flex: 1;
-            max-width: 500px;
-            position: relative;
-        }
-
-        .search-wrapper {
+            max-width: 400px;
+            margin: 0 20px;
             display: flex;
-            gap: 8px;
-            background: #f8f9fa;
-            padding: 8px 16px;
-            border-radius: 24px;
-            border: 2px solid transparent;
-            transition: all 0.3s ease;
+            align-items: center;
+            background: #f3f4f6;
+            border-radius: 10px;
+            border: 1.5px solid transparent;
+            overflow: hidden;
+            transition: all 0.15s ease;
         }
 
-        .search-wrapper:focus-within {
+        .header-search:focus-within {
             background: white;
-            border-color: #74b9ff;
-            box-shadow: 0 0 0 4px rgba(116, 185, 255, 0.1);
+            border-color: #a29bfe;
+            box-shadow: 0 0 0 3px rgba(162, 155, 254, 0.12);
         }
 
-        .search-input {
+        .header-search input {
             flex: 1;
             border: none;
             background: transparent;
+            padding: 9px 14px;
             font-size: 14px;
+            color: #374151;
             outline: none;
-            color: #495057;
         }
 
-        .search-input::placeholder {
-            color: #adb5bd;
+        .header-search input::placeholder {
+            color: #9ca3af;
         }
 
-        .search-btn {
-            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+        .header-search-btn {
             border: none;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
+            background: transparent;
+            padding: 9px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #a29bfe;
             cursor: pointer;
-            font-size: 16px;
-            transition: all 0.2s ease;
+            white-space: nowrap;
+            transition: color 0.15s ease;
+            border-left: 1.5px solid #e5e7eb;
+        }
+
+        .header-search-btn:hover {
+            color: #74b9ff;
+        }
+
+        .header-nav {
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 8px;
             flex-shrink: 0;
         }
 
-        .search-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
-        }
-
-        .header-icons {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .icon-btn {
-            background: #f8f9fa;
-            border: none;
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
+        .navbar-link {
+            padding: 8px 16px;
+            color: #4b5563;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 18px;
-            transition: all 0.2s ease;
-            color: #495057;
+            text-decoration: none;
+            transition: all 0.15s ease;
+            border: none;
+            background: transparent;
+            white-space: nowrap;
         }
 
-        .icon-btn:hover {
-            background: #e9ecef;
-            transform: translateY(-2px);
+        .navbar-link:hover {
+            color: #74b9ff;
+            background: rgba(116, 185, 255, 0.08);
+        }
+
+        .navbar-link.active {
+            color: #a29bfe;
+            font-weight: 700;
+        }
+
+        .navbar-divider {
+            width: 1px;
+            height: 18px;
+            background: #e5e7eb;
+            margin: 0 4px;
         }
 
         .auth-btn {
-            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 12px;
-            cursor: pointer;
+            padding: 8px 16px;
+            color: #4b5563;
             font-size: 14px;
-            font-weight: 600;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s ease;
+            border: none;
+            background: transparent;
             white-space: nowrap;
         }
 
         .auth-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(116, 185, 255, 0.45);
+            color: #74b9ff;
+            background: rgba(116, 185, 255, 0.08);
         }
 
         .user-info {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
+        }
+
+        .user-info .navbar-link {
+            color: #000000;
         }
 
         .logout-btn {
-            background: #f8f9fa;
-            border: none;
             padding: 8px 16px;
-            border-radius: 10px;
+            color: #ef4444;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            color: #495057;
-            transition: all 0.2s ease;
+            text-decoration: none;
+            transition: all 0.15s ease;
+            border: none;
+            background: transparent;
+            white-space: nowrap;
         }
 
         .logout-btn:hover {
-            background: #e9ecef;
+            background: rgba(239, 68, 68, 0.08);
+        }
+
+        /* 페이지당 개수 드롭다운 */
+        .page-size-wrapper {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 8px;
+            max-width: 1200px;
+            margin: 16px auto 0;
+            padding: 0 20px;
+        }
+
+        .page-size-label {
+            font-size: 14px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .page-size-select {
+            appearance: none;
+            -webkit-appearance: none;
+            background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E") no-repeat right 10px center;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 7px 32px 7px 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        }
+
+        .page-size-select:focus {
+            outline: none;
+            border-color: #a29bfe;
+            box-shadow: 0 0 0 3px rgba(162, 155, 254, 0.12);
+        }
+
+        .page-size-select:hover {
+            border-color: #ff6b6b;
+        }
+
+        @media (max-width: 768px) {
+            .header-inner {
+                padding: 0 16px;
+                flex-wrap: wrap;
+                height: auto;
+                padding-top: 12px;
+                padding-bottom: 12px;
+                gap: 10px;
+            }
+            .header-search {
+                order: 3;
+                width: 100%;
+                max-width: 100%;
+                margin: 0;
+            }
         }
 
         .banner {
@@ -480,52 +566,39 @@
                 grid-template-columns: repeat(2, 1fr);
                 gap: 16px;
             }
-            header {
-                padding: 16px 20px;
-                flex-wrap: wrap;
-            }
-            .search-container {
-                order: 3;
-                width: 100%;
-                max-width: 100%;
-                margin-top: 12px;
-            }
         }
     </style>
 </head>
 <body>
 <header>
-    <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
+    <div class="header-inner">
+        <a class="logo" onclick="location.href='home.html'">SSAK3</a>
 
-    <!-- 검색창 -->
-    <div class="search-container">
-        <div class="search-wrapper">
+        <!-- 가운데 검색창 -->
+        <div class="header-search">
             <input
                     type="text"
-                    class="search-input"
                     id="searchInput"
-                    placeholder="상품을 검색해보세요 🔍"
+                    placeholder="상품을 검색해보세요"
                     onkeypress="handleSearchEnter(event)"
             >
-            <button class="search-btn" onclick="handleSearch()">🔍</button>
+            <button class="header-search-btn" onclick="handleSearch()">검색</button>
         </div>
-    </div>
 
-    <div class="header-icons">
-        <button class="icon-btn"
-                id="cartIconBtn"
-                title="장바구니"
-                onclick="location.href='cart.html'">
-            🛒
-        </button>
+        <div class="header-nav">
+            <a class="navbar-link" onclick="location.href='product-search.html'">전체 상품</a>
+            <a class="navbar-link active" onclick="location.href='time-deals.html'">타임딜</a>
+            <a class="navbar-link" onclick="location.href='cart.html'">장바구니</a>
+            <div class="navbar-divider"></div>
 
-        <!-- 로그인 안 된 경우 -->
-        <button class="auth-btn" id="loginBtn" style="display: none;">로그인 / 회원가입</button>
+            <!-- 로그인 안 된 경우 -->
+            <button class="auth-btn" id="loginBtn" style="display: none;">로그인 / 회원가입</button>
 
-        <!-- 로그인 된 경우 -->
-        <div class="user-info" id="userInfo" style="display: none;">
-            <button class="icon-btn" id="myPageBtn" title="마이페이지">👤</button>
-            <button class="logout-btn" id="logoutBtn">로그아웃</button>
+            <!-- 로그인 된 경우 -->
+            <div class="user-info" id="userInfo" style="display: none;">
+                <a class="navbar-link" id="myPageBtn">마이페이지</a>
+                <a class="navbar-link" id="logoutBtn" style="color:#ef4444;">로그아웃</a>
+            </div>
         </div>
     </div>
 </header>
@@ -537,13 +610,14 @@
 
 <div class="filter-section">
     <button class="filter-btn" onclick="filterDeals(null)">전체</button>
-    <button class="filter-btn" onclick="filterDeals('READY')">🔜 오픈 예정</button>
-    <button class="filter-btn active" onclick="filterDeals('OPEN')">🔥 진행중</button>
-    <button class="filter-btn" onclick="filterDeals('CLOSED')">✔️ 종료</button>
+    <button class="filter-btn" onclick="filterDeals('READY')">오픈 예정</button>
+    <button class="filter-btn active" onclick="filterDeals('OPEN')">진행중</button>
+    <button class="filter-btn" onclick="filterDeals('CLOSED')">종료</button>
 </div>
 
 <div class="container">
     <h2 class="section-title" id="sectionTitle">진행중 타임딜</h2>
+    <div id="emptyStateContainer"></div>
     <div id="dealsContainer" class="deals-grid">
         <div class="loading">타임딜 목록을 불러오는 중...</div>
     </div>
@@ -551,12 +625,12 @@
 </div>
 
 <footer>
-    <p>© 2025 싹쓰리 - 모두를 위한 귀여운 굿즈</p>
-    <p>고객센터: 010-1234-5678 | support@ssak3.com</p>
+    <p>© 싹쓰리 - 모두를 위한 귀여운 굿즈</p>
+    <p>고객센터: 010-1234-5678 | <a href="https://github.com/thk7964/Ssak3" style="color:#adb5bd;">싹쓰리 홈페이지</a></p>
     <p>개인정보처리방침 | 이용약관 | 배송정책</p>
 </footer>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
     // API URL 설정
     const API_URL = (() => {
         const hostname = window.location.hostname;
@@ -574,6 +648,7 @@
 
     let currentStatus = 'OPEN';
     let currentPage = 0;
+    let currentPageSize = 12;
     let totalPages = 0;
     let currentDeals = [];
     let countdownIntervals = [];
@@ -660,7 +735,7 @@
 
     async function loadTimeDeals(status = null, page = 0) {
         try {
-            let url = `${API_URL}/ssak3/time-deals?page=${page}&size=12`;
+            let url = `${API_URL}/ssak3/time-deals?page=${page}&size=${currentPageSize}`;
             if (status) {
                 url += `&status=${status}`;
             }
@@ -705,19 +780,23 @@
 
     function renderDeals(deals) {
         const container = document.getElementById('dealsContainer');
+        const emptyContainer = document.getElementById('emptyStateContainer');
 
         console.log('렌더링할 타임딜 개수:', deals.length);
 
         if (deals.length === 0) {
-            container.innerHTML = `
+            emptyContainer.innerHTML = `
             <div class="empty-state">
                 <div class="empty-icon">🔍</div>
                 <div class="empty-title">타임딜이 없습니다</div>
                 <div class="empty-message">현재 진행중인 타임딜이 없어요</div>
             </div>
         `;
+            container.innerHTML = '';
             return;
         }
+
+        emptyContainer.innerHTML = '';
 
         container.innerHTML = deals.map(deal => {
 
@@ -806,6 +885,12 @@
 
         paginationHTML += `</div>`;
         container.innerHTML = paginationHTML;
+    }
+
+    function changePageSize(size) {
+        currentPageSize = parseInt(size);
+        currentPage = 0;
+        loadTimeDeals(currentStatus, 0);
     }
 
     function changePage(page) {

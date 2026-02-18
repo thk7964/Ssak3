@@ -1,7 +1,8 @@
 package com.example.ssak3.domain.coupon.model.response;
 
 import com.example.ssak3.domain.coupon.entity.Coupon;
-import lombok.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -17,11 +18,11 @@ public class CouponListGetResponse {
     private final LocalDateTime issueStartDate;
     private final LocalDateTime issueEndDate;
     private final Integer validDays;
-    private final boolean isDeleted;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
     public static CouponListGetResponse from(Coupon coupon) {
+
         return new CouponListGetResponse(
                 coupon.getId(),
                 coupon.getName(),
@@ -31,7 +32,6 @@ public class CouponListGetResponse {
                 coupon.getIssueStartDate(),
                 coupon.getIssueEndDate(),
                 coupon.getValidDays(),
-                coupon.isDeleted(),
                 coupon.getCreatedAt(),
                 coupon.getUpdatedAt()
         );

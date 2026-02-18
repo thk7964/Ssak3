@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class PaymentConfirmRequest {
+
     private String orderId;
     private String paymentKey;
     private Long amount;

@@ -2,13 +2,13 @@ package com.example.ssak3.domain.cart.model.response;
 
 import com.example.ssak3.domain.cart.entity.Cart;
 import com.example.ssak3.domain.cartproduct.model.response.CartProductListGetResponse;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
 @Getter
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CartGetResponse {
 
     private final Long cartId;
@@ -24,5 +24,4 @@ public class CartGetResponse {
 
         return new CartGetResponse(cart.getId(), productList, totalPrice);
     }
-
 }

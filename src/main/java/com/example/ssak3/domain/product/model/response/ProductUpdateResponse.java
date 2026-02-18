@@ -24,6 +24,7 @@ public class ProductUpdateResponse {
     private final LocalDateTime updatedAt;
 
     public static ProductUpdateResponse from(Product product) {
+
         return new ProductUpdateResponse(
                 product.getId(),
                 product.getCategory().getId(),

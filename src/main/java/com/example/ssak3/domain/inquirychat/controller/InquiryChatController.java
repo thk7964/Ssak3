@@ -22,7 +22,7 @@ public class InquiryChatController {
     @PostMapping
     public ResponseEntity<ApiResponse> createChatRoomApi(@AuthenticationPrincipal AuthUser user) {
 
-        ApiResponse response = ApiResponse.success("문의 채팅방 연결 성공", inquiryChatService.createChatRoom(user.getId()));
+        ApiResponse response = ApiResponse.success("문의 채팅방 연결에 성공했습니다.", inquiryChatService.createChatRoom(user.getId()));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -32,9 +32,9 @@ public class InquiryChatController {
      * 문의 채팅 메시지 조회 API
      */
     @GetMapping("/{roomId}/messages")
-    public ResponseEntity<ApiResponse> getChatHistoryApi(@AuthenticationPrincipal AuthUser sender , @PathVariable Long roomId) {
+    public ResponseEntity<ApiResponse> getChatHistoryApi(@AuthenticationPrincipal AuthUser sender, @PathVariable Long roomId) {
 
-        ApiResponse response = ApiResponse.success("문의채팅 내역 조회 성공", inquiryChatService.getChatHistory(roomId, sender.getId(), sender.getRole()));
+        ApiResponse response = ApiResponse.success("문의 채팅 내역 조회에 성공했습니다.", inquiryChatService.getChatHistory(roomId, sender.getId(), sender.getRole()));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -46,7 +46,7 @@ public class InquiryChatController {
     @PatchMapping("/{roomId}")
     public ResponseEntity<ApiResponse> updateRoomStatusApi(@AuthenticationPrincipal AuthUser user, @PathVariable Long roomId) {
 
-        ApiResponse response = ApiResponse.success("문의 채팅방 종료 성공", inquiryChatService.updateRoomStatus(user.getId(), roomId));
+        ApiResponse response = ApiResponse.success("문의 채팅방 종료에 성공했습니다.", inquiryChatService.updateRoomStatus(user.getId(), roomId));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

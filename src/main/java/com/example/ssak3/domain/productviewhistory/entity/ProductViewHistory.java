@@ -16,7 +16,7 @@ import java.time.LocalDate;
         uniqueConstraints = {
                 @UniqueConstraint(
                         name = "uk_product_id_view_date",
-                        columnNames = { "product_id", "view_date" }
+                        columnNames = {"product_id", "view_date"}
                 )
         }
 )
@@ -38,6 +38,7 @@ public class ProductViewHistory extends BaseEntity {
     private Integer viewCount;
 
     public ProductViewHistory(Product product, LocalDate viewDate, Integer viewCount) {
+
         this.product = product;
         this.viewDate = viewDate;
         this.viewCount = viewCount;

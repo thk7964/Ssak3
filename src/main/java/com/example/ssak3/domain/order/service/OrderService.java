@@ -30,11 +30,11 @@ import com.example.ssak3.domain.user.repository.UserRepository;
 import com.example.ssak3.domain.usercoupon.entity.UserCoupon;
 import com.example.ssak3.domain.usercoupon.repository.UserCouponRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -57,11 +57,10 @@ public class OrderService {
     private final TimeDealRepository timeDealRepository;
     private final PaymentRepository paymentRepository;
     private final TossPaymentClient tossPaymentClient;
+    private final InventoryService inventoryService;
 
     @Value("${app.frontend.base-url}")
     private String frontendBaseUrl;
-
-    private final InventoryService inventoryService;
 
     /**
      * 상품 페이지에서 단일 상품 구매
@@ -72,24 +71,18 @@ public class OrderService {
         User user = userRepository.findByIdWithLock(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        // 결제 대기 중인 주문이 있을 시 새 주문 생성 불가(정책)
         if (orderRepository.existsByUserIdAndStatus(userId, OrderStatus.PAYMENT_PENDING)) {
             throw new CustomException(ErrorCode.ORDER_PAYMENT_PENDING_EXISTS);
         }
 
-        // 비관락
         Product product = productRepository.findByIdForLock(request.getProductId())
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
         int quantity = request.getQuantity();
-
-        // 구매 가능 여부 확인 후 단위 가격 저장
         int unitPrice = validatePurchasableReturnUnitPrice(product, quantity);
-
         long subtotal = unitPrice * quantity;
         long deliveryFee = 0;
 
-        // 3만원 미만 구매 시 배송비 3000원
         if (subtotal < 30000) {
             deliveryFee = 3000;
         }
@@ -100,7 +93,6 @@ public class OrderService {
         OrderProduct orderProduct = new OrderProduct(savedOrder, product, unitPrice, quantity, null);
         orderProductRepository.save(orderProduct);
 
-        // 재고 차감
         inventoryService.decreaseProductStock(product, quantity);
 
         long discount = 0L;
@@ -127,10 +119,9 @@ public class OrderService {
         savedOrder.updateStatus(OrderStatus.PAYMENT_PENDING);
 
         String orderName = URLEncoder.encode(product.getName(), StandardCharsets.UTF_8);
+        String paymentUrl = frontendBaseUrl + "/checkout.html?orderId=" + savedOrder.getId() + "&orderName=" + orderName;
 
-        String url = frontendBaseUrl + "/checkout.html?orderId=" + savedOrder.getId() + "&orderName=" + orderName;
-
-        return OrderCreateResponse.from(savedOrder, subtotal, discount, url, deliveryFee);
+        return OrderCreateResponse.from(savedOrder, subtotal, discount, paymentUrl, deliveryFee);
     }
 
     /**
@@ -142,7 +133,6 @@ public class OrderService {
         User user = userRepository.findByIdWithLock(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        // 결제 대기 중인 주문이 있을 시 새 주문 생성 불가(정책)
         if (orderRepository.existsByUserIdAndStatus(userId, OrderStatus.PAYMENT_PENDING)) {
             throw new CustomException(ErrorCode.ORDER_PAYMENT_PENDING_EXISTS);
         }
@@ -154,14 +144,11 @@ public class OrderService {
             throw new CustomException(ErrorCode.ORDER_PRODUCT_IS_NULL);
         }
 
-        // 내 장바구니인지 확인
         Cart cart = cartRepository.findByIdAndUserId(cartId, user.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.CART_ACCESS_DENIED));
 
-        // 주문할 상품 조회
         List<CartProduct> cartProductList = cartProductRepository.findByCartIdAndIdIn(cart.getId(), cartProductIdList);
 
-        // 입력된 아이디 개수와 장바구니에서 찾은 상품의 개수가 같은지 확인
         if (cartProductList.size() != cartProductIdList.size()) {
             throw new CustomException(ErrorCode.CART_PRODUCT_NOT_FOUND);
         }
@@ -172,13 +159,11 @@ public class OrderService {
         Map<Long, Integer> unitPriceMap = new HashMap<>();
 
         for (CartProduct cartProduct : cartProductList) {
-            // 비관락
             Product lockedProduct = productRepository.findByIdForLock(cartProduct.getProduct().getId())
                     .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
             int quantity = cartProduct.getQuantity();
 
-            // 구매 가능 여부 확인 후 단위 가격 저장
             int unitPrice = validatePurchasableReturnUnitPrice(lockedProduct, quantity);
 
             lockedProductMap.put(cartProduct.getId(), lockedProduct);
@@ -206,9 +191,7 @@ public class OrderService {
             OrderProduct orderProduct = new OrderProduct(savedOrder, lockedProduct, unitPrice, quantity, cartProduct.getId());
             orderProductList.add(orderProduct);
 
-            // 재고 차감
             inventoryService.decreaseProductStock(lockedProduct, quantity);
-
         }
 
         orderProductRepository.saveAll(orderProductList);
@@ -216,7 +199,6 @@ public class OrderService {
         long discount = 0;
         UserCoupon userCoupon = null;
 
-        // 쿠폰 적용 가능한지 확인
         if (request.getUserCouponId() != null) {
             userCoupon = userCouponRepository.findByIdAndUserId(request.getUserCouponId(), userId)
                     .orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
@@ -226,11 +208,8 @@ public class OrderService {
             }
 
             if (userCoupon.getCoupon().getMinOrderPrice() <= subtotal) {
-                // 할인할 가격 계산
                 discount = userCoupon.getCoupon().getDiscountValue();
-                // 쿠폰을 사용 완료 상태로 변경
                 userCoupon.use();
-
                 savedOrder.applyCoupon(userCoupon, discount);
             } else {
                 throw new CustomException(ErrorCode.COUPON_MIN_ORDER_PRICE_NOT_MET);
@@ -246,9 +225,9 @@ public class OrderService {
         }
 
         savedOrder.updateStatus(OrderStatus.PAYMENT_PENDING);
-        String url = frontendBaseUrl + "/checkout.html?orderId=" + savedOrder.getId() + "&orderName=" + orderName;
+        String paymentUrl = frontendBaseUrl + "/checkout.html?orderId=" + savedOrder.getId() + "&orderName=" + orderName;
 
-        return OrderCreateResponse.from(savedOrder, subtotal, discount, url, deliveryFee);
+        return OrderCreateResponse.from(savedOrder, subtotal, discount, paymentUrl, deliveryFee);
 
     }
 
@@ -257,22 +236,18 @@ public class OrderService {
      */
     private int validatePurchasableReturnUnitPrice(Product product, int quantity) {
 
-        // 삭제된 상품인지 확인
         if (product.isDeleted()) {
             throw new CustomException(ErrorCode.PRODUCT_NOT_FOUND);
         }
 
-        // 재고 확인
         if (product.getQuantity() < quantity) {
             throw new CustomException(ErrorCode.PRODUCT_INSUFFICIENT);
         }
 
-        // 판매중인지 확인
         if (product.getStatus().equals(ProductStatus.FOR_SALE)) {
             return product.getPrice();
         }
 
-        // 판매중x and 타임딜 OPEN인지 확인
         TimeDeal timeDeal = timeDealRepository.findByProductIdAndStatusAndIsDeletedFalse(product.getId(), TimeDealStatus.OPEN)
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOR_SALE));
 
@@ -285,8 +260,7 @@ public class OrderService {
     @Transactional(readOnly = true)
     public OrderGetResponse getOrder(Long userId, Long orderId) {
 
-        Order order = orderRepository.findByIdAndUserId(orderId, userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
+        Order order = getUserOrder(userId, orderId);
 
         List<OrderProduct> orderProductList = orderProductRepository.findByOrderId(order.getId());
 
@@ -299,7 +273,6 @@ public class OrderService {
     @Transactional(readOnly = true)
     public PageResponse<OrderListGetResponse> getOrderList(Long userId, Pageable pageable) {
 
-        // 주문 상태가 CREATED가 아닌 주문만 조회(주문이 완료된 상태여야 함)
         Page<OrderListGetResponse> orderListPage = orderRepository.findAllByUserIdAndStatusNotOrderByCreatedAtDesc(userId, pageable, OrderStatus.CREATED)
                 .map(OrderListGetResponse::from);
 
@@ -313,10 +286,8 @@ public class OrderService {
     @Transactional
     public OrderGetResponse updateOrderCanceled(Long userId, OrderCancelRequest request) {
 
-        Order order = orderRepository.findByIdAndUserId(request.getOrderId(), userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
+        Order order = getUserOrder(userId, request.getOrderId());
 
-        // 주문 완료 상태일 때만 취소 가능
         if (!order.getStatus().equals(OrderStatus.DONE)) {
             throw new CustomException(ErrorCode.ORDER_CAN_NOT_BE_CANCELED);
         }
@@ -335,27 +306,13 @@ public class OrderService {
         return OrderGetResponse.from(order, order.getOrderProducts());
     }
 
-    @Transactional
-    protected void orderCancel(Order order, Payment payment) {
-        for (OrderProduct op : order.getOrderProducts()) {
-            op.getProduct().rollbackQuantity(op.getQuantity());
-        }
-        if (order.getUserCoupon() != null) {
-            order.getUserCoupon().rollback();
-        }
-
-        payment.cancel();
-        order.canceled();
-    }
-
     /**
      * 결제 대기 상태(PAYMENT_PENDING)에서 주문 취소(유저)
      */
     @Transactional
     public OrderGetResponse cancelPendingOrder(Long userId, Long orderId) {
 
-        Order order = orderRepository.findByIdAndUserId(orderId, userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
+        Order order = getUserOrder(userId, orderId);
 
         if (!order.getStatus().equals(OrderStatus.PAYMENT_PENDING)) {
             throw new CustomException(ErrorCode.ORDER_CAN_NOT_BE_CANCELED);
@@ -380,19 +337,18 @@ public class OrderService {
     @Transactional
     public OrderCreateResponse retryPayment(Long userId, Long orderId) {
 
-        Order order = orderRepository.findByIdAndUserId(orderId, userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
+        Order order = getUserOrder(userId, orderId);
 
         if (order.getStatus() != OrderStatus.PAYMENT_PENDING) {
             throw new CustomException(ErrorCode.ORDER_NOT_IN_PAYMENT_PENDING);
         }
 
         List<OrderProduct> ops = orderProductRepository.findByOrderId(order.getId());
+
         if (ops.isEmpty()) {
             throw new CustomException(ErrorCode.ORDER_PRODUCT_IS_NULL);
         }
 
-        // 주문명 생성
         String orderNameRaw = (ops.size() == 1)
                 ? ops.get(0).getProduct().getName()
                 : ops.get(0).getProduct().getName() + " 외 " + (ops.size() - 1) + " 건";
@@ -414,9 +370,28 @@ public class OrderService {
         long discount = subtotal - (total - deliveryFee);
         if (discount < 0) discount = 0;
 
-        String url = frontendBaseUrl + "/checkout.html?orderId=" + order.getId() + "&orderName=" + orderName;
+        String paymentUrl = frontendBaseUrl + "/checkout.html?orderId=" + order.getId() + "&orderName=" + orderName;
 
-        return OrderCreateResponse.from(order, subtotal, discount, url, deliveryFee);
+        return OrderCreateResponse.from(order, subtotal, discount, paymentUrl, deliveryFee);
     }
 
+    @Transactional
+    protected void orderCancel(Order order, Payment payment) {
+
+        for (OrderProduct op : order.getOrderProducts()) {
+            op.getProduct().rollbackQuantity(op.getQuantity());
+        }
+        if (order.getUserCoupon() != null) {
+            order.getUserCoupon().rollback();
+        }
+
+        payment.cancel();
+        order.canceled();
+    }
+
+    private Order getUserOrder(Long userId, Long orderId) {
+
+        return orderRepository.findByIdAndUserId(orderId, userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
+    }
 }

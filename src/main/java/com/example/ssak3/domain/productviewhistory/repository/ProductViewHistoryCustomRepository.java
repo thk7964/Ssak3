@@ -7,5 +7,4 @@ import java.util.List;
 public interface ProductViewHistoryCustomRepository {
 
     void saveAll(List<ProductViewHistory> histories);
-
 }

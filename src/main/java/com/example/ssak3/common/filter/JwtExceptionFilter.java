@@ -27,6 +27,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } catch (ExpiredJwtException e) {
             request.setAttribute("exception", ErrorCode.EXPIRED_TOKEN);
+
             authenticationEntryPoint.commence(request, response, new JwtAuthenticationException(ErrorCode.EXPIRED_TOKEN));
         } catch (JwtAuthenticationException e) {
             authenticationEntryPoint.commence(request, response, e);

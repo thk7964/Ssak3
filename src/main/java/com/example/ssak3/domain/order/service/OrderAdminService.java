@@ -14,7 +14,6 @@ import com.example.ssak3.domain.payment.client.TossPaymentClient;
 import com.example.ssak3.domain.payment.entity.Payment;
 import com.example.ssak3.domain.payment.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,11 +29,8 @@ public class OrderAdminService {
     private final TossPaymentClient tossPaymentClient;
     private final OrderService orderService;
 
-    @Value("${app.frontend.base-url}")
-    private String frontendBaseUrl;
-
     /**
-     * 주문 상태 변경(admin)
+     * 주문 상태 변경 (Admin)
      */
     @Transactional
     public OrderGetResponse updateOrderStatus(Long orderId, OrderStatusUpdateRequest request) {
@@ -43,9 +39,8 @@ public class OrderAdminService {
                 .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
 
         if (request.getOrderStatus().equals(OrderStatus.CANCELED)) {
-
-            // 결제 대기 상태에서 취소하는 경우
             if (order.getStatus() == OrderStatus.PAYMENT_PENDING) {
+
                 // 재고 롤백
                 List<OrderProduct> ops = orderProductRepository.findByOrderId(orderId);
                 for (OrderProduct op : ops) {
@@ -53,7 +48,7 @@ public class OrderAdminService {
                 }
 
                 // 쿠폰 롤백
-                if(order.getUserCoupon() != null) {
+                if (order.getUserCoupon() != null) {
                     order.getUserCoupon().rollback();
                 }
 
@@ -62,7 +57,6 @@ public class OrderAdminService {
                 return OrderGetResponse.from(order, ops);
             }
 
-            // 결제 완료 상태에서 취소하는 경우
             if (order.getStatus().equals(OrderStatus.DONE)) {
 
                 Payment payment = paymentRepository.findByOrder(order)
@@ -76,9 +70,7 @@ public class OrderAdminService {
                 orderService.orderCancel(order, payment);
 
                 return OrderGetResponse.from(order, order.getOrderProducts());
-
             }
-
         }
 
         order.updateStatus(request.getOrderStatus());
@@ -86,6 +78,5 @@ public class OrderAdminService {
         List<OrderProduct> orderProductList = orderProductRepository.findByOrderId(order.getId());
 
         return OrderGetResponse.from(order, orderProductList);
-
     }
 }

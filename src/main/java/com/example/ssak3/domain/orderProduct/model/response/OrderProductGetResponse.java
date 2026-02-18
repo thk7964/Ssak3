@@ -16,6 +16,7 @@ public class OrderProductGetResponse {
     private final Integer linePrice;
 
     public static OrderProductGetResponse from(OrderProduct orderProduct) {
+
         Integer unitPrice = orderProduct.getUnitPrice();
         Integer quantity = orderProduct.getQuantity();
         Integer linePrice = unitPrice * quantity;

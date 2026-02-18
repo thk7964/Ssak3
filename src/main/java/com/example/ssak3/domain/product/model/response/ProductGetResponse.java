@@ -24,21 +24,21 @@ public class ProductGetResponse {
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
-
     public static ProductGetResponse from(Product product, String imageUrl, String detailImageUrl) {
-       return new ProductGetResponse(
-               product.getId(),
-               product.getCategory().getId(),
-               product.getName(),
-               product.getPrice(),
-               product.getStatus(),
-               product.getInformation(),
-               product.getQuantity(),
-               product.getAverageScore(),
-               imageUrl,
-               detailImageUrl,
-               product.getCreatedAt(),
-               product.getUpdatedAt()
+
+        return new ProductGetResponse(
+                product.getId(),
+                product.getCategory().getId(),
+                product.getName(),
+                product.getPrice(),
+                product.getStatus(),
+                product.getInformation(),
+                product.getQuantity(),
+                product.getAverageScore(),
+                imageUrl,
+                detailImageUrl,
+                product.getCreatedAt(),
+                product.getUpdatedAt()
         );
     }
 }

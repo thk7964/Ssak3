@@ -15,6 +15,7 @@ public class ReviewDeleteResponse {
     private final LocalDateTime updatedAt;
 
     public static ReviewDeleteResponse from(Review review) {
+
         return new ReviewDeleteResponse(
                 review.getId(),
                 review.getCreatedAt(),

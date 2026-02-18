@@ -10,5 +10,4 @@ public class ProductUpdateStatusRequest {
 
     private Long productId;
     private ProductStatus status;
-
 }

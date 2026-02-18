@@ -25,7 +25,6 @@ public class InquiryChatAdminService {
     /**
      * 관리자 문의 채팅방 참여
      */
-
     @Transactional
     public InquiryChatAcceptResponse acceptChat(Long adminId, Long roomId) {
 
@@ -54,6 +53,4 @@ public class InquiryChatAdminService {
         return PageResponse.from(inquiryChatListPage);
 
     }
-
-
 }

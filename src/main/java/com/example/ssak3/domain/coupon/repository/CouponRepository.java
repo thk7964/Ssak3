@@ -14,15 +14,17 @@ import java.util.Optional;
 
 public interface CouponRepository extends JpaRepository<Coupon, Long> {
 
-    // 사용 가능한 쿠폰만 조회
     @Query("SELECT c " +
             "FROM Coupon c " +
-            "WHERE c.issueEndDate >= :now " +   // 쿠폰 발행 일자가 현재보다 큰 쿠폰 (즉, 만료되지 않은 쿠폰)
-            "AND c.isDeleted = false")          // 삭제 되지 않은 쿠폰
+            "WHERE c.issueEndDate >= :now " +
+            "AND c.isDeleted = false")
     Page<Coupon> findAllAvailableCoupons(LocalDateTime now, Pageable pageable);
 
-    // 비관락 적용
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select c from Coupon c where c.id = :id")
     Optional<Coupon> findByIdWithLock(@Param("id") Long id);
+
+    Page<Coupon> findAllByIsDeletedFalse(Pageable pageable);
+
+    boolean existsByNameAndIsDeletedFalse(String name);
 }

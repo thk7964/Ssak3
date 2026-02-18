@@ -9,11 +9,13 @@ import java.time.LocalDateTime;
 @Getter
 @RequiredArgsConstructor
 public class InquiryReplyDeleteResponse {
+
     private final Long id;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
     public static InquiryReplyDeleteResponse from(InquiryReply inquiryReply) {
+
         return new InquiryReplyDeleteResponse(
                 inquiryReply.getId(),
                 inquiryReply.getCreatedAt(),

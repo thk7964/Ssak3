@@ -47,11 +47,13 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
+
         return new BCryptPasswordEncoder();
     }
 
     @Bean
     public RoleHierarchy roleHierarchy() {
+
         return RoleHierarchyImpl.fromHierarchy("""
                 ROLE_SUPER_ADMIN > ROLE_ADMIN > ROLE_USER
                 """);
@@ -59,6 +61,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtFilter jwtFilter, JwtExceptionFilter jwtExceptionFilter, LoggingFilter loggingFilter, CorsConfigurationSource corsConfigurationSource) throws Exception {
+
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .csrf(AbstractHttpConfigurer::disable)
@@ -70,7 +73,7 @@ public class SecurityConfig {
                         .requestMatchers(PUBLIC_URLS).permitAll()
                         .requestMatchers(HttpMethod.GET, GET_METHOD_PUBLIC_URLS).permitAll()
                         .requestMatchers(HttpMethod.PATCH, "/ssak3/admin/users/**").hasRole("SUPER_ADMIN")
-                        .requestMatchers("/ssak3/admin/**", "/ssak3/coupons/**").hasAnyRole("SUPER_ADMIN", "ADMIN")
+                        .requestMatchers("/ssak3/admin/**").hasAnyRole("SUPER_ADMIN", "ADMIN")
                         .anyRequest().authenticated())
                 .addFilterBefore(loggingFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtFilter, LoggingFilter.class)

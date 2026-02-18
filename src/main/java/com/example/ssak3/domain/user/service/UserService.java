@@ -2,7 +2,6 @@ package com.example.ssak3.domain.user.service;
 
 import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.exception.CustomException;
-import com.example.ssak3.common.model.AuthUser;
 import com.example.ssak3.domain.user.entity.User;
 import com.example.ssak3.domain.user.model.request.UserChangePasswordRequest;
 import com.example.ssak3.domain.user.model.request.UserUpdateRequest;
@@ -27,9 +26,9 @@ public class UserService {
      * 마이 페이지 조회
      */
     @Transactional(readOnly = true)
-    public MyProfileGetResponse getMyProfile(AuthUser authUser) {
+    public MyProfileGetResponse getMyProfile(Long userId) {
 
-        User user = getUser(authUser);
+        User user = getUser(userId);
 
         return MyProfileGetResponse.from(user);
     }
@@ -38,15 +37,18 @@ public class UserService {
      * 유저 정보 수정
      */
     @Transactional
-    public UserUpdateResponse updateUser(AuthUser authUser, UserUpdateRequest request) {
+    public UserUpdateResponse updateUser(Long userId, UserUpdateRequest request) {
 
-        User user = getUser(authUser);
+        User user = getUser(userId);
 
-        if (userRepository.existsByNickname(request.getNickname()) && !user.getNickname().equals(request.getNickname())) {
+        String nickname = request.getNickname().replaceAll("\\s", "");
+        String phone = request.getPhone().replaceAll("\\s", "");
+
+        if (userRepository.existsByNickname(nickname) && !user.getNickname().equals(nickname)) {
             throw new CustomException(ErrorCode.NICKNAME_ALREADY_EXISTS);
         }
 
-        if (userRepository.existsByPhone(request.getPhone()) && !user.getPhone().equals(request.getPhone())) {
+        if (userRepository.existsByPhone(phone) && !user.getPhone().equals(phone)) {
             throw new CustomException(ErrorCode.PHONE_ALREADY_EXISTS);
         }
 
@@ -62,9 +64,9 @@ public class UserService {
     /**
      * 비밀번호 검증
      */
-    public UserVerifyPasswordResponse verifyPassword(AuthUser authUser, UserVerifyPasswordRequest request) {
+    public UserVerifyPasswordResponse verifyPassword(Long userId, UserVerifyPasswordRequest request) {
 
-        User user = getUser(authUser);
+        User user = getUser(userId);
 
         return new UserVerifyPasswordResponse(passwordEncoder.matches(request.getPassword(), user.getPassword()));
     }
@@ -73,9 +75,9 @@ public class UserService {
      * 비밀번호 변경
      */
     @Transactional
-    public UserChangePasswordResponse changePassword(AuthUser authUser, UserChangePasswordRequest request) {
+    public UserChangePasswordResponse changePassword(Long userId, UserChangePasswordRequest request) {
 
-        User user = getUser(authUser);
+        User user = getUser(userId);
 
         user.updatePassword(passwordEncoder.encode(request.getNewPassword()));
 
@@ -86,9 +88,9 @@ public class UserService {
      * 유저 탈퇴
      */
     @Transactional
-    public UserDeleteResponse deleteUser(AuthUser authUser) {
+    public UserDeleteResponse deleteUser(Long userId) {
 
-        User user = getUser(authUser);
+        User user = getUser(userId);
 
         user.softDelete();
 
@@ -100,8 +102,9 @@ public class UserService {
     /**
      * 유저를 얻어오는 내부 전용 메소드
      */
-    private User getUser(AuthUser authUser) {
-        User user = userRepository.findById(authUser.getId())
+    private User getUser(Long userId) {
+
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         if (user.isDeleted()) {

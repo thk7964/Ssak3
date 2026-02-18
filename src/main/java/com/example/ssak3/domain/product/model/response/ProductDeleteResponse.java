@@ -15,6 +15,7 @@ public class ProductDeleteResponse {
     private final LocalDateTime updatedAt;
 
     public static ProductDeleteResponse from(Product product) {
+
         return new ProductDeleteResponse(
                 product.getId(),
                 product.getCreatedAt(),

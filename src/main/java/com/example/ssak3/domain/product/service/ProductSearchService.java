@@ -1,7 +1,6 @@
 package com.example.ssak3.domain.product.service;
 
 import com.example.ssak3.common.model.PageResponse;
-import com.example.ssak3.domain.product.model.response.ProductGetPopularResponse;
 import com.example.ssak3.domain.product.model.response.ProductGetSearchResponse;
 import com.example.ssak3.domain.product.repository.ProductSearchCustomRepository;
 import com.example.ssak3.domain.s3.service.S3Uploader;
@@ -39,6 +38,5 @@ public class ProductSearchService {
         );
 
         return PageResponse.from(mapped);
-
     }
 }

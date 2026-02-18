@@ -28,23 +28,29 @@ public class CouponService {
     private final UserCouponCacheService userCouponCacheService;
 
     /**
-     * 쿠폰 생성 로직
+     * 쿠폰 생성
      */
     @Transactional
     public CouponCreateResponse createCoupon(CouponCreateRequest request) {
 
-        // 시작일이 현재 시간보다 이전인 경우 예외
+        if (couponRepository.existsByNameAndIsDeletedFalse(request.getName().trim())) {
+            throw new CustomException(ErrorCode.COUPON_NAME_ALREADY_EXISTS);
+        }
+
+        if (request.getDiscountValue() > request.getMinOrderPrice()) {
+            throw new CustomException(ErrorCode.DISCOUNT_EXCEEDS_MIN_ORDER_PRICE);
+        }
+
         if (request.getIssueStartDate().isBefore(LocalDateTime.now().minusMinutes(1))) {
             throw new CustomException(ErrorCode.COUPON_INVALID_START_TIME);
         }
 
-        // 종료일이 시작일보다 빠른 경우 예외
         if (request.getIssueEndDate().isBefore(request.getIssueStartDate())) {
             throw new CustomException(ErrorCode.COUPON_INVALID_TIME_RANGE);
         }
 
         Coupon coupon = new Coupon(
-                request.getName(),
+                request.getName().trim(),
                 request.getDiscountValue(),
                 request.getTotalQuantity(),
                 request.getIssueStartDate(),
@@ -55,23 +61,25 @@ public class CouponService {
 
         Coupon savedCoupon = couponRepository.save(coupon);
 
+        userCouponCacheService.clearUserCouponListCache();
+
         return CouponCreateResponse.from(savedCoupon);
     }
 
     /**
-     * 쿠폰 목록 조회 로직
+     * 쿠폰 목록 조회
      */
     @Transactional(readOnly = true)
     public PageResponse<CouponListGetResponse> getCouponList(Pageable pageable) {
 
-        Page<CouponListGetResponse> couponListPage = couponRepository.findAllAvailableCoupons(LocalDateTime.now(), pageable)
+        Page<CouponListGetResponse> couponListPage = couponRepository.findAllByIsDeletedFalse(pageable)
                 .map(CouponListGetResponse::from);
 
         return PageResponse.from(couponListPage);
     }
 
     /**
-     * 쿠폰 수정 로직
+     * 쿠폰 수정
      */
     @Transactional
     public CouponUpdateResponse updateCoupon(Long couponId, CouponUpdateRequest request) {
@@ -79,26 +87,23 @@ public class CouponService {
         Coupon coupon = couponRepository.findById(couponId)
                 .orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
 
-        // 종료일이 현재 시간보다 이전으로 수정되는 것 방지
-        if (request.getIssueEndDate().isBefore(LocalDateTime.now())) {
+        if (request.getIssueEndDate().isBefore(LocalDateTime.now().minusMinutes(1))) {
             throw new CustomException(ErrorCode.COUPON_INVALID_END_TIME);
         }
 
-        // 종료일이 시작일보다 빠른 경우 예외
         if (request.getIssueEndDate().isBefore(coupon.getIssueStartDate())) {
             throw new CustomException(ErrorCode.COUPON_INVALID_TIME_RANGE);
         }
 
         coupon.update(request);
 
-        // 쿠폰 정보가 변경되었으므로 사용자용 목록 캐시를 비움
         userCouponCacheService.clearUserCouponListCache();
 
         return CouponUpdateResponse.from(coupon);
     }
 
     /**
-     * 쿠폰 삭제 로직
+     * 쿠폰 삭제
      */
     @Transactional
     public CouponDeleteResponse deleteCoupon(Long couponId) {
@@ -110,9 +115,8 @@ public class CouponService {
             throw new CustomException(ErrorCode.COUPON_ALREADY_DELETED);
         }
 
-        coupon.delete();
+        coupon.softDelete();
 
-        // 쿠폰이 삭제되었으므로 캐시된 목록에서 사라지도록 처리
         userCouponCacheService.clearUserCouponListCache();
 
         return CouponDeleteResponse.from(coupon);

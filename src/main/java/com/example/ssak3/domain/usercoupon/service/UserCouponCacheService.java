@@ -20,7 +20,7 @@ public class UserCouponCacheService {
      */
     public void saveUserCouponListCache(int pageNumber, int pageSize, PageResponse<CouponListForUserGetResponse> data) {
         String key = USER_COUPON_LIST_CACHE_PREFIX + pageNumber + ":size:" + pageSize;
-        couponRedisTemplate.opsForValue().set(key, data, 10, TimeUnit.MINUTES);   // TTL : 10분
+        couponRedisTemplate.opsForValue().set(key, data, 10, TimeUnit.MINUTES);
     }
 
     /**

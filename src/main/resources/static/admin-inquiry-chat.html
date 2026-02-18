@@ -768,8 +768,9 @@
             window.location.href = 'admin-inquiry-chat-list.html';
 
         } catch (error) {
-            console.error('채팅 종료 실패:', error);
-            alert('채팅 종료에 실패했습니다.');
+            console.error('이미 종료된 상담입니다.:', error);
+            alert('이미 종료된 상담입니다.');
+            window.location.href = 'admin-inquiry-chat-list.html';
         }
     }
 

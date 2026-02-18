@@ -18,6 +18,7 @@ public class CouponCreateResponse {
     private final LocalDateTime updatedAt;
 
     public static CouponCreateResponse from(Coupon coupon) {
+
         return new CouponCreateResponse(
                 coupon.getId(),
                 coupon.getName(),

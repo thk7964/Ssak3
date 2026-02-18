@@ -22,8 +22,7 @@ public class CartController {
      * 내 장바구니 조회 API
      */
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse> getMyCartApi(
-            @AuthenticationPrincipal AuthUser user) {
+    public ResponseEntity<ApiResponse> getMyCartApi(@AuthenticationPrincipal AuthUser user) {
 
         ApiResponse response = ApiResponse.success("장바구니 조회에 성공했습니다.", cartService.getMyCart(user.getId()));
 

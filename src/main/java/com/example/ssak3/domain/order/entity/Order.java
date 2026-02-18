@@ -44,13 +44,14 @@ public class Order extends BaseEntity {
     @Column(nullable = false)
     private String address;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, name = "order_no")
     private String orderNo;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderProduct> orderProducts = new ArrayList<>();
 
     public Order(User user, String Address, UserCoupon userCoupon, Long totalPrice) {
+
         this.user = user;
         this.address = Address;
         this.userCoupon = userCoupon;
@@ -59,19 +60,23 @@ public class Order extends BaseEntity {
     }
 
     public String generateOrderNo() {
+
         return "Order-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + "-" + UUID.randomUUID().toString().substring(0, 8);
     }
 
     public void applyCoupon(UserCoupon coupon, long discount) {
+
         this.userCoupon = coupon;
         this.totalPrice -= discount;
     }
 
     public void updateStatus(OrderStatus orderStatus) {
+
         this.status = orderStatus;
     }
 
     public void canceled() {
+
         this.status = OrderStatus.CANCELED;
     }
 

@@ -5,14 +5,16 @@ import com.example.ssak3.common.enums.InquiryStatus;
 import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.common.model.PageResponse;
 import com.example.ssak3.domain.inquiry.entity.Inquiry;
-import com.example.ssak3.domain.inquiry.model.response.InquiryDeleteResponse;
 import com.example.ssak3.domain.inquiry.model.response.InquiryGetResponse;
 import com.example.ssak3.domain.inquiry.model.response.InquiryListGetResponse;
 import com.example.ssak3.domain.inquiry.repository.InquiryRepository;
 import com.example.ssak3.domain.inquiryreply.entity.InquiryReply;
 import com.example.ssak3.domain.inquiryreply.model.request.InquiryReplyCreateRequest;
 import com.example.ssak3.domain.inquiryreply.model.request.InquiryReplyUpdateRequest;
-import com.example.ssak3.domain.inquiryreply.model.response.*;
+import com.example.ssak3.domain.inquiryreply.model.response.InquiryReplyCreateResponse;
+import com.example.ssak3.domain.inquiryreply.model.response.InquiryReplyDeleteResponse;
+import com.example.ssak3.domain.inquiryreply.model.response.InquiryReplyGetResponse;
+import com.example.ssak3.domain.inquiryreply.model.response.InquiryReplyUpdateResponse;
 import com.example.ssak3.domain.inquiryreply.repository.InquiryReplyRepository;
 import com.example.ssak3.domain.user.entity.User;
 import com.example.ssak3.domain.user.repository.UserRepository;
@@ -36,42 +38,37 @@ public class InquiryReplyService {
     @Transactional
     public InquiryReplyCreateResponse createInquiryReply(Long adminId, InquiryReplyCreateRequest request) {
 
-        User admin = userRepository.findById(adminId)
+        User admin = userRepository.findByIdAndIsDeletedFalse(adminId)
                 .orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        Inquiry foundInquiry = inquiryRepository.findById(request.getInquiryId())
+        Inquiry inquiry = inquiryRepository.findByIdAndIsDeletedFalse(request.getInquiryId())
                 .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_NOT_FOUND));
-
-        foundInquiry.validateDeleted(); // 이미 삭제된 문의인지 검증
-        foundInquiry.validateAnswered();  // 이미 답변완료된 문의인지 검사
 
         InquiryReply inquiryReply = new InquiryReply(
                 admin,
-                foundInquiry,
+                inquiry,
                 request.getContent()
         );
 
         InquiryReply savedInquiryReply = inquiryReplyRepository.save(inquiryReply);
 
-        foundInquiry.updateStatus(InquiryStatus.ANSWERED);
+        inquiry.updateStatus(InquiryStatus.ANSWERED);
 
         return InquiryReplyCreateResponse.from(savedInquiryReply);
     }
 
-
     /**
-     * 문의 답변 목록 조회
+     * 문의 답변 목록 조회 삭제 예정
      */
     @Transactional(readOnly = true)
     public PageResponse<InquiryListGetResponse> getInquiryList(Pageable pageable) {
 
         Page<InquiryListGetResponse> inquiryListPage = inquiryRepository
-                .findAllByIsDeletedFalse(pageable)  // 관리자는 adminId 상관없이 작성한 모든 답변을 볼 수 있음
+                .findAllByIsDeletedFalse(pageable)
                 .map(InquiryListGetResponse::from);
 
         return PageResponse.from(inquiryListPage);
     }
-
 
     /**
      * 관리자용 문의 상세 조회
@@ -79,17 +76,14 @@ public class InquiryReplyService {
     @Transactional(readOnly = true)
     public InquiryGetResponse getInquiryForAdmin(Long inquiryId) {
 
-        Inquiry foundInquiry = inquiryRepository.findById(inquiryId)
+        Inquiry foundInquiry = inquiryRepository.findByIdAndIsDeletedFalse(inquiryId)
                 .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_NOT_FOUND));
 
-        foundInquiry.validateDeleted(); // 삭제된 문의인지 검증
+        InquiryReply inquiryReply = inquiryReplyRepository.findByInquiryIdAndIsDeletedFalse(inquiryId)
+                .orElse(null);
 
-        InquiryReply foundInquiryReply = inquiryReplyRepository.findByInquiryIdAndIsDeletedFalse(inquiryId)
-                .orElse(null);  // 문의 답변 없는 경우 null
-
-        return InquiryGetResponse.from(foundInquiry, foundInquiryReply);
+        return InquiryGetResponse.from(foundInquiry, inquiryReply);
     }
-
 
     /**
      * 문의 답변 상세 조회
@@ -97,14 +91,11 @@ public class InquiryReplyService {
     @Transactional(readOnly = true)
     public InquiryReplyGetResponse getInquiryReply(Long inquiryReplyId) {
 
-        InquiryReply foundInquiryReply = inquiryReplyRepository.findById(inquiryReplyId)
+        InquiryReply inquiryReply = inquiryReplyRepository.findByIdAndIsDeletedFalse(inquiryReplyId)
                 .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_REPLY_NOT_FOUND));
 
-        foundInquiryReply.validateDeleted();  // 삭제된 문의 답변인지 검증
-
-        return InquiryReplyGetResponse.from(foundInquiryReply);
+        return InquiryReplyGetResponse.from(inquiryReply);
     }
-
 
     /**
      * 문의 답변 수정
@@ -115,17 +106,14 @@ public class InquiryReplyService {
         User admin = userRepository.findById(adminId)
                 .orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        InquiryReply foundInquiryReply = inquiryReplyRepository
+        InquiryReply inquiryReply = inquiryReplyRepository
                 .findByInquiryIdAndIsDeletedFalse(inquiryId)
                 .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_REPLY_NOT_FOUND));
 
-        foundInquiryReply.validateDeleted();  // 삭제된 문의 답변인지 검증
+        inquiryReply.update(admin, request.getContent());
 
-        foundInquiryReply.update(admin, request.getContent());
-
-        return InquiryReplyUpdateResponse.from(foundInquiryReply);
+        return InquiryReplyUpdateResponse.from(inquiryReply);
     }
-
 
     /**
      * 문의 답변 삭제
@@ -133,19 +121,15 @@ public class InquiryReplyService {
     @Transactional
     public InquiryReplyDeleteResponse deleteInquiryReply(Long inquiryId) {
 
-        InquiryReply foundInquiryReply = inquiryReplyRepository
+        InquiryReply inquiryReply = inquiryReplyRepository
                 .findByInquiryIdAndIsDeletedFalse(inquiryId)
                 .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_REPLY_NOT_FOUND));
 
-        foundInquiryReply.validateDeleted();  // 삭제된 문의 답변인지 검증
+        inquiryReply.softDelete();
 
-        foundInquiryReply.softDelete();
-
-        // 답변 삭제 시 문의 상태를 PENDING으로 되돌림
-        Inquiry inquiry = foundInquiryReply.getInquiry();
+        Inquiry inquiry = inquiryReply.getInquiry();
         inquiry.updateStatus(InquiryStatus.PENDING);
 
-        return InquiryReplyDeleteResponse.from(foundInquiryReply);
+        return InquiryReplyDeleteResponse.from(inquiryReply);
     }
-
 }

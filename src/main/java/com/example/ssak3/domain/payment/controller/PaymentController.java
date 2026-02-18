@@ -3,6 +3,7 @@ package com.example.ssak3.domain.payment.controller;
 import com.example.ssak3.domain.payment.model.request.PaymentConfirmRequest;
 import com.example.ssak3.domain.payment.service.PaymentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/ssak3/payments")
 public class PaymentController {
+
     private final PaymentService paymentService;
 
     @PostMapping("/confirm")
@@ -20,6 +22,6 @@ public class PaymentController {
 
         paymentService.confirmPayment(request);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

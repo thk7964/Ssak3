@@ -11,7 +11,6 @@ public class ProductViewCountScheduler {
 
     private final ProductViewBackUpService productViewBackUpService;
 
-    // 10분마다 DB에 조회수 백업
     @Scheduled(cron = "* */10 * * * *")
     public void backUpViewCount() {
         productViewBackUpService.backUpViewCount();

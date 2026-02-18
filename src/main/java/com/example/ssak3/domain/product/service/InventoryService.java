@@ -14,20 +14,21 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class InventoryService {
+
     private final TimeDealRepository timeDealRepository;
     private final RedisCacheManager redisCacheManager;
 
     @Transactional
-    public void decreaseProductStock(Product product, int quantity){
+    public void decreaseProductStock(Product product, int quantity) {
         product.decreaseQuantity(quantity);
 
-        if (product.getQuantity() == 0){
+        if (product.getQuantity() == 0) {
             List<TimeDeal> openDeals = timeDealRepository.findOpenByProductId(product.getId());
             openDeals.forEach(timeDeal -> timeDeal.setStatus(TimeDealStatus.CLOSED));
+
             timeDealRepository.saveAll(openDeals);
 
             redisCacheManager.getCache("timeDealsOpen").clear();
         }
     }
-
 }

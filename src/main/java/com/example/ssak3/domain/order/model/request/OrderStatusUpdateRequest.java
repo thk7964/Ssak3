@@ -11,5 +11,4 @@ public class OrderStatusUpdateRequest {
 
     @NotNull
     private OrderStatus orderStatus;
-
 }

@@ -9,15 +9,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping("/ssak3/products/popular")
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/ssak3/products/popular")
 public class ProductRankingController {
 
     private final ProductRankingService productRankingService;
 
     /**
-     * 조회 수 TOP 10
+     * 조회수 TOP 10 API
      */
     @GetMapping
     public ResponseEntity<ApiResponse> getPopularProductApi() {

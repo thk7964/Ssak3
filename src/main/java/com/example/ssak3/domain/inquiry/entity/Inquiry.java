@@ -4,6 +4,7 @@ import com.example.ssak3.common.entity.BaseEntity;
 import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.enums.InquiryStatus;
 import com.example.ssak3.common.exception.CustomException;
+import com.example.ssak3.domain.inquiry.model.request.InquiryUpdateRequest;
 import com.example.ssak3.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -38,46 +39,44 @@ public class Inquiry extends BaseEntity {
     private boolean isDeleted = false;
 
     public Inquiry(User user, String title, String content, InquiryStatus status) {
+
         this.user = user;
         this.title = title;
         this.content = content;
         this.status = status;
     }
 
-    public void update(String newTitle, String newContent) {
-        this.title = newTitle;
-        this.content = newContent;
+    public void update(InquiryUpdateRequest request) {
+
+        if (request.getTitle() != null) {
+            this.title = request.getTitle();
+        }
+        if (request.getContent() != null) {
+            this.content = request.getContent();
+        }
     }
 
-    // 상태 업데이트
     public void updateStatus(InquiryStatus status) {
+
         this.status = status;
     }
 
     public void softDelete() {
+
         this.isDeleted = true;
     }
 
-    // 사용자, 작성자 검증
     public void validateUser(Long userId) {
+
         if (!this.user.getId().equals(userId)) {
             throw new CustomException(ErrorCode.NOT_INQUIRY_WRITER);
         }
     }
 
-    // 답변완료된 문의 검증
     public void validateAnswered() {
+
         if (this.status == InquiryStatus.ANSWERED) {
             throw new CustomException(ErrorCode.INQUIRY_ALREADY_ANSWERED);
         }
     }
-
-    // 삭제된 문의 검증
-    public void validateDeleted() {
-        if (this.isDeleted) {
-            throw new CustomException(ErrorCode.INQUIRY_ALREADY_DELETED);
-        }
-    }
-
-
 }

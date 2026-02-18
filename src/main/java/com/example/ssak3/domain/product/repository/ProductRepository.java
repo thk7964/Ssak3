@@ -20,39 +20,29 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Optional<Product> findByIdAndIsDeletedFalse(Long id);
 
     @Query("""
-    SELECT p
-    FROM Product p
-    WHERE p.isDeleted = false
-      AND (:categoryId IS NULL OR p.category.id = :categoryId)
-      AND p.status IN (
-      com.example.ssak3.common.enums.ProductStatus.FOR_SALE,
-      com.example.ssak3.common.enums.ProductStatus.SOLD_OUT)
-""")
-    Page<Product> findProductListByCategoryId(
-            @Param("categoryId") Long categoryId,
-            Pageable pageable
-    );
+        SELECT p
+        FROM Product p
+        WHERE p.isDeleted = false
+          AND (:categoryId IS NULL OR p.category.id = :categoryId)
+          AND p.status IN (
+          com.example.ssak3.common.enums.ProductStatus.FOR_SALE,
+          com.example.ssak3.common.enums.ProductStatus.SOLD_OUT)
+    """)
+    Page<Product> findProductListByCategoryId(@Param("categoryId") Long categoryId, Pageable pageable);
 
     @Query("""
-    SELECT p
-    FROM Product p
-    WHERE p.isDeleted = false
-      AND (:categoryId IS NULL OR p.category.id = :categoryId)
-""")
-    // 반환타입을 Page로 수정
-    Page<Product> findProductListByCategoryIdForAdmin(
-            @Param("categoryId") Long categoryId,
-            Pageable pageable
-    );
+                SELECT p
+                FROM Product p
+                WHERE p.isDeleted = false
+                  AND (:categoryId IS NULL OR p.category.id = :categoryId)
+            """)
+    Page<Product> findProductListByCategoryIdForAdmin(@Param("categoryId") Long categoryId, Pageable pageable);
 
-    // 카테고리 아이디를 통해 상품의 존재확인
     boolean existsByCategoryId(Long categoryId);
 
-    // 비관락
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select p from Product p where p.id = :productId and p.isDeleted = false")
     Optional<Product> findByIdForLock(@Param("productId") Long productId);
-
 
     List<Product> findAllByIdInAndStatusAndIsDeletedFalse(List<Long> productIds, ProductStatus productStatus);
 }

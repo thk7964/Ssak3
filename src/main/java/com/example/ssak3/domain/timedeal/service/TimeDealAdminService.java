@@ -77,7 +77,6 @@ public class TimeDealAdminService {
         TimeDeal saved = timeDealRepository.save(timeDeal);
 
         return TimeDealCreateResponse.from(saved);
-
     }
 
     /**
@@ -105,31 +104,32 @@ public class TimeDealAdminService {
             throw new CustomException(ErrorCode.TIME_DEAL_CANNOT_UPDATE);
         }
 
-        if (request.getDealPrice() != null && timeDeal.getDealPrice() <= request.getDealPrice()) {
-            throw new CustomException(ErrorCode.UPDATED_SALE_PRICE_MUST_BE_LOWER_THAN_CURRENT_SALE_PRICE);
+        if (request.getDealPrice() != null && request.getDealPrice() >= timeDeal.getProduct().getPrice()) {
+            throw new CustomException(ErrorCode.SALE_PRICE_MUST_BE_LOWER_THAN_ORIGINAL_PRICE);
         }
 
         LocalDateTime now = LocalDateTime.now();
+
+        if (request.getStartAt() != null) {
+            if (!request.getStartAt().isAfter(now)) {
+                throw new CustomException(ErrorCode.TIME_DEAL_START_TIME_MUST_BE_IN_FUTURE);
+            }
+        }
+
         LocalDateTime startAt = request.getStartAt() != null ? request.getStartAt() : timeDeal.getStartAt();
         LocalDateTime endAt = request.getEndAt() != null ? request.getEndAt() : timeDeal.getEndAt();
 
-        if (!startAt.isAfter(now)) {
-            throw new CustomException(ErrorCode.TIME_DEAL_START_TIME_MUST_BE_IN_FUTURE);
+        if (request.getStartAt() != null || request.getEndAt() != null) {
+            if (!endAt.isAfter(startAt)) {
+                throw new CustomException(ErrorCode.INVALID_TIME_RANGE);
+            }
         }
 
-        if (!endAt.isAfter(startAt)) {
-            throw new CustomException(ErrorCode.INVALID_TIME_RANGE);
-        }
-
-        // 저장되어 있는 이미지 파일이 있는지 확인
-        if (request.getImage()!=null && timeDeal.getImage()!=null) {
-            // 기존 파일 먼저 삭제
+        if (request.getImage() != null && timeDeal.getImage() != null) {
             s3Uploader.deleteImage(timeDeal.getImage());
         }
 
-        // 저장되어 있는 상세 이미지 파일이 있는지 확인
-        if (request.getDetailImage()!=null && timeDeal.getDetailImage()!=null) {
-            // 기존 파일 먼저 삭제
+        if (request.getDetailImage() != null && timeDeal.getDetailImage() != null) {
             s3Uploader.deleteImage(timeDeal.getDetailImage());
         }
 
@@ -143,6 +143,7 @@ public class TimeDealAdminService {
      */
     @Transactional
     public TimeDealDeleteResponse deleteTimeDeal(Long timeDealId) {
+
         TimeDeal timeDeal = timeDealRepository.findByIdAndIsDeletedFalse(timeDealId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TIME_DEAL_NOT_FOUND));
 
@@ -162,5 +163,4 @@ public class TimeDealAdminService {
 
         return TimeDealDeleteResponse.from(timeDeal);
     }
-
 }

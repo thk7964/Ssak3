@@ -18,6 +18,7 @@ public class SignupResponse {
     private final LocalDateTime updatedAt;
 
     public static SignupResponse from(User user) {
+
         return new SignupResponse(
                 user.getId(),
                 user.getEmail(),

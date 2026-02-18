@@ -15,6 +15,7 @@ public class UserChangePasswordResponse {
     private final LocalDateTime updatedAt;
 
     public static UserChangePasswordResponse from(User user) {
+
         return new UserChangePasswordResponse(
                 user.getId(),
                 user.getCreatedAt(),

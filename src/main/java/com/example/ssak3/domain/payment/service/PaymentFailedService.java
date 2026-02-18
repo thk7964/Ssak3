@@ -21,7 +21,7 @@ public class PaymentFailedService {
     private final PaymentRepository paymentRepository;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void paymentFailed(String orderId, String paymentKey){
+    public void paymentFailed(String orderId, String paymentKey) {
 
         Order order = orderRepository.findByOrderNo(orderId)
                 .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
@@ -29,11 +29,11 @@ public class PaymentFailedService {
         Payment payment = paymentRepository.findByPaymentKey(paymentKey)
                 .orElseThrow(() -> new CustomException(ErrorCode.PAYMENT_NOT_FOUND));
 
-        for (OrderProduct op : order.getOrderProducts()){
+        for (OrderProduct op : order.getOrderProducts()) {
             op.getProduct().rollbackQuantity(op.getQuantity());
         }
 
-        if (order.getUserCoupon() != null){
+        if (order.getUserCoupon() != null) {
             order.getUserCoupon().rollback();
         }
 

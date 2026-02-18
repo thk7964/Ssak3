@@ -34,11 +34,13 @@ public class JwtUtil {
 
     @PostConstruct
     public void init() {
+
         byte[] bytes = Base64.getDecoder().decode(secretKey);
         this.key = Keys.hmacShaKeyFor(bytes);
     }
 
     public String createToken(Long id, String email, UserRole role) {
+
         return BEARER_PREFIX +
                 Jwts.builder()
                         .subject(String.valueOf(id))
@@ -74,7 +76,5 @@ public class JwtUtil {
             log.warn("message = 유효하지 않은 토큰 에러, class = {}", e.getClass());
             throw new JwtAuthenticationException(ErrorCode.INVALID_TOKEN);
         }
-
     }
-
 }

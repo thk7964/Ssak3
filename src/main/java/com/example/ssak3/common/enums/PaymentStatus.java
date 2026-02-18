@@ -1,6 +1,7 @@
 package com.example.ssak3.common.enums;
 
 public enum PaymentStatus {
+    
     READY,      // 결제 생성됨
     SUCCESS,    // 결제 성공
     FAILED,     // 결제 실패

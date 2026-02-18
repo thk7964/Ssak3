@@ -15,13 +15,11 @@ public class RedisSubscriber {
     private final ObjectMapper objectMapper;
     private final SimpMessageSendingOperations messagingTemplate;
 
-    // Redis에서 메시지가 발행되면 명시적으로 호출하지 않아도 Redis Pub/Sub에 의해 자동으로 호출
     public void onMessage(String savedMessage) {
+
         try {
-            // Redis에서 넘어온 JSON 문자열 DTO로 변환
             ChatMessageResponse response = objectMapper.readValue(savedMessage, ChatMessageResponse.class);
 
-            // 해당 방을 구독 중인 유저들에게 최종적으로 메시지 전송
             messagingTemplate.convertAndSend("/sub/chat/room/" + response.getRoomId(), response);
 
         } catch (Exception e) {

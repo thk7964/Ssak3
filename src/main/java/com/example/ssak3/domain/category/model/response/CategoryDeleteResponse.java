@@ -22,5 +22,4 @@ public class CategoryDeleteResponse {
                 category.getUpdatedAt()
         );
     }
-
 }

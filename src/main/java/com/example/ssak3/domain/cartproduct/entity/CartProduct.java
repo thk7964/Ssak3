@@ -5,7 +5,9 @@ import com.example.ssak3.domain.cart.entity.Cart;
 import com.example.ssak3.domain.product.entity.Product;
 import com.example.ssak3.domain.timedeal.entity.TimeDeal;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter

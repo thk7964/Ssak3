@@ -10,6 +10,7 @@ public class KakaoAuthUrlResponse {
     private final String kakaoAuthUrl;
 
     public static KakaoAuthUrlResponse from(String kakaoAuthUrl) {
+
         return new KakaoAuthUrlResponse(kakaoAuthUrl);
     }
 

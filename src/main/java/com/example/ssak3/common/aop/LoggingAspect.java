@@ -18,8 +18,7 @@ import org.springframework.stereotype.Component;
 public class LoggingAspect {
 
     @Pointcut("execution(* com.example.ssak3.domain..service..*.*(..))")
-    private void service() {
-    }
+    private void service() {}
 
     @Around("service()")
     public Object serviceLogging(ProceedingJoinPoint joinPoint) throws Throwable {

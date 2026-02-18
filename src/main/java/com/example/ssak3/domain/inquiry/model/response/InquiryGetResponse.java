@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @RequiredArgsConstructor
 public class InquiryGetResponse {
+
     private final Long id;
     private final Long userId;
     private final String title;
@@ -21,6 +22,7 @@ public class InquiryGetResponse {
     private final String replyContent;
 
     public static InquiryGetResponse from(Inquiry inquiry, InquiryReply inquiryReply) {
+
         return new InquiryGetResponse(
                 inquiry.getId(),
                 inquiry.getUser().getId(),
@@ -29,7 +31,7 @@ public class InquiryGetResponse {
                 inquiry.getStatus(),
                 inquiry.getCreatedAt(),
                 inquiry.getUpdatedAt(),
-                inquiryReply != null ? inquiryReply.getContent() : null  // 문의 답변이 있는 경우 출력, 없는 경우 null
+                inquiryReply != null ? inquiryReply.getContent() : null
         );
     }
 }

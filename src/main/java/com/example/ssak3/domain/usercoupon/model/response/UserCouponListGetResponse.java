@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class UserCouponListGetResponse {
 
-    private final Long userCouponId;    // 발급된 회원 쿠폰의 아이디
-    private final Long couponId;        // 발급한 쿠폰 아이디
+    private final Long userCouponId;
+    private final Long couponId;
     private final String couponName;
     private final Integer discountValue;
     private final LocalDateTime expiredAt;
@@ -21,6 +21,7 @@ public class UserCouponListGetResponse {
     private final LocalDateTime updatedAt;
 
     public static UserCouponListGetResponse from(UserCoupon userCoupon) {
+
         return new UserCouponListGetResponse(
                 userCoupon.getId(),
                 userCoupon.getCoupon().getId(),

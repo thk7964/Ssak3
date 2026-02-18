@@ -8,20 +8,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import java.util.List;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserCouponRepository extends JpaRepository<UserCoupon, Long> {
 
-    // 헤딩 유저가 이미 해당 쿠폰을 받았는지 확인
     boolean existsByUserAndCouponAndStatusIn(User user, Coupon coupon, List<UserCouponStatus> statuses);
 
-    // 내 쿠폰 목록 페이징 조회
     @Query("SELECT uc " +
             "FROM UserCoupon uc JOIN uc.coupon c " +
             "WHERE uc.user.id = :userId " +
-            "AND c.isDeleted = false " +  // 관리자가 삭제한 쿠폰 제외
+            "AND c.isDeleted = false " +
             "AND uc.status = :status")
     Page<UserCoupon> findAllActiveCouponsByUserId(Long userId, Pageable pageable, UserCouponStatus status);
 

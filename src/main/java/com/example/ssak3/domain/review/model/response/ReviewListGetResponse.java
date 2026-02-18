@@ -20,6 +20,7 @@ public class ReviewListGetResponse {
     private final LocalDateTime updatedAt;
 
     public static ReviewListGetResponse from(Review review) {
+
         return new ReviewListGetResponse(
                 review.getId(),
                 review.getUser().getId(),
@@ -31,5 +32,4 @@ public class ReviewListGetResponse {
                 review.getUpdatedAt()
         );
     }
-
 }

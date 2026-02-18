@@ -66,43 +66,67 @@ public class TimeDeal extends BaseEntity {
 
         if (newStatus == TimeDealStatus.OPEN) {
             closeNormalProduct();
-        }else {
+        } else {
             openNormalProduct();
         }
-
     }
 
     public void softDelete() {
+
         this.isDeleted = true;
         this.status = TimeDealStatus.DELETED;
 
-        if (this.image!=null) {
-            this.image=this.image;
-        }
-        if (this.detailImage!=null) {
-            this.detailImage=this.detailImage;
+        if (this.image != null) {
+            this.image = null;
         }
 
+        if (this.detailImage != null) {
+            this.detailImage = null;
+        }
     }
 
     public void update(TimeDealUpdateRequest request) {
 
+        boolean startAtChanged = false;
+
         if (request.getDealPrice() != null) {
             this.dealPrice = request.getDealPrice();
         }
-        if (request.getStartAt() != null) {
+
+        if (request.getStartAt() != null && !request.getStartAt().equals(this.startAt)) {
             this.startAt = request.getStartAt();
-            setStatus(TimeDealStatus.READY);
+            startAtChanged = true;
         }
+
         if (request.getEndAt() != null) {
             this.endAt = request.getEndAt();
         }
+
         if (request.getImage() != null) {
             this.image = request.getImage();
         }
+
         if (request.getDetailImage() != null) {
             this.detailImage = request.getDetailImage();
         }
+
+        if (startAtChanged) {
+            prepareIfPossible();
+        }
+    }
+
+    public void prepareIfPossible() {
+
+        if (this.product.getQuantity() <= 0) {
+            return;
+        }
+
+        if (this.status == TimeDealStatus.READY) {
+            return;
+        }
+
+        this.status = TimeDealStatus.READY;
+        openNormalProduct();
     }
 
     public boolean isDeletable() {
@@ -110,14 +134,16 @@ public class TimeDeal extends BaseEntity {
     }
 
     private void openNormalProduct() {
+
         if (isDeleted) return;
 
         product.restoreStatusAfterTimeDeal();
     }
 
     private void closeNormalProduct() {
+
         if (isDeleted) return;
+
         product.stopSaleForTimeDeal();
     }
-
 }

@@ -42,7 +42,7 @@ public class Product extends BaseEntity {
     private Integer quantity;
 
     @Column
-    private Double averageScore;
+    private Double averageScore = 0.0;
 
     @Column(columnDefinition = "TEXT")
     private String image;
@@ -54,6 +54,7 @@ public class Product extends BaseEntity {
     private boolean isDeleted = false;
 
     public Product(Category category, String name, Integer price, ProductStatus status, String information, Integer quantity, String image, String detailImage) {
+
         this.category = category;
         this.name = name;
         this.price = price;
@@ -65,9 +66,11 @@ public class Product extends BaseEntity {
     }
 
     public void decreaseQuantity(Integer orderProductQuantity) {
+
         if (this.quantity < orderProductQuantity) {
             throw new CustomException(ErrorCode.PRODUCT_INSUFFICIENT);
         }
+
         this.quantity -= orderProductQuantity;
 
         if (this.quantity == 0) {
@@ -76,11 +79,13 @@ public class Product extends BaseEntity {
     }
 
     public void rollbackQuantity(Integer quantity) {
+
         if (quantity <= 0) {
             throw new CustomException(ErrorCode.INVALID_ROLLBACK_QUANTITY);
         }
 
         this.quantity += quantity;
+
         if (this.quantity > 0 && this.status == ProductStatus.SOLD_OUT) {
             this.status = ProductStatus.FOR_SALE;
         }
@@ -88,32 +93,25 @@ public class Product extends BaseEntity {
 
     public void update(ProductUpdateRequest request, Category category) {
 
-        this.category = category;
+        if (request.getCategoryId() != null) this.category = category;
 
-        if (request.getName() != null) {
-            this.name = request.getName();
-        }
-        if (request.getPrice() != null) {
-            this.price = request.getPrice();
-        }
-        if (request.getStatus() != null) {
-            this.status = request.getStatus();
-        }
-        if (request.getInformation() != null) {
-            this.information = request.getInformation();
-        }
-        if (request.getQuantity() != null) {
-            this.quantity = request.getQuantity();
-        }
-        if (request.getImage() != null) {
-            this.image = request.getImage();
-        }
-        if (request.getDetailImage() != null) {
-            this.detailImage = request.getDetailImage();
-        }
+        if (request.getName() != null) this.name = request.getName();
+
+        if (request.getPrice() != null) this.price = request.getPrice();
+
+        if (request.getStatus() != null) this.status = request.getStatus();
+
+        if (request.getInformation() != null) this.information = request.getInformation();
+
+        if (request.getQuantity() != null) this.quantity = request.getQuantity();
+
+        if (request.getImage() != null) this.image = request.getImage();
+
+        if (request.getDetailImage() != null) this.detailImage = request.getDetailImage();
     }
 
     public void softDelete() {
+
         this.isDeleted = true;
 
         if (this.image != null) {
@@ -126,14 +124,16 @@ public class Product extends BaseEntity {
     }
 
     public void stopSaleForTimeDeal() {
-        if (status!= ProductStatus.STOP_SALE){
-            status= ProductStatus.STOP_SALE;
+
+        if (status != ProductStatus.STOP_SALE) {
+            status = ProductStatus.STOP_SALE;
         }
     }
 
     public void restoreStatusAfterTimeDeal() {
-        if (status!= ProductStatus.FOR_SALE){
-            status=ProductStatus.FOR_SALE;
+
+        if (status != ProductStatus.FOR_SALE) {
+            status = ProductStatus.FOR_SALE;
         }
     }
 
@@ -144,16 +144,5 @@ public class Product extends BaseEntity {
     public void updateAverageScore(Double score) {
 
         this.averageScore = score;
-
-
-
-//        Double i = (this.averageScore == null ? 0.0 : averageScore) + score;
-//        Double averageScore = i / reviewCounts;
-//
-//        Double roundedAvgScore = BigDecimal.valueOf(averageScore)
-//
-//                .setScale(1, RoundingMode.HALF_UP)
-//
-//                .doubleValue();
     }
 }

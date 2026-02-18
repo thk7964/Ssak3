@@ -18,10 +18,10 @@ public class ProductViewHistoryCustomRepositoryImpl implements ProductViewHistor
     @Override
     public void saveAll(List<ProductViewHistory> histories) {
         String sql = "INSERT INTO product_view_histories (product_id, view_date, view_count, created_at, updated_at)" +
-                " VALUES (?, ?, ?, NOW(), NOW())" +
-                " ON DUPLICATE KEY UPDATE" +
-                " view_count = VALUES(view_count), " +
-                " updated_at = NOW()";
+                     " VALUES (?, ?, ?, NOW(), NOW())" +
+                     " ON DUPLICATE KEY UPDATE" +
+                     " view_count = VALUES(view_count), " +
+                     " updated_at = NOW()";
 
         jdbcTemplate.batchUpdate(sql,
                 histories,

@@ -20,14 +20,10 @@ public class ProductSearchController {
     private final ProductSearchService productSearchService;
 
     /**
-     * 상품 통합 검색 (상품명 키워드, 가격 범위)
+     * 상품 통합 검색 API (상품명 키워드, 가격 범위)
      */
     @GetMapping
-    public ResponseEntity<ApiResponse> searchProductApi(
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) Integer minPrice,
-            @RequestParam(required = false) Integer maxPrice,
-            @PageableDefault Pageable pageable) {
+    public ResponseEntity<ApiResponse> searchProductApi(@RequestParam(required = false) String keyword, @RequestParam(required = false) Integer minPrice, @RequestParam(required = false) Integer maxPrice, @PageableDefault Pageable pageable) {
 
         ApiResponse response = ApiResponse.success("상품 통합 검색에 성공했습니다.", productSearchService.searchProduct(keyword, minPrice, maxPrice, pageable));
 

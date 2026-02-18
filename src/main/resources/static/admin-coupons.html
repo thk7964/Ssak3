@@ -55,6 +55,41 @@
             margin-left: 12px;
         }
 
+        .logo {
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+            cursor: pointer;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-common {
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: 0.2s;
+        }
+
+        .home-btn {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+        }
+
+        .home-btn:hover {
+            background-color: #2980b9;
+        }
+
         .header-icons {
             display: flex;
             gap: 12px;
@@ -559,6 +594,26 @@
             cursor: not-allowed;
             transform: none;
         }
+
+        footer {
+            background: #212529;
+            color: #adb5bd;
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+        }
+
+        footer p {
+            margin: 10px 0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        footer p:first-child {
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+        }
     </style>
 </head>
 <body>
@@ -568,19 +623,14 @@
 
 <header>
     <div style="display: flex; align-items: center;">
-        <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
-        <span class="admin-badge">관리자</span>
+        <div class="logo" onclick="location.href='home.html'">SSAK3</div>
     </div>
     <div class="header-icons">
-        <button class="icon-btn">🛒</button>
+        <button id="loginBtn" style="display: none;"></button>
 
-        <!-- 로그인 안 된 경우 -->
-        <button class="auth-btn" id="loginBtn" style="display: none;">로그인 / 회원가입</button>
-
-        <!-- 로그인 된 경우 -->
         <div class="user-info" id="userInfo" style="display: none;">
-            <button class="icon-btn" id="myPageBtn" title="마이페이지">👤</button>
-            <button class="logout-btn" id="logoutBtn">로그아웃</button>
+            <button class="btn-common home-btn" id="myPageBtn">마이페이지</button>
+            <button class="btn-common logout-btn" id="logoutBtn">로그아웃</button>
         </div>
     </div>
 </header>
@@ -594,8 +644,14 @@
     <div class="section-header">
         <div class="section-title">전체 쿠폰 목록</div>
         <button class="btn btn-primary" onclick="openCreateModal()">
-            ➕ 새 쿠폰 생성
+            새 쿠폰 생성
         </button>
+    </div>
+
+    <div class="filter-controls" style="margin-bottom: 20px; display: flex; gap: 10px;">
+        <button class="btn filter-btn" data-status="NOT_STARTED" style="border:1px solid #ddd; padding:5px 15px; border-radius:20px; cursor:pointer;">오픈전</button>
+        <button class="btn filter-btn" data-status="ACTIVE" style="border:1px solid #ddd; padding:5px 15px; border-radius:20px; cursor:pointer;">진행중</button>
+        <button class="btn filter-btn" data-status="EXPIRED" style="border:1px solid #ddd; padding:5px 15px; border-radius:20px; cursor:pointer;">만료됨</button>
     </div>
 
     <div class="table-controls">
@@ -740,8 +796,8 @@
 </div>
 
 <footer>
-    <p>© 2025 싹쓰리 - 모두를 위한 귀여운 굿즈</p>
-    <p>고객센터: 010-1234-5678 | <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3b5854554f5a584f7b48485a500815585456">[email&#160;protected]</a></p>
+    <p>© 싹쓰리 - 모두를 위한 귀여운 굿즈</p>
+    <p>고객센터: 010-1234-5678 | <a href="https://github.com/thk7964/Ssak3" class="__cf_email__">싹쓰리 홈페이지</a></p>
     <p>개인정보처리방침 | 이용약관 | 배송정책</p>
 </footer>
 
@@ -766,6 +822,35 @@
 
     // 쿠폰 목록을 저장할 전역 변수
     let couponsList = [];
+    // 기본값으로 'ACTIVE'(진행중)만 켜져 있게 설정
+    const selectedStatuses = new Set(['ACTIVE']);
+
+    // 필터 버튼 UI를 새로고침하는 함수 (버튼 색상 변경 등)
+    function syncFilterUI() {
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            const status = btn.dataset.status;
+            if (selectedStatuses.has(status)) {
+                btn.classList.add('active');
+                btn.style.backgroundColor = '#74b9ff'; // 활성화 색상
+                btn.style.color = 'white';
+            } else {
+                btn.classList.remove('active');
+                btn.style.backgroundColor = '';
+                btn.style.color = '';
+            }
+        });
+    }
+
+    // 버튼 클릭 시 상태를 넣었다 뺐다 하는 함수
+    function toggleStatus(status) {
+        if (selectedStatuses.has(status)) {
+            selectedStatuses.delete(status);
+        } else {
+            selectedStatuses.add(status);
+        }
+        syncFilterUI();
+        renderCoupons(couponsList); // 필터링해서 다시 그리기
+    }
 
     // 토큰 가져오기
     function getAuthToken() {
@@ -903,6 +988,24 @@
         // 쿠폰 목록을 전역 변수에 저장
         couponsList = coupons || [];
 
+        // --- 필터링 로직 추가 시작 ---
+        const filteredCoupons = couponsList.filter(coupon => {
+            const now = new Date();
+            const startDate = new Date(coupon.issueStartDate);
+            const endDate = new Date(coupon.issueEndDate);
+
+            // 상태 판별 로직 (Badge 표시 로직과 동일하게 맞춤)
+            let status = 'ACTIVE'; // 기본: 진행중
+            if (endDate < now) {
+                status = 'EXPIRED'; // 만료됨
+            } else if (startDate > now) {
+                status = 'NOT_STARTED'; // 오픈전
+            }
+
+            // 현재 선택된 필터(Set)에 해당 상태가 포함되어 있는지 확인
+            return selectedStatuses.has(status);
+        });
+
         if (!coupons || coupons.length === 0) {
             tbody.innerHTML = `
                 <tr>
@@ -917,7 +1020,7 @@
             return;
         }
 
-        tbody.innerHTML = coupons.map(coupon => {
+        tbody.innerHTML = filteredCoupons.map(coupon => {
             const now = new Date();
             const startDate = new Date(coupon.issueStartDate);
             const endDate = new Date(coupon.issueEndDate);
@@ -937,22 +1040,22 @@
             }
 
             return `
-                <tr>
-                    <td>${coupon.id}</td>
-                    <td>${coupon.name}</td>
-                    <td>${coupon.discountValue.toLocaleString()}원</td>
-                    <td>${coupon.totalQuantity.toLocaleString()}개</td>
-                    <td>${coupon.issuedQuantity.toLocaleString()}개</td>
-                    <td>${formatDateTime(coupon.issueStartDate)} ~ ${formatDateTime(coupon.issueEndDate)}</td>
-                    <td>${statusBadge}</td>
-                    <td>
-                        <div class="action-buttons">
-                            <button class="btn btn-secondary btn-small" onclick="openEditModal(${coupon.id})">수정</button>
-                            <button class="btn btn-danger btn-small" onclick="deleteCoupon(${coupon.id})">삭제</button>
-                        </div>
-                    </td>
-                </tr>
-            `;
+            <tr>
+                <td>${coupon.id}</td>
+                <td>${coupon.name}</td>
+                <td>${coupon.discountValue.toLocaleString()}원</td>
+                <td>${coupon.totalQuantity.toLocaleString()}개</td>
+                <td>${coupon.issuedQuantity.toLocaleString()}개</td>
+                <td>${formatDateTime(coupon.issueStartDate)} ~ ${formatDateTime(coupon.issueEndDate)}</td>
+                <td>${statusBadge}</td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary btn-small" onclick="openEditModal(${coupon.id})">수정</button>
+                        <button class="btn btn-danger btn-small" onclick="deleteCoupon(${coupon.id})">삭제</button>
+                    </div>
+                </td>
+            </tr>
+        `;
         }).join('');
     }
 
@@ -1074,13 +1177,16 @@
                 body: JSON.stringify(requestData)
             });
 
+            const result = await response.json(); // 서버에서 보낸 에러 객체를 먼저 읽음
+
             if (!response.ok) {
                 if (response.status === 401 || response.status === 403) {
                     alert('관리자 권한이 필요합니다.');
                     window.location.href = 'login.html';
                     return;
                 }
-                throw new Error('쿠폰 수정 실패');
+                // 서버(CouponService.java)에서 던진 에러 메시지(result.message)를 사용함
+                throw new Error(result.message || '쿠폰 수정 실패');
             }
 
             alert('쿠폰이 수정되었습니다! ✨');
@@ -1088,7 +1194,7 @@
             loadCoupons();
         } catch (error) {
             console.error('쿠폰 수정 오류:', error);
-            alert('쿠폰 수정에 실패했습니다.');
+            alert(error.message); // 여기서 "종료일이 시작일보다..." 메시지가 출력됨
         }
     });
 
@@ -1167,11 +1273,11 @@
             await fetch(`${API_URL}/ssak3/auth/logout`, logoutRequest);
             localStorage.removeItem('accessToken');
             alert('로그아웃 되었습니다.');
-            window.location.href = 'home.html';
+            window.location.href = 'login.html';
         } catch (e) {
             localStorage.removeItem('accessToken');
             alert('로그아웃 되었습니다.');
-            window.location.href = 'home.html';
+            window.location.href = 'login.html';
         }
     });
 
@@ -1198,6 +1304,11 @@
     // });
 
     // 초기 실행
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.onclick = () => toggleStatus(btn.dataset.status);
+    });
+
+    syncFilterUI(); // 페이지 켜질 때 '진행중'에 불 들어오게 함
     checkLoginStatus();
     loadCoupons();
 

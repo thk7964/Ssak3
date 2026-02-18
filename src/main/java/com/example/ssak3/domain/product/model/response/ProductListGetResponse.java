@@ -4,6 +4,7 @@ import com.example.ssak3.common.enums.ProductStatus;
 import com.example.ssak3.domain.product.entity.Product;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
 import java.time.LocalDateTime;
 
 @Getter
@@ -23,6 +24,7 @@ public class ProductListGetResponse {
     private final LocalDateTime updatedAt;
 
     public static ProductListGetResponse from(Product product, String imageUrl) {
+
         return new ProductListGetResponse(
                 product.getId(),
                 product.getCategory().getId(),

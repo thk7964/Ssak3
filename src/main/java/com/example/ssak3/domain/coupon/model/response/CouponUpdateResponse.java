@@ -20,6 +20,7 @@ public class CouponUpdateResponse {
     private final LocalDateTime updatedAt;
 
     public static CouponUpdateResponse from(Coupon coupon) {
+
         return new CouponUpdateResponse(
                 coupon.getId(),
                 coupon.getName(),

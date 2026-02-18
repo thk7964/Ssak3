@@ -15,6 +15,7 @@ public class UserDeleteResponse {
     private final LocalDateTime updatedAt;
 
     public static UserDeleteResponse from(User user) {
+
         return new UserDeleteResponse(
                 user.getId(),
                 user.getCreatedAt(),

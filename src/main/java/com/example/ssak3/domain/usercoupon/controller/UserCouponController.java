@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-
 @RestController
 @RequestMapping("/ssak3/user-coupons")
 @RequiredArgsConstructor
@@ -27,9 +26,9 @@ public class UserCouponController {
      * 쿠폰 목록 조회 API (사용자용)
      */
     @GetMapping
-    public ResponseEntity<ApiResponse> getCouponListForUserApi(@PageableDefault(size = 10, sort = "issueEndDate", direction = Sort.Direction.ASC) Pageable pageable) {
+    public ResponseEntity<ApiResponse> getCouponListForUserApi(@PageableDefault(sort = "issueEndDate", direction = Sort.Direction.ASC) Pageable pageable) {
 
-        ApiResponse response = ApiResponse.success("쿠폰 목록 조회 완료", userCouponService.getCouponListForUser(pageable));
+        ApiResponse response = ApiResponse.success("쿠폰 목록 조회에 성공했습니다.", userCouponService.getCouponListForUser(pageable));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -40,7 +39,7 @@ public class UserCouponController {
     @PostMapping
     public ResponseEntity<ApiResponse> issueCouponApi(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody UserCouponIssueRequest request) {
 
-        ApiResponse response = ApiResponse.success("쿠폰 발급 완료", userCouponService.issueCoupon(authUser.getId(), request.getCouponId()));
+        ApiResponse response = ApiResponse.success("쿠폰 발급에 성공했습니다.", userCouponService.issueCoupon(authUser.getId(), request.getCouponId()));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -49,12 +48,9 @@ public class UserCouponController {
      * 내 쿠폰 목록 조회 API
      */
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse> getMyCouponListApi(
-            @AuthenticationPrincipal AuthUser authUser,
-            @PageableDefault(size = 10, sort = "coupon.discountValue", direction = Sort.Direction.DESC) Pageable pageable,
-            @RequestParam(required = false, defaultValue = "AVAILABLE") UserCouponStatus status) {
+    public ResponseEntity<ApiResponse> getMyCouponListApi(@AuthenticationPrincipal AuthUser authUser, @PageableDefault(sort = "coupon.discountValue", direction = Sort.Direction.DESC) Pageable pageable, @RequestParam(required = false, defaultValue = "AVAILABLE") UserCouponStatus status) {
 
-        ApiResponse response = ApiResponse.success("내 쿠폰 조회 완료", userCouponService.getMyCouponList(authUser.getId(), pageable, status));
+        ApiResponse response = ApiResponse.success("내 쿠폰 조회에 성공했습니다.", userCouponService.getMyCouponList(authUser.getId(), pageable, status));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -65,7 +61,7 @@ public class UserCouponController {
     @DeleteMapping("/{userCouponId}")
     public ResponseEntity<ApiResponse> deleteUserCouponApi(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long userCouponId) {
 
-        ApiResponse response = ApiResponse.success("내 쿠폰 삭제 완료", userCouponService.deleteUserCoupon(authUser.getId(), userCouponId));
+        ApiResponse response = ApiResponse.success("내 쿠폰 삭제에 성공했습니다.", userCouponService.deleteUserCoupon(authUser.getId(), userCouponId));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

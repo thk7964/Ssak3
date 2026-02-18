@@ -15,6 +15,7 @@ public class CouponDeleteResponse {
     private final LocalDateTime updatedAt;
 
     public static CouponDeleteResponse from(Coupon coupon) {
+
         return new CouponDeleteResponse(
                 coupon.getId(),
                 coupon.getCreatedAt(),

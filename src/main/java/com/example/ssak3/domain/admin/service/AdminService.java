@@ -23,7 +23,7 @@ public class AdminService {
     private final UserRepository userRepository;
 
     /**
-     * 유저 권한 변경
+     * 회원 권한 변경
      */
     @Transactional
     public AdminRoleChangeResponse changeUserRole(Long userId, AdminRoleChangeRequest request) {
@@ -41,7 +41,7 @@ public class AdminService {
     }
 
     /**
-     * 유저 목록 조회
+     * 회원 목록 조회
      */
     @Transactional(readOnly = true)
     public PageResponse<UserListGetResponse> getUserList(UserRole role, String nickname, Pageable pageable) {
@@ -52,7 +52,7 @@ public class AdminService {
     }
 
     /**
-     * 유저 단 건 조회
+     * 회원 단 건 조회
      */
     @Transactional(readOnly = true)
     public UserGetResponse getUser(Long userId) {

@@ -301,24 +301,26 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 4px; /* 버튼 사이 간격 좁게 */
+            gap: 6px;
             padding: 30px;
+            flex-wrap: wrap;
         }
 
         .page-btn {
-            min-width: 38px;
-            height: 38px;
+            min-width: 40px;
+            height: 40px;
             border: 1px solid #e9ecef;
             background: white;
             color: #495057;
-            font-size: 14px;
-            font-weight: 500;
+            font-size: 13px;
+            font-weight: 600;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 0 6px;
         }
 
         .page-btn:hover:not(:disabled) {
@@ -330,15 +332,16 @@
         .page-btn.active {
             background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
             color: white;
-            border: none;
+            border: 1px solid #74b9ff;
             font-weight: 700;
             box-shadow: 0 4px 10px rgba(116, 185, 255, 0.3);
         }
 
         .page-btn:disabled {
             cursor: not-allowed;
-            color: #dee2e6;
+            color: #bfbfbf;
             background: #f8f9fa;
+            border-color: #e9ecef;
         }
 
         /* Modal Styles */
@@ -486,6 +489,26 @@
             box-shadow: 0 6px 20px rgba(116, 185, 255, 0.45);
         }
 
+        footer {
+            background: #212529;
+            color: #adb5bd;
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+        }
+
+        footer p {
+            margin: 10px 0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        footer p:first-child {
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 20px 12px;
@@ -524,13 +547,9 @@
 </head>
 <body>
 <header>
-    <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
-    <div class="header-title">
-        <span>🛡️</span>
-        <span>관리자 페이지</span>
-    </div>
+    <div class="logo" onclick="location.href='home.html'">SSAK3</div>
     <div class="header-icons">
-        <button class="home-btn" onclick="location.href='home.html'">홈으로</button>
+        <button class="home-btn" onclick="location.href='mypage.html'">마이페이지</button>
         <button class="logout-btn" id="logoutBtn">로그아웃</button>
     </div>
 </header>
@@ -551,7 +570,7 @@
 
     <!-- 필터 섹션 -->
     <div class="filter-section">
-        <div class="filter-title">🔍 검색 필터</div>
+        <div class="filter-title">검색 필터</div>
         <div class="filter-controls">
             <div class="filter-group">
                 <label class="filter-label">권한:</label>
@@ -565,8 +584,8 @@
                 <label class="filter-label">닉네임:</label>
                 <input type="text" id="nicknameFilter" placeholder="닉네임 검색" onkeypress="handleSearchEnter(event)">
             </div>
-            <button class="search-btn" onclick="searchUsers()">🔍 검색</button>
-            <button class="reset-btn" onclick="resetFilters()">↻ 초기화</button>
+            <button class="search-btn" onclick="searchUsers()">검색</button>
+            <button class="reset-btn" onclick="resetFilters()">초기화</button>
         </div>
     </div>
 
@@ -642,6 +661,12 @@
     </div>
 </div>
 
+<footer>
+    <p>© 싹쓰리 - 모두를 위한 귀여운 굿즈</p>
+    <p>고객센터: 010-1234-5678 | <a href="https://github.com/thk7964/Ssak3" class="__cf_email__">싹쓰리 홈페이지</a></p>
+    <p>개인정보처리방침 | 이용약관 | 배송정책</p>
+</footer>
+
 <script>
     // API URL 설정
     const API_URL = (() => {
@@ -671,11 +696,9 @@
     }
 
     // 관리자 권한 체크
-    // 관리자 권한 체크 (쿠키 인증 지원 추가)
     async function checkAdminAuth() {
         const token = localStorage.getItem('accessToken');
 
-        // 토큰이 없어도 쿠키가 있을 수 있으므로 바로 API를 호출합니다.
         const headers = {};
         if (token && token !== 'null' && token !== 'undefined') {
             headers['Authorization'] = `Bearer ${token}`;
@@ -684,7 +707,6 @@
         try {
             const response = await fetch(`${API_URL}/ssak3/users/me`, {
                 headers: headers,
-                // 💡 핵심: 카카오 로그인 사용자를 위해 쿠키를 포함합니다.
                 credentials: 'include'
             });
 
@@ -695,7 +717,6 @@
             const result = await response.json();
             role = result.data?.role;
 
-            // 권한 검증 로직
             if (role !== 'ADMIN' && role !== 'SUPER_ADMIN') {
                 alert('관리자 권한이 필요합니다.');
                 location.href = 'home.html';
@@ -712,25 +733,22 @@
     // 유저 목록 로드
     async function loadUsers(page = 0) {
         const token = localStorage.getItem('accessToken');
-        const role = document.getElementById('roleFilter').value;
+        const roleFilter = document.getElementById('roleFilter').value;
         const nickname = document.getElementById('nicknameFilter').value.trim();
 
         let url = `${API_URL}/ssak3/admin/users?page=${page}&size=${pageSize}`;
-        if (role) url += `&role=${role}`;
+        if (roleFilter) url += `&role=${roleFilter}`;
         if (nickname) url += `&nickname=${encodeURIComponent(nickname)}`;
 
         try {
             const response = await fetch(url, {
                 method: 'GET',
                 headers: {
-                    // localStorage에 토큰이 있다면 헤더에 넣어주고, 없다면 생략합니다.
                     'Authorization': token ? `Bearer ${token}` : ''
                 },
-                // 중요: 카카오 로그인 유저처럼 쿠키에 인증 정보가 있는 경우를 위해 추가
                 credentials: 'include'
             });
 
-            // 만약 401(Unauthorized)이나 403(Forbidden)이 뜨면 로그를 통해 권한 확인
             if (!response.ok) {
                 if (response.status === 403) console.error('권한 부족: ADMIN 계정이 아닙니다.');
                 throw new Error(`Error: ${response.status}`);
@@ -739,7 +757,7 @@
             const result = await response.json();
             const data = result.data;
 
-            currentPage = data.number;
+            currentPage = data.page;
             totalPages = data.totalPages;
 
             renderUsersTable(data.content);
@@ -762,10 +780,8 @@
             return;
         }
 
-        // 데이터 루프를 돌며 행(tr)을 생성해야 합니다.
         users.forEach(user => {
             const tr = document.createElement('tr');
-            // 행을 클릭하면 모달이 뜨도록 설정
             tr.onclick = () => openUserModal(user);
             tr.style.cursor = 'pointer';
 
@@ -783,91 +799,79 @@
         document.getElementById('tableInfo').innerHTML = `총 <strong>${users.length}</strong>명`;
     }
 
-    // 페이지네이션 렌더링
-    // ─────────────────────────────────────────
-    // 페이지네이션 렌더링 (10단위 그룹화)
-    // ─────────────────────────────────────────
+    // 페이지네이션 렌더링 (1~10, 11~20, ... 형식)
     function renderPagination() {
         const pagination = document.getElementById('pagination');
         pagination.innerHTML = '';
 
-        // 데이터가 아예 없으면 페이지네이션을 그리지 않습니다.
         if (totalPages === 0) return;
 
         const PAGE_GROUP_SIZE = 10;
         const currentGroup = Math.floor(currentPage / PAGE_GROUP_SIZE);
-        const startPage = currentGroup * PAGE_GROUP_SIZE;
-        const endPage = Math.min(startPage + PAGE_GROUP_SIZE, totalPages);
+        const groupStartPage = currentGroup * PAGE_GROUP_SIZE;
+        const groupEndPage = Math.min(groupStartPage + PAGE_GROUP_SIZE, totalPages);
 
-        // 1. [이전] 버튼: 이전 그룹의 마지막 페이지로 점프
+        // [◀ 이전] 버튼
         const prevBtn = document.createElement('button');
         prevBtn.className = 'page-btn';
-        prevBtn.textContent = '‹ 이전';
-        prevBtn.disabled = currentGroup === 0; // 0~9페이지 그룹이면 비활성화
-        prevBtn.onclick = () => loadUsers(startPage - 1);
+        prevBtn.textContent = '◀ 이전';
+        prevBtn.disabled = currentGroup === 0;
+        prevBtn.onclick = () => loadUsers(Math.max(0, groupStartPage - 1));
         pagination.appendChild(prevBtn);
 
-        // 2. [숫자] 버튼들: 10개 미만이라도 존재하는 페이지는 모두 출력
-        for (let i = startPage; i < endPage; i++) {
+        // [숫자] 버튼들
+        for (let i = groupStartPage; i < groupEndPage; i++) {
             const pageBtn = document.createElement('button');
             pageBtn.className = 'page-btn' + (i === currentPage ? ' active' : '');
-            pageBtn.textContent = i + 1;
+            pageBtn.textContent = i + 1; // 1-indexed 표시
             pageBtn.onclick = () => loadUsers(i);
             pagination.appendChild(pageBtn);
         }
 
-        // 3. [다음] 버튼: 다음 그룹의 첫 번째 페이지로 점프
+        // [다음 ▶] 버튼
         const nextBtn = document.createElement('button');
         nextBtn.className = 'page-btn';
-        nextBtn.textContent = '다음 ›';
-        // 마지막 그룹이거나, 계산된 endPage가 전체 페이지 수에 도달하면 비활성화
-        nextBtn.disabled = endPage >= totalPages;
-        nextBtn.onclick = () => loadUsers(endPage);
+        nextBtn.textContent = '다음 ▶';
+        nextBtn.disabled = groupEndPage >= totalPages;
+        nextBtn.onclick = () => loadUsers(groupEndPage);
         pagination.appendChild(nextBtn);
     }
 
-    // 1. 통계 업데이트: 전체 유저수만 표시
+    // 통계 업데이트
     function updateStats(data) {
         document.getElementById('totalUsers').textContent = data.totalElements || 0;
     }
 
-    // 2. 모달 열기: 나의 권한(role)이 SUPER_ADMIN일 때만 버튼 노출
+    // 모달 열기
     function openUserModal(user) {
         currentUserId = user.id;
 
-        // 1. 필요한 DOM 요소 가져오기
         const userRole = typeof user.role === 'object' ? user.role.name : user.role;
         const roleSelect = document.getElementById('modalUserRole');
         const saveBtn = document.querySelector('.save-btn');
         const modalTitle = document.querySelector('.modal-title');
 
-        // 2. 기본 데이터 채우기
         document.getElementById('modalUserId').textContent = user.id;
         document.getElementById('modalUserName').textContent = user.name || '-';
         document.getElementById('modalUserNickname').textContent = user.nickname;
         document.getElementById('modalUserCreated').textContent = formatDateTime(user.createdAt);
         document.getElementById('modalUserUpdated').textContent = formatDateTime(user.updatedAt);
 
-        // 3. 권한 제어 (싹 자르기 로직)
-        // - 내가 SUPER_ADMIN이고, 대상이 SUPER_ADMIN이 아닐 때만 '수정 가능'
         if (role === 'SUPER_ADMIN' && userRole !== 'SUPER_ADMIN') {
             roleSelect.disabled = false;
-            saveBtn.style.display = 'block'; // 버튼 보임
+            saveBtn.style.display = 'block';
             modalTitle.textContent = '유저 권한 수정';
 
-            // 옵션 초기화 (수정 가능할 때만 관리자/유저 선택권 부여)
             roleSelect.innerHTML = `
             <option value="ADMIN">관리자</option>
             <option value="USER">일반 유저</option>
         `;
             roleSelect.value = userRole;
         } else {
-            // - 내가 그냥 ADMIN이거나, 대상이 SUPER_ADMIN인 경우 '조회 전용'
             roleSelect.disabled = true;
-            saveBtn.style.display = 'none'; // 버튼 아예 숨김 (싹을 자름)
+            saveBtn.style.display = 'none';
             modalTitle.textContent = '유저 상세 정보 (조회 전용)';
 
-            // 대상의 권한만 표시하도록 옵션 고정
             roleSelect.innerHTML = `<option value="${userRole}">${getRoleText(userRole)}</option>`;
             roleSelect.value = userRole;
         }
@@ -946,13 +950,13 @@
 
         localStorage.removeItem('accessToken');
         alert('로그아웃 되었습니다.');
-        location.href = 'home.html';
+        location.href = 'login.html';
     });
 
     // 유틸리티 함수
     function getRoleText(role) {
         const roleMap = {
-            'SUPER_ADMIN': '슈퍼 관리자',
+            'SUPER_ADMIN': '최고 관리자',
             'ADMIN': '관리자',
             'USER': '일반 유저'
         };

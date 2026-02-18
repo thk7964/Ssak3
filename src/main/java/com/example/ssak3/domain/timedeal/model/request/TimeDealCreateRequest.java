@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
@@ -21,12 +20,10 @@ public class TimeDealCreateRequest {
     private Integer dealPrice;
 
     @NotNull(message = "startAt은 필수 입력 값이고 yyyy-MM-dd'T'HH 형식으로 입력해야 합니다.")
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH")
     private LocalDateTime startAt;
 
     @NotNull(message = "endAt은 필수 입력 값이고 yyyy-MM-dd'T'HH 형식으로 입력해야 합니다.")
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH")
     private LocalDateTime endAt;
 

@@ -30,14 +30,14 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        // 1. 헤더에서 토큰 찾기 (일반 로그인)
+        // 헤더에서 토큰 찾기 (일반 로그인)
         String accessToken = request.getHeader(JwtUtil.HEADER);
 
         if (accessToken != null && (accessToken.equalsIgnoreCase("Bearer null") || accessToken.equalsIgnoreCase("null"))) {
             accessToken = null;
         }
 
-        // 2. 쿠키에서 토큰 찾기 (카카오 로그인)
+        // 쿠키에서 토큰 찾기 (카카오 로그인)
         if (accessToken == null || !accessToken.startsWith(JwtUtil.BEARER_PREFIX)) {
             if (request.getCookies() != null) {
                 accessToken = Arrays.stream(request.getCookies())
@@ -56,7 +56,6 @@ public class JwtFilter extends OncePerRequestFilter {
         try {
             String rawToken;
 
-            // Prefix가 있을 때만 자르고, 없으면(쿠키일 경우) 그대로 사용
             if (accessToken.startsWith(JwtUtil.BEARER_PREFIX)) {
                 rawToken = jwtUtil.substringToken(accessToken);
             } else {

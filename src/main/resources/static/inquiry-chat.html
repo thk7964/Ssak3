@@ -420,22 +420,31 @@
     });
 
     async function getCurrentUser() {
-        const token = localStorage.getItem('accessToken');
-        if (!token) {
-            alert('로그인이 필요한 서비스입니다.');
-            window.location.href = 'login.html';
-            return null;
-        }
-
         try {
+            const token = localStorage.getItem('accessToken');
+
+            const headers = {};
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
             const response = await fetch(`${API_URL}/ssak3/users/me`, {
-                headers: { 'Authorization': `Bearer ${token}` },
-                credentials: 'include'
+                headers: headers,
+                credentials: 'include'   // ⭐ 쿠키도 같이 전송
             });
+
             if (!response.ok) throw new Error('인증 실패');
+
             const result = await response.json();
-            return { userId: result.data.id, role: result.data.role, token: token };
+
+            return {
+                userId: result.data.id,
+                role: result.data.role,
+                token: token
+            };
+
         } catch (e) {
+            alert('로그인이 필요한 서비스입니다.');
             window.location.href = 'login.html';
             return null;
         }
@@ -472,7 +481,9 @@
     function connectWebSocket() {
         stompClient = new StompJs.Client({
             brokerURL: WS_URL,
-            connectHeaders: { 'Authorization': `Bearer ${currentUser.token}` }
+            connectHeaders: currentUser.token
+                ? { 'Authorization': `Bearer ${currentUser.token}` }
+                : {},   // ⭐ 쿠키 로그인일 경우 빈값
         });
 
         stompClient.onConnect = function(frame) {

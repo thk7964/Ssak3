@@ -1,6 +1,5 @@
 package com.example.ssak3.domain.orderProduct.entity;
 
-import com.example.ssak3.domain.cartproduct.entity.CartProduct;
 import com.example.ssak3.domain.order.entity.Order;
 import com.example.ssak3.domain.product.entity.Product;
 import jakarta.persistence.*;
@@ -26,7 +25,7 @@ public class OrderProduct {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "unit_price")
     private Integer unitPrice;
 
     @Column(nullable = false)

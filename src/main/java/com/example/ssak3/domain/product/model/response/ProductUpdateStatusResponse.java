@@ -19,6 +19,7 @@ public class ProductUpdateStatusResponse {
     private final LocalDateTime updatedAt;
 
     public static ProductUpdateStatusResponse from(Product product) {
+
         return new ProductUpdateStatusResponse(
                 product.getId(),
                 product.getCategory().getId(),
@@ -28,5 +29,4 @@ public class ProductUpdateStatusResponse {
                 product.getUpdatedAt()
         );
     }
-
 }

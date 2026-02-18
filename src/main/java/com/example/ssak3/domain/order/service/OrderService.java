@@ -353,7 +353,7 @@ public class OrderService {
             Product product = productRepository.findByIdAndIsDeletedFalse(op.getProduct().getId())
                     .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
-            int expectedUnitPrice;
+            int expectedUnitPrice = 0;
 
             if (product.getStatus().equals(ProductStatus.STOP_SALE)) {
                 TimeDeal timeDeal = timeDealRepository

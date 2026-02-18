@@ -749,7 +749,7 @@
             sendNotice('QUIT');
 
             // 채팅방 상태 COMPLETED로 변경
-            const response = await fetch(`${API_URL}:8080/ssak3/chat/rooms/${roomId}`, {
+            const response = await fetch(`${API_URL}/ssak3/chat/rooms/${roomId}`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${currentUser.token}`

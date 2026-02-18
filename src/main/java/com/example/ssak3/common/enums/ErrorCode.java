@@ -24,9 +24,11 @@ public enum ErrorCode {
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다."),
     PRODUCT_NOT_FOR_SALE(HttpStatus.BAD_REQUEST, "판매 중인 상품이 아닙니다."),
     PRODUCT_INSUFFICIENT(HttpStatus.BAD_REQUEST, "상품 재고가 부족합니다."),
-    INVALID_QUANTITY(HttpStatus.BAD_REQUEST, "유효한 재고값이 아닙니다."),
+    INVALID_QUANTITY(HttpStatus.BAD_REQUEST, "유효한 재고 값이 아닙니다."),
     PRODUCT_NOT_VIEWABLE(HttpStatus.BAD_REQUEST, "현재 상품 상태에서는 조회할 수 없습니다."),
     INVALID_ROLLBACK_QUANTITY(HttpStatus.BAD_REQUEST, "복구할 수량은 1 이상이어야 합니다."),
+    INVALID_PRODUCT_STATUS(HttpStatus.BAD_REQUEST, "올바른 상품 상태 값이 아닙니다."),
+    PRODUCT_HAS_TIME_DEAL(HttpStatus.BAD_REQUEST, "타임딜이 진행중이거나 준비중인 상태의 상품은 삭제할 수 없습니다."),
 
     // Review 에러
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "후기를 찾을 수 없습니다."),
@@ -47,8 +49,8 @@ public enum ErrorCode {
     ORDER_PRODUCT_IS_NULL(HttpStatus.BAD_REQUEST, "주문할 상품이 선택되지 않았습니다."),
     ORDER_CAN_NOT_BE_CANCELED(HttpStatus.BAD_REQUEST, "주문을 취소할 수 없습니다."),
     ORDER_PAYMENT_PENDING_EXISTS(HttpStatus.BAD_REQUEST, "결제 대기 중인 주문이 있습니다."),
+    ORDER_PRICE_CHANGED(HttpStatus.BAD_REQUEST, "가격이 변경된 상품이 있습니다."),
     USER_NOT_PURCHASED_PRODUCT(HttpStatus.FORBIDDEN, "해당 상품을 구매한 사용자만 이용할 수 있습니다."),
-    ORDER_PRICE_CHANGED(HttpStatus.BAD_REQUEST, "가격이 변경된 상품이 있습니다"),
 
     // TimeDeal 에러
     TIME_DEAL_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 세일 상품을 찾을 수 없습니다."),
@@ -56,7 +58,7 @@ public enum ErrorCode {
     INVALID_TIME_RANGE(HttpStatus.BAD_REQUEST, "시작 시간은 종료 시간보다 늦을 수 없습니다."),
     ACTIVE_TIME_DEAL_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "현재 진행중인 타임딜 상품입니다."),
     TIME_DEAL_CANNOT_DELETE(HttpStatus.BAD_REQUEST, "현재 진행중이거나 삭제할 수 없는 상태의 타임딜 상품입니다."),
-    TIME_DEAL_CANNOT_CREATE(HttpStatus.BAD_REQUEST, "타임딜을 생성할 수 없습니다. 상품 상태를 확인해주세요"),
+    TIME_DEAL_CANNOT_CREATE(HttpStatus.BAD_REQUEST, "타임딜을 생성할 수 없습니다. 상품 상태를 확인해 주세요"),
     TIME_DEAL_CANNOT_UPDATE(HttpStatus.BAD_REQUEST, "상품 재고가 없어 타임딜을 수정할 수 없습니다."),
     TIME_DEAL_INVALID_STATUS(HttpStatus.BAD_REQUEST, "유효하지 않은 타임딜 상태입니다."),
     TIME_DEAL_DELETED_STATUS_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "삭제된 타임딜 상태로는 조회할 수 없습니다."),
@@ -66,7 +68,7 @@ public enum ErrorCode {
     // Image 에러
     IMAGE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 저장에 실패했습니다."),
     INVALID_FILE(HttpStatus.BAD_REQUEST, "유효하지 않은 파일입니다."),
-    INVALID_URL(HttpStatus.BAD_REQUEST, "유효하지 않은 url입니다."),
+    INVALID_URL(HttpStatus.BAD_REQUEST, "유효하지 않은 URL입니다."),
 
     // Token 에러
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
@@ -75,7 +77,7 @@ public enum ErrorCode {
     // Coupon 에러
     COUPON_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 쿠폰입니다."),
     COUPON_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 지급된 쿠폰입니다."),
-    COUPON_NAME_ALREADY_EXISTS(HttpStatus.CONFLICT,"중복된 쿠폰 이름입니다." ),
+    COUPON_NAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "중복된 쿠폰 이름입니다."),
     COUPON_OUT_OF_STOCK(HttpStatus.CONFLICT, "쿠폰 수량이 모두 소진되었습니다."),
     COUPON_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "이미 삭제된 쿠폰입니다."),
     COUPON_INVALID_TIME_RANGE(HttpStatus.BAD_REQUEST, "종료일은 시작일 이전일 수 없습니다."),
@@ -83,7 +85,7 @@ public enum ErrorCode {
     COUPON_INVALID_END_TIME(HttpStatus.BAD_REQUEST, "종료일은 현재 시간 이전일 수 없습니다."),
     COUPON_MIN_ORDER_PRICE_NOT_MET(HttpStatus.BAD_REQUEST, "최소 주문 금액을 만족하지 못해 쿠폰을 사용할 수 없습니다."),
     COUPON_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "사용 가능한 상태의 쿠폰이 아닙니다."),
-    DISCOUNT_EXCEEDS_MIN_ORDER_PRICE(HttpStatus.BAD_REQUEST, "할인 금액은 최소 금액보다 클 수 없습니다."),
+    DISCOUNT_EXCEEDS_MIN_ORDER_PRICE(HttpStatus.BAD_REQUEST, "할인 금액은 최소 주문 금액보다 클 수 없습니다."),
     ADMIN_CANNOT_ISSUE_COUPON(HttpStatus.FORBIDDEN, "관리자는 쿠폰을 발급받을 수 없습니다."),
     FORBIDDEN_COUPON_ACCESS(HttpStatus.FORBIDDEN, "본인의 쿠폰만 사용할 수 있습니다."),
 
@@ -107,14 +109,13 @@ public enum ErrorCode {
 
     // Payment 에러
     PAYMENT_NOT_CANCELABLE(HttpStatus.BAD_REQUEST, "결제 취소 가능한 상태가 아닙니다."),
-    PAYMENT_NOT_FOUND(HttpStatus.BAD_REQUEST, "결제 내역이 없습니다."),
     ORDER_NOT_IN_PAYMENT_PENDING(HttpStatus.BAD_REQUEST, "결제 진행 중인 주문이 아닙니다."),
     PAYMENT_AMOUNT_MISMATCH(HttpStatus.BAD_REQUEST, "결제 금액이 주문 금액과 일치하지 않습니다."),
+    PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "결제 내역을 찾을 수 없습니다."),
     PAYMENT_CANCEL_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "결제 취소에 실패했습니다."),
 
-    // Redis 에러
-    REDIS_CONNECTION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Redis 연결에 실패했습니다."),
-    ;
+    // Redis 에러,
+    REDIS_CONNECTION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Redis 연결에 실패했습니다.");
 
     private final HttpStatus status;
     private final String message;

@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>주문 상세 - 싹쓰리</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
@@ -37,30 +41,69 @@
             cursor: pointer;
         }
 
-        .header-icons { display: flex; gap: 12px; align-items: center; }
-        .icon-btn {
-            background: #f8f9fa; border: none;
-            width: 42px; height: 42px; border-radius: 50%;
-            cursor: pointer; font-size: 18px; transition: all 0.2s ease; color: #495057;
+        .header-icons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
         }
-        .icon-btn:hover { background: #e9ecef; transform: translateY(-2px); }
+
+        .icon-btn {
+            background: #f8f9fa;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s ease;
+            color: #495057;
+        }
+
+        .icon-btn:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
 
         .auth-btn {
             background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
-            color: white; border: none; padding: 10px 20px; border-radius: 12px;
-            cursor: pointer; font-size: 14px; font-weight: 700;
-            transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 700;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.35);
             white-space: nowrap;
         }
-        .auth-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(116, 185, 255, 0.45); }
 
-        .user-info { display: flex; align-items: center; gap: 12px; }
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(116, 185, 255, 0.45);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
         .logout-btn {
-            background: #f8f9fa; border: none; padding: 8px 16px; border-radius: 10px;
-            cursor: pointer; font-size: 13px; font-weight: 700; color: #495057;
+            background: #f8f9fa;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 700;
+            color: #495057;
             transition: all 0.2s ease;
         }
-        .logout-btn:hover { background: #e9ecef; }
+
+        .logout-btn:hover {
+            background: #e9ecef;
+        }
 
         .back-btn {
             background: #f8f9fa;
@@ -77,7 +120,10 @@
             align-items: center;
             gap: 8px;
         }
-        .back-btn:hover { background: #e9ecef; }
+
+        .back-btn:hover {
+            background: #e9ecef;
+        }
 
         .page {
             max-width: 980px;
@@ -104,7 +150,7 @@
         .card {
             background: white;
             border-radius: 20px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
             border: 1px solid #f0f0f0;
             overflow: hidden;
         }
@@ -118,7 +164,11 @@
             gap: 10px;
         }
 
-        .card-title { font-size: 16px; font-weight: 900; color: #212529; }
+        .card-title {
+            font-size: 16px;
+            font-weight: 900;
+            color: #212529;
+        }
 
         .badge {
             display: inline-flex;
@@ -133,12 +183,34 @@
             color: #374151;
             white-space: nowrap;
         }
-        .badge.pending { background: #fff7ed; border-color: #fed7aa; color: #9a3412; }
-        .badge.done { background: #d1fae5; border-color: #a7f3d0; color: #065f46; }
-        .badge.canceled { background: #fee2e2; border-color: #fecaca; color: #991b1b; }
-        .badge.failed { background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; }
 
-        .body { padding: 18px 20px; }
+        .badge.pending {
+            background: #fff7ed;
+            border-color: #fed7aa;
+            color: #9a3412;
+        }
+
+        .badge.done {
+            background: #d1fae5;
+            border-color: #a7f3d0;
+            color: #065f46;
+        }
+
+        .badge.canceled {
+            background: #fee2e2;
+            border-color: #fecaca;
+            color: #991b1b;
+        }
+
+        .badge.failed {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+            color: #1d4ed8;
+        }
+
+        .body {
+            padding: 18px 20px;
+        }
 
         .kv {
             display: flex;
@@ -151,23 +223,45 @@
             color: #374151;
             font-size: 14px;
         }
-        .kv:last-child { border-bottom: none; }
-        .kv .k { color: #6b7280; font-weight: 800; }
-        .kv .v { color: #212529; font-weight: 900; text-align: right; }
+
+        .kv:last-child {
+            border-bottom: none;
+        }
+
+        .kv .k {
+            color: #6b7280;
+            font-weight: 800;
+        }
+
+        .kv .v {
+            color: #212529;
+            font-weight: 900;
+            text-align: right;
+        }
 
         .table {
             width: 100%;
             border-collapse: collapse;
             font-size: 14px;
         }
+
         .table th, .table td {
             padding: 12px 10px;
             border-bottom: 1px solid #f3f4f6;
             text-align: left;
             vertical-align: middle;
         }
-        .table th { color: #6b7280; font-weight: 900; font-size: 12px; }
-        .table td { color: #212529; font-weight: 800; }
+
+        .table th {
+            color: #6b7280;
+            font-weight: 900;
+            font-size: 12px;
+        }
+
+        .table td {
+            color: #212529;
+            font-weight: 800;
+        }
 
         .prod-name {
             font-weight: 900;
@@ -206,30 +300,64 @@
             color: white;
             box-shadow: 0 4px 12px rgba(116, 185, 255, 0.25);
         }
-        .btn.primary:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(116, 185, 255, 0.35); }
+
+        .btn.primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(116, 185, 255, 0.35);
+        }
 
         .btn.danger {
             background: #ffeded;
             color: #ff6b6b;
             box-shadow: 0 4px 12px rgba(255, 107, 107, 0.15);
         }
-        .btn.danger:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(255, 107, 107, 0.22); }
 
-        .btn:disabled { opacity: .55; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+        .btn.danger:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(255, 107, 107, 0.22);
+        }
+
+        .btn:disabled {
+            opacity: .55;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
 
         .empty {
             padding: 60px 20px;
             text-align: center;
             color: #6b7280;
         }
-        .empty .emoji { font-size: 50px; margin-bottom: 10px; }
-        .empty .msg { font-size: 16px; font-weight: 800; color: #374151; }
-        .empty .submsg { margin-top: 8px; font-size: 13px; }
+
+        .empty .emoji {
+            font-size: 50px;
+            margin-bottom: 10px;
+        }
+
+        .empty .msg {
+            font-size: 16px;
+            font-weight: 800;
+            color: #374151;
+        }
+
+        .empty .submsg {
+            margin-top: 8px;
+            font-size: 13px;
+        }
 
         @media (max-width: 980px) {
-            .grid { grid-template-columns: 1fr; }
-            header { padding: 16px 20px; }
-            .actions { justify-content: flex-start; }
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                padding: 16px 20px;
+            }
+
+            .actions {
+                justify-content: flex-start;
+            }
         }
     </style>
 </head>
@@ -268,7 +396,7 @@
         </div>
     </div>
 </div>
-
+<div id="payment-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999;"></div>
 <script>
     // API URL 설정
     const API_URL = (() => {
@@ -387,11 +515,11 @@
 
     function statusMeta(status) {
         const s = String(status || '');
-        if (s === 'PAYMENT_PENDING') return { text: '결제 대기', cls: 'pending' };
-        if (s === 'DONE') return { text: '결제 완료', cls: 'done' };
-        if (s === 'CANCELED') return { text: '취소', cls: 'canceled' };
-        if (s === 'PAYMENT_FAILED') return { text: '결제 실패', cls: 'failed' };
-        return { text: s || '상태 없음', cls: '' };
+        if (s === 'PAYMENT_PENDING') return {text: '결제 대기', cls: 'pending'};
+        if (s === 'DONE') return {text: '결제 완료', cls: 'done'};
+        if (s === 'CANCELED') return {text: '취소', cls: 'canceled'};
+        if (s === 'PAYMENT_FAILED') return {text: '결제 실패', cls: 'failed'};
+        return {text: s || '상태 없음', cls: ''};
     }
 
     function getOrderIdFromQuery() {
@@ -413,17 +541,79 @@
     `;
     }
 
+    let paymentFinished = false;
+
+    window.addEventListener("message", function (event) {
+
+        // 🔒 보안 체크 (같은 origin인지 확인)
+        if (event.origin !== window.location.origin) {
+            return;
+        }
+
+        if (event.data?.type === "PAYMENT_FINISHED") {
+
+            paymentFinished = true;
+
+            const overlay = document.getElementById("payment-overlay");
+            if (overlay) overlay.style.display = "none";
+
+            alert("결제가 완료되었습니다.");
+
+            if (event.data.redirectUrl) {
+                window.location.href = event.data.redirectUrl;
+            }
+        }
+    });
+
     async function retryPayment(orderId, retryBtn, cancelPendingBtn) {
+
+        paymentFinished = false;
+
         if (retryBtn) retryBtn.disabled = true;
         if (cancelPendingBtn) cancelPendingBtn.disabled = true;
 
         try {
-            const res = await apiFetch(`/orders/${orderId}/retry-payment`, { method: 'POST' });
+            const res = await apiFetch(`/orders/${orderId}/retry-payment`, {method: 'POST'});
             if (!res.ok) throw new Error(await readErrorMessage(res));
+
             const json = await res.json();
-            const url = json?.data?.url;
+            const url = json?.data?.paymentUrl;
             if (!url) throw new Error('결제 URL이 없습니다.');
-            location.href = url;
+
+            // ✅ 오버레이 활성화
+            const overlay = document.getElementById("payment-overlay");
+            overlay.style.display = "block";
+
+            const width = 1100;
+            const height = 700;
+            const left = (window.screen.width / 2) - (width / 2);
+            const top = (window.screen.height / 2) - (height / 2);
+
+            const popup = window.open(
+                url,
+                'paymentPopup',
+                `width=${width},height=${height},top=${top},left=${left},resizable=no,scrollbars=yes`
+            );
+
+            if (!popup) {
+                alert('팝업이 차단되었습니다. 팝업 허용 후 다시 시도해주세요.');
+                overlay.style.display = "none";
+                return;
+            }
+
+            const checkClosed = setInterval(async () => {
+                if (popup.closed) {
+                    clearInterval(checkClosed);
+
+                    overlay.style.display = "none";
+
+                    await loadOrder(orderId);
+                    if (!paymentFinished) {
+                        alert("결제가 취소되었습니다.");
+                    }
+                }
+            }, 500);
+
         } catch (e) {
             console.error(e);
             alert('재결제 요청에 실패했습니다.\n' + (e?.message || ''));
@@ -432,6 +622,7 @@
         }
     }
 
+
     async function cancelPending(orderId, retryBtn, cancelPendingBtn) {
         if (!confirm('결제 대기 주문을 취소할까요?')) return;
 
@@ -439,7 +630,7 @@
         if (cancelPendingBtn) cancelPendingBtn.disabled = true;
 
         try {
-            const res = await apiFetch(`/orders/${orderId}/cancel-pending`, { method: 'PATCH' });
+            const res = await apiFetch(`/orders/${orderId}/cancel-pending`, {method: 'PATCH'});
             if (!res.ok) throw new Error(await readErrorMessage(res));
             await loadOrder(orderId);
         } catch (e) {
@@ -592,7 +783,7 @@
 
     async function loadOrder(orderId) {
         try {
-            const res = await apiFetch(`/orders/${orderId}`, { method: 'GET' });
+            const res = await apiFetch(`/orders/${orderId}`, {method: 'GET'});
             if (!res.ok) {
                 if (res.status === 401 || res.status === 403) {
                     alert('로그인이 필요합니다.');

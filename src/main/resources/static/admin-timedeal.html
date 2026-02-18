@@ -972,7 +972,7 @@
         const container = document.getElementById('pagination');
         if (!container) return;
         const totalPages = data.totalPages ?? 0;
-        const current = data.number ?? 0;
+        const current = currentPage;
         const groupStart = Math.floor(current / PAGE_GROUP) * PAGE_GROUP;
         const groupEnd = Math.min(groupStart + PAGE_GROUP, totalPages);
 
@@ -982,16 +982,43 @@
         }
 
         let html = '';
-        if (groupStart > 0) {
-            html += `<button class="page-btn nav" onclick="loadTimeDealList(${groupStart - 1})">이전</button>`;
+        
+        // 첫 페이지 버튼 (현재 페이지가 0이 아닐 때만 표시)
+        if (current > 0) {
+            html += `<button class="page-btn nav" onclick="loadTimeDealList(0)">처음</button>`;
         }
+        
+        // -10 버튼 (현재 페이지가 10 이상일 때만 표시)
+        if (current >= 10) {
+            html += `<button class="page-btn nav" onclick="loadTimeDealList(${current - 10})">-10</button>`;
+        }
+        
+        // 이전 버튼 (현재 페이지가 0보다 클 때만 표시, 한 페이지씩 이동)
+        if (current > 0) {
+            html += `<button class="page-btn nav" onclick="loadTimeDealList(${current - 1})">이전</button>`;
+        }
+        
+        // 숫자 버튼들
         for (let i = groupStart; i < groupEnd; i++) {
             const cls = (i === current) ? 'active' : '';
             html += `<button class="page-btn ${cls}" onclick="loadTimeDealList(${i})">${i + 1}</button>`;
         }
-        if (groupEnd < totalPages) {
-            html += `<button class="page-btn nav" onclick="loadTimeDealList(${groupEnd})">다음</button>`;
+        
+        // 다음 버튼 (현재 페이지가 마지막 페이지가 아닐 때만 표시, 한 페이지씩 이동)
+        if (current < totalPages - 1) {
+            html += `<button class="page-btn nav" onclick="loadTimeDealList(${current + 1})">다음</button>`;
         }
+        
+        // +10 버튼 (현재 페이지 + 10이 총 페이지 수보다 작을 때만 표시)
+        if (current + 10 < totalPages) {
+            html += `<button class="page-btn nav" onclick="loadTimeDealList(${current + 10})">+10</button>`;
+        }
+        
+        // 마지막 페이지 버튼 (현재 페이지가 마지막 페이지가 아닐 때만 표시)
+        if (current < totalPages - 1) {
+            html += `<button class="page-btn nav" onclick="loadTimeDealList(${totalPages - 1})">끝</button>`;
+        }
+        
         container.innerHTML = html;
     }
 

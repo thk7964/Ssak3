@@ -524,7 +524,7 @@
         if (!container) return;
 
         const totalPages = data.totalPages ?? 0;
-        const current    = data.number ?? 0;
+        const current    = currentPage;
         const groupStart = Math.floor(current / PAGE_GROUP_SIZE) * PAGE_GROUP_SIZE;
         const groupEnd   = Math.min(groupStart + PAGE_GROUP_SIZE, totalPages);
 
@@ -532,9 +532,19 @@
 
         let html = '';
 
-        // 💡 핵심: 이전 버튼 (현재 그룹의 시작이 0보다 크면 '이전 10개' 그룹의 마지막 페이지로 이동)
-        if (groupStart > 0) {
-            html += `<button class="page-btn nav" onclick="loadProducts(${groupStart - 1})">이전</button>`;
+        // 첫 페이지 버튼 (현재 페이지가 0이 아닐 때만 표시)
+        if (current > 0) {
+            html += `<button class="page-btn nav" onclick="loadProducts(0)">처음</button>`;
+        }
+
+        // -10 버튼 (현재 페이지가 10 이상일 때만 표시)
+        if (current >= 10) {
+            html += `<button class="page-btn nav" onclick="loadProducts(${current - 10})">-10</button>`;
+        }
+
+        // 이전 버튼 (현재 페이지가 0보다 클 때만 표시, 한 페이지씩 이동)
+        if (current > 0) {
+            html += `<button class="page-btn nav" onclick="loadProducts(${current - 1})">이전</button>`;
         }
 
         // 숫자 버튼들
@@ -543,9 +553,19 @@
             html += `<button class="page-btn ${activeClass}" onclick="loadProducts(${i})">${i + 1}</button>`;
         }
 
-        // 💡 핵심: 다음 버튼 (다음 그룹이 존재하면 '다음 10개' 그룹의 첫 페이지로 이동)
-        if (groupEnd < totalPages) {
-            html += `<button class="page-btn nav" onclick="loadProducts(${groupEnd})">다음</button>`;
+        // 다음 버튼 (현재 페이지가 마지막 페이지가 아닐 때만 표시, 한 페이지씩 이동)
+        if (current < totalPages - 1) {
+            html += `<button class="page-btn nav" onclick="loadProducts(${current + 1})">다음</button>`;
+        }
+
+        // +10 버튼 (현재 페이지 + 10이 총 페이지 수보다 작을 때만 표시)
+        if (current + 10 < totalPages) {
+            html += `<button class="page-btn nav" onclick="loadProducts(${current + 10})">+10</button>`;
+        }
+
+        // 마지막 페이지 버튼 (현재 페이지가 마지막 페이지가 아닐 때만 표시)
+        if (current < totalPages - 1) {
+            html += `<button class="page-btn nav" onclick="loadProducts(${totalPages - 1})">끝</button>`;
         }
 
         container.innerHTML = html;

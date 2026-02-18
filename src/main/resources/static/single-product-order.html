@@ -589,12 +589,23 @@
     function initHeaderActions() {
         document.getElementById('myPageBtn').onclick = () => location.href = 'mypage.html';
         document.getElementById('loginBtn').onclick = () => location.href = 'login.html';
-        document.getElementById('logoutBtn').onclick = () => {
-            localStorage.removeItem('accessToken');
-            applyHeaderAuthUI();
-            alert('로그아웃 되었습니다.');
-            location.href = 'home.html';
-        };
+        document.getElementById('logoutBtn').addEventListener('click', async function () {
+            if (!confirm('로그아웃 하시겠습니까?')) return;
+            const token = localStorage.getItem('accessToken');
+            try {
+                const req = {method: 'POST', credentials: 'include'};
+                if (token) req.headers = {'Authorization': `Bearer ${token}`};
+                await fetch('http://localhost:8080/ssak3/auth/logout', req);
+                localStorage.removeItem('accessToken');
+                alert('로그아웃 되었습니다.');
+                window.location.href = 'home.html';
+            } catch (e) {
+                console.error(e);
+                localStorage.removeItem('accessToken');
+                alert('로그아웃 되었습니다.');
+                window.location.replace('home.html');
+            }
+        });
     }
 
     applyHeaderAuthUI();

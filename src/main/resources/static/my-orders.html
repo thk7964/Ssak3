@@ -585,40 +585,63 @@
     async function applyHeaderAuthUI() {
         const loginBtn = document.getElementById('loginBtn');
         const userInfo = document.getElementById('userInfo');
-        const token = localStorage.getItem('accessToken');
-        try {
-            const res = await fetch(`${API_URL}/ssak3/users/me`, {
-                method: 'GET',
-                credentials: 'include',
-                headers: {
-                    'Authorization': token ? `Bearer ${token}` : ''
-                }
-            });
 
-            if (res.ok) {
-                loginBtn.style.display = 'none';
-                userInfo.style.display = 'flex';
-            } else {
-                loginBtn.style.display = 'inline-block';
-                userInfo.style.display = 'none';
+        const token = localStorage.getItem('accessToken');
+
+        try {
+            let res;
+
+            // 1) 토큰 있으면 Bearer로 먼저 확인
+            if (token && token !== 'null' && token !== 'undefined') {
+                res = await fetch(`${API_URL}/ssak3/users/me`, {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
             }
-        } catch {
-            console.error('헤더 인증 실패', e);
+
+            // 2) 토큰 없거나 / 토큰이 401이면 쿠키로 재시도
+            if (!token || (res && res.status === 401)) {
+                res = await fetch(`${API_URL}/ssak3/users/me`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+            }
+
+            if (!res.ok) throw new Error('Unauthorized');
+
+            loginBtn.style.display = 'none';
+            userInfo.style.display = 'flex';
+        } catch (e) {
+            localStorage.removeItem('accessToken');
             loginBtn.style.display = 'inline-block';
             userInfo.style.display = 'none';
         }
     }
 
+
     function initHeaderActions() {
         document.getElementById('myPageBtn').onclick = () => location.href = 'mypage.html';
         document.getElementById('loginBtn').onclick = () => location.href = 'login.html';
-        document.getElementById('logoutBtn').onclick = () => {
-            localStorage.removeItem('accessToken');
-            applyHeaderAuthUI();
-            alert('로그아웃 되었습니다.');
-            location.href = 'home.html';
-        };
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            if (!confirm('로그아웃 하시겠습니까?')) return;
+
+            const token = localStorage.getItem('accessToken');
+            try {
+                const req = { method: 'POST', credentials: 'include' };
+                if (token) req.headers = { 'Authorization': `Bearer ${token}` };
+
+                await fetch(`${API_URL}/ssak3/auth/logout`, req);
+            } catch (e) {
+                console.error(e);
+            } finally {
+                localStorage.removeItem('accessToken');
+                alert('로그아웃 되었습니다.');
+                location.href = 'home.html';
+            }
+        });
     }
+
 
     async function apiFetch(path, options = {}) {
         const url = `${API_URL}/ssak3` + path;
@@ -1077,7 +1100,7 @@
     }
 
     (async function init() {
-        applyHeaderAuthUI();
+        await applyHeaderAuthUI();
         initHeaderActions();
 
         function handleSearch() {

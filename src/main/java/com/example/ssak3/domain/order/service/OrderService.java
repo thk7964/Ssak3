@@ -349,6 +349,28 @@ public class OrderService {
             throw new CustomException(ErrorCode.ORDER_PRODUCT_IS_NULL);
         }
 
+        for (OrderProduct op : ops) {
+            Product product = productRepository.findByIdAndIsDeletedFalse(op.getProduct().getId())
+                    .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
+
+            int expectedUnitPrice;
+
+            if (product.getStatus().equals(ProductStatus.STOP_SALE)) {
+                TimeDeal timeDeal = timeDealRepository
+                        .findByProductIdAndStatusAndIsDeletedFalse(product.getId(), TimeDealStatus.OPEN)
+                        .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOR_SALE));
+
+                expectedUnitPrice = timeDeal.getDealPrice();
+
+            } else {
+                expectedUnitPrice = product.getPrice();
+            }
+
+            if (op.getUnitPrice() != expectedUnitPrice) {
+                throw new CustomException(ErrorCode.ORDER_PRICE_CHANGED);
+            }
+        }
+
         String orderNameRaw = (ops.size() == 1)
                 ? ops.get(0).getProduct().getName()
                 : ops.get(0).getProduct().getName() + " 외 " + (ops.size() - 1) + " 건";
@@ -359,11 +381,7 @@ public class OrderService {
                 .mapToLong(op -> (long) op.getUnitPrice() * op.getQuantity())
                 .sum();
 
-        long deliveryFee = 0;
-
-        if (subtotal < 30000) {
-            deliveryFee = 3000;
-        }
+        long deliveryFee = (subtotal < 30000) ? 3000 : 0;
 
         long total = order.getTotalPrice();
 

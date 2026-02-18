@@ -867,8 +867,40 @@
         try {
             const res = await apiFetch(`/orders/${orderId}/retry-payment`, { method: 'POST' });
             if (!res.ok) {
-                const txt = await res.text().catch(() => '');
-                throw new Error(txt || `재결제 실패 (${res.status})`);
+                // 에러 응답: json 우선, 실패하면 text
+                let errJson = null;
+                let errText = '';
+
+                try { errJson = await res.clone().json(); } catch (_) {}
+                try { errText = await res.clone().text(); } catch (_) {}
+
+                const msg  = errJson?.message || errJson?.error?.message || errText || '';
+                const code = errJson?.code || errJson?.errorCode || errJson?.error?.code || '';
+
+                const isPriceChanged =
+                    res.status === 400 && (
+                        String(code).includes('ORDER_PRICE_CHANGED') ||
+                        String(msg).includes('가격이 변경된 상품이 있습니다') ||
+                        String(errText).includes('ORDER_PRICE_CHANGED')
+                    );
+
+                if (isPriceChanged) {
+                    alert('가격이 변경된 상품이 있어 재결제가 불가능합니다.');
+                    const ok = confirm('취소하시겠습니까?');
+
+                    if (ok) {
+                        // ✅ confirm 없이 바로 취소 호출
+                        await cancelPending(orderId, retryBtn, cancelBtn, { skipConfirm: true });
+                    } else {
+                        // 사용자가 취소 안 하면 버튼 원복
+                        if (retryBtn) retryBtn.disabled = false;
+                        if (cancelBtn) cancelBtn.disabled = false;
+                    }
+                    overlay.style.display = 'none';
+                    return;
+                }
+
+                throw new Error(msg || `재결제 실패 (${res.status})`);
             }
 
             const json = await res.json();
@@ -915,8 +947,12 @@
         }
     }
 
-    async function cancelPending(orderId, retryBtn, cancelBtn) {
-        if (!confirm('결제 대기 주문을 취소할까요?')) return;
+    async function cancelPending(orderId, retryBtn, cancelBtn, opts = {}) {
+        const { skipConfirm = false } = opts;
+
+        if (!skipConfirm) {
+            if (!confirm('결제 대기 주문을 취소할까요?')) return;
+        }
 
         if (retryBtn) retryBtn.disabled = true;
         if (cancelBtn) cancelBtn.disabled = true;

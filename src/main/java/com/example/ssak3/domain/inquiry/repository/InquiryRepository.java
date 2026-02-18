@@ -23,5 +23,4 @@ public interface InquiryRepository extends JpaRepository<Inquiry, Long> {
     Page<Inquiry> findAllByIsDeletedFalse(Pageable pageable);
 
     Optional<Inquiry> findByIdAndIsDeletedFalse(Long inquiryId);
-
 }

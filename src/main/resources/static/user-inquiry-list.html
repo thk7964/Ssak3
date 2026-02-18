@@ -15,80 +15,181 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
             background: #fafafa;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
+        .container {
+            flex: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 28px;
+            width: 100%;
+        }
         header {
-            background: #ffffff;
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 24px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.5);
+            box-shadow: 0 2px 16px rgba(116, 185, 255, 0.15);
             position: sticky;
             top: 0;
             z-index: 100;
-            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 28px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
         }
 
         .logo {
-            font-size: 26px;
-            font-weight: 700;
+            font-size: 22px;
+            font-weight: 800;
             background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             letter-spacing: -0.5px;
             cursor: pointer;
+            flex-shrink: 0;
+            text-decoration: none;
         }
 
-        .header-title {
+        .header-search {
             flex: 1;
-            font-size: 20px;
+            max-width: 400px;
+            margin: 0 20px;
+            display: flex;
+            align-items: center;
+            background: #f3f4f6;
+            border-radius: 10px;
+            border: 1.5px solid transparent;
+            overflow: hidden;
+            transition: all 0.15s ease;
+        }
+
+        .header-search:focus-within {
+            background: white;
+            border-color: #a29bfe;
+            box-shadow: 0 0 0 3px rgba(162, 155, 254, 0.12);
+        }
+
+        .header-search input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 9px 14px;
+            font-size: 14px;
+            color: #374151;
+            outline: none;
+        }
+
+        .header-search input::placeholder {
+            color: #9ca3af;
+        }
+
+        .header-search-btn {
+            border: none;
+            background: transparent;
+            padding: 9px 14px;
+            font-size: 13px;
             font-weight: 600;
-            color: #212529;
+            color: #a29bfe;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: color 0.15s ease;
+            border-left: 1.5px solid #e5e7eb;
+        }
+
+        .header-search-btn:hover {
+            color: #74b9ff;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .navbar-link {
+            padding: 8px 16px;
+            color: #4b5563;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s ease;
+            border: none;
+            background: transparent;
+            white-space: nowrap;
+        }
+
+        .navbar-link:hover {
+            color: #74b9ff;
+            background: rgba(116, 185, 255, 0.08);
+        }
+
+        .navbar-link.active {
+            color: #a29bfe;
+            font-weight: 700;
+        }
+
+        .navbar-divider {
+            width: 1px;
+            height: 18px;
+            background: #e5e7eb;
+            margin: 0 4px;
+        }
+
+        .auth-btn {
+            padding: 8px 16px;
+            color: #4b5563;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s ease;
+            border: none;
+            background: transparent;
+            white-space: nowrap;
+        }
+
+        .auth-btn:hover {
+            color: #74b9ff;
+            background: rgba(116, 185, 255, 0.08);
+        }
+
+        .user-info {
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .header-icons {
-            display: flex;
-            gap: 12px;
-        }
-
-        .btn-common {
-            padding: 10px 20px;
-            border-radius: 12px;
+        .logout-btn {
+            padding: 8px 16px;
+            color: #ef4444;
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 500;
+            border-radius: 8px;
             cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s ease;
             border: none;
-            transition: 0.2s;
+            background: transparent;
+            white-space: nowrap;
         }
 
-        .home-btn {
-            background-color: #3498db;
-            color: white;
-        }
-
-        .home-btn:hover {
-            background-color: #2980b9;
-        }
-
-        .mypage-btn {
-            background: #f8f9fa;
-            color: #495057;
-        }
-
-        .mypage-btn:hover {
-            background: #e9ecef;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 40px 20px;
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.08);
         }
 
         .page-header {
@@ -295,24 +396,63 @@
                 overflow-x: auto;
             }
         }
+        footer {
+            background: #212529;
+            color: #adb5bd;
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+        }
+
+        footer p {
+            margin: 10px 0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        footer p:first-child {
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+        }
     </style>
 </head>
 <body>
 
+<!-- ───────────── 상단바 ───────────── -->
 <header>
-    <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
-    <div class="header-title">💬 1:1 문의 관리</div>
-    <div class="header-icons">
-        <button class="btn-common home-btn" onclick="location.href='home.html'">홈으로</button>
-        <button class="btn-common mypage-btn" onclick="location.href='mypage.html'">마이페이지</button>
+    <div class="header-inner">
+        <a class="logo" onclick="location.href='home.html'">SSAK3</a>
+
+        <div class="header-search">
+            <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="상품을 검색해보세요"
+                    onkeypress="handleSearchEnter(event)"
+            >
+            <button class="header-search-btn" onclick="handleSearch()">검색</button>
+        </div>
+
+        <div class="header-nav">
+            <a class="navbar-link" onclick="location.href='product-search.html'">전체 상품</a>
+            <a class="navbar-link" onclick="location.href='time-deals.html'">타임딜</a>
+            <a class="navbar-link" onclick="location.href='cart.html'">장바구니</a>
+            <div class="navbar-divider"></div>
+
+            <!-- 로그인 안 된 경우 -->
+            <button class="auth-btn" id="loginBtn" style="display: none;">로그인 / 회원가입</button>
+
+            <!-- 로그인 된 경우 -->
+            <div class="user-info" id="userInfo" style="display: none;">
+                <a class="navbar-link" id="myPageBtn">마이페이지</a>
+                <a class="navbar-link" id="logoutBtn" style="color:#ef4444;">로그아웃</a>
+            </div>
+        </div>
     </div>
 </header>
 
 <div class="container">
-    <div class="back-section">
-        <button class="back-btn" onclick="location.href='mypage.html'">← 마이페이지로 돌아가기</button>
-    </div>
-
     <div class="page-header">
         <div>
             <h1>1:1 문의 게시판</h1>
@@ -498,5 +638,78 @@
     }
 </script>
 
+<footer>
+    <p>© 싹쓰리 - 모두를 위한 귀여운 굿즈</p>
+    <p>고객센터: 010-1234-5678 | <a href="https://github.com/thk7964/Ssak3" style="color:#adb5bd;">싹쓰리 홈페이지</a></p>
+    <p>개인정보처리방침 | 이용약관 | 배송정책</p>
+</footer>
+
+<script>
+    // [헤더] 검색 함수
+    function handleSearch() {
+        const keyword = document.getElementById('searchInput').value.trim();
+        if (keyword) {
+            window.location.href = `product-search.html?keyword=${encodeURIComponent(keyword)}&page=0`;
+        } else {
+            window.location.href = `product-search.html`;
+        }
+    }
+
+    function handleSearchEnter(event) {
+        if (event.key === 'Enter') handleSearch();
+    }
+
+    // [헤더] 로그인 상태 확인
+    async function checkLoginStatus() {
+        const loginBtn = document.getElementById('loginBtn');
+        const userInfo = document.getElementById('userInfo');
+        const token = localStorage.getItem('accessToken');
+        try {
+            let response;
+            if (token) {
+                response = await fetch(`${API_URL}/ssak3/users/me`, {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+            }
+            if (!token || response.status === 401) {
+                response = await fetch(`${API_URL}/ssak3/users/me`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+            }
+            if (response.ok) {
+                loginBtn.style.display = 'none';
+                userInfo.style.display = 'flex';
+            } else {
+                throw new Error('Not Authenticated');
+            }
+        } catch (e) {
+            localStorage.removeItem('accessToken');
+            loginBtn.style.display = 'block';
+            userInfo.style.display = 'none';
+        }
+    }
+
+    document.getElementById('loginBtn').addEventListener('click', () => location.href = 'login.html');
+    document.getElementById('myPageBtn').addEventListener('click', () => location.href = 'mypage.html');
+    document.getElementById('logoutBtn').addEventListener('click', async function () {
+        if (!confirm('로그아웃 하시겠습니까?')) return;
+        const token = localStorage.getItem('accessToken');
+        try {
+            const req = { method: 'POST', credentials: 'include' };
+            if (token) req.headers = { 'Authorization': `Bearer ${token}` };
+            await fetch(`${API_URL}/ssak3/auth/logout`, req);
+        } catch (e) {
+            console.error('로그아웃 통신 에러:', e);
+        } finally {
+            localStorage.removeItem('accessToken');
+            alert('로그아웃 되었습니다.');
+            location.href = 'home.html';
+        }
+    });
+
+    checkLoginStatus();
+</script>
 </body>
 </html>

@@ -914,6 +914,13 @@
                 };
             }
 
+            const qtyBox = itemEl.querySelector('.qty-box');
+            if (qtyBox) {
+                qtyBox.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                });
+            }
+
             // 카드 클릭 -> 체크 토글 (구매 가능만)
             itemEl.addEventListener('click', (e) => {
                 if (e.target.closest('button')) return;

@@ -610,7 +610,7 @@
             const res = await fetch(`${API_BASE}/users/me`, {
                 method: 'GET',
                 headers,
-                credentials: 'include' // ✅ 쿠키 로그인 지원
+                credentials: 'include' // 쿠키 로그인 지원
             });
 
             if (!res.ok) throw new Error('Unauthorized');
@@ -641,11 +641,11 @@
             }
 
             try {
-                // ✅ 쿠키 세션 로그아웃(카카오) + 토큰 로그아웃(일반) 둘 다 처리
+                // 쿠키 세션 로그아웃(카카오) + 토큰 로그아웃(일반) 둘 다 처리
                 await fetch(`${API_BASE}/auth/logout`, {
                     method: 'POST',
                     headers,
-                    credentials: 'include' // ✅ 핵심: 쿠키 포함
+                    credentials: 'include' // 쿠키 포함
                 });
             } catch (e) {
                 console.error('logout api error:', e);

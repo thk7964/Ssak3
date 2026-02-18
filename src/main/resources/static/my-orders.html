@@ -330,7 +330,7 @@
     // ✅ 선택된 상태들(토글 필터) - 비어있으면 "전체"
     const selectedStatuses = new Set(); // 'PAYMENT_PENDING' | 'DONE' | 'CANCELED'
 
-    // ✅ mypage 방식: 토큰 + 쿠키(카카오) 모두 지원
+    // 토큰 + 쿠키(카카오)
     async function applyHeaderAuthUI() {
         const loginBtn = document.getElementById('loginBtn');
         const userInfo = document.getElementById('userInfo');

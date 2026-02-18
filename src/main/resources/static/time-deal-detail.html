@@ -612,7 +612,7 @@
             const response = await fetch(`${API_BASE}/users/me`, {
                 method: 'GET',
                 headers,
-                credentials: 'include' // 💡 핵심: 쿠키 포함
+                credentials: 'include' // 쿠키 포함
             });
 
             if (!response.ok) throw new Error('Unauthenticated');

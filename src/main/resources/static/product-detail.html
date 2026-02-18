@@ -1058,7 +1058,7 @@
                     ...(options.headers || {}),
                     'Authorization': `Bearer ${token}`
                 },
-                credentials: 'include' // ✅ 토큰 요청에도 쿠키 같이 보내도 문제 없음
+                credentials: 'include'
             });
 
             if (res1.status !== 401) return res1;
@@ -1074,7 +1074,7 @@
                 'Content-Type': 'application/json',
                 ...(options.headers || {})
             },
-            credentials: 'include' // ✅ 핵심
+            credentials: 'include'
         });
     }
 
@@ -1185,7 +1185,7 @@
     }
 
     async function addToCart() {
-        // ✅ 카카오 쿠키 로그인도 통과
+        // 카카오 쿠키 로그인도 통과
         if (!(isLoggedIn())) {
             await requireLoginAndRedirect();
             return;

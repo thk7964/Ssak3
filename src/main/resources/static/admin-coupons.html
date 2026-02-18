@@ -55,6 +55,41 @@
             margin-left: 12px;
         }
 
+        .logo {
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+            cursor: pointer;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-common {
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: 0.2s;
+        }
+
+        .home-btn {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+        }
+
+        .home-btn:hover {
+            background-color: #2980b9;
+        }
+
         .header-icons {
             display: flex;
             gap: 12px;
@@ -559,6 +594,26 @@
             cursor: not-allowed;
             transform: none;
         }
+
+        footer {
+            background: #212529;
+            color: #adb5bd;
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+        }
+
+        footer p {
+            margin: 10px 0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        footer p:first-child {
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+        }
     </style>
 </head>
 <body>
@@ -568,19 +623,14 @@
 
 <header>
     <div style="display: flex; align-items: center;">
-        <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
-        <span class="admin-badge">관리자</span>
+        <div class="logo" onclick="location.href='home.html'">SSAK3</div>
     </div>
     <div class="header-icons">
-        <button class="icon-btn">🛒</button>
+        <button id="loginBtn" style="display: none;"></button>
 
-        <!-- 로그인 안 된 경우 -->
-        <button class="auth-btn" id="loginBtn" style="display: none;">로그인 / 회원가입</button>
-
-        <!-- 로그인 된 경우 -->
         <div class="user-info" id="userInfo" style="display: none;">
-            <button class="icon-btn" id="myPageBtn" title="마이페이지">👤</button>
-            <button class="logout-btn" id="logoutBtn">로그아웃</button>
+            <button class="btn-common home-btn" id="myPageBtn">마이페이지</button>
+            <button class="btn-common logout-btn" id="logoutBtn">로그아웃</button>
         </div>
     </div>
 </header>
@@ -594,7 +644,7 @@
     <div class="section-header">
         <div class="section-title">전체 쿠폰 목록</div>
         <button class="btn btn-primary" onclick="openCreateModal()">
-            ➕ 새 쿠폰 생성
+            새 쿠폰 생성
         </button>
     </div>
 
@@ -746,8 +796,8 @@
 </div>
 
 <footer>
-    <p>© 2025 싹쓰리 - 모두를 위한 귀여운 굿즈</p>
-    <p>고객센터: 010-1234-5678 | <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3b5854554f5a584f7b48485a500815585456">[email&#160;protected]</a></p>
+    <p>© 싹쓰리 - 모두를 위한 귀여운 굿즈</p>
+    <p>고객센터: 010-1234-5678 | <a href="https://github.com/thk7964/Ssak3" class="__cf_email__">싹쓰리 홈페이지</a></p>
     <p>개인정보처리방침 | 이용약관 | 배송정책</p>
 </footer>
 
@@ -1223,11 +1273,11 @@
             await fetch(`${API_URL}/ssak3/auth/logout`, logoutRequest);
             localStorage.removeItem('accessToken');
             alert('로그아웃 되었습니다.');
-            window.location.href = 'home.html';
+            window.location.href = 'login.html';
         } catch (e) {
             localStorage.removeItem('accessToken');
             alert('로그아웃 되었습니다.');
-            window.location.href = 'home.html';
+            window.location.href = 'login.html';
         }
     });
 

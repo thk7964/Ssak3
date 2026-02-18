@@ -2,107 +2,177 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>카테고리 관리</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>카테고리 관리 - 관리자</title>
     <style>
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+            background: #fafafa;
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 30px 20px;
         }
 
-        .category-container {
-            background: white;
-            width: 100%;
-            max-width: 700px;
-            border-radius: 30px;
-            padding: 40px;
-            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
-        }
-
-        /* 헤더 */
-        .page-header {
+        header {
+            background: #ffffff;
+            padding: 20px 40px;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 30px;
+            gap: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #f0f0f0;
         }
 
-        .back-icon-btn {
-            background: #e8ebff;
-            border: none;
-            border-radius: 12px;
-            width: 40px;
-            height: 40px;
-            font-size: 18px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.2s;
-            flex-shrink: 0;
-        }
-
-        .back-icon-btn:hover {
-            background: #dde1ff;
-        }
-
-        .page-header h2 {
-            color: #667eea;
-            font-size: 24px;
+        .logo {
+            font-size: 26px;
             font-weight: 700;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+            cursor: pointer;
         }
 
-        .header-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
+        .header-title {
+            flex: 1;
+            font-size: 20px;
             font-weight: 600;
-            margin-left: auto;
+            color: #212529;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-common {
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: 0.2s;
+        }
+
+        .home-btn {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+        }
+
+        .home-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .logout-btn {
+            background: #f8f9fa;
+            color: #495057;
+        }
+
+        .logout-btn:hover {
+            background: #e9ecef;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .back-section {
+            margin-bottom: 24px;
+        }
+
+        .back-btn {
+            background: #f8f9fa;
+            color: #495057;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background: #e9ecef;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            padding: 40px;
+            border-radius: 24px;
+            margin-bottom: 40px;
+            color: white;
+            box-shadow: 0 10px 40px rgba(116, 185, 255, 0.25);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            font-size: 15px;
+            opacity: 0.9;
+        }
+
+        .admin-badge {
+            background: white;
+            color: #74b9ff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
         }
 
         /* 생성 폼 섹션 */
-        .section-title {
-            font-size: 15px;
-            font-weight: 700;
-            color: #444;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+        .create-section {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 40px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
 
-        .create-form {
-            background: #f8f9ff;
-            border: 1px solid #e8ebff;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 30px;
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .form-row {
             display: flex;
-            gap: 10px;
+            gap: 12px;
         }
 
         .form-input {
             flex: 1;
             padding: 12px 16px;
-            border: 1.5px solid #e8ebff;
+            border: 1.5px solid #e9ecef;
             border-radius: 12px;
-            font-size: 15px;
+            font-size: 14px;
             color: #333;
             outline: none;
             transition: border-color 0.2s;
@@ -110,30 +180,30 @@
         }
 
         .form-input:focus {
-            border-color: #667eea;
+            border-color: #74b9ff;
         }
 
         .form-input::placeholder {
-            color: #bbb;
+            color: #adb5bd;
         }
 
         .create-btn {
-            padding: 12px 22px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 12px 28px;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
             color: white;
             border: none;
             border-radius: 12px;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
             white-space: nowrap;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.3);
         }
 
         .create-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 6px 16px rgba(116, 185, 255, 0.4);
         }
 
         .create-btn:active {
@@ -142,174 +212,179 @@
 
         /* 카테고리 목록 */
         .list-section {
-            /* 목록 영역 */
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
         }
 
         .list-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 12px;
+            padding: 24px;
+            border-bottom: 1px solid #f0f0f0;
         }
 
         .category-count {
             font-size: 13px;
-            color: #999;
+            color: #adb5bd;
+            font-weight: 600;
         }
 
         .category-list {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            max-height: 420px;
+            max-height: 600px;
             overflow-y: auto;
-            padding-right: 4px;
         }
 
         .category-list::-webkit-scrollbar {
-            width: 5px;
+            width: 6px;
         }
 
         .category-list::-webkit-scrollbar-track {
             background: #f1f1f1;
-            border-radius: 10px;
         }
 
         .category-list::-webkit-scrollbar-thumb {
-            background: #c5caff;
-            border-radius: 10px;
+            background: #d0d0d0;
+            border-radius: 3px;
         }
 
         /* 카테고리 아이템 */
         .category-item {
-            background: #f8f9ff;
-            border: 1.5px solid #e8ebff;
-            border-radius: 14px;
-            padding: 14px 16px;
+            padding: 16px 24px;
+            border-bottom: 1px solid #f0f0f0;
             display: flex;
             align-items: center;
-            gap: 12px;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            gap: 16px;
+            transition: background 0.2s;
         }
 
         .category-item:hover {
-            border-color: #c5caff;
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+            background: #f8f9fa;
+        }
+
+        .category-item:last-child {
+            border-bottom: none;
         }
 
         .category-item.editing {
-            border-color: #667eea;
-            background: #f0f3ff;
+            background: #f0f7ff;
         }
 
         .category-id {
             font-size: 12px;
-            color: #aaa;
+            color: #adb5bd;
             font-weight: 600;
-            min-width: 32px;
+            min-width: 40px;
         }
 
         .category-name-display {
             flex: 1;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
-            color: #333;
+            color: #212529;
         }
 
         .category-edit-input {
             flex: 1;
-            padding: 7px 12px;
-            border: 1.5px solid #667eea;
+            padding: 8px 12px;
+            border: 1.5px solid #74b9ff;
             border-radius: 8px;
-            font-size: 15px;
+            font-size: 14px;
             color: #333;
             outline: none;
             background: white;
         }
 
         .category-dates {
-            font-size: 11px;
-            color: #bbb;
+            font-size: 12px;
+            color: #adb5bd;
             text-align: right;
             line-height: 1.5;
+            min-width: 110px;
         }
 
         /* 아이템 버튼 그룹 */
         .item-btn-group {
             display: flex;
-            gap: 6px;
+            gap: 8px;
             flex-shrink: 0;
         }
 
         .item-btn {
-            padding: 7px 14px;
+            padding: 8px 16px;
             border: none;
             border-radius: 8px;
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
+            white-space: nowrap;
         }
 
         .edit-btn {
-            background: #e8ebff;
-            color: #667eea;
+            background: #f0f7ff;
+            color: #74b9ff;
         }
 
         .edit-btn:hover {
-            background: #dde1ff;
+            background: #e3f2fd;
         }
 
         .save-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
             color: white;
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 2px 8px rgba(116, 185, 255, 0.3);
         }
 
         .save-btn:hover {
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.4);
             transform: translateY(-1px);
         }
 
         .cancel-btn {
             background: #f0f0f0;
-            color: #888;
+            color: #868e96;
         }
 
         .cancel-btn:hover {
-            background: #e5e5e5;
+            background: #e9ecef;
         }
 
         .delete-btn {
-            background: #ffeded;
-            color: #ff6b6b;
+            background: #ffebee;
+            color: #e53935;
         }
 
         .delete-btn:hover {
-            background: #ffd6d6;
+            background: #ffcdd2;
         }
 
         /* 빈 상태 */
         .empty-state {
             text-align: center;
-            padding: 50px 20px;
-            color: #bbb;
+            padding: 80px 20px;
+            color: #adb5bd;
         }
 
         .empty-state .empty-icon {
-            font-size: 48px;
-            margin-bottom: 12px;
+            font-size: 64px;
+            margin-bottom: 16px;
         }
 
         .empty-state p {
             font-size: 15px;
+            color: #868e96;
         }
 
         /* 로딩 */
         .loading-state {
             text-align: center;
-            padding: 40px 20px;
-            color: #aaa;
+            padding: 60px 20px;
+            color: #adb5bd;
             font-size: 15px;
         }
 
@@ -338,11 +413,11 @@
         }
 
         .toast.success {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
         }
 
         .toast.error {
-            background: #ff6b6b;
+            background: #e53935;
         }
 
         /* 삭제 확인 모달 */
@@ -388,13 +463,13 @@
         .modal-title {
             font-size: 17px;
             font-weight: 700;
-            color: #333;
+            color: #212529;
             margin-bottom: 8px;
         }
 
         .modal-desc {
             font-size: 14px;
-            color: #888;
+            color: #868e96;
             margin-bottom: 22px;
             line-height: 1.5;
         }
@@ -424,7 +499,7 @@
         .modal-confirm-btn {
             flex: 1;
             padding: 11px;
-            background: #ff6b6b;
+            background: #e53935;
             color: white;
             border: none;
             border-radius: 10px;
@@ -435,21 +510,60 @@
         }
 
         .modal-confirm-btn:hover {
-            background: #ff5252;
+            background: #d32f2f;
         }
 
-        @media (max-width: 500px) {
-            .category-container {
-                padding: 24px 18px;
+        footer {
+            background: #212529;
+            color: #adb5bd;
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+        }
+
+        footer p {
+            margin: 10px 0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        footer p:first-child {
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 16px 20px;
+                flex-direction: column;
+                gap: 12px;
             }
+
+            .container {
+                padding: 24px 16px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
             .form-row {
                 flex-direction: column;
             }
+
             .item-btn-group {
                 flex-wrap: wrap;
             }
+
             .category-dates {
                 display: none;
+            }
+
+            .category-item {
+                flex-wrap: wrap;
             }
         }
     </style>
@@ -472,26 +586,36 @@
 <!-- 토스트 -->
 <div class="toast" id="toast"></div>
 
-<div class="category-container">
+<!-- 헤더 -->
+<header>
+    <div class="logo" onclick="location.href='home.html'">SSAK3</div>
+    <div class="header-icons">
+        <button class="btn-common home-btn" onclick="location.href='mypage.html'">마이페이지</button>
+        <button class="btn-common logout-btn" id="logoutBtn">로그아웃</button>
+    </div>
+</header>
 
-    <!-- 헤더 -->
+<div class="container">
+
     <div class="page-header">
-        <button class="back-icon-btn" onclick="location.href='admin-mypage.html'" title="뒤로가기">←</button>
-        <h2>🗂️ 카테고리 관리</h2>
-        <span class="header-badge">ADMIN</span>
+        <div>
+            <h1>카테고리 관리</h1>
+            <p id="totalCountDisplay">카테고리를 관리하세요</p>
+        </div>
+        <span class="admin-badge">🔐 ADMIN</span>
     </div>
 
     <!-- 카테고리 생성 폼 -->
-    <div class="section-title">➕ 새 카테고리 추가</div>
-    <div class="create-form">
+    <div class="create-section">
+        <div class="section-title">새 카테고리 추가</div>
         <div class="form-row">
             <input
-                type="text"
-                id="newCategoryName"
-                class="form-input"
-                placeholder="카테고리 이름을 입력하세요"
-                maxlength="50"
-                onkeydown="if(event.key==='Enter') createCategory()"
+                    type="text"
+                    id="newCategoryName"
+                    class="form-input"
+                    placeholder="카테고리 이름을 입력하세요"
+                    maxlength="50"
+                    onkeydown="if(event.key==='Enter') createCategory()"
             />
             <button class="create-btn" onclick="createCategory()">생성</button>
         </div>
@@ -507,8 +631,14 @@
             <div class="loading-state">불러오는 중...</div>
         </div>
     </div>
-
 </div>
+
+<!-- 푸터 -->
+<footer>
+    <p>© 싹쓰리 - 모두를 위한 귀여운 굿즈</p>
+    <p>고객센터: 010-1234-5678 | <a href="https://github.com/thk7964/Ssak3" class="__cf_email__">싹쓰리 홈페이지</a></p>
+    <p>개인정보처리방침 | 이용약관 | 배송정책</p>
+</footer>
 
 <script>
     // API URL 설정
@@ -781,6 +911,12 @@
     /* ──────────────── 모달 외부 클릭 닫기 ──────────────── */
     document.getElementById('deleteModal').addEventListener('click', function(e) {
         if (e.target === this) closeDeleteModal();
+    });
+
+    /* ──────────────── 로그아웃 ──────────────── */
+    document.getElementById('logoutBtn')?.addEventListener('click', () => {
+        localStorage.removeItem('accessToken');
+        location.href = 'login.html';
     });
 
     /* ──────────────── 초기 로드 ──────────────── */

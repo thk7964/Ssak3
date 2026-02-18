@@ -65,7 +65,7 @@
         }
 
         .home-btn {
-            background: #3498db;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
             color: white;
         }
 
@@ -571,14 +571,34 @@
             background: linear-gradient(90deg, #fd79a8, #e17055);
             transition: width 0.3s;
         }
+
+        footer {
+            background: #212529;
+            color: #adb5bd;
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+        }
+
+        footer p {
+            margin: 10px 0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        footer p:first-child {
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+        }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="logo" onclick="location.href='home.html'">🌊 싹쓰리</div>
-    <div class="header-title">⚡ 타임딜 관리 시스템</div>
+    <div class="logo" onclick="location.href='home.html'">SSAK3</div>
     <div class="header-icons">
+        <button class="btn-common home-btn" id="myPageBtn" onclick="location.href='mypage.html'">마이페이지</button>
         <button class="btn-common logout-btn" id="logoutBtn">로그아웃</button>
     </div>
 </header>
@@ -761,6 +781,13 @@
         </div>
     </div>
 </div>
+
+<footer>
+    <p>© 싹쓰리 - 모두를 위한 귀여운 굿즈</p>
+    <p>고객센터: 010-1234-5678 | <a href="https://github.com/thk7964/Ssak3" class="__cf_email__">싹쓰리 홈페이지</a></p>
+    <p>개인정보처리방침 | 이용약관 | 배송정책</p>
+</footer>
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 

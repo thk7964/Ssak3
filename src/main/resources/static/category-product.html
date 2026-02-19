@@ -758,29 +758,54 @@
             ? new Date(product.createdAt).toLocaleDateString('ko-KR', { year:'numeric', month:'short', day:'numeric' })
             : '';
 
-        const displayPrice = (product.dealPrice ?? product.price ?? 0).toLocaleString();
+        // 타임딜 여부 확인
+        const isTimeDeal = !!product.timeDealId;
+        const displayPrice = (isTimeDeal ? product.dealPrice : product.price ?? 0).toLocaleString();
+        const originalPrice = product.price?.toLocaleString();
 
+        // 이미지 처리
         let imageContent;
         if (product.imageUrl) {
-            imageContent = `<img class="product-img-tag" src="${product.imageUrl}" alt="${product.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-<div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:64px;">🛍️</div>`;
+            // 타임딜이면 배너나 오버레이 표시
+            imageContent = `
+            <img class="product-img-tag" src="${product.imageUrl}" alt="${product.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:64px;">🛍️</div>
+            ${isTimeDeal ? '<div style="position:absolute;top:8px;left:8px;background:red;color:white;padding:4px 8px;border-radius:12px;font-size:12px;font-weight:700;">타임딜</div>' : ''}
+        `;
         } else {
             imageContent = `<span>🛍️</span>`;
         }
 
+        // 가격 HTML
+        let priceHTML;
+        if (isTimeDeal) {
+            priceHTML = `
+            <div style="display:flex;gap:8px;align-items:center;">
+                <span style="text-decoration:line-through;color:#adb5bd;">${originalPrice}원</span>
+                <span style="color:red;font-weight:700;">${displayPrice}원</span>
+            </div>
+        `;
+        } else {
+            priceHTML = `<div class="product-price">${displayPrice}원</div>`;
+        }
+
         card.innerHTML = `
-<div class="product-image">${imageContent}</div>
-<div class="product-info">
-<div class="product-name" title="${product.name}">${product.name}</div>
-<div class="product-footer">
-<div class="product-price">${displayPrice}원</div>
+        <div class="product-image">${imageContent}</div>
+        <div class="product-info">
+            <div class="product-name" title="${product.name}">${product.name}</div>
+            <div class="product-footer">
+                ${priceHTML}
+            </div>
+        </div>
+    `;
 
-</div>
-</div>`;
-
-        // 카드 클릭 → 상세 페이지
+        // 클릭 시 상세 페이지 이동
         card.addEventListener('click', () => {
-            window.location.href = `product-detail.html?id=${product.id}`;
+            if (isTimeDeal) {
+                window.location.href = `time-deal-detail.html?id=${product.timeDealId}`;
+            } else {
+                window.location.href = `product-detail.html?id=${product.id}`;
+            }
         });
 
         return card;

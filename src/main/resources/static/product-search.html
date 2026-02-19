@@ -359,10 +359,27 @@
             align-items: center;
             justify-content: center;
             font-size: 70px;
+            position: relative;
+            overflow: hidden;
         }
 
         .product-card:hover .product-image {
             background: linear-gradient(135deg, #74b9ff15 0%, #a29bfe15 100%);
+        }
+
+        .product-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover .product-img {
+            transform: scale(1.05);
+        }
+
+        .emoji-fallback {
+            font-size: 60px;
         }
 
         .product-info {
@@ -405,11 +422,29 @@
             background-clip: text;
         }
 
+        .product-price.deal-active {
+            color: #ef4444 !important;
+            background: none !important;
+            -webkit-text-fill-color: #ef4444 !important;
+        }
+
         .product-deal-price {
             font-size: 14px;
-            color: #ef4444;
+            color: #adb5bd !important;
             font-weight: 600;
-            text-decoration: line-through;
+            text-decoration: line-through !important;
+        }
+
+        .time-deal-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: linear-gradient(135deg, #ff6b6b, #ff4757);
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 8px;
         }
 
         .pagination {
@@ -506,34 +541,6 @@
             header {
                 padding: 16px 20px;
             }
-        }
-
-        /* 기존 .product-image 수정 */
-        .product-image {
-            width: 100%;
-            height: 200px;
-            background: #f8f9fa;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* 실제 이미지 스타일 추가 */
-        .product-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* 비율 유지하며 꽉 채우기 */
-            transition: transform 0.3s ease;
-        }
-
-        .product-card:hover .product-img {
-            transform: scale(1.05);
-        }
-
-        .emoji-fallback {
-            font-size: 60px;
         }
     </style>
 </head>
@@ -808,22 +815,29 @@
             const description = product.information || '상품 설명이 없습니다';
             const hasDeal = product.dealPrice !== null && product.dealPrice < product.price;
 
-            let finalImageUrl = product.imageUrl;
+            const isTimeDeal = product.timeDealId !== null;
+            const productUrl = isTimeDeal
+                ? `time-deal-detail.html?id=${product.timeDealId}`
+                : `product-detail.html?id=${product.productId}`;
 
-            // 🔥 수정 포인트: onerror에 복잡한 문자열 대신, 단순한 함수 호출이나 처리를 사용
-            // innerHTML 대신 직접 이미지를 숨기고 에모지를 보여주는 방식으로 안전하게 구현했습니다.
+            // 타임딜이면 타임딜 이미지, 아니면 일반 상품 이미지
+            const finalImageUrl = isTimeDeal && product.timeDealImageUrl
+                ? product.timeDealImageUrl
+                : product.productImageUrl;
+
             const imageHtml = finalImageUrl
-                ? `<img src="${finalImageUrl}"
-                class="product-img"
-                alt="${product.name}"
-                onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-               <div class="emoji-fallback" style="display:none;">${emoji}</div>`
+                ? `<div class="product-img-wrapper" style="position:relative;">
+             <img src="${finalImageUrl}"
+                  class="product-img"
+                  alt="${product.name}"
+                  onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+             ${isTimeDeal ? `<div class="time-deal-badge">🔥 타임딜</div>` : ''}
+             <div class="emoji-fallback" style="display:none;">${emoji}</div>
+           </div>`
                 : `<div class="emoji-fallback">${emoji}</div>`;
 
-            const pid = product.productId || product.id;
-
             return `
-        <div class="product-card" onclick="location.href='product-detail.html?id=${pid}'">
+        <div class="product-card" onclick="location.href='${productUrl}'">
             <div class="product-image">
                 ${imageHtml}
             </div>
@@ -832,13 +846,13 @@
                 <div class="product-desc">${description}</div>
                 <div class="product-prices">
                     ${hasDeal ? `<div class="product-deal-price">${product.price.toLocaleString()}원</div>` : ''}
-                    <div class="product-price">${(hasDeal ? product.dealPrice : product.price).toLocaleString()}원</div>
+                    <div class="product-price ${hasDeal ? 'deal-active' : ''}">${(hasDeal ? product.dealPrice : product.price).toLocaleString()}원</div>
                 </div>
             </div>
         </div>`;
         }).join('');
 
-        container.innerHTML = `<div class="products-grid">${productsHTML}</div    >`;
+        container.innerHTML = `<div class="products-grid">${productsHTML}</div>`;
         displayPagination(currentPage, totalPages);
     }
 

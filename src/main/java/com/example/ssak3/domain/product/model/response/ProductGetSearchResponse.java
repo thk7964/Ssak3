@@ -16,7 +16,8 @@ public class ProductGetSearchResponse {
     private final String information;
     private final Integer price;
     private final Integer dealPrice;
-    private final String imageUrl;
+    private final String productImageUrl;
+    private final String timeDealImageUrl;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 

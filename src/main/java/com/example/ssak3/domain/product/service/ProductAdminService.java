@@ -71,13 +71,13 @@ public class ProductAdminService {
      * 상품 목록 조회(관리자)
      */
     @Transactional(readOnly = true)
-    public PageResponse<ProductListGetResponse> getProductListAdmin(Long categoryId, Pageable pageable) {
+    public PageResponse<ProductAdminListGetResponse> getProductListAdmin(Long categoryId, Pageable pageable) {
 
         Page<Product> productList = productRepository.findProductListByCategoryIdForAdmin(categoryId, pageable);
 
-        Page<ProductListGetResponse> mapped = productList.map(p -> {
+        Page<ProductAdminListGetResponse> mapped = productList.map(p -> {
             String viewImageUrl = s3Uploader.createPresignedGetUrl(p.getImage(), 5);
-            return ProductListGetResponse.from(p, viewImageUrl);
+            return ProductAdminListGetResponse.from(p, viewImageUrl);
         });
 
         return PageResponse.from(mapped);
@@ -112,7 +112,7 @@ public class ProductAdminService {
      */
     @Transactional
     public ProductDeleteResponse deleteProduct(Long productId) {
-        
+
         Product foundProduct = findProduct(productId);
 
         if (foundProduct.getImage() != null) {

@@ -10,6 +10,7 @@ public enum ErrorCode {
     EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, "가입 이력이 있는 이메일입니다."),
     NICKNAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 닉네임입니다."),
     PHONE_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 가입된 전화번호입니다."),
+    PASSWORD_SAME_AS_OLD(HttpStatus.CONFLICT, "현재 비밀번호와 일치해서 변경할 수 없습니다."),
     UNREGISTERED_USER(HttpStatus.NOT_FOUND, "가입되지 않은 사용자입니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."),
     WITHDRAWN_USER(HttpStatus.NOT_FOUND, "탈퇴한 회원입니다."),
@@ -75,7 +76,7 @@ public enum ErrorCode {
     // Coupon 에러
     COUPON_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 쿠폰입니다."),
     COUPON_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 지급된 쿠폰입니다."),
-    COUPON_NAME_ALREADY_EXISTS(HttpStatus.CONFLICT,"중복된 쿠폰 이름입니다." ),
+    COUPON_NAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "중복된 쿠폰 이름입니다."),
     COUPON_OUT_OF_STOCK(HttpStatus.CONFLICT, "쿠폰 수량이 모두 소진되었습니다."),
     COUPON_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "이미 삭제된 쿠폰입니다."),
     COUPON_INVALID_TIME_RANGE(HttpStatus.BAD_REQUEST, "종료일은 시작일 이전일 수 없습니다."),

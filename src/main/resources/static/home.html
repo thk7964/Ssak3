@@ -451,6 +451,25 @@
             background-clip: text;
         }
 
+        .deal-price {
+            color: #ef4444 !important;
+            background: none !important;
+            -webkit-text-fill-color: initial !important;
+        }
+
+        .time-deal-badge {
+            display: inline-block;
+            margin-left: 8px;
+            padding: 2px 6px;
+            font-size: 10px;
+            font-weight: 700;
+            color: white;
+            background: linear-gradient(135deg, #f87171, #ef4444);
+            border-radius: 12px;
+            letter-spacing: 0.5px;
+            vertical-align: middle;
+        }
+
         .add-btn {
             background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
             color: white;
@@ -667,18 +686,32 @@
                     ${imageHtml}
                 </div>
                 <div class="product-info">
-                    <div class="product-name">${product.name}</div>
+                    <div class="product-name">
+                        ${product.name}
+                        ${product.timeDealId ? '<span class="time-deal-badge">타임딜</span>' : ''}
+                    </div>
                     <div class="product-desc">카테고리 ${product.categoryId}</div>
                     <div class="product-footer">
                         <div class="product-price">
-                            ${(product.dealPrice ?? product.price).toLocaleString()}원
+                            ${
+                    product.timeDealId
+                        ? `<span style="text-decoration: line-through !important; color: #adb5bd !important; background: none !important; -webkit-text-fill-color: #adb5bd !important;">${product.price.toLocaleString()}원</span>
+                                   <span class="deal-price">${product.dealPrice.toLocaleString()}원</span>`
+                        : `${(product.dealPrice ?? product.price).toLocaleString()}원`
+                }
                         </div>
                     </div>
                 </div>
             `;
 
                 card.addEventListener('click', () => {
-                    window.location.href = `product-detail.html?id=${product.id}`;
+                    if (product.timeDealId) {
+                        // 타임딜 중이면 타임딜 상세 페이지로
+                        window.location.href = `time-deal-detail.html?id=${product.timeDealId}`;
+                    } else {
+                        // 일반 상품이면 기존 상품 상세 페이지
+                        window.location.href = `product-detail.html?id=${product.id}`;
+                    }
                 });
 
                 container.appendChild(card);
@@ -796,14 +829,6 @@
             alert('장바구니에 추가되었습니다!');
         });
     });
-
-    // document.querySelecto
-
-    // document.querySelectorAll('.product-card').forEach((card, index) => {
-    //     card.addEventListener('click', () => {
-    //         window.location.href = `product-detail.html?id=${index + 1}`;
-    //     });
-    // });
 </script>
 </body>
 </html>

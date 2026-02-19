@@ -79,6 +79,10 @@ public class UserService {
 
         User user = getUser(userId);
 
+        if (passwordEncoder.matches(request.getNewPassword(), user.getPassword())) {
+            throw new CustomException(ErrorCode.PASSWORD_SAME_AS_OLD);
+        }
+
         user.updatePassword(passwordEncoder.encode(request.getNewPassword()));
 
         return UserChangePasswordResponse.from(user);

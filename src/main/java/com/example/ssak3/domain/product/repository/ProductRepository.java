@@ -1,6 +1,5 @@
 package com.example.ssak3.domain.product.repository;
 
-import com.example.ssak3.common.enums.ProductStatus;
 import com.example.ssak3.domain.product.entity.Product;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
@@ -24,9 +23,8 @@ public interface ProductRepository extends JpaRepository<Product, Long>, Product
                 FROM Product p
                 WHERE p.isDeleted = false
                   AND (:categoryId IS NULL OR p.category.id = :categoryId)
-                  AND p.status IN (
-                  com.example.ssak3.common.enums.ProductStatus.FOR_SALE,
-                  com.example.ssak3.common.enums.ProductStatus.SOLD_OUT)
+                  AND p.status NOT IN (
+                  com.example.ssak3.common.enums.ProductStatus.BEFORE_SALE)
             """)
     Page<Product> findProductListByCategoryId(@Param("categoryId") Long categoryId, Pageable pageable);
 
@@ -36,5 +34,5 @@ public interface ProductRepository extends JpaRepository<Product, Long>, Product
     @Query("select p from Product p where p.id = :productId and p.isDeleted = false")
     Optional<Product> findByIdForLock(@Param("productId") Long productId);
 
-    List<Product> findAllByIdInAndStatusAndIsDeletedFalse(List<Long> productIds, ProductStatus productStatus);
+    List<Product> findAllByIdInAndIsDeletedFalse(List<Long> productIdList);
 }

@@ -434,11 +434,14 @@
                 body: JSON.stringify({ newPassword })
             });
 
-            if (res.ok) {
+            const data = await res.json();
+
+            if (data.success) {
                 alert('비밀번호가 성공적으로 변경되었습니다.');
                 closeModal();
             } else {
-                alert('변경 실패');
+                // message가 있으면 그걸, 없으면 기본 메시지
+                alert(data.message || '변경 실패');
             }
 
         } catch (e) {

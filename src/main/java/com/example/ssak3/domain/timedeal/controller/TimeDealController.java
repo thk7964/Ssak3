@@ -2,6 +2,7 @@ package com.example.ssak3.domain.timedeal.controller;
 
 import com.example.ssak3.common.model.ApiResponse;
 import com.example.ssak3.domain.timedeal.service.TimeDealService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -20,9 +21,9 @@ public class TimeDealController {
      * 타임딜 상세 조회 API
      */
     @GetMapping("/{timeDealId}")
-    public ResponseEntity<ApiResponse> getTimeDealApi(@PathVariable Long timeDealId) {
+    public ResponseEntity<ApiResponse> getTimeDealApi(@PathVariable Long timeDealId, HttpServletRequest request) {
 
-        ApiResponse response = ApiResponse.success("타임딜 상세 조회에 성공했습니다.", timeDealService.getTimeDeal(timeDealId));
+        ApiResponse response = ApiResponse.success("타임딜 상세 조회에 성공했습니다.", timeDealService.getTimeDeal(timeDealId, request.getRemoteAddr()));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

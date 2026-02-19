@@ -10,6 +10,7 @@ public enum ErrorCode {
     EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, "가입 이력이 있는 이메일입니다."),
     NICKNAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 닉네임입니다."),
     PHONE_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 가입된 전화번호입니다."),
+    PASSWORD_SAME_AS_OLD(HttpStatus.CONFLICT, "현재 비밀번호와 일치해서 변경할 수 없습니다."),
     UNREGISTERED_USER(HttpStatus.NOT_FOUND, "가입되지 않은 사용자입니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."),
     WITHDRAWN_USER(HttpStatus.NOT_FOUND, "탈퇴한 회원입니다."),

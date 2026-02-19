@@ -76,7 +76,7 @@ public class ProductAdminService {
      * 상품 목록 조회(관리자)
      */
     @Transactional(readOnly = true)
-    public PageResponse<ProductListGetResponse> getProductListAdmin(Long categoryId, String status, Pageable pageable) {
+    public PageResponse<ProductAdminListGetResponse> getProductListAdmin(Long categoryId, String status, Pageable pageable) {
 
         ProductStatus productStatus = null;
 
@@ -90,9 +90,9 @@ public class ProductAdminService {
 
         Page<Product> productList = productRepository.findProductListForAdmin(categoryId, productStatus, pageable);
 
-        Page<ProductListGetResponse> mapped = productList.map(p -> {
+        Page<ProductAdminListGetResponse> mapped = productList.map(p -> {
             String viewImageUrl = s3Uploader.createPresignedGetUrl(p.getImage(), 5);
-            return ProductListGetResponse.from(p, viewImageUrl);
+            return ProductAdminListGetResponse.from(p, viewImageUrl);
         });
 
         return PageResponse.from(mapped);

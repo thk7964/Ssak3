@@ -22,19 +22,27 @@ public class ProductSearchService {
 
         Page<ProductGetSearchResponse> response = productSearchCustomRepository.searchProduct(keyword, minPrice, maxPrice, pageable);
 
-        Page<ProductGetSearchResponse> mapped = response.map(product ->
-                new ProductGetSearchResponse(
-                        product.getProductId(),
-                        product.getTimeDealId(),
-                        product.getCategoryId(),
-                        product.getName(),
-                        product.getInformation(),
-                        product.getPrice(),
-                        product.getDealPrice(),
-                        s3Uploader.createPresignedGetUrl(product.getImageUrl(), 5),
-                        product.getCreatedAt(),
-                        product.getUpdatedAt()
-                )
+        Page<ProductGetSearchResponse> mapped = response.map(product -> {
+
+                    String timeDealImageUrl = (product.getTimeDealId() != null)
+                            ? s3Uploader.createPresignedGetUrl(product.getTimeDealImageUrl(), 5) : null;
+
+                    return new ProductGetSearchResponse(
+                            product.getProductId(),
+                            product.getTimeDealId(),
+                            product.getCategoryId(),
+                            product.getName(),
+                            product.getInformation(),
+                            product.getPrice(),
+                            product.getDealPrice(),
+                            product.getStatus(),
+                            s3Uploader.createPresignedGetUrl(product.getProductImageUrl(), 5),
+                            timeDealImageUrl,
+                            product.getCreatedAt(),
+                            product.getUpdatedAt()
+                    );
+                }
+
         );
 
         return PageResponse.from(mapped);

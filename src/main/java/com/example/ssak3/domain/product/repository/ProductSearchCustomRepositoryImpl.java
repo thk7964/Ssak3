@@ -39,7 +39,7 @@ public class ProductSearchCustomRepositoryImpl implements ProductSearchCustomRep
                 )
                 .where(
                         product.isDeleted.eq(false),
-                        product.status.eq(ProductStatus.FOR_SALE),
+                        product.status.ne(ProductStatus.BEFORE_SALE),
                         nameContains(keyword),
                         priceGoe(minPrice),
                         priceLoe(maxPrice)
@@ -57,7 +57,9 @@ public class ProductSearchCustomRepositoryImpl implements ProductSearchCustomRep
                         product.information,
                         product.price,
                         timeDeal.dealPrice,
+                        product.status,
                         product.image,
+                        timeDeal.image,
                         product.createdAt,
                         product.updatedAt
                 ))
@@ -72,7 +74,7 @@ public class ProductSearchCustomRepositoryImpl implements ProductSearchCustomRep
                 )
                 .where(
                         product.isDeleted.eq(false),
-                        product.status.eq(ProductStatus.FOR_SALE),
+                        product.status.ne(ProductStatus.BEFORE_SALE),
                         nameContains(keyword),
                         priceGoe(minPrice),
                         priceLoe(maxPrice)

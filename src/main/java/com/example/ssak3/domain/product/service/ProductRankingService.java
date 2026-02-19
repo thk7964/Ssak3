@@ -74,7 +74,7 @@ public class ProductRankingService {
 
         List<Long> productIdList = result.stream().map(id -> Long.parseLong(id.getValue())).toList();
 
-        List<Product> productList = productRepository.findAllByIdInAndStatusAndIsDeletedFalse(productIdList, ProductStatus.FOR_SALE);
+        List<Product> productList = productRepository.findAllByIdInAndIsDeletedFalse(productIdList);
 
         List<TimeDeal> timeDealList = timeDealRepository.findAllByProductIdInAndStatusAndIsDeletedFalse(productIdList, TimeDealStatus.OPEN);
 
@@ -86,24 +86,22 @@ public class ProductRankingService {
 
         return productIdList.stream()
                 .map(id -> {
+                    TimeDeal timeDeal = timeDealMap.get(id);
+
+                    if (timeDeal != null) {
+                        Product product = timeDeal.getProduct();
+                        String timeDealImageUrl = s3Uploader.createPresignedGetUrl(timeDeal.getImage(), 5);
+                        return ProductGetPopularResponse.from(product, timeDeal, null, timeDealImageUrl);
+                    }
+
                     Product product = productMap.get(id);
 
-                    if (product == null) {
+                    if (product == null || (product.getStatus() != ProductStatus.FOR_SALE && product.getStatus() != ProductStatus.SOLD_OUT)) {
                         return null;
                     }
 
-                    TimeDeal timeDeal = timeDealMap.get(id);
-
-                    String productImageUrl = null;
-                    String timeDealImageUrl = null;
-
-                    if (timeDeal != null) {
-                        timeDealImageUrl = s3Uploader.createPresignedGetUrl(timeDeal.getImage(), 5);
-                    } else {
-                        productImageUrl = s3Uploader.createPresignedGetUrl(product.getImage(), 5);
-                    }
-
-                    return ProductGetPopularResponse.from(product, timeDeal, productImageUrl, timeDealImageUrl);
+                    String productImageUrl = s3Uploader.createPresignedGetUrl(product.getImage(), 5);
+                    return ProductGetPopularResponse.from(product, null, productImageUrl, null);
                 })
                 .filter(Objects::nonNull)
                 .toList();

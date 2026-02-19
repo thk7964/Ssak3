@@ -38,7 +38,7 @@
             height: 64px;
             display: flex;
             align-items: center;
-            justify-content: space-between; /* 로고 왼쪽, 버튼 오른쪽 */
+            justify-content: space-between;
             gap: 16px;
         }
 
@@ -55,11 +55,10 @@
             text-decoration: none;
         }
 
-        /* 가운데 검색창 */
         .header-search {
             flex: 1;
             max-width: 400px;
-            margin: 0 20px; /* 좌우 여백으로 중앙 배치 */
+            margin: 0 20px;
             display: flex;
             align-items: center;
             background: #f3f4f6;
@@ -144,7 +143,6 @@
             margin: 0 4px;
         }
 
-        /* 로그인 — 글자 스타일 */
         .auth-btn {
             padding: 8px 16px;
             color: #4b5563;
@@ -164,7 +162,6 @@
             background: rgba(116, 185, 255, 0.08);
         }
 
-        /* 로그인 된 경우 */
         .user-info {
             display: flex;
             align-items: center;
@@ -172,7 +169,7 @@
         }
 
         .user-info .navbar-link {
-            color: #000000; /* 검정색으로 변경 */
+            color: #000000;
         }
 
         .logout-btn {
@@ -276,7 +273,6 @@
             width: 100%;
         }
 
-        /* ───────────── 섹션 타이틀 (세련된 버전) ───────────── */
         .section-title-wrap {
             display: flex;
             align-items: center;
@@ -370,7 +366,7 @@
             font-size: 60px;
         }
 
-        /* ───────────── 랭크 뱃지 (세련된 버전) ───────────── */
+        /* ───────────── 랭크 뱃지 ───────────── */
         .rank-badge {
             position: absolute;
             top: 10px;
@@ -451,6 +447,25 @@
             background-clip: text;
         }
 
+        .deal-price {
+            color: #ef4444 !important;
+            background: none !important;
+            -webkit-text-fill-color: initial !important;
+        }
+
+        .time-deal-badge {
+            display: inline-block;
+            margin-left: 8px;
+            padding: 2px 6px;
+            font-size: 10px;
+            font-weight: 700;
+            color: white;
+            background: linear-gradient(135deg, #f87171, #ef4444);
+            border-radius: 12px;
+            letter-spacing: 0.5px;
+            vertical-align: middle;
+        }
+
         .add-btn {
             background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
             color: white;
@@ -471,6 +486,60 @@
 
         .add-btn:active {
             transform: translateY(0);
+        }
+
+        /* ── SOLD_OUT 카드 오버레이 스타일 ── */
+        .product-card.is-soldout {
+            filter: grayscale(30%);
+        }
+
+        .product-card.is-soldout .product-image {
+            overflow: visible;
+        }
+
+        .soldout-card-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            pointer-events: none;
+            z-index: 5;
+            animation: soldout-card-fade 0.3s ease;
+            overflow: hidden;
+        }
+
+        @keyframes soldout-card-fade {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        .soldout-card-badge {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1.5px solid rgba(255, 255, 255, 0.6);
+            border-radius: 50px;
+            padding: 6px 16px;
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            backdrop-filter: blur(4px);
+            text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+        }
+
+        .soldout-card-sub {
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        /* SOLD_OUT 카드는 hover 시 위로 올라가는 효과 제거 */
+        .product-card.is-soldout:hover {
+            transform: none;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
         }
 
         footer {
@@ -522,7 +591,6 @@
     <div class="header-inner">
         <a class="logo" onclick="location.href='home.html'">SSAK3</a>
 
-        <!-- 가운데 검색창 -->
         <div class="header-search">
             <input
                     type="text"
@@ -539,10 +607,8 @@
             <a class="navbar-link" onclick="location.href='cart.html'">장바구니</a>
             <div class="navbar-divider"></div>
 
-            <!-- 로그인 안 된 경우 -->
             <button class="auth-btn" id="loginBtn" style="display: none;">로그인 / 회원가입</button>
 
-            <!-- 로그인 된 경우 -->
             <div class="user-info" id="userInfo" style="display: none;">
                 <a class="navbar-link active" id="myPageBtn">마이페이지</a>
                 <a class="navbar-link" id="logoutBtn" style="color:#ef4444;">로그아웃</a>
@@ -559,7 +625,6 @@
 <nav id="categoryNav"></nav>
 
 <div class="products-section">
-    <!-- 세련된 섹션 타이틀 -->
     <div class="section-title-wrap">
         <span class="section-title-line"></span>
         <h2 class="section-title">
@@ -580,20 +645,15 @@
 
 
 <script>
-    // 다른 도메인에서 넘어온 토큰을 내 도메인 저장소에 기록
-    // 무조건 토큰부터 챙기기 (함수 없이 즉시 실행)
     const urlParams = new URLSearchParams(window.location.search);
     const tokenFromUrl = urlParams.get('token');
     let categoryMap = {};
 
     if (tokenFromUrl && tokenFromUrl !== 'null') {
-        // 로컬 스토리지에 먼저 저장
         localStorage.setItem('accessToken', tokenFromUrl);
-        // 주소창 세탁 (토큰 노출 방지)
         window.history.replaceState({}, document.title, window.location.pathname);
     }
 
-    // API URL 설정
     const API_URL = (() => {
         const hostname = window.location.hostname;
 
@@ -618,7 +678,6 @@
             const nav = document.getElementById('categoryNav');
             nav.innerHTML = '';
 
-            // ✅ id -> name 맵 만들기
             categoryMap = {};
             categories.forEach(cat => {
                 const catName = cat.name ?? cat.categoryName;
@@ -629,9 +688,28 @@
                 a.href = `category-product.html?categoryId=${cat.id}`;
                 nav.appendChild(a);
             });
-
         } catch (e) {
             console.error('카테고리 로딩 실패:', e);
+        }
+    }
+
+    loadCategories();
+
+    // SOLD_OUT 카드 오버레이 적용 함수
+    function applySoldoutCardOverlay(card, product) {
+        if (product.status !== 'SOLD_OUT') return;
+
+        card.classList.add('is-soldout');
+
+        const imgEl = card.querySelector('.product-image');
+        if (imgEl) {
+            const overlay = document.createElement('div');
+            overlay.className = 'soldout-card-overlay';
+            overlay.innerHTML = `
+                <div class="soldout-card-badge">SOLD OUT</div>
+                <div class="soldout-card-sub">품절된 상품입니다</div>
+            `;
+            imgEl.appendChild(overlay);
         }
     }
 
@@ -653,12 +731,10 @@
                 const card = document.createElement('div');
                 card.className = 'product-card';
 
-                // 🔥 이미지 유무에 따른 HTML 처리
                 const imageHtml = product.imageUrl
                     ? `<img src="${product.imageUrl}" class="product-img" alt="${product.name}">`
                     : `<div class="emoji-fallback">🛍️</div>`;
 
-                // 세련된 랭크 뱃지: 1~3등 특별 스타일, 나머지는 심플
                 const rankClass = index === 0 ? 'rank-1' : index === 1 ? 'rank-2' : index === 2 ? 'rank-3' : '';
 
                 card.innerHTML = `
@@ -669,19 +745,36 @@
                     ${imageHtml}
                 </div>
                 <div class="product-info">
+                    <div class="product-name">
+                        ${product.name}
+                        ${product.timeDealId ? '<span class="time-deal-badge">타임딜</span>' : ''}
+                    </div>
+                    <div class="product-desc">카테고리 ${product.categoryId}</div>
                     <div class="product-name">${product.name}</div>
                     <div class="product-desc">${categoryMap[product.categoryId] ?? `카테고리 ${product.categoryId}`}</div>
                     <div class="product-footer">
                         <div class="product-price">
-                            ${(product.dealPrice ?? product.price).toLocaleString()}원
+                            ${
+                    product.timeDealId
+                        ? `<span style="text-decoration: line-through !important; color: #adb5bd !important; background: none !important; -webkit-text-fill-color: #adb5bd !important;">${product.price.toLocaleString()}원</span>
+                                   <span class="deal-price">${product.dealPrice.toLocaleString()}원</span>`
+                        : `${(product.dealPrice ?? product.price).toLocaleString()}원`
+                }
                         </div>
                     </div>
                 </div>
             `;
 
                 card.addEventListener('click', () => {
-                    window.location.href = `product-detail.html?id=${product.id}`;
+                    if (product.timeDealId) {
+                        window.location.href = `time-deal-detail.html?id=${product.timeDealId}`;
+                    } else {
+                        window.location.href = `product-detail.html?id=${product.id}`;
+                    }
                 });
+
+                // SOLD_OUT 오버레이 적용
+                applySoldoutCardOverlay(card, product);
 
                 container.appendChild(card);
             });
@@ -696,10 +789,8 @@
         const keyword = document.getElementById('searchInput').value.trim();
 
         if (keyword) {
-            // 백엔드 API 명세에 맞춰 'keyword' 파라미터 사용
             window.location.href = `product-search.html?keyword=${encodeURIComponent(keyword)}&page=0`;
         } else {
-            // 검색어 없이 이동할 경우 전체 상품을 보여주기 위해 그대로 이동
             window.location.href = `product-search.html`;
         }
     }
@@ -708,7 +799,6 @@
         if (event.key === 'Enter') handleSearch();
     }
 
-    // [핵심] 로그인 상태 확인 로직
     async function checkLoginStatus() {
         const loginBtn = document.getElementById('loginBtn');
         const userInfo = document.getElementById('userInfo');
@@ -716,7 +806,6 @@
 
         try {
             let response;
-            // 1. 일반 로그인(JWT) 우선 확인
             if (token) {
                 response = await fetch(`${API_URL}/ssak3/users/me`, {
                     method: 'GET',
@@ -724,11 +813,10 @@
                 });
             }
 
-            // 2. 토큰이 없거나 만료된 경우 카카오(쿠키) 확인
             if (!token || response.status === 401) {
                 response = await fetch(`${API_URL}/ssak3/users/me`, {
                     method: 'GET',
-                    credentials: 'include' // 쿠키 포함
+                    credentials: 'include'
                 });
             }
 
@@ -745,14 +833,12 @@
         }
     }
 
-    // [핵심] 로그아웃 로직 (네트워크 오류 방어)
     document.getElementById('logoutBtn').addEventListener('click', async function() {
         if (!confirm('로그아웃 하시겠습니까?')) return;
 
         const token = localStorage.getItem('accessToken');
 
         try {
-            // 서버에 로그아웃 알림 (에러가 나더라도 클라이언트는 지워야 하므로 await 처리)
             const logoutRequest = {
                 method: 'POST',
                 credentials: 'include'
@@ -761,7 +847,6 @@
 
             const response = await fetch(`${API_URL}/ssak3/auth/logout`, logoutRequest);
 
-            // 서버 응답과 상관없이 클라이언트 데이터는 무조건 삭제 (유저 경험 우선)
             localStorage.removeItem('accessToken');
 
             if (!response.ok) {
@@ -769,27 +854,21 @@
             }
 
             alert('로그아웃 되었습니다.');
-            // 캐시 방지를 위해 주소 뒤에 파라미터를 붙여 리다이렉트
-            // window.location.replace('home.html?logout=' + Date.now());
             window.location.href = 'home.html';
 
         } catch (e) {
             console.error('로그아웃 통신 에러:', e);
-            // 네트워크 끊겨도 로컬 정보는 지워서 로그아웃된 것처럼 보이게 처리
             localStorage.removeItem('accessToken');
             alert('로그아웃 되었습니다.');
             window.location.replace('home.html');
         }
     });
 
-    // 버튼 이벤트 바인딩
     document.getElementById('loginBtn').addEventListener('click', () => location.href = 'login.html');
     document.getElementById('myPageBtn').addEventListener('click', () => location.href = 'mypage.html');
 
-    // 초기 실행
     checkLoginStatus();
 
-    // 상품 카드 관련 (기존 유지)
     document.querySelectorAll('.add-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();

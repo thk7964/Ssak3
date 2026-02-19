@@ -2,6 +2,7 @@ package com.example.ssak3.domain.product.service;
 
 import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.enums.ProductStatus;
+import com.example.ssak3.common.enums.TimeDealStatus;
 import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.common.model.PageResponse;
 import com.example.ssak3.domain.category.entity.Category;
@@ -13,11 +14,14 @@ import com.example.ssak3.domain.product.model.request.ProductUpdateStatusRequest
 import com.example.ssak3.domain.product.model.response.*;
 import com.example.ssak3.domain.product.repository.ProductRepository;
 import com.example.ssak3.domain.s3.service.S3Uploader;
+import com.example.ssak3.domain.timedeal.repository.TimeDealRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 
 @Service
@@ -26,6 +30,7 @@ public class ProductAdminService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final TimeDealRepository timeDealRepository;
     private final S3Uploader s3Uploader;
 
     /**
@@ -71,13 +76,23 @@ public class ProductAdminService {
      * 상품 목록 조회(관리자)
      */
     @Transactional(readOnly = true)
-    public PageResponse<ProductListGetResponse> getProductListAdmin(Long categoryId, Pageable pageable) {
+    public PageResponse<ProductAdminListGetResponse> getProductListAdmin(Long categoryId, String status, Pageable pageable) {
 
-        Page<Product> productList = productRepository.findProductListByCategoryIdForAdmin(categoryId, pageable);
+        ProductStatus productStatus = null;
 
-        Page<ProductListGetResponse> mapped = productList.map(p -> {
+        if (status != null && !status.isBlank()) {
+            try {
+                productStatus = ProductStatus.valueOf(status.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new CustomException(ErrorCode.INVALID_PRODUCT_STATUS);
+            }
+        }
+
+        Page<Product> productList = productRepository.findProductListForAdmin(categoryId, productStatus, pageable);
+
+        Page<ProductAdminListGetResponse> mapped = productList.map(p -> {
             String viewImageUrl = s3Uploader.createPresignedGetUrl(p.getImage(), 5);
-            return ProductListGetResponse.from(p, viewImageUrl);
+            return ProductAdminListGetResponse.from(p, viewImageUrl);
         });
 
         return PageResponse.from(mapped);
@@ -112,8 +127,14 @@ public class ProductAdminService {
      */
     @Transactional
     public ProductDeleteResponse deleteProduct(Long productId) {
-        
+
         Product foundProduct = findProduct(productId);
+
+        boolean hasBlockingTimeDeal = timeDealRepository.existsByProductAndStatusInAndIsDeletedFalse(foundProduct, List.of(TimeDealStatus.READY, TimeDealStatus.OPEN));
+
+        if (hasBlockingTimeDeal) {
+            throw new CustomException(ErrorCode.PRODUCT_HAS_TIME_DEAL);
+        }
 
         if (foundProduct.getImage() != null) {
             s3Uploader.deleteImage(foundProduct.getImage());

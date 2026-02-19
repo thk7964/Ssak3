@@ -557,6 +557,60 @@
             .hero-text h1 { font-size: 26px; }
             .products-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
         }
+
+        /* ── ✅ 추가: SOLD_OUT 카드 오버레이 스타일 ── */
+        .product-card.is-soldout {
+            filter: grayscale(30%);
+        }
+
+        .product-card.is-soldout .product-image {
+            position: relative;
+        }
+
+        .soldout-card-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            pointer-events: none;
+            z-index: 5;
+            animation: soldout-card-fade 0.3s ease;
+        }
+
+        @keyframes soldout-card-fade {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        .soldout-card-badge {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1.5px solid rgba(255, 255, 255, 0.6);
+            border-radius: 50px;
+            padding: 6px 16px;
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            backdrop-filter: blur(4px);
+            text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+        }
+
+        .soldout-card-sub {
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        /* SOLD_OUT 카드는 hover 시 위로 올라가는 효과 제거 */
+        .product-card.is-soldout:hover {
+            transform: none;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            border-color: #f0f0f0;
+        }
     </style>
 </head>
 <body>
@@ -568,10 +622,10 @@
 
         <div class="header-search">
             <input
-                type="text"
-                id="searchInput"
-                placeholder="상품을 검색해보세요"
-                onkeypress="handleSearchEnter(event)"
+                    type="text"
+                    id="searchInput"
+                    placeholder="상품을 검색해보세요"
+                    onkeypress="handleSearchEnter(event)"
             >
             <button class="header-search-btn" onclick="handleSearch()">검색</button>
         </div>
@@ -758,30 +812,58 @@
             ? new Date(product.createdAt).toLocaleDateString('ko-KR', { year:'numeric', month:'short', day:'numeric' })
             : '';
 
-        const displayPrice = (product.dealPrice ?? product.price ?? 0).toLocaleString();
+        // 타임딜 여부 확인
+        const isTimeDeal = !!product.timeDealId;
+        const displayPrice = (isTimeDeal ? product.dealPrice : product.price ?? 0).toLocaleString();
+        const originalPrice = product.price?.toLocaleString();
 
+        // 이미지 처리
         let imageContent;
         if (product.imageUrl) {
-            imageContent = `<img class="product-img-tag" src="${product.imageUrl}" alt="${product.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-<div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:64px;">🛍️</div>`;
+            // 타임딜이면 배너나 오버레이 표시
+            imageContent = `
+            <img class="product-img-tag" src="${product.imageUrl}" alt="${product.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:64px;">🛍️</div>
+            ${isTimeDeal ? '<div style="position:absolute;top:8px;left:8px;background:red;color:white;padding:4px 8px;border-radius:12px;font-size:12px;font-weight:700;">타임딜</div>' : ''}
+        `;
         } else {
             imageContent = `<span>🛍️</span>`;
         }
 
+        // 가격 HTML
+        let priceHTML;
+        if (isTimeDeal) {
+            priceHTML = `
+            <div style="display:flex;gap:8px;align-items:center;">
+                <span style="text-decoration:line-through;color:#adb5bd;">${originalPrice}원</span>
+                <span style="color:red;font-weight:700;">${displayPrice}원</span>
+            </div>
+        `;
+        } else {
+            priceHTML = `<div class="product-price">${displayPrice}원</div>`;
+        }
+
         card.innerHTML = `
-<div class="product-image">${imageContent}</div>
-<div class="product-info">
-<div class="product-name" title="${product.name}">${product.name}</div>
-<div class="product-footer">
-<div class="product-price">${displayPrice}원</div>
+        <div class="product-image">${imageContent}</div>
+        <div class="product-info">
+            <div class="product-name" title="${product.name}">${product.name}</div>
+            <div class="product-footer">
+                ${priceHTML}
+            </div>
+        </div>
+    `;
 
-</div>
-</div>`;
-
-        // 카드 클릭 → 상세 페이지
+        // 클릭 시 상세 페이지 이동
         card.addEventListener('click', () => {
-            window.location.href = `product-detail.html?id=${product.id}`;
+            if (isTimeDeal) {
+                window.location.href = `time-deal-detail.html?id=${product.timeDealId}`;
+            } else {
+                window.location.href = `product-detail.html?id=${product.id}`;
+            }
         });
+
+        // ── ✅ 추가: SOLD_OUT 오버레이 적용 ──
+        applySoldoutCardOverlay(card, product);
 
         return card;
     }
@@ -920,6 +1002,26 @@
         // 3. 로그인 상태 확인하여 헤더 UI 변경
         checkLoginStatus();
     });
+
+    // ── ✅ 추가: SOLD_OUT 카드 오버레이 적용 함수 ──
+    function applySoldoutCardOverlay(card, product) {
+        if (product.status !== 'SOLD_OUT') return;
+
+        // 카드 전체에 품절 스타일 클래스 추가
+        card.classList.add('is-soldout');
+
+        // 이미지 영역 위에 어두운 오버레이 + 배지 삽입
+        const imgEl = card.querySelector('.product-image');
+        if (imgEl) {
+            const overlay = document.createElement('div');
+            overlay.className = 'soldout-card-overlay';
+            overlay.innerHTML = `
+                <div class="soldout-card-badge">SOLD OUT</div>
+                <div class="soldout-card-sub">품절된 상품입니다</div>
+            `;
+            imgEl.appendChild(overlay);
+        }
+    }
 </script>
 </body>
 </html>

@@ -9,6 +9,8 @@ import com.example.ssak3.domain.product.model.response.ProductGetResponse;
 import com.example.ssak3.domain.product.model.response.ProductListGetResponse;
 import com.example.ssak3.domain.product.repository.ProductRepository;
 import com.example.ssak3.domain.s3.service.S3Uploader;
+import com.example.ssak3.domain.timedeal.entity.TimeDeal;
+import com.example.ssak3.domain.timedeal.repository.TimeDealRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -24,6 +26,7 @@ public class ProductUserService {
     private final ProductRepository productRepository;
     private final ProductRankingService productRankingService;
     private final S3Uploader s3Uploader;
+    private final TimeDealRepository timeDealRepository;
 
     /**
      * 상품 상세 조회 (사용자)
@@ -58,9 +61,20 @@ public class ProductUserService {
 
         Page<Product> productList = productRepository.findProductListByCategoryId(categoryId, pageable);
 
-        Page<ProductListGetResponse> mapped = productList.map(p -> {
-            String viewImageUrl = s3Uploader.createPresignedGetUrl(p.getImage(), 5);
-            return ProductListGetResponse.from(p, viewImageUrl);
+        Page<ProductListGetResponse> mapped = productList.map(product -> {
+
+            if (product.getStatus().equals(ProductStatus.STOP_SALE)) {
+                TimeDeal timeDeal = timeDealRepository.findByProductId(product.getId())
+                        .orElseThrow(() -> new CustomException(ErrorCode.TIME_DEAL_NOT_FOUND));
+
+                String timeDealImageUrl = s3Uploader.createPresignedGetUrl(timeDeal.getImage(), 5);
+                String productImageUrl = s3Uploader.createPresignedGetUrl(product.getImage(), 5);
+
+                return ProductListGetResponse.from(product, timeDeal, productImageUrl, timeDealImageUrl);
+            }
+
+            String imageUrl = s3Uploader.createPresignedGetUrl(product.getImage(), 5);
+            return ProductListGetResponse.from(product, null, imageUrl, null);
         });
 
         return PageResponse.from(mapped);

@@ -1047,6 +1047,54 @@
                 padding: 16px 18px;
             }
         }
+
+        /* ── ✅ 추가: SOLD_OUT 오버레이 스타일 ── */
+        .soldout-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            z-index: 10;
+            pointer-events: none;
+            animation: soldout-fade-in 0.3s ease;
+        }
+
+        @keyframes soldout-fade-in {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        .soldout-overlay-badge {
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            border-radius: 50px;
+            padding: 10px 28px;
+            color: #ffffff;
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 3px;
+            backdrop-filter: blur(4px);
+            text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        }
+
+        .soldout-overlay-sub {
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        /* SOLD_OUT 시 상품 정보 영역 전체 흐리게 */
+        .product-main.is-soldout .product-info-section {
+            opacity: 0.55;
+            filter: grayscale(40%);
+            transition: opacity 0.3s ease, filter 0.3s ease;
+        }
     </style>
 </head>
 
@@ -1339,6 +1387,9 @@
       ${detailImgTag}
     `;
 
+        // ── ✅ 추가: SOLD_OUT 오버레이 적용 ──
+        applySoldoutOverlay(product);
+
         initReviews();
     }
 
@@ -1416,14 +1467,14 @@
         }
     }
 
-   async function buyNow() {
+    async function buyNow() {
 
-       const token = getToken();
+        const token = getToken();
 
-       const res = await fetch(`${API_URL}/ssak3/users/me`, {   // ✅ 여기 수정
-           headers: token ? { 'Authorization': `Bearer ${token}` } : {},
-           credentials: 'include'
-       });
+        const res = await fetch(`${API_URL}/ssak3/users/me`, {   // ✅ 여기 수정
+            headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+            credentials: 'include'
+        });
 
         if (!res.ok) {
             requireLoginAndRedirect();
@@ -1887,6 +1938,31 @@
         } catch (e) {
             __isLoggedIn = false;
             __myId = null;
+        }
+    }
+
+    // ── ✅ 추가: SOLD_OUT 오버레이 적용 함수 ──
+    function applySoldoutOverlay(product) {
+        if (product.status !== 'SOLD_OUT') return;
+
+        // 이미지 섹션에 relative 포지션 부여 후 오버레이 삽입
+        const imgSection = document.querySelector('.product-image-section');
+        if (imgSection) {
+            imgSection.style.position = 'relative';
+
+            const overlay = document.createElement('div');
+            overlay.className = 'soldout-overlay';
+            overlay.innerHTML = `
+                <div class="soldout-overlay-badge">SOLD OUT</div>
+                <div class="soldout-overlay-sub">해당 상품은 현재 품절 상태입니다</div>
+            `;
+            imgSection.appendChild(overlay);
+        }
+
+        // 상품 정보 섹션 전체에 흐리게 처리를 위한 클래스 추가
+        const productMain = document.querySelector('.product-main');
+        if (productMain) {
+            productMain.classList.add('is-soldout');
         }
     }
 </script>

@@ -116,10 +116,16 @@ public class OrderService {
             }
         }
 
-        savedOrder.updateStatus(OrderStatus.PAYMENT_PENDING);
+        String paymentUrl = null;
 
-        String orderName = URLEncoder.encode(product.getName(), StandardCharsets.UTF_8);
-        String paymentUrl = frontendBaseUrl + "/checkout.html?orderId=" + savedOrder.getId() + "&orderName=" + orderName;
+        if (savedOrder.getTotalPrice() == 0) {
+            savedOrder.updateStatus(OrderStatus.DONE);
+        } else {
+            savedOrder.updateStatus(OrderStatus.PAYMENT_PENDING);
+
+            String orderName = URLEncoder.encode(product.getName(), StandardCharsets.UTF_8);
+            paymentUrl = frontendBaseUrl + "/checkout.html?orderId=" + savedOrder.getId() + "&orderName=" + orderName;
+        }
 
         return OrderCreateResponse.from(savedOrder, subtotal, discount, paymentUrl, deliveryFee);
     }
@@ -224,8 +230,14 @@ public class OrderService {
             orderName = cartProductList.get(0).getProduct().getName() + " 외" + (cartProductList.size() - 1) + " 건";
         }
 
-        savedOrder.updateStatus(OrderStatus.PAYMENT_PENDING);
-        String paymentUrl = frontendBaseUrl + "/checkout.html?orderId=" + savedOrder.getId() + "&orderName=" + orderName;
+        String paymentUrl = null;
+
+        if (savedOrder.getTotalPrice() == 0) {
+            savedOrder.updateStatus(OrderStatus.DONE);
+        } else {
+            savedOrder.updateStatus(OrderStatus.PAYMENT_PENDING);
+            paymentUrl = frontendBaseUrl + "/checkout.html?orderId=" + savedOrder.getId() + "&orderName=" + orderName;
+        }
 
         return OrderCreateResponse.from(savedOrder, subtotal, discount, paymentUrl, deliveryFee);
 
@@ -292,14 +304,18 @@ public class OrderService {
             throw new CustomException(ErrorCode.ORDER_CAN_NOT_BE_CANCELED);
         }
 
-        Payment payment = paymentRepository.findByOrder(order)
-                .orElseThrow(() -> new CustomException(ErrorCode.PAYMENT_NOT_FOUND));
+        Payment payment = null;
 
-        if (payment.getStatus() == PaymentStatus.CANCELLED) {
-            return OrderGetResponse.from(order, order.getOrderProducts());
+        if (order.getTotalPrice() != 0) {
+            payment = paymentRepository.findByOrder(order)
+                    .orElseThrow(() -> new CustomException(ErrorCode.PAYMENT_NOT_FOUND));
+
+            if (payment.getStatus() == PaymentStatus.CANCELLED) {
+                return OrderGetResponse.from(order, order.getOrderProducts());
+            }
+
+            tossPaymentClient.cancel(payment.getPaymentKey(), request.getCancelReason());
         }
-
-        tossPaymentClient.cancel(payment.getPaymentKey(), request.getCancelReason());
 
         orderCancel(order, payment);
 
@@ -403,7 +419,10 @@ public class OrderService {
             order.getUserCoupon().rollback();
         }
 
-        payment.cancel();
+        if (payment != null) {
+            payment.cancel();
+        }
+
         order.canceled();
     }
 

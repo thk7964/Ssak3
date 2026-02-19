@@ -16,9 +16,10 @@
             background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
             min-height: 100vh;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: stretch;
+            padding: 0;
         }
 
         .login-container {
@@ -222,59 +223,281 @@
                 font-size: 28px;
             }
         }
+
+        /* ───────────── 상단바 ───────────── */
+        header {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.5);
+            box-shadow: 0 2px 16px rgba(116, 185, 255, 0.15);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 28px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .header-logo {
+            font-size: 22px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+            cursor: pointer;
+            flex-shrink: 0;
+            text-decoration: none;
+        }
+
+        .header-search {
+            flex: 1;
+            max-width: 400px;
+            margin: 0 20px;
+            display: flex;
+            align-items: center;
+            background: #f3f4f6;
+            border-radius: 10px;
+            border: 1.5px solid transparent;
+            overflow: hidden;
+            transition: all 0.15s ease;
+        }
+
+        .header-search:focus-within {
+            background: white;
+            border-color: #a29bfe;
+            box-shadow: 0 0 0 3px rgba(162, 155, 254, 0.12);
+        }
+
+        .header-search input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 9px 14px;
+            font-size: 14px;
+            color: #374151;
+            outline: none;
+        }
+
+        .header-search input::placeholder {
+            color: #9ca3af;
+        }
+
+        .header-search-btn {
+            border: none;
+            background: transparent;
+            padding: 9px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #a29bfe;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: color 0.15s ease;
+            border-left: 1.5px solid #e5e7eb;
+        }
+
+        .header-search-btn:hover {
+            color: #74b9ff;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .navbar-link {
+            padding: 8px 16px;
+            color: #4b5563;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s ease;
+            border: none;
+            background: transparent;
+            white-space: nowrap;
+        }
+
+        .navbar-link:hover {
+            color: #74b9ff;
+            background: rgba(116, 185, 255, 0.08);
+        }
+
+        .navbar-divider {
+            width: 1px;
+            height: 18px;
+            background: #e5e7eb;
+            margin: 0 4px;
+        }
+
+        .auth-btn {
+            padding: 8px 16px;
+            color: #4b5563;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s ease;
+            border: none;
+            background: transparent;
+            white-space: nowrap;
+        }
+
+        .auth-btn:hover {
+            color: #74b9ff;
+            background: rgba(116, 185, 255, 0.08);
+        }
+
+        /* ───────────── 푸터 ───────────── */
+        footer {
+            background: #212529;
+            color: #adb5bd;
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 0;
+        }
+
+        footer p {
+            margin: 10px 0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        footer p:first-child {
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        footer a {
+            color: #adb5bd;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            color: white;
+        }
+
+        .page-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        @media (max-width: 768px) {
+            .header-inner {
+                padding: 0 16px;
+                flex-wrap: wrap;
+                height: auto;
+                padding-top: 12px;
+                padding-bottom: 12px;
+                gap: 10px;
+            }
+            .header-search {
+                order: 3;
+                width: 100%;
+                max-width: 100%;
+                margin: 0;
+            }
+        }
     </style>
 </head>
 <body>
-<div class="login-container">
-    <div class="logo">
-        <h1>싹쓰리</h1>
-        <p>나만의 특별한 굿즈를 만나보세요</p>
-    </div>
 
-    <form id="loginForm">
-        <div class="form-group">
-            <label for="email">이메일</label>
-            <div class="input-wrapper">
-                <input
-                        type="email"
-                        id="email"
-                        placeholder="example@email.com"
-                        required
-                >
-            </div>
+<!-- ───────────── 상단바 ───────────── -->
+<header>
+    <div class="header-inner">
+        <a class="header-logo" onclick="location.href='home.html'">SSAK3</a>
+
+        <div class="header-search">
+            <input type="text" id="searchInput" placeholder="상품을 검색해보세요" onkeypress="if(event.key==='Enter'){const k=this.value.trim();window.location.href=k?'product-search.html?keyword='+encodeURIComponent(k)+'&page=0':'product-search.html';}">
+            <button class="header-search-btn" onclick="const k=document.getElementById('searchInput').value.trim();window.location.href=k?'product-search.html?keyword='+encodeURIComponent(k)+'&page=0':'product-search.html';">검색</button>
         </div>
 
-        <div class="form-group">
-            <label for="password">비밀번호</label>
-            <div class="input-wrapper">
-                <input
-                        type="password"
-                        id="password"
-                        placeholder="비밀번호를 입력하세요"
-                        required
-                >
-            </div>
+        <div class="header-nav">
+            <a class="navbar-link" onclick="location.href='product-search.html'">전체 상품</a>
+            <a class="navbar-link" onclick="location.href='time-deals.html'">타임딜</a>
+            <a class="navbar-link" onclick="location.href='cart.html'">장바구니</a>
+            <div class="navbar-divider"></div>
+            <button class="auth-btn" onclick="location.href='login.html'">로그인 / 회원가입</button>
+        </div>
+    </div>
+</header>
+
+<div class="page-content">
+    <div class="login-container">
+        <div class="logo">
+            <h1>싹쓰리</h1>
+            <p>나만의 특별한 굿즈를 만나보세요</p>
         </div>
 
-        <button type="submit" class="login-btn">로그인</button>
-    </form>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">이메일</label>
+                <div class="input-wrapper">
+                    <input
+                            type="email"
+                            id="email"
+                            placeholder="example@email.com"
+                            required
+                    >
+                </div>
+            </div>
 
-    <div class="divider">
-        <span>또는</span>
+            <div class="form-group">
+                <label for="password">비밀번호</label>
+                <div class="input-wrapper">
+                    <input
+                            type="password"
+                            id="password"
+                            placeholder="비밀번호를 입력하세요"
+                            required
+                    >
+                </div>
+            </div>
+
+            <button type="submit" class="login-btn">로그인</button>
+        </form>
+
+        <div class="divider">
+            <span>또는</span>
+        </div>
+
+        <!-- 카카오 로그인 버튼 -->
+        <button type="button" class="kakao-btn" onclick="kakaoLogin()">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M9 0C4.03 0 0 3.36 0 7.5C0 10.08 1.53 12.36 3.9 13.68L3.06 16.74C2.97 17.07 3.33 17.34 3.63 17.16L7.29 15.03C7.86 15.12 8.43 15.18 9 15.18C13.97 15.18 18 11.82 18 7.68C18 3.54 13.97 0 9 0Z" fill="#371D1E"/>
+            </svg>
+            카카오 로그인
+        </button>
+
+        <div class="signup-link">
+            아직 회원이 아니신가요? <a href="signup.html">회원가입</a>
+        </div>
     </div>
+</div><!-- /.page-content -->
 
-    <!-- 카카오 로그인 버튼 -->
-    <button type="button" class="kakao-btn" onclick="kakaoLogin()">
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-            <path d="M9 0C4.03 0 0 3.36 0 7.5C0 10.08 1.53 12.36 3.9 13.68L3.06 16.74C2.97 17.07 3.33 17.34 3.63 17.16L7.29 15.03C7.86 15.12 8.43 15.18 9 15.18C13.97 15.18 18 11.82 18 7.68C18 3.54 13.97 0 9 0Z" fill="#371D1E"/>
-        </svg>
-        카카오 로그인
-    </button>
-
-    <div class="signup-link">
-        아직 회원이 아니신가요? <a href="signup.html">회원가입</a>
-    </div>
-</div>
+<footer>
+    <p>© 싹쓰리 - 모두를 위한 귀여운 굿즈</p>
+    <p>고객센터: 010-1234-5678 | <a href="https://github.com/thk7964/Ssak3">싹쓰리 홈페이지</a></p>
+    <p>개인정보처리방침 | 이용약관 | 배송정책</p>
+</footer>
 
 <script>
     // API URL 설정

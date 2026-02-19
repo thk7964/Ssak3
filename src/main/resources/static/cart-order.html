@@ -1097,6 +1097,12 @@
 
             const json = await res.json();
 
+            const data = json?.data;
+            if (data && data.orderStatus === 'DONE' && Number(data.totalPrice) === 0) {
+                window.location.href = 'my-orders.html';
+                return;
+            }
+
             if (!json.data || !json.data.paymentUrl) {
                 throw new Error('결제 URL이 없습니다.');
             }

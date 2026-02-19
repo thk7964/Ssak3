@@ -4,8 +4,12 @@
 
 # “굿즈 커머스 플랫폼 - 싹쓰리”
 
+<br><br>
+
 ## 목차
 <!-- 하이퍼링크 걸어서 넣기 -->
+
+<br><br>
 
 ---
 ## **📄** 프로젝트 소개
@@ -32,6 +36,8 @@
 
 상품 조회부터 주문·결제까지의 과정을 직관적으로 제공하는 커머스 서비스입니다.
 
+
+<br><br>
 
 ---
 ## 🔧 기술 스택 
@@ -102,6 +108,7 @@
 ![Figma](https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white)
 ![draw.io](https://img.shields.io/badge/draw.io-F08705?style=for-the-badge)
 
+<br><br>
 
 ---
 ## ⚙️ 시스템 아키텍쳐
@@ -118,7 +125,7 @@
 
 
 </details>
-<details open>
+<details>
 <summary><b>v3</b></summary>
 
 <img width="500" height="800" alt="image" src="https://github.com/user-attachments/assets/1495326c-29e3-4c51-83a1-9d533bf1ccf5" />
@@ -126,10 +133,22 @@
 
 </details>
 
+<details open>
+<summary><b>v4</b></summary>
+
+<img width="858" height="1118" alt="image" src="https://github.com/user-attachments/assets/950196f4-4e71-4bd3-b1e4-0fe2ae83f9a1" />
+
+
+</details>
+
+<br><br>
+
 ---
 ## 💻 와이어프레임
 
 <!-- 수정 후 최종본 넣기 -->
+
+<br><br>
 
 ---
 ## 📑 ERD
@@ -138,12 +157,18 @@
 [ERD 링크](https://www.erdcloud.com/d/733xaDF6icfwc8eJY) 
 
 
+<br><br>
+
 ---
 ## 📝 API 명세서
 <!-- 여기에 넣기 -->
 
+<br><br>
+
 ---
 ## 👊 주요 기능
+
+<br>
 
 <details open>
 <summary><b>🎖️ 인기 TOP 10 상품 조회</b></summary>
@@ -220,44 +245,65 @@
   사용자가 채팅 종료 버튼을 눌러 종료하거나, 회원이 채팅으로 종료 의사를 밝히고 종료 버튼을 누르지 않고 종료한 경우 혹은  회원이 1시간 이상 채팅에 답장이 없을 경우 관리자가 종료처리
 </details>
 
+<br><br>
+
 ---
 ## 🛠 기술적 의사 결정
+
+<br>
+
 <details>
-<summary><b>✨ 인증 방식 결정 (Session vs JWT)</b></summary>
+<summary><b>✨ Session vs JWT 인증 방식 의사 결정</b></summary>
+
+<br>
   
 <b>⁉️ 의사 결정 발생 배경</b>
 
 - **서버 자원 효율성 및 확장성 확보**
 - 사용자가 늘어남에 따라 서버 메모리에 세션 정보를 저장하는 방식은 메모리 부족의 위험성을 키우고, 향후 트래픽 대응을 위해 서버를 여러 대 띄우는 Scale-Out 상황에서 세션 불일치 문제를 경계했습니다.
 
+<br>
+
 <b>🙋‍♀️ 의사 결정 과정</b>
 
 - **JWT 선택**
 - 서버의 메모리 자원을 소모하지 않는 Stateless한 특성을 가진 JWT를 선택하여 서버 확장(Scale-out) 시 별도의 세션 클러스터링이나 공유 저장소 구축 없이도 대응 가능하도록 설계했습니다.
+
+<br>
 
 <b>💡 고려한 대안</b>
 
 - **세션 기반 인증**
 - 구현이 쉽고 보안 상 즉시 만료가 가능하다는 장점이 있으나, 서버 메모리의 부담과 향후 분산 환경에서의 인프라 복잡도 증가 우려로 제외했습니다.
 
+<br>
+
 <b>✨ 해결 과정</b>
 
 1. `OncePerRequestFilter` 를 상속 받은 `JwtFilter` 를 구현하여 매 요청마다 토큰의 유효성을 검증하도록 설계했습니다.
 2. `SecurityConfig` 에서 인증이 필요한 경로와 필요하지 않은 경로를 분리하고, Stateless 세션 정책을 명시하여 JWT의 취지에 맞게 설정했습니다.
 
+<br>
+
 <b>📝 향후 고도화 방안</b>
 
 - **Refresh Token 도입**: 현재는 보안을 위해 Access Token의 만료 시간을 짧게 가져가고 있습니다. 사용자 편의성을 해치지 않으면서 보안을 유지하기 위해 Redis를 활용한 Refresh Token 저장소를 구축하여 토큰 탈취 리스크에 대응할 계획입니다.
 - **토큰 블랙리스트 구현**: 로그아웃 시나리오에서 유효 기간이 남은 토큰을 강제로 무효화할 수 있도록 Redis에 로그아웃 된 토큰 정보를 저장하고 필터에서 이를 대조하는 로직을 추가하는 방향을 고려 중입니다.
+
+<br>
 </details>
 
 <details>
-<summary><b>✨ OAuth 2.0 도입</b></summary>
+<summary><b>✨ OAuth 2.0 도입 배경</b></summary>
+
+<br>
   
 <b>⁉️ 의사 결정 발생 배경</b>
 
 - **사용자 접근성 향상 및 운영 가시성 확보**
 - 사용자가 느끼는 회원가입에 대한 심리적 장벽을 낮추고, 검증된 플랫폼의 보안 인프라를 활용하여 개인정보 관리 리스크를 줄이고자 했습니다.
+
+<br>
 
 <b>🙋‍♀️ 의사 결정 과정</b>
 
@@ -265,30 +311,42 @@
   - **외부 API 의존성**: 카카오/구글 등 외부 플랫폼의 장애 시 인증 시스템이 마비될 수 있으나, 자체 회원가입 시스템과 병행으로 운영함으로써 리스크를 최소화
   - **사용자 편의성**: 복잡한 가입 절차를 생략하여 유입률 증가
 
+<br>
+
 <b>💡 고려한 대안</b>
 
 - **카카오 vs 구글**
   - 국내 사용자 타겟팅이 우선이였기 때문에 접근성이 가장 높은 카카오를 1순위로 채택했습니다.
+
+<br>
 
 <b>✨ 해결 과정</b>
 
 - **OAuth 2.0**
   - 카카오 인증 서버로부터 받은 Authorization Code를 Access Token으로 교환하고, 카카오로부터 사용자 정보를 받아 내부 서비스용 JWT를 발급하는 로직을 구현했습니다.
 
+<br>
+
 <b>📝 향후 고도화 방안</b>
 
 - **OAuth Provider 확장**
   - 카카오 외에도 구글, 네이버 등 다양한 소셜 로그인을 인터페이스화하여 코드 수정 없이 확장 가능한 구조로 리팩토링 하고 싶습니다.
+ 
+<br>
 </details>
 
 <details>
 <summary><b>📆 타임딜 스케줄러 도입 배경 및 결정</b></summary>
+
+<br>
   
 <b>⁉️ 의사 결정 발생 배경</b>
 
 - 타임딜은 **정해진 시간에 정확히 열리고 닫혀야 하는 기능**으로, 사용자에게 실시간으로 최신 정보를 제공해야 했습니다.
 - 기존 방식인 **요청 시점 조회 방식**은 동시 접속자가 많을 경우 DB 부하가 급증하고 응답 지연 가능성이 있습니다.
 - 따라서 **트래픽 집중 구간에서도 안정적으로 동작할 수 있는 방법**이 필요했습니다.
+
+<br>
 
 <b>🙋‍♀️ 의사 결정 과정</b>
 
@@ -301,10 +359,14 @@
 
 => 비교 결과, 안정성과 속도 모두 확보 가능한 스케줄러 기반 방식을 선택했습니다.
 
+<br>
+
 <b>💡 고려한 대안</b>
 
 - 요청 시점 조회 → 구현은 간단하지만 트래픽 집중 시 성능 저하 위험
 - 스케줄러 기반 준비 → 사전 준비를 통해 트래픽 집중에도 안정적 운영 가능
+
+<br>
 
 <b>✨ 실행 및 결과</b>
 
@@ -323,10 +385,14 @@
 </details>
 
   - 스케줄러 도입으로 서비스 안정성과 사용자 경험 확보
+
+<br>
 </details>
 
 <details>
-<summary><b>📈 WebSocket STOMP</b></summary>
+<summary><b>📈 WebSocket STOMP 도입 배경</b></summary>
+
+<br>
   
 <b>⁉️ 의사 결정 발생 배경</b>
 
@@ -349,6 +415,8 @@
 
 따라서 프로젝트가 확장되면서 더 체계적이고 유지보수 가능한 구조가 필요하다고 판단했습니다.
 
+<br>
+
 <b>🙋‍♀️ 의사 결정 과정</b>
 
 - **관심사의 분리**
@@ -357,6 +425,8 @@
     - 엔드포인트가 늘어날 때마다 `switch-case` 문이 무한정 길어지는 구조는 코드 작성 중 오류가 발생할 가능성이 높다고 판단되어 선언적 방식의 도입을 고려했습니다.
 - **표준 규격의 도입**
     - 클라이언트와 서버가 서로 다른 방식으로 파싱 로직을 구현하는 대신 표준 프로토콜을 사용해 통신 규격을 통일하고자 했습니다.
+
+<br>
 
 <b>💡 고려한 대안</b>
 
@@ -392,6 +462,8 @@
     - 프레임 헤더로 인한 미세한 오버헤드 (채팅 서비스에서는 무시 가능)
     - STOMP 프로토콜 규격 준수 필요
     - 프론트엔드에서 stomp.js/sock.js 라이브러리 학습 필요
+
+<br>
 
 <b>✨ 해결 과정</b>
 
@@ -620,15 +692,21 @@
 
 - 대신 @MessageMapping을 도입하여, 마치 REST API의 Controller처럼 경로(Path)를 기반으로 비즈니스 로직을 분리하여 코드 가독성과 유지보수성을 확보했습니다.
 
+<br>
+
 <b>📝 향후 고도화 방안</b>
 
 - **에러 핸들링**
     - `@MessageExceptionHandler`를 도입하여 STOMP 통신 중 발생하는 에러를 클라이언트에게 규격화된 형태로 전달하는 기능을 추가하고 싶습니다.
 - 채팅 읽음 처리, 알림 기능을 추가하고 싶습니다.
+
+<br>
 </details>
 
 <details>
-<summary><b>📩 Redis pub/sub</b></summary>
+<summary><b>📩 Redis pub/sub 도입 배</b></summary>
+
+<br>
   
 <b>⁉️ 의사 결정 발생 배경</b>
 
@@ -656,10 +734,14 @@
 
 따라서 채팅방에서 한쪽이 보낸 메시지를 상대방이 받지 못하는 문제가 발생하게 되었고 이를 해결할 새로운 방안이 필요하게 되었습니다.
 
+<br>
+
 <b>🙋‍♀️ 의사 결정 과정</b>
 
 - **메시지 브로커 도입**
     - 서버가 여러 대일 경우, A 서버에 접속한 사용자가 보낸 메시지를 B 서버에 접속한 사용자가 받지 못하는 '**데이터 파편화**' 문제를 해결하기 위해 서버 간 메시지를 공유할 매개체가 필요했습니다.
+
+<br>
 
 <b>💡 고려한 대안</b>
 
@@ -694,6 +776,8 @@
     - **메시지 비영속성**: 전달 후 즉시 소멸 (브로커가 아닌 메시지 버스)
     - 구독자가 없으면 메시지 유실
     - 복잡한 라우팅이나 재처리 불가
+
+<br>
 
 <b>✨ 해결 과정</b>
 
@@ -767,14 +851,19 @@
 
 </details>
 
+<br>
+
 <b>📝 향후 고도화 방안</b>
 
 - **분산 세션 관리 통합**: 현재 각 서버가 개별적으로 관리하는 웹소켓 세션 정보를 Redis로 통합 관리하여, 어떤 서버에 접속하더라도 사용자의 실시간 접속 상태를 정확히 파악할 수 있는 Presence 관리 서버 기능을 추가하고 싶습니다.
 
+<br>
 </details>
 
 <details>
-<summary><b>👷 BastionHost</b></summary>
+<summary><b>👷 BastionHost 도입 배경</b></summary>
+
+<br>
   
 <b>⁉️ 의사 결정 발생 배경</b>
 
@@ -790,6 +879,8 @@
 
 - 서비스의 안전성을 위해 **내부 자원들을 격리하면서도 개발자가 안전하게 서버를 관리할 수 있는 전용 통로가 필요**했습니다.
 
+<br>
+
 <b>🙋‍♀️ 의사 결정 과정</b>
 
 - **공격 표면의 최소화**
@@ -798,6 +889,8 @@
     - 서비스 로직이 돌아가는 애플리케이션 서버와 중요한 데이터가 담긴 DB 서버는 Private Subnet에 위치시키는 것으로 설계 방향성을 정했습니다.
 - **접근 통제**
     - 서버를 직접적으로 제어하는 관리자만 특정 경로로 접근하도록 설계하고자 하였습니다.
+
+<br>
 
 <b>💡 고려한 대안</b>
 
@@ -813,6 +906,8 @@
 Public Subnet에 있는 서버는 Public IP를 가지는데 이는 인터넷 어디서든 그 서버의 주소로 패킷을 보낼 수 있다는 것을 의미합니다. 보안그룹 설정을 잘못 할 경우 즉시 해킹 위험에 노출됩니다.
 
 반면에 Private Subnet에 있는 서버는 Public IP 자체가 없으므로 이러한 위험에서 벗어날 수 있습니다. 설정에 문제가 생기더라도 물리적으로 2중 보안이 가능합니다.
+
+<br>
 
 <b>✨ 해결 과정</b>
 <details>
@@ -835,6 +930,8 @@ Public Subnet에 있는 서버는 Public IP를 가지는데 이는 인터넷 어
 - **SSH 터널링 적용**
     - 실제 서비스 서버는 프라이빗 서브넷에 위치시키고, 오직 Bastion Host의 특정 IP로부터 오는 SSH 요청만 수용하도록 보안 그룹을 강화했습니다.
 
+<br>
+
 <b>📝 향후 고도화 방안</b>
 
 - **Audit Log 관리**
@@ -842,19 +939,28 @@ Public Subnet에 있는 서버는 Public IP를 가지는데 이는 인터넷 어
 - **AWS Systems Manager(SSM) 도입**
     - 현재는 SSH 키를 사용한 방식을 사용하고 있지만 이 방식도 키가 유출 및 분실 될 경우의 위험성을 인지하고 있습니다. 이러한 위험을 없애기 위해, 포트 개방 없이 브라우저 기반으로 안전하게 인스턴스에 접속할 수 있는 SSM Session Manager로 전환하는 고도화 방안을 고려하고 있습니다.
 
+<br>
 </details>
 
+<br>
 
 ---
 ## 🚩 트러블 슈팅
+
+<br>
+
 <details>
 <summary><b>✨ 인기 조회수 TOP 10 조회 시 발생한 N+1 문제</b></summary>
+
+<br>
 
 <b>⚠️ 문제 상황</b>
 <img width="1024" height="141" alt="image" src="https://github.com/user-attachments/assets/8d1ea9ab-b4b0-41a5-bc4a-81bbf8c690b2" />
 
 
 - 인기 조회수 TOP 10 상품을 조회할 때, 상품 정보를 조회하는 쿼리는 한 번만 날아갔는데 타임딜 정보를 조회하는 쿼리가 10개가 추가로 날아가는 문제 발생
+
+<br>
 
 <b>🙋‍♀️ 문제 발생 원인</b>
 <img width="758" height="246" alt="image" src="https://github.com/user-attachments/assets/90f86a22-291b-4e72-9ef8-ae1129b43e5d" />
@@ -865,6 +971,8 @@ Public Subnet에 있는 서버는 Public IP를 가지는데 이는 인터넷 어
 - Redis에서 인기 조회수 상품 ID를 10개를 획득한 후, 반복문을 돌며 각 상품에 대한 타임딜 정보를 DB에서 조회
 
 - 결과적으로 로직 상의 문제로 ID 목록 1번 + 타임딜 정보 N번의 문제가 발생
+
+<br>
 
 <b>✨ 해결 과정</b>
 
@@ -885,11 +993,15 @@ Public Subnet에 있는 서버는 Public IP를 가지는데 이는 인터넷 어
 <details>
 <summary><b>✨ 로깅 시 USER ID가 null로 찍히는 문제</b></summary>
 
+<br>
+
 <b>⚠️ 문제 상황</b>
 <img width="1024" height="45" alt="image" src="https://github.com/user-attachments/assets/7b93482a-5d03-42ee-830c-02c4d9a41bf4" />
 
 
 - LoggingFilter에서 인증된 사용자의 요청임에도 불구하고 USER_ID가 계속 null로 찍히는 문제가 발생했습니다.
+
+<br>
 
 <b>🙋‍♀️ 문제 발생 원인</b>
 <details>
@@ -984,22 +1096,29 @@ import java.util.UUID;
 
 그 결과, 인증 객체가 생성되기 전에 로그를 찍으려고 시도하다 보니 `SecurityContext` 에서 USER 정보를 가져오지 못해 `USER_ID`가 항상 null이 되었습니다.
 
+<br>
+
 <b>✨ 해결 과정</b>
 
 <img width="1024" height="440" alt="image" src="https://github.com/user-attachments/assets/bd1bbdb4-159d-48b3-a175-4e4d5e0ec8e1" />
 
 - LoggingFilter를 JwtFilter와 UsernamePasswordAuthenticationFilter 사이에 두어 인증 정보가 담긴 후에 처리 되게 하면서 인증 정보가 지워지기 전에 로그를 찍을 수 있도록 설정해서 해결
 
+<br>
 </details>
 
 <details>
 <summary><b>🐛 분산 서버 환경에서 스케줄러 중복 실행 문제</b></summary>
+
+<br>
 
 <b>⚠️ 문제 상황</b>
 
 - 분산 서버 환경에서 스케줄러 동작 중 이슈가 발생했습니다.
 - 동일한 스케줄러가 **서버별로 동시에 실행**되는 현상을 확인했습니다.
 - 한 번만 실행되어야 하는 배치 작업이 **중복 수행**되고 있었습니다.
+
+<br>
 
 <b>🙋‍♀️ 문제 발생 원인</b>
 
@@ -1012,6 +1131,8 @@ import java.util.UUID;
 <img width="1024" height="184" alt="image" src="https://github.com/user-attachments/assets/06741ea8-08b4-4df6-a519-2733607b92d8" />
 
 동일한 실행 시각에 각 서버 인스턴스에서 TimeDeal Scheduler START 로그가 출력되며, 스케줄러가 서버 수만큼 중복 실행되고 있음을 확인할 수 있습니다.
+
+<br>
 
 <b>💡 고려한 대안</b>
 
@@ -1033,6 +1154,8 @@ import java.util.UUID;
 
 여러 대안 중 **ShedLock 기반 분산 락 방식을 선택했습니다.**
 
+<br>
+
 <b>✨ 해결 과정</b>
 
 - 스케줄러 메서드에 @SchedulerLock 어노테이션을 적용하여 분산 락을 획득하는 구조로 구현했습니다.
@@ -1049,20 +1172,26 @@ import java.util.UUID;
 아래 로그는 여러 인스턴스가 동시에 기동된 환경에서, **락을 획득한 1개의 인스턴스만 스케줄러를 실행한 예시**입니다
 <img width="1024" height="190" alt="image" src="https://github.com/user-attachments/assets/031fcbae-e5bd-4c03-8010-e9d5daf0a011" />
 
+<br>
 
 <b>📝 향후 고도화 방안</b>
 
 - 락 획득 실패시 재시도 로직 추가
 - 트랜잭션 실패 또는 서버 장애 시 **스케줄러 작업 복구 전략 마련**
 
+<br>
 </details>
 
 <details>
-<summary><b>✨ 동시 요청 환경에서 데드락 및 정합성 문제 해결</b></summary>
+<summary><b>✨ 동시 요청 환경에서 데드락 및 정합성 문제</b></summary>
+
+<br>
 
 <b>⚠️ 문제 상황</b>
 JMeter를 사용하여 상품 구매 기능에 대한 동시성 테스트 진행 중 데드락 발생
 <img width="1280" height="227" alt="image" src="https://github.com/user-attachments/assets/db542c03-136a-4dc0-914f-b502d584e1e1" />
+
+<br>
 
 <b>🙋‍♀️ 문제 발생 원인</b>
 
@@ -1089,6 +1218,8 @@ JMeter를 사용하여 상품 구매 기능에 대한 동시성 테스트 진행
 
       ===> Deadlock 발생
 
+<br>
+
 <b>💡 고려한 대안</b>
 
 #### update 이후 insert가 실행되도록 락 획득 순서 보장
@@ -1111,6 +1242,7 @@ JMeter를 사용하여 상품 구매 기능에 대한 동시성 테스트 진행
 
     <img width="1024" height="202" alt="image" src="https://github.com/user-attachments/assets/0e2ec6bf-dcad-4274-b3b9-b2371e49eb7f" />
 
+<br>
 
 <b>✨ 해결 과정</b>
 
@@ -1125,11 +1257,16 @@ JMeter를 사용하여 상품 구매 기능에 대한 동시성 테스트 진행
 
 비관적 락은 성능은 떨어지지만, 주문 도메인에서는 정합성이 최우선이므로 성능 손실을 감수하더라도 무결성을 보장하는 비관락을 선정
 
+<br>
+
 <b>📝 향후 고도화 방안</b>
 
 - 비관락 사용 시 동시 처리 성능이 저하되는 문제가 발생할 수 있으므로 향후 트래픽 증가 시 성능에 미치는 영향을 지속적으로 관찰하고 필요하다면 분산락 등 다른 동시성 제어 방식도 고려해 볼 필요가 있다.
 
+<br>
 </details>
+
+<br>
 
 ---
 ## 📈 성능 개선

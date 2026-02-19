@@ -584,6 +584,7 @@
     // 무조건 토큰부터 챙기기 (함수 없이 즉시 실행)
     const urlParams = new URLSearchParams(window.location.search);
     const tokenFromUrl = urlParams.get('token');
+    let categoryMap = {};
 
     if (tokenFromUrl && tokenFromUrl !== 'null') {
         // 로컬 스토리지에 먼저 저장
@@ -613,25 +614,26 @@
             const result = await res.json();
             if (!result.success) return;
 
-            const categories = result.data.content || result.data;
+            const categories = result.data?.content ?? result.data ?? [];
             const nav = document.getElementById('categoryNav');
+            nav.innerHTML = '';
 
+            // ✅ id -> name 맵 만들기
+            categoryMap = {};
             categories.forEach(cat => {
+                const catName = cat.name ?? cat.categoryName;
+                categoryMap[cat.id] = catName;
+
                 const a = document.createElement('a');
-                a.textContent = cat.name;
-
-                // 1. 클릭 시 categoryId 파라미터를 붙여서 이동
+                a.textContent = catName;
                 a.href = `category-product.html?categoryId=${cat.id}`;
-
                 nav.appendChild(a);
             });
+
         } catch (e) {
             console.error('카테고리 로딩 실패:', e);
         }
     }
-
-    // 초기 실행 시 카테고리 로드 추가
-    loadCategories();
 
     async function loadPopularProducts() {
         try {
@@ -668,7 +670,7 @@
                 </div>
                 <div class="product-info">
                     <div class="product-name">${product.name}</div>
-                    <div class="product-desc">카테고리 ${product.categoryId}</div>
+                    <div class="product-desc">${categoryMap[product.categoryId] ?? `카테고리 ${product.categoryId}`}</div>
                     <div class="product-footer">
                         <div class="product-price">
                             ${(product.dealPrice ?? product.price).toLocaleString()}원
@@ -688,8 +690,6 @@
             console.error('인기 상품 로딩 실패:', error);
         }
     }
-
-    loadPopularProducts();
 
     // [공통] 검색 처리 함수
     function handleSearch() {
@@ -797,13 +797,11 @@
         });
     });
 
-    // document.querySelecto
+    (async function init() {
+        await loadCategories();
+        await loadPopularProducts();
+    })();
 
-    // document.querySelectorAll('.product-card').forEach((card, index) => {
-    //     card.addEventListener('click', () => {
-    //         window.location.href = `product-detail.html?id=${index + 1}`;
-    //     });
-    // });
 </script>
 </body>
 </html>

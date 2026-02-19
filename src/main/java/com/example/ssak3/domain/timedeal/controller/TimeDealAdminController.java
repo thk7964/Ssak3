@@ -6,9 +6,6 @@ import com.example.ssak3.domain.timedeal.model.request.TimeDealUpdateRequest;
 import com.example.ssak3.domain.timedeal.service.TimeDealAdminService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,18 +28,6 @@ public class TimeDealAdminController {
         ApiResponse response = ApiResponse.success("타임딜 상품 생성에 성공했습니다.", timeDealAdminService.createTimeDeal(request));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
-
-    /**
-     * 타임딜 목록 조회 API
-     */
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping
-    public ResponseEntity<ApiResponse> getTimeDealListApi(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-
-        ApiResponse response = ApiResponse.success("타임딜 목록 조회에 성공했습니다.", timeDealAdminService.getTimeDealList(pageable));
-
-        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     /**

@@ -8,7 +8,6 @@ import com.example.ssak3.domain.product.service.ProductAdminService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,9 +50,9 @@ public class ProductAdminController {
      */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    public ResponseEntity<ApiResponse> getProductListAdminApi(@RequestParam(name = "categoryId", required = false) Long categoryId, @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+    public ResponseEntity<ApiResponse> getProductListAdminApi(@RequestParam(name = "categoryId", required = false) Long categoryId, @RequestParam(required = false) String status, @PageableDefault Pageable pageable) {
 
-        ApiResponse response = ApiResponse.success("상품 목록 조회에 성공했습니다.", productAdminService.getProductListAdmin(categoryId, pageable));
+        ApiResponse response = ApiResponse.success("상품 목록 조회에 성공했습니다.", productAdminService.getProductListAdmin(categoryId, status, pageable));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

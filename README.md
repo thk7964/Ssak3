@@ -1508,9 +1508,13 @@ public class ProductRankingService {
 - 동일한 테스트 환경에서 비교했을 때, **p95 기준 약 99.5% 이상 응답 시간 감소**를 확인했습니다.
 
 - 캐싱 전
+
+  
   <img width="826" height="606" alt="image" src="https://github.com/user-attachments/assets/a1f1c488-46e2-4d87-b8d4-5d067b15eca1" />
 
 - 캐싱 후
+
+  
   <img width="872" height="593" alt="image" src="https://github.com/user-attachments/assets/27f1c821-05df-4917-a098-19eea8fc4a46" />
 
 2. 평균 응답 시간 및 지연 구간 개선

@@ -158,7 +158,9 @@
 ## 💻 와이어프레임
 
 <!-- 수정 후 최종본 넣기 -->
+<img width="1475" height="972" alt="image" src="https://github.com/user-attachments/assets/ff4b54e0-f2fb-43bc-a641-cf5c04db3583" />
 
+[와이어프레임 링크](https://www.figma.com/design/y462Rj5dJu5KCmmVD1cFgx/%EC%8B%B9%EC%93%B0%EB%A6%AC?node-id=0-1&p=f&t=JjvgP7QshvAVdOns-0)
 <br><br>
 
 ---

@@ -430,7 +430,7 @@
 
 <b>💡 고려한 대안</b>
 
-#### 순수 WebSocket  vs STOMP
+**순수 WebSocket  vs STOMP**
 
 - **순수 WebSocket**
     
@@ -467,7 +467,7 @@
 
 <b>✨ 해결 과정</b>
 
-#### STOMP 사용 결정 이유
+**STOMP 사용 결정 이유**
 
 - **개발 생산성**
     - 정형화된 구조로 개발 시간 단축
@@ -480,7 +480,7 @@
 - **적합한 성능**
     - 채팅은 게임처럼 ms 단위 응답이 필요 없으므로 STOMP의 약간의 오버헤드는 허용 가능
 
-#### 개선 과정
+**개선 과정**
 <details>
   <summary><b>기존의 길고 복잡했던 Handler 코드</b></summary>
 
@@ -726,7 +726,7 @@
     - 사용자 트래픽 폭증 시 관리자 서비스는 정상 운영되어야 함
     - 각 서버의 독립적인 스케일링 및 장애 격리
 
-#### 발생한 문제
+**발생한 문제**
 
 기존의 단일 서버 환경에서는 Spring의 **SimpleBroker**만으로 충분했습니다. 
 
@@ -745,7 +745,7 @@
 
 <b>💡 고려한 대안</b>
 
-#### 전문 메시지 브로커 vs  Redis Pub/Sub
+**전문 메시지 브로커 vs  Redis Pub/Sub**
 
 - **전문 메시지 브로커 (RabbitMQ, Kafka)**
     
@@ -781,7 +781,7 @@
 
 <b>✨ 해결 과정</b>
 
-#### Redis pub/sub으로 결정한 이유
+**Redis pub/sub으로 결정한 이유**
 
 - **실시간성 우선**
     - 채팅은 즉시성이 가장 중요하며, Redis의 in-memory 처리는 밀리초 단위 응답 보장
@@ -792,7 +792,7 @@
 - **간단한 연동**
     - Spring 설정에서 `SimpleBroker` → `RedisMessageBroker`로 변경만으로 완료
 
-#### 해결 과정
+**해결 과정**
 
 - **RedisMessageBroker 연동**
     - Spring의 `SimpleBroker`를 Redis 전용 브로커로 확장하여, 메시지 발행 시 Redis의 Topic을 거쳐 모든 서버로 전파되는 구조를 구축했습니다.
@@ -894,14 +894,14 @@
 
 <b>💡 고려한 대안</b>
 
-#### 외부 포트 개방 vs Bastion Host
+**외부 포트 개방 vs Bastion Host**
 
 - **외부 포트 개방(v1)**
     - 보안 그룹 설정만으로 소프트웨어적 접근 제어는 가능하지만 보안 위협에 노출됨.
 - **Bastion Host(v2 이후)**
     - 모든 priavate 서버 접근을 Bastion을 통과해야만 접속 가능하도록 통제하여 보안성을 높일 수 있음.
 
-#### 보안그룹 설정만으로 부족한 이유?
+**보안그룹 설정만으로 부족한 이유?**
 
 Public Subnet에 있는 서버는 Public IP를 가지는데 이는 인터넷 어디서든 그 서버의 주소로 패킷을 보낼 수 있다는 것을 의미합니다. 보안그룹 설정을 잘못 할 경우 즉시 해킹 위험에 노출됩니다.
 
@@ -923,7 +923,7 @@ Public Subnet에 있는 서버는 Public IP를 가지는데 이는 인터넷 어
 
 - 서버 관리자의 경우 Ec2나 RDS에 직접적으로 접속해야하므로 Bastion Host를 이용해 접근 제어를 하도록 하였습니다.
 
-#### 개선 내용
+**개선 내용**
 
 - **Bastion Host 구축**
     - AWS EC2를 활용해 퍼블릭 서브넷에 Bastion Host를 배치했습니다.
@@ -1222,7 +1222,7 @@ JMeter를 사용하여 상품 구매 기능에 대한 동시성 테스트 진행
 
 <b>💡 고려한 대안</b>
 
-#### update 이후 insert가 실행되도록 락 획득 순서 보장
+**update 이후 insert가 실행되도록 락 획득 순서 보장**
 
 - update 이후 insert가 실행되도록 락 획득 순서update 후 바로 flush()를 실행시켜 x-lock을 선점
   <img width="579" height="94" alt="image" src="https://github.com/user-attachments/assets/7619387d-2741-4fae-9c17-764b8216b35a" />
@@ -1246,7 +1246,7 @@ JMeter를 사용하여 상품 구매 기능에 대한 동시성 테스트 진행
 
 <b>✨ 해결 과정</b>
 
-#### 비관락 적용
+**비관락 적용**
 
 - product 조회 시 비관락 적용
 - 장점 : 데이터 조회 시점부터 x-lock을 획득하여 다른 트랜잭션의 접근을 차단 ⇒ 데이터 정합성 보장

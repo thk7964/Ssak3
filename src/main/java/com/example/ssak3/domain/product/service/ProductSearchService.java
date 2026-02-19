@@ -35,6 +35,7 @@ public class ProductSearchService {
                             product.getInformation(),
                             product.getPrice(),
                             product.getDealPrice(),
+                            product.getStatus(),
                             s3Uploader.createPresignedGetUrl(product.getProductImageUrl(), 5),
                             timeDealImageUrl,
                             product.getCreatedAt(),

@@ -1,6 +1,7 @@
 package com.example.ssak3.domain.timedeal.repository;
 
 import com.example.ssak3.common.enums.TimeDealStatus;
+import com.example.ssak3.domain.product.entity.Product;
 import com.example.ssak3.domain.timedeal.entity.TimeDeal;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -18,4 +19,6 @@ public interface TimeDealRepository extends JpaRepository<TimeDeal, Long>, TimeD
     List<TimeDeal> findOpenByProductId(Long id);
 
     Optional<TimeDeal> findByProductId(Long id);
+
+    boolean existsByProductAndStatusInAndIsDeletedFalse(Product product, List<TimeDealStatus> statuses);
 }

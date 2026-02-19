@@ -96,7 +96,7 @@ public class ProductRankingService {
 
                     Product product = productMap.get(id);
 
-                    if (product == null || product.getStatus() != ProductStatus.FOR_SALE) {
+                    if (product == null || (product.getStatus() != ProductStatus.FOR_SALE && product.getStatus() != ProductStatus.SOLD_OUT)) {
                         return null;
                     }
 

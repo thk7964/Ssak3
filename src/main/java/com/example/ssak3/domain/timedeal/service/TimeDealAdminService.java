@@ -3,7 +3,6 @@ package com.example.ssak3.domain.timedeal.service;
 import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.enums.ProductStatus;
 import com.example.ssak3.common.exception.CustomException;
-import com.example.ssak3.common.model.PageResponse;
 import com.example.ssak3.domain.product.entity.Product;
 import com.example.ssak3.domain.product.repository.ProductRepository;
 import com.example.ssak3.domain.s3.service.S3Uploader;
@@ -12,13 +11,10 @@ import com.example.ssak3.domain.timedeal.model.request.TimeDealCreateRequest;
 import com.example.ssak3.domain.timedeal.model.request.TimeDealUpdateRequest;
 import com.example.ssak3.domain.timedeal.model.response.TimeDealCreateResponse;
 import com.example.ssak3.domain.timedeal.model.response.TimeDealDeleteResponse;
-import com.example.ssak3.domain.timedeal.model.response.TimeDealListGetResponse;
 import com.example.ssak3.domain.timedeal.model.response.TimeDealUpdateResponse;
 import com.example.ssak3.domain.timedeal.repository.TimeDealRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,17 +73,6 @@ public class TimeDealAdminService {
         TimeDeal saved = timeDealRepository.save(timeDeal);
 
         return TimeDealCreateResponse.from(saved);
-    }
-
-    /**
-     * 타임딜 목록(전체) 조회
-     */
-    @Transactional(readOnly = true)
-    public PageResponse<TimeDealListGetResponse> getTimeDealList(Pageable pageable) {
-
-        Page<TimeDealListGetResponse> responsePage = timeDealRepository.findAll(pageable).map(TimeDealListGetResponse::from);
-
-        return PageResponse.from(responsePage);
     }
 
     /**

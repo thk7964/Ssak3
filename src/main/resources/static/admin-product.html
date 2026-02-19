@@ -80,6 +80,26 @@
         /* 오른쪽 끝 상품 등록 버튼 */
         .filter-spacer { flex: 1; }
 
+        /* 상태별 필터 버튼 */
+        .status-filter-group { display: flex; gap: 6px; align-items: center; }
+        .status-filter-btn {
+            padding: 8px 14px;
+            border-radius: 20px;
+            border: 2px solid #e9ecef;
+            background: white;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #495057;
+        }
+        .status-filter-btn:hover { border-color: #74b9ff; color: #74b9ff; }
+        .status-filter-btn.active { background: #74b9ff; border-color: #74b9ff; color: white; }
+        .status-filter-btn.active.s-BEFORE_SALE { background: #7950f2; border-color: #7950f2; }
+        .status-filter-btn.active.s-FOR_SALE    { background: #1976d2; border-color: #1976d2; }
+        .status-filter-btn.active.s-STOP_SALE   { background: #e65100; border-color: #e65100; }
+        .status-filter-btn.active.s-SOLD_OUT    { background: #d32f2f; border-color: #d32f2f; }
+
         /* 상품 등록 버튼 파란색으로 변경 */
         .create-btn, .home-btn {
             background-color: #3498db !important; /* 메인 파란색 */
@@ -221,6 +241,13 @@
         <select id="categoryFilter" onchange="loadProducts(0)">
             <option value="">전체 카테고리</option>
         </select>
+        <div class="status-filter-group">
+            <button class="status-filter-btn active" data-status="" onclick="setStatusFilter(this)">전체</button>
+            <button class="status-filter-btn s-BEFORE_SALE" data-status="BEFORE_SALE" onclick="setStatusFilter(this)">판매전</button>
+            <button class="status-filter-btn s-FOR_SALE" data-status="FOR_SALE" onclick="setStatusFilter(this)">판매중</button>
+            <button class="status-filter-btn s-STOP_SALE" data-status="STOP_SALE" onclick="setStatusFilter(this)">판매중지</button>
+            <button class="status-filter-btn s-SOLD_OUT" data-status="SOLD_OUT" onclick="setStatusFilter(this)">품절</button>
+        </div>
         <div class="filter-spacer"></div>
         <button class="create-btn" onclick="openCreateModal()">+ 상품 등록</button>
     </div>
@@ -277,7 +304,7 @@
         </div>
 
         <div class="form-group">
-            <label>상품 설명 <span style="color:#e74c3c">*</span></label>
+            <label>상품 설명</label>
             <textarea id="createInformation" placeholder="상품 설명을 입력하세요"></textarea>
         </div>
 
@@ -393,6 +420,7 @@
     // ─────────────────────────────────────────
     let currentId   = null;
     let currentPage = 0;
+    let currentStatus = '';
     const PAGE_GROUP_SIZE = 10;
 
     // ─────────────────────────────────────────
@@ -459,6 +487,13 @@
         }
     }
 
+    function setStatusFilter(btn) {
+        document.querySelectorAll('.status-filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentStatus = btn.dataset.status;
+        loadProducts(0);
+    }
+
     async function loadProducts(page = 0) {
         const categoryFilter = document.getElementById('categoryFilter');
         const rawValue = categoryFilter ? categoryFilter.value : "";
@@ -470,6 +505,10 @@
             if (!isNaN(cleanId)) {
                 url += `&categoryId=${cleanId}`;
             }
+        }
+
+        if (currentStatus) {
+            url += `&status=${currentStatus}`;
         }
 
         try {

@@ -877,7 +877,7 @@
         currentFilter = filter;
         document.querySelectorAll('.status-chip').forEach(c => c.classList.remove('active'));
         el.classList.add('active');
-        renderFilteredTable();
+        loadTimeDealList(0);
     }
 
     // ─────────────────────────────────────────
@@ -885,7 +885,8 @@
     // GET /ssak3/admin/time-deals
     // ─────────────────────────────────────────
     async function loadTimeDealList(page = 0) {
-        const url = `${API_URL}/ssak3/admin/time-deals?page=${page}&size=10`;
+        const statusParam = currentFilter && currentFilter !== 'all' ? `&status=${currentFilter.toUpperCase()}` : '';
+        const url = `${API_URL}/ssak3/time-deals?page=${page}&size=10${statusParam}`;
 
         try {
             const res = await fetch(url, getRequestOptions());
@@ -962,7 +963,7 @@
             const originalPrice = d.originalPrice ?? d.productPrice ?? d.price ?? 0;
             const dealPrice = d.dealPrice ?? 0;
             const discountRate = originalPrice > 0
-                ? Math.round((1 - dealPrice / originalPrice) * 100)
+                ? Math.floor((1 - dealPrice / originalPrice) * 100)
                 : 0;
 
             const img = d.imageUrl ?? d.productImageUrl

@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ProductRepository extends JpaRepository<Product, Long> {
+public interface ProductRepository extends JpaRepository<Product, Long>, ProductCustomRepository {
 
     Optional<Product> findByIdAndIsDeletedFalse(Long id);
 
@@ -27,14 +27,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                   com.example.ssak3.common.enums.ProductStatus.BEFORE_SALE)
             """)
     Page<Product> findProductListByCategoryId(@Param("categoryId") Long categoryId, Pageable pageable);
-
-    @Query("""
-                SELECT p
-                FROM Product p
-                WHERE p.isDeleted = false
-                  AND (:categoryId IS NULL OR p.category.id = :categoryId)
-            """)
-    Page<Product> findProductListByCategoryIdForAdmin(@Param("categoryId") Long categoryId, Pageable pageable);
 
     boolean existsByCategoryId(Long categoryId);
 

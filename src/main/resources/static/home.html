@@ -647,6 +647,7 @@
 <script>
     const urlParams = new URLSearchParams(window.location.search);
     const tokenFromUrl = urlParams.get('token');
+    let categoryMap = {};
 
     if (tokenFromUrl && tokenFromUrl !== 'null') {
         localStorage.setItem('accessToken', tokenFromUrl);
@@ -673,12 +674,17 @@
             const result = await res.json();
             if (!result.success) return;
 
-            const categories = result.data.content || result.data;
+            const categories = result.data?.content ?? result.data ?? [];
             const nav = document.getElementById('categoryNav');
+            nav.innerHTML = '';
 
+            categoryMap = {};
             categories.forEach(cat => {
+                const catName = cat.name ?? cat.categoryName;
+                categoryMap[cat.id] = catName;
+
                 const a = document.createElement('a');
-                a.textContent = cat.name;
+                a.textContent = catName;
                 a.href = `category-product.html?categoryId=${cat.id}`;
                 nav.appendChild(a);
             });
@@ -743,7 +749,7 @@
                         ${product.name}
                         ${product.timeDealId ? '<span class="time-deal-badge">타임딜</span>' : ''}
                     </div>
-                    <div class="product-desc">카테고리 ${product.categoryId}</div>
+                    <div class="product-desc">${categoryMap[product.categoryId] ?? `카테고리 ${product.categoryId}`}</div>
                     <div class="product-footer">
                         <div class="product-price">
                             ${
@@ -776,8 +782,7 @@
         }
     }
 
-    loadPopularProducts();
-
+    // [공통] 검색 처리 함수
     function handleSearch() {
         const keyword = document.getElementById('searchInput').value.trim();
 
@@ -868,6 +873,12 @@
             alert('장바구니에 추가되었습니다!');
         });
     });
+
+    (async function init() {
+        await loadCategories();
+        await loadPopularProducts();
+    })();
+
 </script>
 </body>
 </html>

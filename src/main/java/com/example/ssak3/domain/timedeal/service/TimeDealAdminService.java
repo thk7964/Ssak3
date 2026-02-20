@@ -41,9 +41,7 @@ public class TimeDealAdminService {
             throw new CustomException(ErrorCode.TIME_DEAL_CANNOT_CREATE);
         }
 
-        LocalDateTime now = LocalDateTime.now();
-
-        boolean hasActiveDeal = timeDealRepository.existsActiveDealByProduct(product.getId(), now);
+        boolean hasActiveDeal = timeDealRepository.existsActiveDealByProduct(product.getId());
 
         if (hasActiveDeal) {
             throw new CustomException(ErrorCode.ACTIVE_TIME_DEAL_ALREADY_EXISTS);
@@ -52,6 +50,8 @@ public class TimeDealAdminService {
         if (product.getPrice() <= request.getDealPrice()) {
             throw new CustomException(ErrorCode.SALE_PRICE_MUST_BE_LOWER_THAN_ORIGINAL_PRICE);
         }
+
+        LocalDateTime now = LocalDateTime.now();
 
         if (!request.getStartAt().isAfter(now)) {
             throw new CustomException(ErrorCode.TIME_DEAL_START_TIME_MUST_BE_IN_FUTURE);

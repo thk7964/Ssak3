@@ -22,7 +22,7 @@
             width: 100%;
             background: rgba(255, 255, 255, 0.92);
             backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255,255,255,0.5);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
             box-shadow: 0 2px 16px rgba(116, 185, 255, 0.15);
             position: sticky;
             top: 0;
@@ -218,7 +218,7 @@
             color: #374151;
             cursor: pointer;
             transition: all 0.15s ease;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
         }
 
         .page-size-select:focus {
@@ -240,6 +240,7 @@
                 padding-bottom: 12px;
                 gap: 10px;
             }
+
             .header-search {
                 order: 3;
                 width: 100%;
@@ -266,13 +267,17 @@
             right: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
             animation: rotate 20s linear infinite;
         }
 
         @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         .banner-title {
@@ -394,8 +399,12 @@
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
         }
 
         /* 기존 deal-image 수정 */
@@ -562,6 +571,7 @@
             .banner-title {
                 font-size: 32px;
             }
+
             .deals-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 16px;
@@ -630,7 +640,8 @@
     <p>개인정보처리방침 | 이용약관 | 배송정책</p>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+<script>
     // API URL 설정
     const API_URL = (() => {
         const hostname = window.location.hostname;
@@ -743,16 +754,16 @@
             console.log('타임딜 API 호출:', url); // 디버깅용
 
             const response = await fetch(url);
-            
+
             console.log('응답 상태:', response.status); // 디버깅용
-            
+
             if (!response.ok) {
                 throw new Error('타임딜 목록을 불러올 수 없습니다.');
             }
 
             const result = await response.json();
             console.log('API 응답 데이터:', result); // 디버깅용
-            
+
             const data = result.data;
 
             totalPages = data.totalPages;
@@ -769,7 +780,7 @@
             // 1초마다 모든 카운트다운 업데이트
             const interval = setInterval(updateAllCountdowns, 1000);
             countdownIntervals.push(interval);
-            
+
             // 즉시 한 번 업데이트
             updateAllCountdowns();
         } catch (error) {
@@ -802,15 +813,16 @@
 
             // 기본 이모지 (이미지 없을 때)
             const emoji = productEmojis[deal.id % 10 + 1] || '🎁';
+            const imageSrc = deal.imageUrl || deal.productImageUrl || null;
 
-            const imageHtml = deal.imageUrl
+            const imageHtml = imageSrc
                 ? `
-                <img src="${deal.imageUrl}"
-                     class="deal-img"
-                     alt="${deal.productName}"
-                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                <div class="emoji-fallback" style="display:none;">${emoji}</div>
-              `
+      <img src="${imageSrc}"
+           class="deal-img"
+           alt="${deal.productName}"
+           onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="emoji-fallback" style="display:none;">${emoji}</div>
+    `
                 : `<div class="emoji-fallback">${emoji}</div>`;
 
             return `
@@ -849,7 +861,7 @@
 
     function renderPagination() {
         const container = document.getElementById('paginationContainer');
-        
+
         if (totalPages <= 1) {
             container.innerHTML = '';
             return;
@@ -896,7 +908,7 @@
     function changePage(page) {
         if (page < 0 || page >= totalPages) return;
         loadTimeDeals(currentStatus, page);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({top: 0, behavior: 'smooth'});
     }
 
     function filterDeals(status) {
@@ -963,7 +975,7 @@
             if (token) {
                 response = await fetch(`${API_URL}/ssak3/users/me`, {
                     method: 'GET',
-                    headers: { 'Authorization': `Bearer ${token}` }
+                    headers: {'Authorization': `Bearer ${token}`}
                 });
             }
 
@@ -989,7 +1001,7 @@
     }
 
     // [핵심] 로그아웃 로직
-    document.getElementById('logoutBtn').addEventListener('click', async function() {
+    document.getElementById('logoutBtn').addEventListener('click', async function () {
         if (!confirm('로그아웃 하시겠습니까?')) return;
 
         const token = localStorage.getItem('accessToken');
@@ -999,7 +1011,7 @@
                 method: 'POST',
                 credentials: 'include'
             };
-            if (token) logoutRequest.headers = { 'Authorization': `Bearer ${token}` };
+            if (token) logoutRequest.headers = {'Authorization': `Bearer ${token}`};
 
             const response = await fetch(`${API_URL}/ssak3/auth/logout`, logoutRequest);
 

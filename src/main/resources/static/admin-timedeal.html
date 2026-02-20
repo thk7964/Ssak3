@@ -1068,7 +1068,7 @@
 
         searchTimer = setTimeout(async () => {
             try {
-                const url = `${API_URL}/ssak3/admin/products?page=0&size=20&name=${encodeURIComponent(keyword.trim())}`;
+                const url = `${API_URL}/ssak3/products/search?keyword=${encodeURIComponent(keyword.trim())}`;
                 const res = await fetch(url, getRequestOptions());
                 const result = await res.json();
                 const items = result?.data?.content ?? [];

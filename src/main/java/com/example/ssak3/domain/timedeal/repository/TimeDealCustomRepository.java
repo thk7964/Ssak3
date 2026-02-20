@@ -13,7 +13,7 @@ public interface TimeDealCustomRepository {
 
     Page<TimeDealListGetResponse> findTimeDeals (TimeDealStatus status, Pageable pageable);
 
-    boolean existsActiveDealByProduct(Long productId, LocalDateTime now);
+    boolean existsActiveDealByProduct(Long productId);
 
     List<TimeDeal> findReadyToOpen(LocalDateTime now);
 

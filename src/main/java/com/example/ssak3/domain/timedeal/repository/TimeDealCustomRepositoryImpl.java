@@ -6,6 +6,8 @@ import com.example.ssak3.domain.timedeal.model.response.TimeDealListGetResponse;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.DateTimeExpression;
+import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,17 +28,15 @@ public class TimeDealCustomRepositoryImpl implements TimeDealCustomRepository {
     @Override
     public Page<TimeDealListGetResponse> findTimeDeals(TimeDealStatus status, Pageable pageable) {
 
-        LocalDateTime now = LocalDateTime.now();
-
         List<TimeDeal> timeDeals =
                 queryFactory.selectFrom(timeDeal)
                         .join(timeDeal.product).fetchJoin()
                         .where(
-                                timeDealStatusCondition(status, now),
+                                timeDealStatusCondition(status),
                                 timeDeal.isDeleted.isFalse()
                         )
                         .orderBy(
-                                status != null ? getTimeDealByForStatus(status) : new OrderSpecifier[]{statusPriority(now)}
+                                status != null ? getTimeDealByForStatus(status) : getDefaultOrder()
                         )
                         .offset(pageable.getOffset())
                         .limit(pageable.getPageSize())
@@ -44,30 +44,52 @@ public class TimeDealCustomRepositoryImpl implements TimeDealCustomRepository {
 
         List<TimeDealListGetResponse> list = timeDeals.stream()
                 .map(TimeDealListGetResponse::from)
-                .sorted((a, b) -> {
-                    if (a.getStatus() == TimeDealStatus.OPEN && b.getStatus() == TimeDealStatus.OPEN) {
-                        return a.getEndAt().compareTo(b.getEndAt());
-                    }
-                    if (a.getStatus() == TimeDealStatus.READY && b.getStatus() == TimeDealStatus.READY) {
-                        return a.getStartAt().compareTo(b.getStartAt());
-                    }
-                    if (a.getStatus() == TimeDealStatus.CLOSED && b.getStatus() == TimeDealStatus.CLOSED) {
-                        return b.getEndAt().compareTo(a.getEndAt());
-                    }
-                    return 0;
-                })
                 .toList();
 
         Long count = queryFactory
                 .select(timeDeal.count())
                 .from(timeDeal)
                 .where(
-                        timeDealStatusCondition(status, now),
+                        timeDealStatusCondition(status),
                         timeDeal.isDeleted.isFalse()
                 )
                 .fetchOne();
 
         return new PageImpl<>(list, pageable, count == null ? 0 : count);
+    }
+
+    private OrderSpecifier<?>[] getDefaultOrder() {
+
+        NumberExpression<Integer> statusOrder =
+                new CaseBuilder()
+                        .when(timeDeal.status.eq(TimeDealStatus.OPEN)).then(0)
+                        .when(timeDeal.status.eq(TimeDealStatus.READY)).then(1)
+                        .otherwise(2);
+
+        DateTimeExpression<LocalDateTime> openOrder =
+                new CaseBuilder()
+                        .when(timeDeal.status.eq(TimeDealStatus.OPEN))
+                        .then(timeDeal.endAt)
+                        .otherwise((LocalDateTime) null);
+
+        DateTimeExpression<LocalDateTime> readyOrder =
+                new CaseBuilder()
+                        .when(timeDeal.status.eq(TimeDealStatus.READY))
+                        .then(timeDeal.startAt)
+                        .otherwise((LocalDateTime) null);
+
+        DateTimeExpression<LocalDateTime> closedOrder =
+                new CaseBuilder()
+                        .when(timeDeal.status.eq(TimeDealStatus.CLOSED))
+                        .then(timeDeal.endAt)
+                        .otherwise((LocalDateTime) null);
+
+        return new OrderSpecifier[]{
+                statusOrder.asc(),
+                openOrder.asc(),
+                readyOrder.asc(),
+                closedOrder.desc()
+        };
     }
 
     /**
@@ -84,36 +106,24 @@ public class TimeDealCustomRepositoryImpl implements TimeDealCustomRepository {
     }
 
     /**
-     * 상태 우선순위
-     */
-    private OrderSpecifier<?> statusPriority(LocalDateTime now) {
-
-        return new CaseBuilder()
-                .when(timeDeal.startAt.loe(now).and(timeDeal.endAt.goe(now))).then(0)
-                .when(timeDeal.startAt.gt(now)).then(1)
-                .otherwise(2)
-                .asc();
-    }
-
-    /**
      * 상태별 조회 조건
      */
-    private BooleanExpression timeDealStatusCondition(TimeDealStatus status, LocalDateTime now) {
+    private BooleanExpression timeDealStatusCondition(TimeDealStatus status) {
 
         if (status == null) {
             return null;
         }
 
         return switch (status) {
-            case READY -> timeDeal.startAt.gt(now);
-            case OPEN -> timeDeal.startAt.loe(now).and(timeDeal.endAt.goe(now));
-            case CLOSED -> timeDeal.endAt.lt(now);
+            case READY -> timeDeal.status.eq(TimeDealStatus.READY);
+            case OPEN -> timeDeal.status.eq(TimeDealStatus.OPEN);
+            case CLOSED -> timeDeal.status.eq(TimeDealStatus.CLOSED);
             default -> null;
         };
     }
 
     @Override
-    public boolean existsActiveDealByProduct(Long productId, LocalDateTime now) {
+    public boolean existsActiveDealByProduct(Long productId) {
 
         return queryFactory.selectFrom(timeDeal)
                 .where(

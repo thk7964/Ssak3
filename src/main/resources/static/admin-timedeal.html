@@ -1068,7 +1068,7 @@
 
         searchTimer = setTimeout(async () => {
             try {
-                const url = `${API_URL}/ssak3/admin/products?page=0&size=20&name=${encodeURIComponent(keyword.trim())}`;
+                const url = `${API_URL}/ssak3/products/search?keyword=${encodeURIComponent(keyword.trim())}`;
                 const res = await fetch(url, getRequestOptions());
                 const result = await res.json();
                 const items = result?.data?.content ?? [];
@@ -1077,14 +1077,15 @@
                     dropdown.innerHTML = '<div class="product-option" style="color:#adb5bd;cursor:default">검색 결과가 없습니다.</div>';
                 } else {
                     dropdown.innerHTML = items.map(p => {
+                        const pid = p.id ?? p.productId;
                         const imgTag = p.imageUrl
                             ? `<img src="${p.imageUrl}" onerror="this.style.display='none'">`
                             : `<span style="font-size:20px">📦</span>`;
                         return `
-                        <div class="product-option" onclick="selectProduct(${p.id}, '${escapeHtml(p.name)}', ${p.price}, '${p.imageUrl ?? ''}', '${dropdownId}')">
+                        <div class="product-option" onclick="selectProduct(${pid}, '${escapeHtml(p.name)}', ${p.price}, '${p.imageUrl ?? ''}', '${dropdownId}')">
                             ${imgTag}
                             <div>
-                                <div class="prod-name">[${p.id}] ${escapeHtml(p.name)}</div>
+                                <div class="prod-name">[${pid}] ${escapeHtml(p.name)}</div>
                                 <div class="prod-price">${(p.price ?? 0).toLocaleString()}원</div>
                             </div>
                         </div>`;

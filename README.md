@@ -2257,7 +2257,7 @@ DB 저장 전에 메시지를 먼저 뿌려주므로 소요 시간이 **3~7ms** 
   </sub>
 </td>
     <td align="center" width="33%">
-    <img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/15b0a1da-cca6-498b-92c7-4d29af6652ab" />
+    <img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/7d8b54de-2a85-46b5-b7ba-d8f2cfc9abaf" />
 <br/><br/>
   <b>팀원</b><br/>
   <a href="https://github.com/jangse0">장서연</a><br/><br/>

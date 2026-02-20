@@ -67,7 +67,8 @@ public class TimeDealService {
         Page<TimeDealListGetResponse> responsePage = timeDealRepository.findTimeDeals(timeDealStatus, pageable);
 
         Page<TimeDealListGetResponse> mapped = responsePage.map(dto -> {
-            String presignedUrl = s3Uploader.createPresignedGetUrl(dto.getImageUrl(), 1500);
+            String imageUrl = s3Uploader.createPresignedGetUrl(dto.getImageUrl(), 1500);
+            String productImageUrl = s3Uploader.createPresignedGetUrl(dto.getProductImageUrl(), 1500);
             return new TimeDealListGetResponse(
                     dto.getId(),
                     dto.getProductName(),
@@ -76,7 +77,8 @@ public class TimeDealService {
                     dto.getStatus(),
                     dto.getStartAt(),
                     dto.getEndAt(),
-                    presignedUrl
+                    imageUrl,
+                    productImageUrl
             );
         });
 

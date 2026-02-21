@@ -785,6 +785,10 @@
         if (!timeDealData) return;
         const el = document.getElementById('remainingTime');
         if (el) {
+            if (timeDealData.status === 'CLOSED') {
+                el.style.display = 'none';
+                return;
+            }
             const text = calculateRemainingTime(timeDealData.startAt, timeDealData.endAt);
             el.textContent = `⏱️ ${text}`;
             if (text === '종료됨' && countdownInterval) clearInterval(countdownInterval);
@@ -861,7 +865,7 @@
                 <div class="time-info-value">${formatDateTime(timeDeal.startAt)}</div>
                 <div class="time-info-label" style="margin-top:12px;">종료 시간</div>
                 <div class="time-info-value">${formatDateTime(timeDeal.endAt)}</div>
-                <div class="remaining-time" id="remainingTime">⏱️ 계산 중...</div>
+                <div class="remaining-time" id="remainingTime" ${timeDeal.status === 'CLOSED' ? 'style="display:none;"' : ''}>⏱️ 계산 중...</div>
             </div>
 
             <div class="quantity-selector">

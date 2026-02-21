@@ -731,6 +731,7 @@
 
     function updateAllCountdowns() {
         currentDeals.forEach(deal => {
+            if (deal.status === 'CLOSED') return;
             const remainingElement = document.getElementById(`remaining-${deal.id}`);
             if (remainingElement) {
                 const remainingTime = calculateRemainingTime(deal.startAt, deal.endAt);
@@ -850,7 +851,7 @@
                         종료: ${formatDateTime(deal.endAt)}
                     </div>
 
-                    <div class="remaining-time" id="remaining-${deal.id}">
+                    <div class="remaining-time" id="remaining-${deal.id}" ${deal.status === 'CLOSED' ? 'style="display:none;"' : ''}>
                         ⏰ 계산 중...
                     </div>
                 </div>

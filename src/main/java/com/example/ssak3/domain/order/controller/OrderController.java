@@ -69,7 +69,7 @@ public class OrderController {
     /**
      * 주문 취소 API
      */
-    @PatchMapping("cancel")
+    @PatchMapping("/cancel")
     public ResponseEntity<ApiResponse> updateOrderCanceledApi(@AuthenticationPrincipal AuthUser user, @Valid @RequestBody OrderCancelRequest request) {
 
         ApiResponse response = ApiResponse.success("주문 취소에 성공했습니다.", orderService.updateOrderCanceled(user.getId(), request));

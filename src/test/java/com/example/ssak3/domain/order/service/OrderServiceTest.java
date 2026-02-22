@@ -1,13 +1,18 @@
 package com.example.ssak3.domain.order.service;
 
+import com.example.ssak3.common.enums.ErrorCode;
 import com.example.ssak3.common.enums.OrderStatus;
 import com.example.ssak3.common.enums.ProductStatus;
+import com.example.ssak3.common.enums.UserCouponStatus;
+import com.example.ssak3.common.exception.CustomException;
 import com.example.ssak3.domain.cart.entity.Cart;
 import com.example.ssak3.domain.cart.repository.CartRepository;
 import com.example.ssak3.domain.cartproduct.entity.CartProduct;
 import com.example.ssak3.domain.cartproduct.repository.CartProductRepository;
 import com.example.ssak3.domain.category.entity.Category;
 import com.example.ssak3.domain.category.repository.CategoryRepository;
+import com.example.ssak3.domain.coupon.entity.Coupon;
+import com.example.ssak3.domain.coupon.repository.CouponRepository;
 import com.example.ssak3.domain.order.entity.Order;
 import com.example.ssak3.domain.order.model.request.OrderCreateFromCartRequest;
 import com.example.ssak3.domain.order.model.request.OrderCreateFromProductRequest;
@@ -20,6 +25,8 @@ import com.example.ssak3.domain.product.entity.Product;
 import com.example.ssak3.domain.product.repository.ProductRepository;
 import com.example.ssak3.domain.user.entity.User;
 import com.example.ssak3.domain.user.repository.UserRepository;
+import com.example.ssak3.domain.usercoupon.entity.UserCoupon;
+import com.example.ssak3.domain.usercoupon.repository.UserCouponRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,9 +35,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
@@ -55,6 +64,10 @@ class OrderServiceTest {
     private CartRepository cartRepository;
     @Autowired
     private CartProductRepository cartProductRepository;
+    @Autowired
+    private CouponRepository couponRepository;
+    @Autowired
+    private UserCouponRepository userCouponRepository;
 
     @BeforeEach
     void clean() {
@@ -63,6 +76,8 @@ class OrderServiceTest {
         orderRepository.deleteAllInBatch();
         cartProductRepository.deleteAllInBatch();
         cartRepository.deleteAllInBatch();
+        userCouponRepository.deleteAllInBatch();
+        couponRepository.deleteAllInBatch();
     }
 
 
@@ -184,6 +199,65 @@ class OrderServiceTest {
         assertThat(reloaded2.getQuantity()).isEqualTo(4); // 5 - 1
         assertThat(op1.getCartProductId()).isEqualTo(cp1.getId());
         assertThat(op2.getCartProductId()).isEqualTo(cp2.getId());
+    }
+
+    @Test
+    @DisplayName("장바구니 상품 주문 - 상품 재고 부족 예외")
+    void createOrderFromCart_통합테스트_상품재고부족() {
+        // Given
+        User user = new User("test4", "user4", "test4@test.com", "Aa12345678!!", LocalDate.of(2026, 2, 2), "010-0000-0001", "서울");
+        userRepository.save(user);
+
+        Category category = new Category("test");
+        categoryRepository.save(category);
+
+        Product product = new Product(category, "테스트", 10000, ProductStatus.FOR_SALE, "설명", 1, null, null);
+        productRepository.save(product);
+
+        Cart cart = new Cart(user);
+        cartRepository.save(cart);
+
+        CartProduct cartProduct = new CartProduct(cart, product, null, 2);
+        cartProductRepository.save(cartProduct);
+
+        OrderCreateFromCartRequest request = new OrderCreateFromCartRequest(cart.getId(), List.of(cartProduct.getId()), "서울시", null);
+
+        // When / Then
+        assertThatThrownBy(() -> orderService.createOrderFromCart(user.getId(), request))
+                .isInstanceOf(CustomException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.PRODUCT_INSUFFICIENT);
+    }
+
+    @Test
+    @DisplayName("단일 상품 주문 - 쿠폰 최소 금액 미달 예외")
+    void createOrderFromProduct_통합테스트_쿠폰최소금액미달() {
+        // Given
+        User user = new User("test4", "user4", "test4@test.com", "Aa12345678!!", LocalDate.of(2026, 2, 2), "010-0000-0001", "서울");
+        userRepository.save(user);
+
+        Category category = new Category("test");
+        categoryRepository.save(category);
+
+        Product product = new Product(category, "테스트", 10000, ProductStatus.FOR_SALE, "설명", 1, null, null);
+        productRepository.save(product);
+
+        Coupon coupon = new Coupon("테스트 쿠폰", 5000, 100, LocalDateTime.now().minusDays(1), LocalDateTime.now().plusDays(1), 30000, 7);
+        couponRepository.save(coupon);
+
+        UserCoupon userCoupon = new UserCoupon(user, coupon, LocalDateTime.now().plusDays(coupon.getValidDays()), UserCouponStatus.AVAILABLE);
+        userCouponRepository.save(userCoupon);
+
+        OrderCreateFromProductRequest request = new OrderCreateFromProductRequest(product.getId(), 1, "배송지", userCoupon.getId());
+
+        // When / Then
+        assertThatThrownBy(() -> orderService.createOrderFromProduct(user.getId(), request))
+                .isInstanceOf(CustomException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.COUPON_MIN_ORDER_PRICE_NOT_MET);
+
+        assertThat(orderRepository.findAll()).isEmpty();
+        assertThat(userCoupon.getStatus()).isEqualTo(UserCouponStatus.AVAILABLE);
     }
 
 }

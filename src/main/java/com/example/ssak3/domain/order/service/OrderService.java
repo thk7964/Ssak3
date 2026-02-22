@@ -88,10 +88,8 @@ public class OrderService {
         }
 
         Order order = new Order(user, request.getAddress(), null, subtotal + deliveryFee);
-        Order savedOrder = orderRepository.save(order);
 
-        OrderProduct orderProduct = new OrderProduct(savedOrder, product, unitPrice, quantity, null);
-        orderProductRepository.save(orderProduct);
+        OrderProduct orderProduct = new OrderProduct(order, product, unitPrice, quantity, null);
 
         inventoryService.decreaseProductStock(product, quantity);
 
@@ -110,11 +108,14 @@ public class OrderService {
                 discount = userCoupon.getCoupon().getDiscountValue();
                 userCoupon.use();
 
-                savedOrder.applyCoupon(userCoupon, discount);
+                order.applyCoupon(userCoupon, discount);
             } else {
                 throw new CustomException(ErrorCode.COUPON_MIN_ORDER_PRICE_NOT_MET);
             }
         }
+
+        Order savedOrder = orderRepository.save(order);
+        orderProductRepository.save(orderProduct);
 
         String paymentUrl = null;
 

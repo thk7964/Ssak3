@@ -22,6 +22,7 @@ public class TimeDealListGetResponse {
     private final LocalDateTime startAt;
     private final LocalDateTime endAt;
     private final String imageUrl;
+    private final String productImageUrl;
 
     public static TimeDealListGetResponse from(TimeDeal timeDeal) {
 
@@ -33,7 +34,8 @@ public class TimeDealListGetResponse {
                 timeDeal.getStatus(),
                 timeDeal.getStartAt(),
                 timeDeal.getEndAt(),
-                timeDeal.getImage()
+                timeDeal.getImage(),
+                timeDeal.getProduct().getImage()
         );
     }
 }

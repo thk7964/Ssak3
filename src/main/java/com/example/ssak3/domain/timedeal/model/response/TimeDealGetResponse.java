@@ -17,12 +17,12 @@ public class TimeDealGetResponse {
     private final String productInformation;
     private final Integer dealPrice;
     private final TimeDealStatus status;
-    private final LocalDateTime startAt;
-    private final LocalDateTime endAt;
     private final String imageUrl;
     private final String productImageUrl;
     private final String detailImageUrl;
     private final String productDetailImageUrl;
+    private final LocalDateTime startAt;
+    private final LocalDateTime endAt;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
@@ -35,12 +35,12 @@ public class TimeDealGetResponse {
                 timeDeal.getProduct().getInformation(),
                 timeDeal.getDealPrice(),
                 timeDeal.getStatus(),
-                timeDeal.getStartAt(),
-                timeDeal.getEndAt(),
                 imageUrl,
                 productImageUrl,
                 detailImageUrl,
                 productDetailImageUrl,
+                timeDeal.getStartAt(),
+                timeDeal.getEndAt(),
                 timeDeal.getCreatedAt(),
                 timeDeal.getUpdatedAt()
         );

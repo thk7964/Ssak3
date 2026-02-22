@@ -16,10 +16,10 @@ public class TimeDealCreateResponse {
     private final String productInformation;
     private final Integer dealPrice;
     private final TimeDealStatus status;
-    private final LocalDateTime startAt;
-    private final LocalDateTime endAt;
     private final String imageUrl;
     private final String detailImageUrl;
+    private final LocalDateTime startAt;
+    private final LocalDateTime endAt;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
@@ -31,10 +31,10 @@ public class TimeDealCreateResponse {
                 timeDeal.getProduct().getInformation(),
                 timeDeal.getDealPrice(),
                 timeDeal.getStatus(),
-                timeDeal.getStartAt(),
-                timeDeal.getEndAt(),
                 timeDeal.getImage(),
                 timeDeal.getDetailImage(),
+                timeDeal.getStartAt(),
+                timeDeal.getEndAt(),
                 timeDeal.getCreatedAt(),
                 timeDeal.getUpdatedAt()
 

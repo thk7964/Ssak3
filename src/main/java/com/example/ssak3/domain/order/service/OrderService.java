@@ -58,6 +58,7 @@ public class OrderService {
     private final PaymentRepository paymentRepository;
     private final TossPaymentClient tossPaymentClient;
     private final InventoryService inventoryService;
+    private final OrderCancelService orderCancelService;
 
     @Value("${app.frontend.base-url}")
     private String frontendBaseUrl;
@@ -296,7 +297,6 @@ public class OrderService {
     /**
      * 주문 취소
      */
-    @Transactional
     public OrderGetResponse updateOrderCanceled(Long userId, OrderCancelRequest request) {
 
         Order order = getUserOrder(userId, request.getOrderId());
@@ -318,7 +318,7 @@ public class OrderService {
             tossPaymentClient.cancel(payment.getPaymentKey(), request.getCancelReason());
         }
 
-        orderCancel(order, payment);
+        orderCancelService.orderCancel(order, payment);
 
         return OrderGetResponse.from(order, order.getOrderProducts());
     }
@@ -408,23 +408,6 @@ public class OrderService {
         String paymentUrl = frontendBaseUrl + "/checkout.html?orderId=" + order.getId() + "&orderName=" + orderName;
 
         return OrderCreateResponse.from(order, subtotal, discount, paymentUrl, deliveryFee);
-    }
-
-    @Transactional
-    protected void orderCancel(Order order, Payment payment) {
-
-        for (OrderProduct op : order.getOrderProducts()) {
-            op.getProduct().rollbackQuantity(op.getQuantity());
-        }
-        if (order.getUserCoupon() != null) {
-            order.getUserCoupon().rollback();
-        }
-
-        if (payment != null) {
-            payment.cancel();
-        }
-
-        order.canceled();
     }
 
     private Order getUserOrder(Long userId, Long orderId) {

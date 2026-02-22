@@ -1,8 +1,8 @@
 package com.example.ssak3.domain.product.scheduler;
 
 import com.example.ssak3.domain.product.service.ProductRankingService;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -13,17 +13,10 @@ public class ProductWeeklyRankingScheduler {
     private final ProductRankingService productRankingService;
 
     /**
-     * 프로그램 처음 실행 시 한 번 집계
-     */
-    @PostConstruct
-    public void init() {
-        productRankingService.updateWeeklyRanking();
-    }
-
-    /**
      * 1분마다 주간 인기 집계
      */
-    @Scheduled(cron = "0 */1 * * * *")
+    @Scheduled(fixedDelay = 60000, initialDelay = 0)
+    @SchedulerLock(name = "updateWeeklyRankingLock", lockAtMostFor = "50s", lockAtLeastFor = "10s")
     public void updateWeeklyRanking() {
         productRankingService.updateWeeklyRanking();
     }

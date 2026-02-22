@@ -36,7 +36,7 @@ public class AdminService {
         User user = userRepository.findByIdAndIsDeletedFalse(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        if (user.getProvider().equals(OAuthProvider.KAKAO)) {
+        if (user.getProvider() != null && user.getProvider().equals(OAuthProvider.KAKAO)) {
             throw new CustomException(ErrorCode.OAUTH_USER_CANNOT_BE_ADMIN);
         }
 

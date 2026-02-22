@@ -30,7 +30,7 @@ public class ProductListGetResponse {
 
         Long timeDealId = timeDeal != null ? timeDeal.getId() : null;
         Integer dealPrice = timeDeal != null ? timeDeal.getDealPrice() : null;
-        String imageUrl = timeDeal != null ? timeDealImageUrl : productImageUrl;
+        String imageUrl = (timeDeal != null && timeDealImageUrl != null) ? timeDealImageUrl : productImageUrl;
 
         return new ProductListGetResponse(
                 product.getId(),

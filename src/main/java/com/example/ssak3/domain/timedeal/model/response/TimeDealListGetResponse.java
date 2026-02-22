@@ -19,10 +19,10 @@ public class TimeDealListGetResponse {
     private final Integer originalPrice;
     private final Integer dealPrice;
     private final TimeDealStatus status;
-    private final LocalDateTime startAt;
-    private final LocalDateTime endAt;
     private final String imageUrl;
     private final String productImageUrl;
+    private final LocalDateTime startAt;
+    private final LocalDateTime endAt;
 
     public static TimeDealListGetResponse from(TimeDeal timeDeal) {
 
@@ -32,10 +32,10 @@ public class TimeDealListGetResponse {
                 timeDeal.getProduct().getPrice(),
                 timeDeal.getDealPrice(),
                 timeDeal.getStatus(),
-                timeDeal.getStartAt(),
-                timeDeal.getEndAt(),
                 timeDeal.getImage(),
-                timeDeal.getProduct().getImage()
+                timeDeal.getProduct().getImage(),
+                timeDeal.getStartAt(),
+                timeDeal.getEndAt()
         );
     }
 }

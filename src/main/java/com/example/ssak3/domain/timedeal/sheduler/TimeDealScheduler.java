@@ -16,7 +16,6 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class TimeDealScheduler {
 
     private final TimeDealRepository timeDealRepository;

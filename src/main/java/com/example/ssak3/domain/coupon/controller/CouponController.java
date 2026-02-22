@@ -28,7 +28,7 @@ public class CouponController {
     @GetMapping
     public ResponseEntity<ApiResponse> getCouponListApi(@PageableDefault(sort = "issueEndDate", direction = Sort.Direction.ASC) Pageable pageable) {
 
-        ApiResponse response = ApiResponse.success("쿠폰 목록 조회 완료", couponService.getCouponList(pageable));
+        ApiResponse response = ApiResponse.success("쿠폰 목록 조회를 성공했습니다.", couponService.getCouponList(pageable));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -40,7 +40,7 @@ public class CouponController {
     @PostMapping
     public ResponseEntity<ApiResponse> createCouponApi(@Valid @RequestBody CouponCreateRequest request) {
 
-        ApiResponse response = ApiResponse.success("쿠폰 생성 완료", couponService.createCoupon(request));
+        ApiResponse response = ApiResponse.success("쿠폰을 생성에 성공했습니다.", couponService.createCoupon(request));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -52,7 +52,7 @@ public class CouponController {
     @PatchMapping("/{couponId}")
     public ResponseEntity<ApiResponse> updateCouponApi(@PathVariable Long couponId, @RequestBody CouponUpdateRequest request) {
 
-        ApiResponse response = ApiResponse.success("쿠폰 수정 완료", couponService.updateCoupon(couponId, request));
+        ApiResponse response = ApiResponse.success("쿠폰을 수정에 성공했습니다.", couponService.updateCoupon(couponId, request));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -64,7 +64,7 @@ public class CouponController {
     @DeleteMapping("/{couponId}")
     public ResponseEntity<ApiResponse> deleteCouponApi(@PathVariable Long couponId) {
 
-        ApiResponse response = ApiResponse.success("쿠폰 삭제 완료", couponService.deleteCoupon(couponId));
+        ApiResponse response = ApiResponse.success("쿠폰을 삭제에 성공했습니다.", couponService.deleteCoupon(couponId));
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

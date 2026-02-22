@@ -10,6 +10,8 @@ import com.example.ssak3.domain.cartproduct.repository.CartProductRepository;
 import com.example.ssak3.domain.category.entity.Category;
 import com.example.ssak3.domain.category.repository.CategoryRepository;
 import com.example.ssak3.domain.order.entity.Order;
+import com.example.ssak3.domain.order.model.request.OrderCreateFromCartRequest;
+import com.example.ssak3.domain.order.model.request.OrderCreateFromProductRequest;
 import com.example.ssak3.domain.order.repository.OrderRepository;
 import com.example.ssak3.domain.orderProduct.entity.OrderProduct;
 import com.example.ssak3.domain.orderProduct.repository.OrderProductRepository;
@@ -30,12 +32,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -97,18 +99,15 @@ class OrderControllerTest {
                 ProductStatus.FOR_SALE, "설명", 10, null, null);
         productRepository.save(product);
 
-        HashMap<String, Object> requestBody = new HashMap<>();
-        requestBody.put("productId", product.getId());
-        requestBody.put("quantity", 2);
-        requestBody.put("address", "서울시");
-        requestBody.put("userCouponId", null);
+        OrderCreateFromProductRequest request =
+                new OrderCreateFromProductRequest(product.getId(), 2, "서울시", null);
 
         // When / Then
         mockMvc.perform(
                         post("/ssak3/orders/products")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .header("Authorization", token)
-                                .content(objectMapper.writeValueAsString(requestBody))
+                                .content(objectMapper.writeValueAsString(request))
                 )
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.success").value(true))
@@ -153,18 +152,20 @@ class OrderControllerTest {
         CartProduct cp2 = new CartProduct(cart, p2, null, 1);
         cartProductRepository.saveAll(List.of(cp1, cp2));
 
-        HashMap<String, Object> requestBody = new HashMap<>();
-        requestBody.put("cartId", cart.getId());
-        requestBody.put("cartProductIdList", List.of(cp1.getId(), cp2.getId()));
-        requestBody.put("address", "서울시");
-        requestBody.put("userCouponId", null);
+        OrderCreateFromCartRequest request =
+                new OrderCreateFromCartRequest(
+                        cart.getId(),
+                        List.of(cp1.getId(), cp2.getId()),
+                        "서울시",
+                        null
+                );
 
         // When / Then
         mockMvc.perform(
                         post("/ssak3/orders/carts")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .header("Authorization", token)
-                                .content(objectMapper.writeValueAsString(requestBody))
+                                .content(objectMapper.writeValueAsString(request))
                 )
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.success").value(true))
@@ -173,7 +174,6 @@ class OrderControllerTest {
                 .andExpect(jsonPath("$.data.discount").value(0))
                 .andExpect(jsonPath("$.data.paymentUrl").isNotEmpty());
 
-        // DB 검증
         List<Order> orders = orderRepository.findAll();
         assertThat(orders).hasSize(1);
 

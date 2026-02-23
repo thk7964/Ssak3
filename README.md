@@ -1465,26 +1465,62 @@ import java.util.UUID;
 
     <img width="1024" height="202" alt="image" src="https://github.com/user-attachments/assets/0e2ec6bf-dcad-4274-b3b9-b2371e49eb7f" />
 
+**방법 2) 비관적 락(Pessimistic Lock)**
+
+- 구현 방법 : `Repository`에 `@Lock(LockModeType.PESSIMISTIC_WRITE)`이 적용된 `findByIdWithLock`을 정의하고 서비스 레이어에서 적용하였습니다.
+        
+  <img width="463" height="106" alt="image" src="https://github.com/user-attachments/assets/88194280-2bb7-4afe-922f-ed166fea78ff" />
+
+    - 결과 : **데드락과 데이터 정합성 문제가 모두 해결**되었습니다.
+        - 쿠폰 발급 기능
+            - 실제 발급된 쿠폰 수(100) = 쿠폰 테이블에서 측정된 발급 쿠폰 수(100)
+                
+              <img width="734" height="295" alt="image" src="https://github.com/user-attachments/assets/2eb2c411-b80b-4ee6-9f3e-434b93dbacd3" />
+                
+        - 상품 주문 기능
+            - 생성된 주문 수(100) = 재고 차감 수(100)
+
+            <img width="1280" height="83" alt="image" src="https://github.com/user-attachments/assets/9d82b995-b6c4-46f8-8802-93e43bbbd795" />
+            <img width="1280" height="271" alt="image" src="https://github.com/user-attachments/assets/0be34ca2-77e5-4ffd-a42c-e331bf34cbea" />
+
+
+    
+
 <br>
 
 <b>✨ 해결 과정</b>
 
-**비관락 적용**
+- **비관적 락 선택**
+    - coupon / product 조회 시점에 비관락 적용했습니다.
+    - **장점**: **데이터 조회 시점부터 x-lock을 획득**하여 다른 트랜잭션의 접근을 차단하여 **데이터 정합성 보장**합니다.
+    - **단점**: 순차적 처리를 하게 되어 **병목 현상 발생 가능성**이 있습니다.
+    - 비관적 락은 성능은 떨어지지만, 이커머스 서비스 특성 상 쿠폰 발급 / 주문 도메인에서 **정합성이 최우선이므로 성능 손실을 감수하더라도 무결성을 보장하는 비관적 락을 선정**하였습니다.
 
-- product 조회 시 비관락 적용
-- 장점 : 데이터 조회 시점부터 x-lock을 획득하여 다른 트랜잭션의 접근을 차단 ⇒ 데이터 정합성 보장
-- 단점 : 순차적 처리를 하게 되어 병목 현상 발생 가능
-<img width="1024" height="66" alt="image" src="https://github.com/user-attachments/assets/38b2d174-9269-49d2-9271-f355cddab427" />
-<img width="1024" height="217" alt="image" src="https://github.com/user-attachments/assets/57ccb24d-17cf-47d9-9e56-1e55c82adaa7" />
+- **해결 결과**
+    - **문제 해결 여부** : 데드락 현상과 정합성 문제 모두 해결했습니다.
+    - **이전과 이후 변화** :
+        - **데드락**: 대량 발생 → 0건
+        - **수량 정합성**: 100건 모두 정확히 반영
+    - **검증 결과**: JMeter 100건 동시 요청 테스트 결과 에러율 **0.00%** 및 데이터 일치를 확인했습니다.
+<img width="1969" height="275" alt="image" src="https://github.com/user-attachments/assets/aa8eff74-8026-4b90-bcc8-62ceeec9c799" />
 
 
-비관적 락은 성능은 떨어지지만, 주문 도메인에서는 정합성이 최우선이므로 성능 손실을 감수하더라도 무결성을 보장하는 비관락을 선정
-
-<br>
+<br><br>
 
 <b>📝 회고</b>
 
-- 비관락 사용 시 동시 처리 성능이 저하되는 문제가 발생할 수 있으므로 향후 트래픽 증가 시 성능에 미치는 영향을 지속적으로 관찰하고 필요하다면 분산락 등 다른 동시성 제어 방식도 고려해 볼 필요가 있다.
+**느낀 점**
+
+- 이번 트러블 슈팅을 통해 제가 작성한 코드의 로직 흐름대로 적용되지 않을 수 있다는 것을 알게 되었고, 이 문제를 식별하는 과정에서 로그를 적극적으로 활용해볼 수 있었습니다.
+- 두 가지 해결 방안을 모두 시도해 본 점과, InnoDB 모니터를 통해 데드락의 근본적인 원인을 로그 분석을 통해 검증한 과정이 효과적이었습니다.
+
+**아쉬운 점**
+
+- 비관적 락 적용 시 발생할 수 있는 성능 문제가 남아있습니다.
+
+**추가 개선 방안**
+
+- 향후 트래픽 증가 시 성능에 미치는 영향을 지속적으로 관찰하고 필요하다면 **분산락** 등 다른 동시성 제어 방식도 고려해 볼 필요가 있습니다.
 
 <br>
 </details>

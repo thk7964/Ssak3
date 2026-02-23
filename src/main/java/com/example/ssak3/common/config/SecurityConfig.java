@@ -42,7 +42,8 @@ public class SecurityConfig {
             "/ssak3/products/**",
             "/ssak3/user-coupons",
             "/ssak3/categories",
-            "/ssak3/time-deals/**"
+            "/ssak3/time-deals/**",
+            "/ssak3/reviews"
     };
 
     @Bean

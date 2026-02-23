@@ -75,10 +75,10 @@ public class TimeDealService {
                     dto.getOriginalPrice(),
                     dto.getDealPrice(),
                     dto.getStatus(),
-                    dto.getStartAt(),
-                    dto.getEndAt(),
                     imageUrl,
-                    productImageUrl
+                    productImageUrl,
+                    dto.getStartAt(),
+                    dto.getEndAt()
             );
         });
 

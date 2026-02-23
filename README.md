@@ -310,6 +310,8 @@
 ## 📝 API 명세서
 <!-- 여기에 넣기 -->
 
+[API 명세서 보러가기](https://www.notion.so/teamsparta/API-3102dc3ef5148000b60ec1913961ee5d)
+
 <br><br>
 
 
